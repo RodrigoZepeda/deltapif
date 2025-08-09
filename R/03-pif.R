@@ -1,0 +1,223 @@
+#' Potential Impact fraction and Population Attributable Fraction
+#'
+#' Calculates the potential impact fraction `pif` or the population
+#' attributable fraction `paf` for a categorical exposure considering
+#' an observed prevalence of  `p` and a relative risk
+#' (or relative risk parameter) of `beta`.
+#'
+#' @inheritParams classes
+#' @param rr_link_deriv Derivative of the link function for the relative risk.
+#' The function tries to build it automatically from `rr_link` using
+#' [Deriv::Deriv()].
+#'
+#' @param link_deriv Derivative of the `link` function. The function tries
+#' to build it automatically from `link` using [Deriv::Deriv()].
+#'
+#' @param quiet Whether to show messages.
+#'
+#' @note This function assumes `p` and `beta` have been pre-computed from
+#' the data and the individual-level data are not accessible to the
+#' researchers. If either the data for the individual-level prevalence of
+#' exposure `p` or the data for the individual-level risk estimate `beta`
+#' can be accessed by the researcher other methods (such as the `pifpaf`
+#' package should be preferred).
+#'
+#' @section Formulas:
+#' This function computed the potential impact fraction and its confidence
+#' intervals using Walter's formula:
+#' \deqn{
+#'  \dfrac{
+#'    \sum\limits_{i=1}^N p_i \text{RR}_i - \sum\limits_{i=1}^N p_i^{\text{cft}} \text{RR}_i
+#'   }{
+#'    \sum\limits_{i=1}^N p_i \text{RR}_i
+#'   }
+#' }
+#' in the case of `N` exposure categories which is equivalent to Levine's formula
+#' when there is only `1` exposure category:
+#' \deqn{
+#'  \dfrac{
+#'    p (\text{RR} - 1) - p^{\text{cft}} (\text{RR} - 1)
+#'   }{
+#'    1 + p (\text{RR} - 1)
+#'   }
+#' }
+#'
+#' @section Link functions for the PIF:
+#'
+#' @section Link functions for beta:
+#'
+#' @section Population Attributable Fraction:
+#' The population attributable fraction corresponds to the potential impact
+#' fraction at the theoretical minimum risk level. It is assumed that the
+#' theoretical minimum risk level is a relative risk of 1. If no
+#' counterfactual prevalence `p_cft` is specified, the model computes
+#' the population attributable fraction.
+#'
+#' @examples
+#' # This example comes from Levin 1953
+#' # Relative risk of lung cancer given smoking was 3.6
+#' # Proportion of individuals smoking where 49.9%
+#' # Calculates PAF (i.e. counterfactual is no smoking)
+#' paf(p = 0.499, beta = 3.6)
+#'
+#' # Assuming that beta and p had a variance
+#' paf(p = 0.499, beta = 3.6, sigma_p = 0.001, sigma_beta = 1)
+#'
+#' # If the variance was to high a logistic transform would be required
+#' # Generates incorrect values for the interval:
+#' paf(p = 0.499, beta = 3.6, sigma_p = 0.1, sigma_beta = 3)
+#'
+#' # Logit fixes it
+#' paf(p = 0.499, beta = 3.6, sigma_p = 0.1, sigma_beta = 3, link = "logit", quiet = T)
+#'
+#' # If the counterfactual was reducing the smoking population by 1/2
+#' pif(p = 0.499, beta = 3.6, p_cft = 0.499/2, sigma_p = 0.001, sigma_beta = 1, link = "logit", quiet = T)
+#'
+#' @name pifpaf
+NULL
+
+#' Population attributable fraction
+#' @rdname pifpaf
+#' @export
+paf <- function(p, beta,
+                sigma_p = NULL,
+                sigma_beta = NULL,
+                rr_link = "identity",
+                rr_link_deriv = NULL,
+                link = "log-complement",
+                link_inv = NULL,
+                link_deriv = NULL,
+                conf_level = 0.95,
+                quiet = FALSE) {
+  pif(
+    p = p, p_cft = rep(0, length(p)), beta = beta, sigma_p = sigma_p,
+    sigma_beta = sigma_beta, rr_link = rr_link,
+    rr_link_deriv = rr_link_deriv, link = link, link_inv = link_inv,
+    link_deriv = link_deriv, conf_level = conf_level, quiet = quiet,
+    type = "PAF"
+  )
+}
+
+#' Potential impact fraction
+#' @rdname pifpaf
+#' @export
+pif <- function(p,
+                p_cft         = rep(0, length(p)),
+                beta,
+                sigma_p       = NULL,
+                sigma_beta    = NULL,
+                rr_link       = "identity",
+                rr_link_deriv = NULL,
+                link          = "log-complement",
+                link_inv      = NULL,
+                link_deriv    = NULL,
+                conf_level    = 0.95,
+                type          = "PIF",
+                quiet         = FALSE) {
+
+  #Check that type is not PAF if p_cft has values
+  if (type == "PAF" & any(p_cft > 0)){
+    if (!quiet){
+      cli::cli_alert_danger(
+        paste0(
+          "type `PAF` was selected but the counterfactual prevalence `p_cft` ",
+          "has non-zero values. Are you sure you are not calculating a PIF ",
+          "instead?"
+        )
+      )
+    }
+  }
+
+  # Get the inverse function
+  if (is.null(link_inv) & is.character(link)) {
+    link_inv <- parse_inv_link(link)
+  }
+
+  # Get the functions
+  rr_link <- parse_link(rr_link)
+  link    <- parse_link(link)
+
+  # Get the derivatives of the links
+  if (is.null(rr_link_deriv)) {
+    rr_link_deriv <- Deriv::Deriv(rr_link)
+  }
+
+  if (is.null(link_deriv)) {
+    link_deriv <- Deriv::Deriv(link)
+  }
+
+  # Get zero matrices for sigma_p and sigma_beta if not given
+  if (is.null(sigma_p)) {
+    sigma_p <- matrix(0, ncol = length(p), nrow = length(p))
+    if (!quiet){
+      cli::cli_alert_warning(
+        paste0(
+          "Assuming parameters `p` have no variance. Use `sigma_p` ",
+          "to input their variances and/or covariances"
+        )
+      )
+    }
+  }
+
+  if (is.null(sigma_beta)) {
+    sigma_beta <- matrix(0, ncol = length(beta), nrow = length(beta))
+    if (!quiet){
+      cli::cli_alert_warning(
+        paste0(
+          "Assuming parameters `beta` have no variance. Use `sigma_beta` ",
+          "to input their variances and/or covariances"
+        )
+      )
+    }
+  }
+
+  # If vectors provided then transform to approximate matrices
+  sigma_p_upper_bound <- FALSE
+  if (is.vector(sigma_p) && length(sigma_p) > 1) {
+    sigma_p_upper_bound <- TRUE
+    sigma_p <- sigma_p %*% t(sigma_p)
+    if (!quiet){
+      cli::cli_alert_warning(
+        paste0(
+          "Assuming parameters `p` are correlated but correlation is unknown. ",
+          "If they are uncorrelated redefine `sigma_p = diag(sigma_p)` to ",
+          "transform them into a matrix with no correlations."
+        )
+      )
+    }
+  }
+
+  sigma_beta_upper_bound <- FALSE
+  if (is.vector(sigma_beta) && length(sigma_beta) > 1) {
+    sigma_beta_upper_bound <- TRUE
+    sigma_beta <- sigma_beta %*% t(sigma_beta)
+    if (!quiet){
+      cli::cli_alert_warning(
+        paste0(
+          "Assuming parameters `beta` are correlated but correlation is unknown. ",
+          "If they are uncorrelated redefine `sigma_beta = diag(sigma_beta)` to ",
+          "transform them into a matrix with no correlations."
+        )
+      )
+    }
+  }
+
+  pif_atomic_class(
+     p          = p,
+     p_cft      = p_cft,
+     beta       = beta,
+     sigma_p    = sigma_p,
+     sigma_beta = sigma_beta,
+     link       = link,
+     link_inv   = link_inv,
+     link_deriv = link_deriv,
+     rr_link    = rr_link,
+     rr_link_deriv = rr_link_deriv,
+     conf_level = conf_level,
+     type       = type,
+     sigma_p_upper_bound = sigma_p_upper_bound,
+     sigma_beta_upper_bound = sigma_beta_upper_bound
+  )
+
+
+}
