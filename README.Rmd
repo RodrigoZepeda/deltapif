@@ -64,9 +64,10 @@ Note that there is no uncertainty in the fraction as we have not inputed the
 standard deviation of `beta`. To do so we notice that the variance for
 the relative risk is actually for the log of beta. We follow the formula
 from [Cochrane's handbook](https://handbook-5-1.cochrane.org/chapter_7/7_7_3_2_obtaining_standard_deviations_from_standard_errors_and.htm):
-$$
+
+```math
 \text{var}_{\ln(\beta)} = \Bigg(\frac{\ln(\text{upper limit}) - \ln(\text{lower limit})}{2\times 1.95}\Bigg)^2
-$$
+```
 
 ```{r}
 ((log(2.20) - log(1.15)) / (2*1.95))^2
