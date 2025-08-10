@@ -16,3 +16,10 @@ Imports:
     S7,
     scales
 URL: https://rodrigozepeda.github.io/deltapif/
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+Depends: 
+    R (>= 3.5)
+LazyData: true

@@ -64,15 +64,5 @@ check_rr_links <- function(rr_link, rr_link_deriv){
     )
   }
 
-
-  if (is.function(rr_link) & is.null(rr_link_deriv)){
-    cli::cli_abort(
-      paste0(
-        "A functional link was specified but no `rr_link_deriv` was given. Set",
-        "`rr_link_deriv =` the derivative of your rr_link function."
-      )
-    )
-  }
-
   return(invisible())
 }

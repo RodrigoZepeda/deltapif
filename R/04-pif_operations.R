@@ -132,7 +132,7 @@ pif_total <- function(pif1, ..., weights, sigma_weights = 0, conf_level = 0.95,
     link_deriv <- Deriv::Deriv(link)
   }
 
-  if (sum(weights) != 1){
+  if (abs(sum(weights) - 1) > sqrt(.Machine$double.eps)){
     cli::cli_abort(
       "`weights` should sum to 1 but `sum(weights)` = {sum(weights)}"
     )

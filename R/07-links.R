@@ -199,7 +199,7 @@ parse_link <- function(link_name) {
     return(log_complement)
   } else if (link_name == "hawkins") {
     return(hawkins)
-  } else if (link_name == "exponential") {
+  } else if (link_name == "exponential" || link_name == "exp") {
     return(exp)
   } else {
     cli::cli_abort(
@@ -230,7 +230,7 @@ parse_inv_link <- function(link_name) {
     return(inv_log_complement)
   } else if (link_name == "hawkins") {
     return(inv_hawkins)
-  } else if (link_name == "exponential") {
+  } else if (link_name == "exponential" || link_name == "exp") {
     return(log)
   } else {
     cli::cli_abort(

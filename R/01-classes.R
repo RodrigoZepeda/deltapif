@@ -68,7 +68,7 @@
 #'   \item{`ci`}{`numeric(2)` — Lower and upper confidence limits at level `conf_level`.}
 #'   \item{`link_vals`}{`numeric` — Entrywise evaluation of the link function at pif: `link(pif)`.}
 #'   \item{`link_deriv_vals`}{`character` — Entrywise evaluation of the derivative of the link function (`link_deriv`) at pif: `link(pif)`.}
-#'   \item{`link_variance`}{`numeric` - Estimate for the linked potential impact fraction's variance: `var(link(pif))`.}
+#'   \item{`link_variance`}{`numeric` - Estimate for the linked potential impact fraction's variance: `variance(link(pif))`.}
 #' }
 #'
 #' @section Properties of a  `pif_atomic_class`:
@@ -140,7 +140,7 @@
 #'
 #' @examples
 #' #Create a new pif parent class element
-#' pif_class(pif = 0.3, var = 0.01, conf_level = 0.95, type = "PIF",
+#' pif_class(pif = 0.3, variance = 0.01, conf_level = 0.95, type = "PIF",
 #'   link = logit, link_inv = inv_logit, link_deriv = deriv_logit)
 #'
 #' #Create a new potential impact fraction from the Walter's formula
@@ -526,11 +526,11 @@ pif_total_class <- S7::new_class(
       }
     }
 
-    if (length(weights) != length(pif_class)){
+    if (length(self@weights) != length(self@pif_list)){
       cli::cli_abort(
         paste0(
-          "Weights provided have length {length(weights)} but",
-          "{length(pif_class)} fractions were provided."
+          "Weights provided have length {length(self@weights)} but",
+          "{length(self@pif_list)} fractions were provided."
         )
       )
     }

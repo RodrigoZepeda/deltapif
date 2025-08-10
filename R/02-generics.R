@@ -15,8 +15,8 @@ print_pif_class <- function(x, accuracy){
   #   ── Potential Impact Fraction ──
   #
   # PIF = 4.421% [95% CI: 0.179% to 54.364%]
-  # sd(pif %) = 7.003
-  # sd(link(pif)) = 1.657
+  # standard_deviation(pif %) = 7.003
+  # standard_deviation(link(pif)) = 1.657
 
   pif_val <- scales::percent(x@pif, accuracy = accuracy)
   cilow   <- scales::percent(x@ci[1], accuracy = accuracy)
@@ -29,10 +29,10 @@ print_pif_class <- function(x, accuracy){
     "[{.emph {scales::percent(x@conf_level)} CI}: {cilow} to {cihigh}]"
   )
   cli::cli_text(
-    "sd({tolower(x@type)} %) = {scales::comma(100*sqrt(x@variance), accuracy = accuracy)}"
+    "standard_deviation({tolower(x@type)} %) = {scales::comma(100*sqrt(x@variance), accuracy = accuracy)}"
   )
   cli::cli_text(
-    "sd(link({tolower(x@type)})) = {scales::comma(sqrt(x@link_variance), accuracy = accuracy)}"
+    "standard_deviation(link({tolower(x@type)})) = {scales::comma(sqrt(x@link_variance), accuracy = accuracy)}"
   )
 
   return(invisible())
@@ -123,14 +123,18 @@ S7::method(confint, pif_class) <- function(object, ..., level = 0.95) {
 #' @export
 S7::method(summary, pif_class) <- function(object, level = 0.95, ...) {
   conf_interval <- confint(object, level = level)
-  return(
-    c("type"       = fraction_type(object),
-      "value"      = coef(object),
-      "sd"         = sd(object),
-      "ci_low"     = conf_interval[1],
-      "ci_up"      = conf_interval[2],
-      "confidence" = level)
-  )
+
+  #Build the return vector
+  return_vec <- c("value"      = coef(object),
+                  "standard_deviation" = standard_deviation(object),
+                  "ci_low"     = conf_interval[1],
+                  "ci_up"      = conf_interval[2],
+                  "confidence" = level)
+
+  #Assign the name
+  names(return_vec)[1] <- fraction_type(object)
+
+  return(return_vec)
 }
 
 #' Transform a pif object into a data.frame

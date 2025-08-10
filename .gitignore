@@ -8,3 +8,4 @@ oldstuff/
 .quarto
 logo/
 docs
+inst/doc

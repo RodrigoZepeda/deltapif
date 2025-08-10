@@ -159,8 +159,8 @@ pif <- function(p,
     if (!quiet){
       cli::cli_alert_warning(
         paste0(
-          "Assuming parameters `p` have no link_variance. Use `var_p` ",
-          "to input their link_variances and/or colink_variances"
+          "Assuming parameters `p` have no variance Use `var_p` ",
+          "to input their link_variances and/or covariance"
         )
       )
     }
@@ -171,8 +171,8 @@ pif <- function(p,
     if (!quiet){
       cli::cli_alert_warning(
         paste0(
-          "Assuming parameters `beta` have no link_variance. Use `var_beta` ",
-          "to input their link_variances and/or colink_variances"
+          "Assuming parameters `beta` have no variance Use `var_beta` ",
+          "to input their link_variances and/or covariance"
         )
       )
     }

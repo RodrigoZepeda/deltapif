@@ -146,11 +146,11 @@ get_covariance_total <- function(self){
         cov_mat[i,j] <- cov_total_pif(self@pif_list[[i]], self@pif_list[[j]])
       }
     }
-    cov_mat <- cov_mat + t(cov_mat) + diag(sapply(self@pif_list, var))
+    cov_mat <- cov_mat + t(cov_mat) + diag(sapply(self@pif_list, variance))
     return(cov_mat)
   } else {
     return(
-      var(self@pif_list[[1]])
+      variance(self@pif_list[[1]])
     )
   }
 }
@@ -163,17 +163,17 @@ get_ensemble_covariance <- function(self){
     cov_mat <- matrix(0, ncol = npifs, nrow = npifs)
     for (i in 1:(npifs - 1)){
       for (j in (i + 1):npifs){
-        #In ensemble the covariance is given by ln(1 - pif[i])'*ln(1 - pif[j])'*cov(pif[i],pif[j])
+        #In ensemble the covariance is given by ln(1 - pif[i])'*ln(1 - pif[j])'*covariance(pif[i],pif[j])
         g_i_prime <- link_deriv_vals(self@pif_list[[i]])
         g_j_prime <- link_deriv_vals(self@pif_list[[j]])
         cov_mat[i,j] <- g_i_prime*g_j_prime*cov_total_pif(self@pif_list[[i]], self@pif_list[[j]])
       }
     }
-    cov_mat <- cov_mat + t(cov_mat) + diag(sapply(self@pif_list, var)*(sapply(self@pif_list, link_deriv_vals)^2))
+    cov_mat <- cov_mat + t(cov_mat) + diag(sapply(self@pif_list, variance)*(sapply(self@pif_list, link_deriv_vals)^2))
     return(cov_mat)
   } else {
     return(
-      var(self@pif_list[[1]])*(link_deriv_vals(self@pif_list[[1]])^2)
+      variance(self@pif_list[[1]])*(link_deriv_vals(self@pif_list[[1]])^2)
     )
   }
 }

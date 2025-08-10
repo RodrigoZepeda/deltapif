@@ -187,7 +187,7 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
   # If pif1 is a list (regardless of p2's type)
   if (S7::S7_inherits(pif1, pif_total_class)) {
     for (i in seq_along(pif1@pif_list)) {
-      #Compute sum q*cov(pif1, pif2)
+      #Compute sum q*covariance(pif1, pif2)
       total <- total +
         pif1@weights[[i]]*cov_total_pif(pif1 = pif1@pif_list[[i]],
                                         pif2 = pif2,
@@ -225,9 +225,9 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
 #' Colink_variance matrix, correlation matrix, link_variance and standard deviation
 #' for potential impact fractions
 #'
-#' Computes the colink_variance (`cov`) or correlation (`cor`) for multiple
-#' potential impact fractions and the link_variance `var` and standard deviation
-#' `sd`for a potential impact fraction.
+#' Computes the colink_variance (`covariance`) or correlation (`correlation`) for multiple
+#' potential impact fractions and the link_variance `variance` and standard deviation
+#' `standard_deviation`for a potential impact fraction.
 #'
 #' @param x A potential impact fraction
 #'
@@ -255,10 +255,10 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
 #' @examples
 #' # Get the approximate link_variance of a pif object
 #' my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1, var_beta = 0.2)
-#' var(my_pif)
+#' variance(my_pif)
 #'
 #' # This is the same as colink_variance with just 1 pIF
-#' cov(my_pif)
+#' covariance(my_pif)
 #'
 #' # Calculate the colink_variance between 3 fractions with shared relative risk
 #' beta <- 0.3
@@ -266,10 +266,10 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
 #' pif1 <- pif(0.5, 0.2, beta, var_p = 0.5 * (1 - 0.5) / 100, var_beta = var_beta)
 #' pif2 <- pif(0.3, 0.1, beta, var_p = 0.3 * (1 - 0.3) / 100, var_beta = var_beta)
 #' pif3 <- pif(0.7, 0.3, beta, var_p = 0.7 * (1 - 0.7) / 100, var_beta = var_beta)
-#' cov(pif1, pif2, pif3, independent_beta = FALSE)
+#' covariance(pif1, pif2, pif3, independent_beta = FALSE)
 #'
 #' # The colink_variance between a pif and itself only has the link_variance as entries
-#' cov(pif1, pif1, independent_beta = FALSE, independent_p = FALSE)
+#' covariance(pif1, pif1, independent_beta = FALSE, independent_p = FALSE)
 #'
 #' # Or if there is a colink_variance structure between different betas you can specify with
 #' # var_beta in the colink_variance
@@ -284,24 +284,24 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
 #' pif1 <- pif(0.5, 0.2, betas[1], var_p = 0.5 * (1 - 0.5) / 100, var_beta = var_beta[1, 1])
 #' pif2 <- pif(0.3, 0.1, betas[2], var_p = 0.3 * (1 - 0.3) / 100, var_beta = var_beta[2, 2])
 #' pif3 <- pif(0.3, 0.1, betas[3], var_p = 0.3 * (1 - 0.3) / 100, var_beta = var_beta[3, 3])
-#' cov(pif1, pif2, pif3, var_beta = var_beta)
+#' covariance(pif1, pif2, pif3, var_beta = var_beta)
 #'
 #' # Compute the correlation
-#' cor(pif1, pif2, pif3, var_beta = var_beta, quiet = TRUE)
+#' correlation(pif1, pif2, pif3, var_beta = var_beta, quiet = TRUE)
 #' @name covcor
 NULL
 
 #' @rdname covcor
 #' @export
-cov <- S7::new_generic(
-  "cov", "x",
+covariance <- S7::new_generic(
+  "covariance", "x",
   function(x, ..., var_p = NULL, var_beta = NULL,
            independent_p = "guess", independent_beta = "guess",
            quiet = FALSE) {
     S7::S7_dispatch()
   }
 )
-S7::method(cov, S7::new_union(pif_total_class, pif_atomic_class)) <- function(x, ..., var_p = NULL, var_beta = NULL,
+S7::method(covariance, S7::new_union(pif_total_class, pif_atomic_class)) <- function(x, ..., var_p = NULL, var_beta = NULL,
                                                                               independent_p = "guess", independent_beta = "guess",
                                                                               quiet = FALSE) {
 
@@ -366,10 +366,10 @@ S7::method(cov, S7::new_union(pif_total_class, pif_atomic_class)) <- function(x,
     }
 
     # Add lower triangle
-    cov_mat <- cov_mat + t(cov_mat) + diag(sapply(pif_list, var))
+    cov_mat <- cov_mat + t(cov_mat) + diag(sapply(pif_list, variance))
 
   } else {
-    cov_mat <- matrix(var(x), ncol = 1, nrow = 1)
+    cov_mat <- matrix(variance(x), ncol = 1, nrow = 1)
   }
 
   return(cov_mat)
@@ -377,8 +377,8 @@ S7::method(cov, S7::new_union(pif_total_class, pif_atomic_class)) <- function(x,
 
 #' @rdname covcor
 #' @export
-var <- S7::new_generic("var", "x")
-S7::method(var, S7::new_union(pif_total_class, pif_atomic_class)) <- function(x, ...) {
+variance <- S7::new_generic("variance", "x")
+S7::method(variance, S7::new_union(pif_total_class, pif_atomic_class)) <- function(x, ...) {
   if (length(list(...)) > 0) {
     cli::cli_alert_danger(
       "Currently this function does not support more than 1 argument. Ignoring the rest."
@@ -389,26 +389,26 @@ S7::method(var, S7::new_union(pif_total_class, pif_atomic_class)) <- function(x,
 
 #' @rdname covcor
 #' @export
-sd <- S7::new_generic("sd", "x")
-S7::method(sd, S7::new_union(pif_total_class, pif_atomic_class)) <- function(x, ...) {
-  sqrt(var(x, ...))
+standard_deviation <- S7::new_generic("standard_deviation", "x")
+S7::method(standard_deviation, S7::new_union(pif_total_class, pif_atomic_class)) <- function(x, ...) {
+  sqrt(variance(x, ...))
 }
 
 #' @rdname covcor
 #' @export
-cor <- S7::new_generic(
-  "cor", "x",
+correlation <- S7::new_generic(
+  "correlation", "x",
   function(x, ..., var_p = NULL, var_beta = NULL,
            independent_p = "guess", independent_beta = "guess",
            quiet = FALSE) {
     S7::S7_dispatch()
   }
 )
-S7::method(cor, S7::new_union(pif_total_class, pif_atomic_class)) <- function(x, ..., var_p = NULL, var_beta = NULL,
+S7::method(correlation, S7::new_union(pif_total_class, pif_atomic_class)) <- function(x, ..., var_p = NULL, var_beta = NULL,
                                                                               independent_p = "guess", independent_beta = "guess",
                                                                               quiet = FALSE) {
   cov2cor(
-    cov(x, ...,
+    covariance(x, ...,
         var_p = var_p, var_beta = var_beta,
         independent_p = independent_p, independent_beta = independent_beta,
         quiet = quiet

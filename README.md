@@ -53,26 +53,21 @@ We can calculate a point estimate of the PAF as follows:
 
 ``` r
 library(deltapif)
-#> 
-#> Attaching package: 'deltapif'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     cor, cov, sd, var
 paf(p = 0.085, beta = 1.59, quiet = TRUE)
 #> 
 #> ── Population Attributable Fraction ──
 #> 
 #> PAF = 4.776% [95% CI: 4.776% to 4.776%]
-#> sd(paf %) = 0.000
-#> sd(link(paf)) = 0.000
+#> standard_deviation(paf %) = 0.000
+#> standard_deviation(link(paf)) = 0.000
 ```
 
 Note that this follows the formula by
 [Levin](https://doi.org/10.1016/j.gloepi.2021.100062):
 
-``` math
+$$
 \textrm{PAF} = \frac{p \cdot (\text{RR} - 1)}{1 + p \cdot (\text{RR} - 1)}
-```
+$$
 
 Additional examples show how to calculate the PAF for multiple
 categories.
@@ -85,9 +80,9 @@ for the relative risk is actually for the log of beta. We follow the
 formula from [Cochrane’s
 handbook](https://handbook-5-1.cochrane.org/chapter_7/7_7_3_2_obtaining_standard_deviations_from_standard_errors_and.htm):
 
-``` math
-\text{var}_{\ln(\beta)} = \Bigg(\frac{\ln(\text{upper limit}) - \ln(\text{lower limit})}{2\times 1.95}\Bigg)^2
-```
+$$
+\text{variance}_{\ln(\beta)} = \Bigg(\frac{\ln(\text{upper limit}) - \ln(\text{lower limit})}{2\times 1.95}\Bigg)^2
+$$
 
 ``` r
 ((log(2.20) - log(1.15)) / (2*1.95))^2
@@ -101,13 +96,13 @@ is through the exponential function. Finally as no uncertainty was given
 for `p` we set `var_p = 0`.
 
 ``` r
-paf(p = 0.085, beta = 0.4637, var_beta = 0.02766639, var_p = 0, rr_link = "exponential")
+paf(p = 0.085, beta = 0.4637, var_beta = 0.02766639, var_p = 0, rr_link = exp)
 #> 
 #> ── Population Attributable Fraction ──
 #> 
 #> PAF = 4.775% [95% CI: 0.695% to 8.688%]
-#> sd(paf %) = 2.038
-#> sd(link(paf)) = 0.021
+#> standard_deviation(paf %) = 2.038
+#> standard_deviation(link(paf)) = 0.021
 ```
 
 ## Calculating a potential impact fraction
@@ -118,13 +113,13 @@ specifying the counterfactual distribution (in this case the 15%
 reduction results in $0.085 \times (1 - 0.15) = 0.07225$)
 
 ``` r
-pif(p = 0.085, p_cft = 0.07225, beta = 0.4637, var_beta = 0.02766639, var_p = 0, rr_link = "exponential")
+pif(p = 0.085, p_cft = 0.07225, beta = 0.4637, var_beta = 0.02766639, var_p = 0, rr_link = exp)
 #> 
 #> ── Potential Impact Fraction ──
 #> 
 #> PIF = 0.716% [95% CI: 0.115% to 1.314%]
-#> sd(pif %) = 0.306
-#> sd(link(pif)) = 0.003
+#> standard_deviation(pif %) = 0.306
+#> standard_deviation(link(pif)) = 0.003
 ```
 
 Note that both the PIF and PAF result in similar point estimates and CIs
@@ -132,3 +127,8 @@ as in *Lee et al* who report:
 
 - **PAF**: 4.9 (1.3-9.3)
 - **PIF**: 0.7 (0.2-1.4)
+
+## More
+
+Visit the [deltapif](https://rodrigozepeda.github.io/deltapif/) website
+for more examples and additional operations you can do with `PIF`.

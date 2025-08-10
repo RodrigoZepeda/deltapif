@@ -117,7 +117,7 @@ considering an observed prevalence of  \code{p} and a relative risk
 \item{\code{ci}}{\code{numeric(2)} — Lower and upper confidence limits at level \code{conf_level}.}
 \item{\code{link_vals}}{\code{numeric} — Entrywise evaluation of the link function at pif: \code{link(pif)}.}
 \item{\code{link_deriv_vals}}{\code{character} — Entrywise evaluation of the derivative of the link function (\code{link_deriv}) at pif: \code{link(pif)}.}
-\item{\code{link_variance}}{\code{numeric} - Estimate for the linked potential impact fraction's variance: \code{var(link(pif))}.}
+\item{\code{link_variance}}{\code{numeric} - Estimate for the linked potential impact fraction's variance: \code{variance(link(pif))}.}
 }
 }
 
@@ -196,7 +196,7 @@ as it can be transformed into
 
 \examples{
 #Create a new pif parent class element
-pif_class(pif = 0.3, var = 0.01, conf_level = 0.95, type = "PIF",
+pif_class(pif = 0.3, variance = 0.01, conf_level = 0.95, type = "PIF",
   link = logit, link_inv = inv_logit, link_deriv = deriv_logit)
 
 #Create a new potential impact fraction from the Walter's formula

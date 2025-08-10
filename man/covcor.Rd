@@ -3,10 +3,10 @@
 \name{cov_total_pif}
 \alias{cov_total_pif}
 \alias{covcor}
-\alias{cov}
-\alias{var}
-\alias{sd}
-\alias{cor}
+\alias{covariance}
+\alias{variance}
+\alias{standard_deviation}
+\alias{correlation}
 \title{Colink_variance function for a \code{pif_total_class}}
 \usage{
 cov_total_pif(
@@ -19,7 +19,7 @@ cov_total_pif(
   quiet = FALSE
 )
 
-cov(
+covariance(
   x,
   ...,
   var_p = NULL,
@@ -29,11 +29,11 @@ cov(
   quiet = FALSE
 )
 
-var(x, ...)
+variance(x, ...)
 
-sd(x, ...)
+standard_deviation(x, ...)
 
-cor(
+correlation(
   x,
   ...,
   var_p = NULL,
@@ -74,17 +74,17 @@ separated by commas.}
 \description{
 Recursively obtains the colink_variance matrix of a \code{pif_total_class}
 
-Computes the colink_variance (\code{cov}) or correlation (\code{cor}) for multiple
-potential impact fractions and the link_variance \code{var} and standard deviation
-\code{sd}for a potential impact fraction.
+Computes the colink_variance (\code{covariance}) or correlation (\code{correlation}) for multiple
+potential impact fractions and the link_variance \code{variance} and standard deviation
+\code{standard_deviation}for a potential impact fraction.
 }
 \examples{
 # Get the approximate link_variance of a pif object
 my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1, var_beta = 0.2)
-var(my_pif)
+variance(my_pif)
 
 # This is the same as colink_variance with just 1 pIF
-cov(my_pif)
+covariance(my_pif)
 
 # Calculate the colink_variance between 3 fractions with shared relative risk
 beta <- 0.3
@@ -92,10 +92,10 @@ var_beta <- 0.1
 pif1 <- pif(0.5, 0.2, beta, var_p = 0.5 * (1 - 0.5) / 100, var_beta = var_beta)
 pif2 <- pif(0.3, 0.1, beta, var_p = 0.3 * (1 - 0.3) / 100, var_beta = var_beta)
 pif3 <- pif(0.7, 0.3, beta, var_p = 0.7 * (1 - 0.7) / 100, var_beta = var_beta)
-cov(pif1, pif2, pif3, independent_beta = FALSE)
+covariance(pif1, pif2, pif3, independent_beta = FALSE)
 
 # The colink_variance between a pif and itself only has the link_variance as entries
-cov(pif1, pif1, independent_beta = FALSE, independent_p = FALSE)
+covariance(pif1, pif1, independent_beta = FALSE, independent_p = FALSE)
 
 # Or if there is a colink_variance structure between different betas you can specify with
 # var_beta in the colink_variance
@@ -110,9 +110,9 @@ var_beta <- matrix(c(
 pif1 <- pif(0.5, 0.2, betas[1], var_p = 0.5 * (1 - 0.5) / 100, var_beta = var_beta[1, 1])
 pif2 <- pif(0.3, 0.1, betas[2], var_p = 0.3 * (1 - 0.3) / 100, var_beta = var_beta[2, 2])
 pif3 <- pif(0.3, 0.1, betas[3], var_p = 0.3 * (1 - 0.3) / 100, var_beta = var_beta[3, 3])
-cov(pif1, pif2, pif3, var_beta = var_beta)
+covariance(pif1, pif2, pif3, var_beta = var_beta)
 
 # Compute the correlation
-cor(pif1, pif2, pif3, var_beta = var_beta, quiet = TRUE)
+correlation(pif1, pif2, pif3, var_beta = var_beta, quiet = TRUE)
 }
 \keyword{internal}

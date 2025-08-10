@@ -40,14 +40,14 @@
 #' \deqn{
 #' \text{CC}_{p} = \dfrac{
 #'  \partial \textrm{PIF}_i}{\partial p_i}^{\top}
-#'  \textrm{Cov}\big( \hat{p}_i, \hat{p}_j\big)
+#'  \textrm{covariance}\big( \hat{p}_i, \hat{p}_j\big)
 #'  \dfrac{\partial \textrm{PIF}_j}{\partial p_j}
 #' }
 #' and for `beta`:
 #' \deqn{
 #' \text{CC}_{\theta} =  \dfrac{
 #' \partial \textrm{PIF}_i}{\partial \theta_i}^{\top}
-#' \textrm{Cov}\big( \hat{\theta}_i, \hat{\theta}_j\big)
+#' \textrm{covariance}\big( \hat{\theta}_i, \hat{\theta}_j\big)
 #' \dfrac{\partial \textrm{PIF}_j}{\partial \theta_j}
 #' }
 #'

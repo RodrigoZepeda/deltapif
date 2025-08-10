@@ -1,0 +1,205 @@
+---
+title: "Introduction"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: Referencias.bib
+csl: american-journal-of-epidemiology.csl
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(deltapif)
+```
+
+To estimate a population attributable fraction two ingredients are required:
+
+- `beta`: the relative risk or a value from which to calculate the relative risk (with variance `var_beta`).
+- `p`: the exposure prevalence (with variance `var_p`).
+
+and in the case of potential impact fractions we also require:
+- `p_cft`: the counterfactual prevalence.  
+
+> **Note** An important hypothesis of the current method is that
+the relative risk estimate and the prevalence of exposure are both independent
+in the sense that they were estimated in different populations and studies. 
+
+For example consider the population attributable fraction of depression into dementia.
+Consider:
+
+-  A relative risk of  relative risk of `1.90` with a variance of `0.02`. 
+-  A prevalence of depression of 12% (`0.12`) with variance `0.0009`. 
+
+We can calculate a point estimate of the PAF as follows:
+
+```{r}
+paf(p = 0.12, beta = 1.90, var_p = 0.0009, var_beta = 0.02)
+```
+
+A potential impact fraction of reducing the prevalence of depression to 6% can be
+calculated as follows: 
+
+```{r}
+pif(p = 0.12, p_cft = 0.06, beta = 1.90, var_p = 0.0009, var_beta = 0.02)
+```
+
+The following examples show how to calculate the PIF and PAF under different scenarios
+as well as how to combine the fractions of subpopulations and of different risk estimates. 
+
+
+
+## Example 1: A potential impact fraction
+
+The article [@lee](https://doi.org/10.1001/jamanetworkopen.2022.19672)
+discusses the population attributable fraction (PAF) of dementia associated with 12 
+different risk factors in US adults. It also estimates a potential impact
+fraction correspondent to a 15% reduction in the exposures of such factors. 
+
+The dataset `dementiarisk` contains the relative risk of dementia for different
+exposures as well as the prevalence of exposure for the total population
+and for different subpopulations (races):
+
+```{r}
+data(dementiarisk)
+```
+
+```{r, echo = FALSE}
+dementiarisk[,c("risk_factor","logrr","sdlog", "total", "hispanic", "asian", "black", "white")]
+```
+
+Here we show how to calculate the potential impact fraction and the population attributable fraction for smoking among the 4 subpopulations (race groups) and then how to calculate the total attributable fraction. 
+
+For that purpose we will choose smoking which has a log relative risk of `beta = 0.4637340` with variance of	`var_beta = 0.0273858` (`= 0.165486566^2`). 
+
+Among hispanic individuals 6.9% (`p = 0.069`) smoke. Hence their paf is:
+
+```{r}
+paf_hispanic <- paf(p = 0.069, beta = 0.4637340, var_beta = 0.0273858, 
+                    rr_link = exp)
+```
+
+Note that the model throws a warning for us not specifying the variance of `var_p`. We will 
+assume that the value was perfectly estimated and it has no associated variance thus setting `var_p = 0`:
+
+```{r}
+paf_hispanic <- paf(p = 0.069, beta = 0.4637340, var_beta = 0.0273858, 
+                    var_p = 0, rr_link = exp)
+paf_hispanic
+```
+
+The [coef], [confint], [summary], and [as.data.frame] functions have been extended to 
+allow the user to extract information from a `paf` (or `pif`):
+
+```{r}
+as.data.frame(paf_hispanic)
+```
+
+The other fractions can be computed in the same way noting that 4.9	of non-hispanic asians, 11.7 of non-hispanic blacks and	8.4 of non-hispanic whites smoke:
+
+```{r}
+paf_asian <- paf(p = 0.049, beta = 0.4637340, var_beta = 0.0273858, 
+                    var_p = 0, rr_link = exp)
+paf_black <- paf(p = 0.117, beta = 0.4637340, var_beta = 0.0273858, 
+                    var_p = 0, rr_link = exp)
+paf_white <- paf(p = 0.084, beta = 0.4637340, var_beta = 0.0273858, 
+                    var_p = 0, rr_link = exp)
+```
+
+Correlations [correlation] and covariances [covariance] can also be calculated for multiple `paf` objects:
+
+```{r}
+covariance(paf_white, paf_hispanic, paf_asian, paf_black)
+```
+
+We can calculate the total potential impact fraction by combining the fractions of the subpopulations
+weighted by the proportion of the population. According to Wikipedia the distribution in 2020 was as follows:
+
+```{r}
+weights <- c("white" = 0.5784, "hispanic" = 0.1873, "black" = 0.1205, "asian" = 0.0592)
+
+#Normalized weights to sum to 1
+weights <- weights / sum(weights)
+```
+
+The `paf_total` function computes the aggregated `paf` of the whole population:
+
+```{r}
+paf_total(paf_white, paf_hispanic, paf_black, paf_asian, weights = weights, sigma_weights = 0)
+```
+
+### Why are we using `logrr`?
+
+A common question is why in this case we are using `logrr` with `exponential` link
+and not the relative risks. The reason depends on what standard deviation can be properly
+recovered. Recall that the classic (Wald-type) confidence intervals should have the same
+distance from the point estimate (in this case the `RR`) to the bounds. We can see that
+this does not happen here as for example in the case of **smoking** the RR is
+1.59 [1.15-2.20] and:
+
+```{r}
+2.20 - 1.59
+```
+
+```{r}
+1.59 - 1.15
+```
+
+the distances are not the same!
+
+However in the log-scale they are much more similar:
+
+```{r}
+log(2.20) - log(1.59)
+```
+
+```{r}
+log(1.59) - log(1.15)
+```
+
+
+which implies that the uncertainty was estimated in the log-scale and hence we
+need to use the log relative risk as beta and exponentiate it (`link = "exponential"`). 
+
+Mathematically the explanation of why this happens is because usually relative risks,
+odds ratios and hazard ratios are transformed to the log-scale to estimate
+the confidence intervals. You can see in Wikipedia, for example, 
+the classic formulas for the [relative risks CIs](https://en.wikipedia.org/wiki/Relative_risk)
+and for the [odds ratios](https://en.wikipedia.org/wiki/Odds_ratio#Statistical_inference)
+all involve a log-transform. 
+
+<!--
+
+## Example 2: A Population Attributable Fraction
+
+The article [@pandeya](https://doi.org/10.1111/1753-6405.12456)
+estimates the population attributable fraction of different cancers given
+distinct levels of alcohol consumption for the Australian population. 
+
+The `alcohol` dataframe included in the package contains an estimate
+of the intake of alcohol by sex as well as the proportion of
+individuals in each of the intake-categories:
+
+```{r}
+data(alcohol)
+```
+
+```{r, echo = FALSE}
+alcohol[,c("sex", "alcohol_g", "median_intake", "age_18_plus")]
+```
+
+
+
+## Example 3: Negative fractions
+
+## Example 4: Combining fractions of different risks into an ensemble
+-->
+
+## References
