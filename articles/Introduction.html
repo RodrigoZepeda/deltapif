@@ -164,9 +164,10 @@ perfectly estimated and it has no associated variance thus setting
 <span><span class="co">#&gt; PAF = 3.912% [<span style="font-style: italic;">95% CI</span>: 0.569% to 7.142%]</span></span>
 <span><span class="co">#&gt; standard_deviation(paf %) = 1.676</span></span>
 <span><span class="co">#&gt; standard_deviation(link(paf)) = 0.017</span></span></code></pre></div>
-<p>The [coef], [confint], [summary], and [as.data.frame] functions have
-been extended to allow the user to extract information from a
-<code>paf</code> (or <code>pif</code>):</p>
+<p>The <code>coef</code>, <code>confint</code>, <code>summary</code>,
+and <code>as.data.frame</code> functions have been extended to allow the
+user to extract information from a <code>paf</code> (or
+<code>pif</code>):</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">paf_hispanic</span><span class="op">)</span></span>
 <span><span class="co">#&gt;          PAF standard_deviation      ci_low      ci_up confidence</span></span>
@@ -181,8 +182,9 @@ non-hispanic whites smoke:</p>
 <span>                    var_p <span class="op">=</span> <span class="fl">0</span>, rr_link <span class="op">=</span> <span class="va">exp</span><span class="op">)</span></span>
 <span><span class="va">paf_white</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.084</span>, beta <span class="op">=</span> <span class="fl">0.4637340</span>, var_beta <span class="op">=</span> <span class="fl">0.0273858</span>, </span>
 <span>                    var_p <span class="op">=</span> <span class="fl">0</span>, rr_link <span class="op">=</span> <span class="va">exp</span><span class="op">)</span></span></code></pre></div>
-<p>Correlations [correlation] and covariances [covariance] can also be
-calculated for multiple <code>paf</code> objects:</p>
+<p>Correlations (<code>correlation</code>) and covariances
+(<code>covariance</code>) can also be calculated for multiple
+<code>paf</code> objects:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/covcor.html">covariance</a></span><span class="op">(</span><span class="va">paf_white</span>, <span class="va">paf_hispanic</span>, <span class="va">paf_asian</span>, <span class="va">paf_black</span><span class="op">)</span></span>
 <span><span class="co">#&gt;              [,1]         [,2]         [,3]         [,4]</span></span>
@@ -190,10 +192,10 @@ calculated for multiple <code>paf</code> objects:</p>
 <span><span class="co">#&gt; [2,] 0.0003363365 0.0002809952 0.0002041506 0.0004515599</span></span>
 <span><span class="co">#&gt; [3,] 0.0002443575 0.0002041506 0.0001483209 0.0003280704</span></span>
 <span><span class="co">#&gt; [4,] 0.0005404935 0.0004515599 0.0003280704 0.0007256577</span></span></code></pre></div>
-<p>We can calculate the total potential impact fraction by combining the
-fractions of the subpopulations weighted by the proportion of the
-population. According to Wikipedia the distribution in 2020 was as
-follows:</p>
+<p>We can calculate the total population attributable fraction by
+combining the fractions of the subpopulations weighted by the proportion
+of the population. According to Wikipedia the distribution in 2020 was
+as follows:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">weights</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span> <span class="op">=</span> <span class="fl">0.5784</span>, <span class="st">"hispanic"</span> <span class="op">=</span> <span class="fl">0.1873</span>, <span class="st">"black"</span> <span class="op">=</span> <span class="fl">0.1205</span>, <span class="st">"asian"</span> <span class="op">=</span> <span class="fl">0.0592</span><span class="op">)</span></span>
 <span></span>
