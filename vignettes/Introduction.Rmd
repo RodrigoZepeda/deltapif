@@ -95,7 +95,7 @@ paf_hispanic <- paf(p = 0.069, beta = 0.4637340, var_beta = 0.0273858,
 paf_hispanic
 ```
 
-The [coef], [confint], [summary], and [as.data.frame] functions have been extended to 
+The `coef`, `confint`, `summary`, and `as.data.frame` functions have been extended to 
 allow the user to extract information from a `paf` (or `pif`):
 
 ```{r}
@@ -113,13 +113,13 @@ paf_white <- paf(p = 0.084, beta = 0.4637340, var_beta = 0.0273858,
                     var_p = 0, rr_link = exp)
 ```
 
-Correlations [correlation] and covariances [covariance] can also be calculated for multiple `paf` objects:
+Correlations (`correlation`) and covariances (`covariance`) can also be calculated for multiple `paf` objects:
 
 ```{r}
 covariance(paf_white, paf_hispanic, paf_asian, paf_black)
 ```
 
-We can calculate the total potential impact fraction by combining the fractions of the subpopulations
+We can calculate the total population attributable fraction by combining the fractions of the subpopulations
 weighted by the proportion of the population. According to Wikipedia the distribution in 2020 was as follows:
 
 ```{r}
