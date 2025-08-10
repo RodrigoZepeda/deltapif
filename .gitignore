@@ -1,3 +1,8 @@
 .Rproj.user
 references/
 oldstuff/
+.DS_Store
+.Rhistory
+.Rdata
+.httr-oauth
+.quarto

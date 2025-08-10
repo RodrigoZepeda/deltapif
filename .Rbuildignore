@@ -3,3 +3,6 @@
 references
 oldstuff
 ^LICENSE\.md$
+\.DS_Store
+^README\.Rmd$
+^\.github$

@@ -2,7 +2,6 @@
 % Please edit documentation in R/00-getters.R
 \name{getters}
 \alias{getters}
-\alias{get_alpha_confint}
 \alias{get_rr}
 \alias{get_mu_obs}
 \alias{get_mu_cft}
@@ -10,14 +9,20 @@
 \alias{get_link_vals}
 \alias{get_link_deriv_vals}
 \alias{get_rr_link_deriv_vals}
+\alias{get_link_variance}
 \alias{get_variance_atomic}
 \alias{get_ci}
-\alias{get_pifs}
-\alias{get_covariance}
+\alias{get_total_coefs}
+\alias{get_ensemble_coefs}
+\alias{get_total_pif}
+\alias{get_total_type}
+\alias{get_ensemble_type}
+\alias{get_covariance_total}
+\alias{get_ensemble_covariance}
+\alias{get_variance_total}
+\alias{get_ensemble_variance}
 \title{Getters}
 \usage{
-get_alpha_confint(self)
-
 get_rr(self)
 
 get_mu_obs(self)
@@ -32,13 +37,29 @@ get_link_deriv_vals(self)
 
 get_rr_link_deriv_vals(self)
 
+get_link_variance(self)
+
 get_variance_atomic(self)
 
 get_ci(self)
 
-get_pifs(self)
+get_total_coefs(self)
 
-get_covariance(self)
+get_ensemble_coefs(self)
+
+get_total_pif(self)
+
+get_total_type(self)
+
+get_ensemble_type(self)
+
+get_covariance_total(self)
+
+get_ensemble_covariance(self)
+
+get_variance_total(self)
+
+get_ensemble_variance(self)
 }
 \arguments{
 \item{self}{A \code{pif_class} or \code{pif_atomic_class} object created with S7.}

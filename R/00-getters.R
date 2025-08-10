@@ -11,12 +11,6 @@
 #' @keywords internal
 NULL
 
-#' Get the alpha / 2 value for the confidence interval
-#' @rdname getters
-get_alpha_confint <- function(self) {
-  (1 - self@conf_level) / 2
-}
-
 #' Get the relative risks
 #' @rdname getters
 get_rr <- function(self) {
@@ -75,26 +69,32 @@ get_rr_link_deriv_vals <- function(self) {
   return(deriv_vals)
 }
 
-#' Get the variance
+#' Get the link_variance
+#' @rdname getters
+get_link_variance <- function(self){
+  (self@link_deriv_vals)^2 * self@variance
+}
+
+#' Get the link_variance
 #' @rdname getters
 get_variance_atomic <- function(self) {
-  pif_variance(
+  from_parameters_pif_variance(
     p = self@p, p_cft = self@p_cft, rr = self@rr,
-    rr_link_deriv_vals = self@rr_link_deriv_vals, mu_obs = self@mu_obs,
+    rr_link_deriv_vals = self@rr_link_deriv_vals,
+    mu_obs = self@mu_obs,
     mu_cft = self@mu_cft, sigma_p = self@sigma_p,
     sigma_beta = self@sigma_beta,
-    link_deriv_vals = self@link_deriv_vals,
-    upper_bound_p = self@sigma_p_upper_bound,
-    upper_bound_beta = self@sigma_beta_upper_bound
+    upper_bound_p = self@upper_bound_p,
+    upper_bound_beta = self@upper_bound_beta
   )
 }
 
 #' Get the confidence interval
 #' @rdname getters
 get_ci <- function(self) {
-  pif_ci(
-    link_vals = self@link_vals, variance = self@variance,
-    alpha_confint = get_alpha_confint(self), link_inv = self@link_inv
+  pif_atomic_ci(
+    link_vals = self@link_vals, link_variance = self@link_variance,
+    conf_level = self@conf_level, link_inv = self@link_inv
   )
 }
 
@@ -106,8 +106,19 @@ get_total_coefs <- function(self){
 
 #' Get the coefficients
 #' @rdname getters
+get_ensemble_coefs <- function(self){
+  get_total_coefs(self)
+}
+
+#' Get the ensemble coefficients
+get_ensemble_pif <- function(self){
+  exp(sum(log(self@coefs)))
+}
+
+#' Get the coefficients
+#' @rdname getters
 get_total_pif <- function(self){
-  t(self@weights) %*% self@coefs
+  as.numeric(t(self@weights) %*% self@coefs)
 }
 
 #' Get types
@@ -117,16 +128,69 @@ get_total_type <- function(self){
   ifelse(any(pif_types == "PIF"), "PIF", "PAF")
 }
 
-#' Get the covariance matrix between elements of the list
+#' Get types
 #' @rdname getters
-get_total_covariance <- function(self){
-  diag(0, nrow = length(self@pif_list))
+get_ensemble_type <- function(self){
+  get_total_type(self)
 }
 
-#' Get the covariance matrix between elements of the list
+#' Get the covariance of the summands of pif total
 #' @rdname getters
-get_total_variance <- function(self){
-  t(self@weights) %*% self@covariance %*% self@weights +
+get_covariance_total <- function(self){
+  npifs <- length(self@pif_list)
+  if (npifs > 1){
+    cov_mat <- matrix(0, ncol = npifs, nrow = npifs)
+    for (i in 1:(npifs - 1)){
+      for (j in (i + 1):npifs){
+        cov_mat[i,j] <- cov_total_pif(self@pif_list[[i]], self@pif_list[[j]])
+      }
+    }
+    cov_mat <- cov_mat + t(cov_mat) + diag(sapply(self@pif_list, var))
+    return(cov_mat)
+  } else {
+    return(
+      var(self@pif_list[[1]])
+    )
+  }
+}
+
+#' Get the covariance of the summands of pif total
+#' @rdname getters
+get_ensemble_covariance <- function(self){
+  npifs <- length(self@pif_list)
+  if (npifs > 1){
+    cov_mat <- matrix(0, ncol = npifs, nrow = npifs)
+    for (i in 1:(npifs - 1)){
+      for (j in (i + 1):npifs){
+        #In ensemble the covariance is given by ln(1 - pif[i])'*ln(1 - pif[j])'*cov(pif[i],pif[j])
+        g_i_prime <- link_deriv_vals(self@pif_list[[i]])
+        g_j_prime <- link_deriv_vals(self@pif_list[[j]])
+        cov_mat[i,j] <- g_i_prime*g_j_prime*cov_total_pif(self@pif_list[[i]], self@pif_list[[j]])
+      }
+    }
+    cov_mat <- cov_mat + t(cov_mat) + diag(sapply(self@pif_list, var)*(sapply(self@pif_list, link_deriv_vals)^2))
+    return(cov_mat)
+  } else {
+    return(
+      var(self@pif_list[[1]])*(link_deriv_vals(self@pif_list[[1]])^2)
+    )
+  }
+}
+
+#' Get the variance of pif total
+#' @rdname getters
+get_variance_total <- function(self){
+  as.numeric(
+    t(self@weights) %*% self@covariance %*% self@weights +
     t(self@coefs) %*% self@sigma_weights %*% self@coefs +
     sum(diag(self@covariance*self@sigma_weights))
+  )
+}
+
+#' Get the variance of pif total
+#' @rdname getters
+get_ensemble_variance <- function(self){
+  as.numeric(
+    sum(self@covariance)
+  )
 }

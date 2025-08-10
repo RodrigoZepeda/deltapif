@@ -1,10 +1,10 @@
 #' Link functions
 #'
-#' A collection of common link functions, for calculating the variance of
+#' A collection of common link functions, for calculating the link_variance of
 #' the  potential impact fraction.
 #'
 #' @note
-#' When used, the variance is calculated for `linkfun(pif)`.
+#' When used, the link_variance is calculated for `linkfun(pif)`.
 #'
 #' @param pif The value of a potential impact fraction or a
 #' population attributable fraction
@@ -154,4 +154,90 @@ deriv_log_complement <- function(pif) {
 #' @export
 deriv_hawkins <- function(pif) {
   1 / (sqrt(pif^2 + 1))
+}
+
+#' Link parsers
+#'
+#' Functions to parse the link (or inverse link) from a word to a function
+#'
+#' @param link_name The name of the link or a function.
+#'
+#' @details
+#' The following are valid link names:
+#' \describe{
+#'   \item{identity}{The function `f(x) = x`.with inverse `finv(x) = x`}
+#'   \item{logit}{The function `f(x) = ln(x / (1 - x))` with inverse `finv(x) = 1 / (1 + exp(-x))`}
+#'   \item{log-complement}{The function `f(x) = ln(1 - x)` with inverse `finv(x) = 1 - exp(x)`}
+#'   \item{hawkins}{The function `f(x) = ln(x + sqrt(x^2 + 1))` with inverse `finv(x) = 0.5 * exp(-x) * (exp(2 * x) - 1)`}
+#'   \item{exponential}{The function `f(x) = exp(x)` with inverse `f(x) = ln(x)`}
+#' }
+#'
+#' @return A function corresponding to the `link_name`.
+#'
+#' @seealso [linkfuns] and [inv_linkfuns]
+#'
+#' @note If a function is supplied to `link_name` the same function is returned
+#' @name link_parsers
+
+
+#' @rdname link_parsers
+#' @export
+parse_link <- function(link_name) {
+  if (is.function(link_name)) {
+    return(link_name)
+  }
+
+  link_name <- tolower(link_name)
+  link_name <- gsub("[ _-]+", "", link_name)
+
+
+  if (link_name == "identity") {
+    return(identity)
+  } else if (link_name == "logit") {
+    return(logit)
+  } else if (link_name == "logcomplement") {
+    return(log_complement)
+  } else if (link_name == "hawkins") {
+    return(hawkins)
+  } else if (link_name == "exponential") {
+    return(exp)
+  } else {
+    cli::cli_abort(
+      paste0(
+        "Cannot find link {.val {link_name}}. Please specify ",
+        "the function using {.code rr_link}"
+      )
+    )
+  }
+}
+
+#' @rdname link_parsers
+#' @export
+parse_inv_link <- function(link_name) {
+  if (is.function(link_name)) {
+    return(link_name)
+  }
+
+  link_name <- tolower(link_name)
+  link_name <- gsub("[ _-]+", "", link_name)
+
+
+  if (link_name == "identity") {
+    return(identity)
+  } else if (link_name == "logit") {
+    return(inv_logit)
+  } else if (link_name == "logcomplement") {
+    return(inv_log_complement)
+  } else if (link_name == "hawkins") {
+    return(inv_hawkins)
+  } else if (link_name == "exponential") {
+    return(log)
+  } else {
+    cli::cli_abort(
+      paste0(
+        "Cannot find link {.val {link_name}}. Please specify the",
+        "function using {.code rr_link}"
+      )
+    )
+  }
 }

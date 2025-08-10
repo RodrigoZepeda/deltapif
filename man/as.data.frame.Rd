@@ -9,7 +9,7 @@
 \item{...}{Additional parameters (ignored)}
 }
 \description{
-Gets the potential impact fraction value, the variance and the confidence
+Gets the potential impact fraction value, the link_variance and the confidence
 interval values
 }
 \examples{

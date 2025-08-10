@@ -14,7 +14,7 @@
 Function to print or show a potential impact fraction object
 }
 \examples{
-my_pif <- new_pif(p = 0.2, beta = 1.3, sigma_beta = 0.1)
+my_pif <- pif(p = 0.2, beta = 1.3, sigma_beta = 0.1)
 print(my_pif)
 
 # Change the ammount of digits to show just 1

@@ -60,18 +60,20 @@
 #' # Calculates PAF (i.e. counterfactual is no smoking)
 #' paf(p = 0.499, beta = 3.6)
 #'
-#' # Assuming that beta and p had a variance
+#' # Assuming that beta and p had a link_variance
 #' paf(p = 0.499, beta = 3.6, sigma_p = 0.001, sigma_beta = 1)
 #'
-#' # If the variance was to high a logistic transform would be required
+#' # If the link_variance was to high a logistic transform would be required
 #' # Generates incorrect values for the interval:
 #' paf(p = 0.499, beta = 3.6, sigma_p = 0.1, sigma_beta = 3)
 #'
 #' # Logit fixes it
-#' paf(p = 0.499, beta = 3.6, sigma_p = 0.1, sigma_beta = 3, link = "logit", quiet = T)
+#' paf(p = 0.499, beta = 3.6, sigma_p = 0.1, sigma_beta = 3,
+#'     link = "logit", quiet = TRUE)
 #'
 #' # If the counterfactual was reducing the smoking population by 1/2
-#' pif(p = 0.499, beta = 3.6, p_cft = 0.499/2, sigma_p = 0.001, sigma_beta = 1, link = "logit", quiet = T)
+#' pif(p = 0.499, beta = 1.6, p_cft = 0.499/2, sigma_p = 0.001,
+#'     sigma_beta = 1, link = "logit", quiet = TRUE)
 #'
 #' @name pifpaf
 NULL
@@ -128,6 +130,11 @@ pif <- function(p,
     }
   }
 
+  # Check that is link is given as character then link inv and link_deriv are not specified
+  link_name <- link #Variable saved until the pif is calculated
+  check_links(link = link, link_inv = link_inv, link_deriv = link_deriv)
+  check_rr_links(rr_link = rr_link, rr_link_deriv = rr_link_deriv)
+
   # Get the inverse function
   if (is.null(link_inv) & is.character(link)) {
     link_inv <- parse_inv_link(link)
@@ -152,8 +159,8 @@ pif <- function(p,
     if (!quiet){
       cli::cli_alert_warning(
         paste0(
-          "Assuming parameters `p` have no variance. Use `sigma_p` ",
-          "to input their variances and/or covariances"
+          "Assuming parameters `p` have no link_variance. Use `sigma_p` ",
+          "to input their link_variances and/or colink_variances"
         )
       )
     }
@@ -164,17 +171,17 @@ pif <- function(p,
     if (!quiet){
       cli::cli_alert_warning(
         paste0(
-          "Assuming parameters `beta` have no variance. Use `sigma_beta` ",
-          "to input their variances and/or covariances"
+          "Assuming parameters `beta` have no link_variance. Use `sigma_beta` ",
+          "to input their link_variances and/or colink_variances"
         )
       )
     }
   }
 
   # If vectors provided then transform to approximate matrices
-  sigma_p_upper_bound <- FALSE
+  upper_bound_p <- FALSE
   if (is.vector(sigma_p) && length(sigma_p) > 1) {
-    sigma_p_upper_bound <- TRUE
+    upper_bound_p <- TRUE
     sigma_p <- sigma_p %*% t(sigma_p)
     if (!quiet){
       cli::cli_alert_warning(
@@ -187,9 +194,9 @@ pif <- function(p,
     }
   }
 
-  sigma_beta_upper_bound <- FALSE
+  upper_bound_beta <- FALSE
   if (is.vector(sigma_beta) && length(sigma_beta) > 1) {
-    sigma_beta_upper_bound <- TRUE
+    upper_bound_beta <- TRUE
     sigma_beta <- sigma_beta %*% t(sigma_beta)
     if (!quiet){
       cli::cli_alert_warning(
@@ -202,7 +209,7 @@ pif <- function(p,
     }
   }
 
-  pif_atomic_class(
+  pif <- pif_atomic_class(
      p          = p,
      p_cft      = p_cft,
      beta       = beta,
@@ -215,9 +222,21 @@ pif <- function(p,
      rr_link_deriv = rr_link_deriv,
      conf_level = conf_level,
      type       = type,
-     sigma_p_upper_bound = sigma_p_upper_bound,
-     sigma_beta_upper_bound = sigma_beta_upper_bound
+     upper_bound_p = upper_bound_p,
+     upper_bound_beta = upper_bound_beta
   )
+
+  if (is.character(link_name) && link_name == "logit" && coef(pif) <= 0){
+    cli::cli_alert_danger(
+      paste0(
+        "Value for {fraction_type(pif)} = {round(coef(pif),2)} <= 0. ",
+        "Change link to a different value as `logit` is only ",
+        "valid for strictly positive {fraction_type(pif)}s."
+      )
+    )
+  }
+
+  return(pif)
 
 
 }

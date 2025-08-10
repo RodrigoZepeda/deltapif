@@ -10,11 +10,10 @@
 #'
 #' @keywords internal
 NULL
-
 set_conf_level <- function(self, value){
-  if (!is.numeric(value) | length(value) != 1 | value < 0 | value > 1){
+  if (!is.numeric(value) | length(value) != 1 | value <= 0 | value >= 1){
     cli::cli_abort(
-      "Invalid value {value} given to confidence level."
+      "Invalid confidence level of {value} given."
     )
   }
   self@conf_level <- value

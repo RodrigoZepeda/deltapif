@@ -1,3 +1,44 @@
+#' Print a `pif_class`
+#'
+#' Prints a `pif_class` object.
+#'
+#' @param x A `pif_class`
+#'
+#' @param accuracy The accuracy parameter for [`scales::percent`].
+#'
+#' @return Called for its side-effects of printing to the console
+#'
+#' @keywords internal
+print_pif_class <- function(x, accuracy){
+
+  # Printed text looks like:
+  #   ── Potential Impact Fraction ──
+  #
+  # PIF = 4.421% [95% CI: 0.179% to 54.364%]
+  # sd(pif %) = 7.003
+  # sd(link(pif)) = 1.657
+
+  pif_val <- scales::percent(x@pif, accuracy = accuracy)
+  cilow   <- scales::percent(x@ci[1], accuracy = accuracy)
+  cihigh  <- scales::percent(x@ci[2], accuracy = accuracy)
+  title   <- ifelse(x@type == "PIF", "Potential Impact Fraction", "Population Attributable Fraction")
+
+  cli::cli_h2(title)
+  cli::cli_text(
+    "{x@type} = {pif_val} ",
+    "[{.emph {scales::percent(x@conf_level)} CI}: {cilow} to {cihigh}]"
+  )
+  cli::cli_text(
+    "sd({tolower(x@type)} %) = {scales::comma(100*sqrt(x@variance), accuracy = accuracy)}"
+  )
+  cli::cli_text(
+    "sd(link({tolower(x@type)})) = {scales::comma(sqrt(x@link_variance), accuracy = accuracy)}"
+  )
+
+  return(invisible())
+}
+
+
 #' Print or show a potential impact fraction
 #'
 #' Function to print or show a potential impact fraction object
@@ -9,7 +50,7 @@
 #' @param accuracy The accuracy of the printed value
 #'
 #' @examples
-#' my_pif <- new_pif(p = 0.2, beta = 1.3, sigma_beta = 0.1)
+#' my_pif <- pif(p = 0.2, beta = 1.3, sigma_beta = 0.1)
 #' print(my_pif)
 #'
 #' # Change the ammount of digits to show just 1
@@ -17,19 +58,7 @@
 #' @name print
 #' @export
 S7::method(print, pif_class) <- function(x, ..., accuracy = 0.001) {
-  # Putting this value outside otherwise package build throws warning of not using scales
-  pif_val <- scales::percent(x@pif, accuracy = accuracy)
-  title     <- ifelse(x@type == "PIF", "Potential Impact Fraction", "Population Attributable Fraction")
-  cli::cli_h2(title)
-  cli::cli_text(
-    "{x@type} = {pif_val} ",
-    "[{.emph {scales::percent(x@conf_level)} CI}: ",
-    "{scales::percent(x@ci[1], accuracy = accuracy)} to  ",
-    "{scales::percent(x@ci[2], accuracy = accuracy)}]"
-  )
-  cli::cli_text(
-    "Var({x@type} %) = {scales::comma(100^2*x@variance, accuracy = accuracy)}"
-  )
+  print_pif_class(x, accuracy)
   # cli::cli_h3("Parameters:")
   # cli::cli_ul()
   # cli::cli_li("Observed prevalence ({.code p_obs}) = {x@p}")
@@ -65,12 +94,16 @@ S7::method(coef, pif_class) <- function(object, ...) {
 #'
 #' @examples
 #' my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, sigma_p = 0.1, sigma_beta = 0.2)
+#' #Default 95% CI
 #' confint(my_pif)
+#'
+#' #Custom 90% ci:
+#' confint(my_pif, level = 0.90)
 #' @name confint
 #' @export
-S7::method(confint, pif_class) <- function(object, ...) {
+S7::method(confint, pif_class) <- function(object, ..., level = 0.95) {
   #Set the level
-  #object@conf_level <- level
+  object@conf_level <- level
   return(object@ci)
 
 }
@@ -91,7 +124,8 @@ S7::method(confint, pif_class) <- function(object, ...) {
 S7::method(summary, pif_class) <- function(object, level = 0.95, ...) {
   conf_interval <- confint(object, level = level)
   return(
-    c("pif"        = coef(object),
+    c("type"       = fraction_type(object),
+      "value"      = coef(object),
       "sd"         = sd(object),
       "ci_low"     = conf_interval[1],
       "ci_up"      = conf_interval[2],
@@ -101,7 +135,7 @@ S7::method(summary, pif_class) <- function(object, level = 0.95, ...) {
 
 #' Transform a pif object into a data.frame
 #'
-#' Gets the potential impact fraction value, the variance and the confidence
+#' Gets the potential impact fraction value, the link_variance and the confidence
 #' interval values
 #'
 #' @param x A `pif_class` object.
@@ -112,8 +146,8 @@ S7::method(summary, pif_class) <- function(object, level = 0.95, ...) {
 #' as.data.frame(my_pif)
 #' @name as.data.frame
 #' @export
-S7::method(as.data.frame, pif_class) <- function(x, ...) {
-  as.data.frame(t(summary(x)))
+S7::method(as.data.frame, pif_class) <- function(x, ..., level = 0.95) {
+  as.data.frame(t(summary(x, level = level)))
 }
 
 

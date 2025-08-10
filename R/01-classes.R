@@ -20,8 +20,9 @@
 #' @param type Character either Potential Impact Fraction (`PIF`) or
 #' Population Attributable Fraction (`PAF`)
 #'
-#' @param variance Variance estimate for the linked potential impact fraction (i.e.
-#' for `link(pif)`)
+#'
+#' @param variance variance estimate for the potential impact fraction (i.e.
+#' for `pif`)
 #'
 #' @param p Prevalence (proportion) of the exposed individuals for
 #' each of the `N` exposure levels.
@@ -34,11 +35,11 @@
 #' of the relative risk as most RRs, ORs and HRs come from exponential
 #' models).
 #'
-#' @param sigma_p Estimate of the covariance matrix of `p` where the entry
-#' `sigma_p[i,j]` represents the covariance between `p[i]` and `p[j]`.
+#' @param sigma_p Estimate of the colink_variance matrix of `p` where the entry
+#' `sigma_p[i,j]` represents the colink_variance between `p[i]` and `p[j]`.
 #'
-#' @param sigma_beta Estimate of the covariance matrix of `beta` where the entry
-#' `sigma_beta[i,j]` represents the covariance between `beta[i]` and `beta[j]`.
+#' @param sigma_beta Estimate of the colink_variance matrix of `beta` where the entry
+#' `sigma_beta[i,j]` represents the colink_variance between `beta[i]` and `beta[j]`.
 #'
 #' @param rr_link Link function such that the relative risk is given by
 #' `rr_link(beta)`.
@@ -47,19 +48,27 @@
 #' The constructor tries to build it automatically from `rr_link` using
 #' [Deriv::Deriv()].
 #'
-#' @param sigma_p_upper_bound Whether the values for the `p` component
-#' of the variance should be approximated by an upper bound.
+#' @param upper_bound_p Whether the values for the `p` component
+#' of the link_variance should be approximated by an upper bound.
 #'
-#' @param sigma_beta_upper_bound Whether the values for the `beta` component
-#' of the variance should be approximated by an upper bound.
+#' @param upper_bound_beta Whether the values for the `beta` component
+#' of the link_variance should be approximated by an upper bound.
 #'
-#' @param .data A `list` of `pif_atomic_class`  or `pif_list_class` entries.
+#' @param weights Weights for calculating the total PIF (respectively PAF)
+#' in `pif_total`.
+#'
+#' @param sigma_weights Colink_variance matrix for the weights when calculating the
+#' total PIF (respectively PAF) in `pif_total`.
+#'
+#' @param pif_list A list of potential impact fractions `pif_class` so that
+#' the total can be computed from it.
 #'
 #' @section Properties of a  `pif_class`:
 #' \describe{
 #'   \item{`ci`}{`numeric(2)` — Lower and upper confidence limits at level `conf_level`.}
 #'   \item{`link_vals`}{`numeric` — Entrywise evaluation of the link function at pif: `link(pif)`.}
 #'   \item{`link_deriv_vals`}{`character` — Entrywise evaluation of the derivative of the link function (`link_deriv`) at pif: `link(pif)`.}
+#'   \item{`link_variance`}{`numeric` - Estimate for the linked potential impact fraction's variance: `var(link(pif))`.}
 #' }
 #'
 #' @section Properties of a  `pif_atomic_class`:
@@ -68,14 +77,13 @@
 #'   \item{`mu_obs`}{`numeric` — Average relative risk in the observed population.}
 #'   \item{`mu_cft`}{`numeric` — Average relative risk in the counterfactual population.}
 #'   \item{`pif`}{`numeric` — Estimate of the potential impact fraction.}
-#'   \item{`variance`}{`numeric` — Estimate of the variance of `link(pif)`.}
 #'   \item{`rr_link_deriv_vals`}{`character` — Entrywise evaluation of the derivative of the link function (`link_deriv`) at pif: `link(pif)`.}
 #' }
 #'
 #' @section Computation of confidence intervals:
 #' Wald-type confidence intervals are calculated for `link(pif)` as follows:
 #' \deqn{
-#'  \text{CI}_{\text{Link}} = \text{link}\big(\text{PIF}\big) \pm Z_{\alpha/2}\cdot\sqrt{\textrm{Variance}}
+#'  \text{CI}_{\text{Link}} = \text{link}\big(\text{PIF}\big) \pm Z_{\alpha/2}\cdot\sqrt{\textrm{link\_variance}}
 #' }
 #' and then transformed back using the inverse of the link function `inv_link`:
 #' \deqn{
@@ -96,18 +104,18 @@
 #'    \sum\limits_{i=1}^N p_i \text{RR}_i
 #'   }
 #' }
-#' where the relative risk is a function of a parameter \eqn{\theta_i}
+#' where the relative risk is a function of a parameter \eqn{\beta_i}
 #' \deqn{
-#'  \text{RR}_i = g(\theta_i)
+#'  \text{RR}_i = g(\beta_i)
 #' }
-#' and the variance is calculated for a function of PIF: \eqn{f(\textrm{PIF})}
+#' and the link_variance is calculated for a function of PIF: \eqn{f(\textrm{PIF})}
 #' The `pif_atomic_class` only contains one potential impact fraction
 #' and the parameters to estimate it.
 #'
 #' The `pif_additive_class` is a type of `pif_class` that can be computed
 #' as a sum of weighted transformations of potential impact fractions
 #' where the weights can be random. Elements of a `pif_additive_class`
-#' have a variance estimated for the following expression:
+#' have a link_variance estimated for the following expression:
 #' \deqn{
 #'  f\big(\textrm{PIF}_{+}\big) = \sum\limits_{i = 1}^{N} q_i \cdot  f_i\Big(\textrm{PIF}_i\Big)
 #' }
@@ -133,7 +141,7 @@
 #' @examples
 #' #Create a new pif parent class element
 #' pif_class(pif = 0.3, var = 0.01, conf_level = 0.95, type = "PIF",
-#'   link = identity, link_inv = identity)
+#'   link = logit, link_inv = inv_logit, link_deriv = deriv_logit)
 #'
 #' #Create a new potential impact fraction from the Walter's formula
 #' pif_atomic_class(
@@ -141,78 +149,88 @@
 #'   link = logit, link_inv = inv_logit, link_deriv = deriv_logit,
 #'   rr_link = identity, rr_link_deriv = function(x) 1,
 #'   conf_level = 0.95, type = "PAF",
-#'   sigma_p_upper_bound = FALSE,
-#'   sigma_beta_upper_bound = FALSE
+#'   upper_bound_p = FALSE,
+#'   upper_bound_beta = FALSE
 #' )
 #'
 #' #Create a list of pif
 #' pif1 <- pif_atomic_class(
-#'   p = 0.499, p_cft = 0, beta = 3.6, sigma_p = 0.1, sigma_beta = 3,
+#'   p = 0.499, p_cft = 0, beta = 3.6, sigma_p = 0.01, sigma_beta = 0.03,
 #'   link = logit, link_inv = inv_logit, link_deriv = deriv_logit,
 #'   rr_link = identity, rr_link_deriv = function(x) 1,
 #'   conf_level = 0.95, type = "PAF",
-#'   sigma_p_upper_bound = FALSE,
-#'   sigma_beta_upper_bound = FALSE
+#'   upper_bound_p = FALSE,
+#'   upper_bound_beta = FALSE
 #' )
 #' pif2 <- pif_atomic_class(
-#'   p = 0.79, p_cft = 0, beta = 3.6, sigma_p = 0.1, sigma_beta = 3,
+#'   p = 0.79, p_cft = 0, beta = 3.6, sigma_p = 0.01, sigma_beta = 0.03,
 #'   link = logit, link_inv = inv_logit, link_deriv = deriv_logit,
 #'   rr_link = identity, rr_link_deriv = function(x) 1,
 #'   conf_level = 0.95, type = "PAF",
-#'   sigma_p_upper_bound = FALSE,
-#'   sigma_beta_upper_bound = FALSE
+#'   upper_bound_p = FALSE,
+#'   upper_bound_beta = FALSE
 #' )
-#' pif_list_class(list(pif1, pif2))
-#'
-#' #A list can be constructed out of lists
-#' pif_list_class_1 <- pif_list_class(list(pif1, pif2))
 #' pif3 <- pif_atomic_class(
-#'   p = 0.8, p_cft = 0, beta = 3.6, sigma_p = 0.1, sigma_beta = 3,
+#'   p = 0.8, p_cft = 0, beta = 3.6, sigma_p = 0.01, sigma_beta = 0.03,
 #'   link = logit, link_inv = inv_logit, link_deriv = deriv_logit,
 #'   rr_link = identity, rr_link_deriv = function(x) 1,
 #'   conf_level = 0.95, type = "PAF",
-#'   sigma_p_upper_bound = FALSE,
-#'   sigma_beta_upper_bound = FALSE
+#'   upper_bound_p = FALSE,
+#'   upper_bound_beta = FALSE
 #' )
-#' pif_list_class(list(pif3, pif_list_class_1))
 #'
-#' pif_total_class(pif_list = list(pif1, pif2, pif3),
-#'   weights = c(0.5, 0.2, 0.3), sigma_weights = diag(0.01, ncol = 3, nrow = 3),
-#'   link = identity, link_inv = identity)
+#' tp1 <- pif_total_class(pif_list = list(pif1, pif2),
+#'   weights = c(0.5, 0.2), sigma_weights = diag(0.001, ncol = 2, nrow = 2),
+#'   link = identity, link_inv = identity, link_deriv = identity)
+#'
+#' pif_total_class(pif_list = list(tp1, pif3),
+#'   weights = c(0.7, 0.3), sigma_weights = diag(0.001, ncol = 2, nrow = 2),
+#'   link = identity, link_inv = identity, link_deriv = identity)
 #' @name classes
 NULL
 
 #' @rdname classes
 #' @export
+#pif_class-----
 pif_class <- S7::new_class("pif_class",
+   package = "pifes",
    properties = list(
      # > Data inputs-----
 
-     # Proportion of individuals exposed (vector or number)
-     pif        = S7::class_numeric,
+     # Potential Impact fraction (number)
+     pif           = S7::class_numeric,
 
-     # Proportion of individuals exposed under counterfactual (vector or number)
-     variance   = S7::class_numeric,
+     # Variance for the potential impact fraction
+     variance      = S7::class_numeric,
 
      # Confidence level
-     conf_level = S7::new_property(S7::class_numeric, setter = set_conf_level, default = 0.95),
+     conf_level    = S7::new_property(S7::class_numeric, setter = set_conf_level),
 
      # Type
-     type       = S7::new_property(S7::class_character, default = "PIF"),
+     type          = S7::new_property(S7::class_character, default = "PIF"),
 
      # PIF link function
-     link       = S7::new_property(S7::class_function),
+     link          = S7::new_property(S7::class_function),
 
      # PIF link function's inverse
-     link_inv   = S7::new_property(S7::class_function),
+     link_inv      = S7::new_property(S7::class_function),
 
-     # > Calculated properties----
+     # PIF link function's derivative
+     link_deriv    = S7::new_property(S7::class_function),
+
+     # > Dynamic properties----
+
+     # Get the derivative of pif link at pif
+     link_deriv_vals    = S7::new_property(S7::class_numeric, getter = get_link_deriv_vals),
 
      # Transform of the pif via the link function
-     link_vals       = S7::new_property(S7::class_numeric, getter = get_link_vals),
+     link_vals     = S7::new_property(S7::class_numeric, getter = get_link_vals),
+
+     # Variance for link(pif)
+     link_variance = S7::new_property(S7::class_numeric, getter = get_link_variance),
 
      # Get confidence intervals
-     ci              = S7::new_property(S7::class_numeric, getter = get_ci)
+     ci            = S7::new_property(S7::class_numeric, getter = get_ci)
    ),
    validator = function(self){
 
@@ -234,6 +252,12 @@ pif_class <- S7::new_class("pif_class",
        )
      }
 
+     if (self@variance < 0){
+       cli::cli_abort(
+         "Invalid (negative) variance provided"
+       )
+     }
+
      if (self@pif > 1) {
        cli::cli_abort(
          paste0(
@@ -250,14 +274,16 @@ pif_class <- S7::new_class("pif_class",
      }
   }
 )
-S7::S4_register(pif_class)
+#S7::S4_register(pif_class)
 
 #' @rdname classes
 #' @export
+#pif_atomic_class-------
 pif_atomic_class <- S7::new_class("pif_atomic_class",
+   package = "pifes",
    parent = pif_class,
    properties = list(
-     # Data inputs-----
+     # > Data inputs-----
 
      # Proportion of individuals exposed (vector or number)
      p             = S7::class_numeric,
@@ -268,10 +294,10 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
      # Relative risk parameter
      beta          = S7::class_numeric,
 
-     # Covariance matrix for p
+     # Colink_variance matrix for p
      sigma_p       = S7::class_numeric,
 
-     # Covariance matrix for beta
+     # Colink_variance matrix for beta
      sigma_beta    = S7::class_numeric,
 
      # Relative risk link function RR = rr_link(beta)
@@ -280,18 +306,12 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
      # Relative risk link function's derivative
      rr_link_deriv = S7::class_function,
 
-     # PIF link function's derivative
-     link_deriv    = S7::class_function,
+     # > Flags----
+     upper_bound_p    = S7::class_logical,
 
-     # PIF link function's inverse
-     link_inv      = S7::class_function,
+     upper_bound_beta = S7::class_logical,
 
-     # Flags----
-     sigma_p_upper_bound    = S7::class_logical,
-
-     sigma_beta_upper_bound = S7::class_logical,
-
-     # Calculated properties----
+     # > Calculated properties----
 
      #Relative risk values
      rr     = S7::new_property(S7::class_numeric, getter = get_rr),
@@ -305,13 +325,10 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
      #Potential impact fraction
      pif    = S7::new_property(S7::class_numeric, getter = get_pif),
 
-     # Get the derivative of pif link at pif
-     link_deriv_vals    = S7::new_property(S7::class_numeric, getter = get_link_deriv_vals),
-
      # Get the derivative of rr link at pif
      rr_link_deriv_vals = S7::new_property(S7::class_numeric, getter = get_rr_link_deriv_vals),
 
-     # Variance estimate (with linking function)
+     # link_variance estimate (with linking function)
      variance           = S7::new_property(S7::class_numeric, get_variance_atomic)
 
 
@@ -409,7 +426,7 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
          cli::cli_abort(
            paste0(
              "Exposure prevalence vector {.code p} has ",
-             "different length than its covariance matrix",
+             "different length than its colink_variance matrix",
              "{.code sigma_p}."
            )
          )
@@ -425,7 +442,7 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
          cli::cli_abort(
            paste0(
              "Exposure prevalence vector {.code p} has ",
-             "different length than its covariance ",
+             "different length than its colink_variance ",
              "matrix {.code sigma_p}."
            )
          )
@@ -453,16 +470,17 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
    },
    constructor = function(p, p_cft, beta, sigma_p, sigma_beta, rr_link,
                           rr_link_deriv, link, link_deriv, link_inv, conf_level,
-                          type, sigma_p_upper_bound, sigma_beta_upper_bound) {
+                          type, upper_bound_p, upper_bound_beta) {
 
 
-     S7::new_object(pif_atomic_class,
+     S7::new_object(S7::S7_object(),
 
                     #Elements of pif_class
                     conf_level = conf_level,
                     type       = type,
                     link       = link,
                     link_inv   = link_inv,
+                    link_deriv = link_deriv,
 
                     #New added elements of pif_atomic
                     p             = p,
@@ -470,51 +488,33 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
                     beta          = beta,
                     sigma_p       = sigma_p,
                     sigma_beta    = sigma_beta,
-                    link_deriv    = link_deriv,
                     rr_link       = rr_link,
                     rr_link_deriv = rr_link_deriv,
-                    sigma_p_upper_bound = sigma_p_upper_bound,
-                    sigma_beta_upper_bound = sigma_beta_upper_bound
+                    upper_bound_p = upper_bound_p,
+                    upper_bound_beta = upper_bound_beta
 
 
      )
   }
 )
-S7::S4_register(pif_atomic_class)
-
-
-#' @rdname classes
-#' @export
-pif_list_class <- S7::new_class(
-  name      = "pif_list_class",
-  parent    = S7::class_list,
-  validator = function(self) {
-
-    for (i in seq_along(self)) {
-      if (!(S7::S7_inherits(self[[i]], pif_class) || S7::S7_inherits(self[[i]], pif_list_class))) {
-        cli::cli_abort(
-          "Element {i} must be a 'pif_class' or 'pif_list_class'.",
-        )
-      }
-    }
-  }
-)
-S7::S4_register(pif_list_class)
+#S7::S4_register(pif_atomic_class)
 
 #' @rdname classes
 #' @export
+#pif_total_class------------------
 pif_total_class <- S7::new_class(
-  name      = "pif_list_class",
+  name      = "pif_total_class",
+  package   = "pifes",
   parent    = pif_class,
   properties = list(
+    pif_list      = S7::class_list,
+    weights       = S7::class_numeric,
+    sigma_weights = S7::class_numeric,
     type          = S7::new_property(S7::class_numeric, getter = get_total_type),
     coefs         = S7::new_property(S7::class_numeric, getter = get_total_coefs),
     pif           = S7::new_property(S7::class_numeric, getter = get_total_pif),
-    covariance    = S7::new_property(S7::class_numeric, getter = get_total_covariance),
-    variance      = S7::new_property(S7::class_numeric, getter = get_total_variance),
-    pif_list      = pif_list_class,
-    weights       = S7::class_numeric,
-    sigma_weights = S7::class_numeric
+    covariance    = S7::new_property(S7::class_numeric, getter = get_covariance_total),
+    variance      = S7::new_property(S7::class_numeric, getter = get_variance_total)
   ),
   validator = function(self) {
 
@@ -535,17 +535,14 @@ pif_total_class <- S7::new_class(
       )
     }
   },
-  constructor = function(pif_list, weights, sigma_weights, conf_level = 0.95, link, link_inv){
+  constructor = function(pif_list, weights, sigma_weights,
+                         conf_level = 0.95, link, link_inv, link_deriv){
 
-    #TODO: Move this to a get
-    #Convert to pif class
-    pif_list = pif_list_class(pif_list)
-
-
-    S7::new_object(pif_total_class,
+    S7::new_object(S7::S7_object(),
                    conf_level = conf_level,
                    link = link,
                    link_inv = link_inv,
+                   link_deriv = link_deriv,
                    pif_list = pif_list,
                    weights = weights,
                    sigma_weights = sigma_weights
@@ -554,4 +551,44 @@ pif_total_class <- S7::new_class(
 
   }
 )
-S7::S4_register(pif_total_class)
+
+#' @rdname classes
+#' @export
+#pif_ensemble_class------------------
+pif_ensemble_class <- S7::new_class(
+  name      = "pif_ensemble_class",
+  package   = "pifes",
+  parent    = pif_total_class,
+  properties = list(
+    pif_list      = S7::class_list,
+    type          = S7::new_property(S7::class_numeric, getter = get_ensemble_type),
+    coefs         = S7::new_property(S7::class_numeric, getter = get_ensemble_coefs),
+    pif           = S7::new_property(S7::class_numeric, getter = get_ensemble_pif),
+    covariance    = S7::new_property(S7::class_numeric, getter = get_ensemble_covariance),
+    variance      = S7::new_property(S7::class_numeric, getter = get_ensemble_variance)
+  ),
+  validator = function(self) {
+
+    for (i in seq_along(self@pif_list)) {
+      if (!S7::S7_inherits(self@pif_list[[i]], pif_class)) {
+        cli::cli_abort(
+          "Element {i} of `pif_list` must be a 'pif_class'."
+        )
+      }
+    }
+  },
+  constructor = function(pif_list, conf_level = 0.95){
+
+    S7::new_object(S7::S7_object(),
+                   conf_level = conf_level,
+                   link = log_complement,
+                   link_inv = inv_log_complement,
+                   link_deriv = deriv_log_complement,
+                   pif_list = pif_list,
+                   weights = rep(1, length(pif_list)),
+                   sigma_weights = matrix(0, ncol = length(pif_list), nrow = length(pif_list))
+    )
+
+
+  }
+)

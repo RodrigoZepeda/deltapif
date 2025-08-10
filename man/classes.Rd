@@ -4,17 +4,18 @@
 \alias{classes}
 \alias{pif_class}
 \alias{pif_atomic_class}
-\alias{pif_list_class}
 \alias{pif_total_class}
+\alias{pif_ensemble_class}
 \title{Potential Impact Fraction related classes}
 \usage{
 pif_class(
   pif = integer(0),
   variance = integer(0),
-  conf_level = 0.95,
+  conf_level = integer(0),
   type = "PIF",
   link = function() NULL,
-  link_inv = function() NULL
+  link_inv = function() NULL,
+  link_deriv = function() NULL
 )
 
 pif_atomic_class(
@@ -30,19 +31,27 @@ pif_atomic_class(
   link_inv,
   conf_level,
   type,
-  sigma_p_upper_bound,
-  sigma_beta_upper_bound
+  upper_bound_p,
+  upper_bound_beta
 )
 
-pif_list_class(.data = list())
+pif_total_class(
+  pif_list,
+  weights,
+  sigma_weights,
+  conf_level = 0.95,
+  link,
+  link_inv,
+  link_deriv
+)
 
-pif_total_class(pif_list, weights, conf_level = 0.95, link, link_inv)
+pif_ensemble_class(pif_list, conf_level = 0.95)
 }
 \arguments{
 \item{pif}{Potential Impact Fraction estimate}
 
-\item{variance}{Variance estimate for the linked potential impact fraction (i.e.
-for \code{link(pif)})}
+\item{variance}{variance estimate for the potential impact fraction (i.e.
+for \code{pif})}
 
 \item{conf_level}{Confidence level for the confidence interval (default 0.95).}
 
@@ -55,6 +64,9 @@ stays within the expected bounds.}
 \item{link_inv}{The inverse of \code{link}. For example if \code{link}
 is \code{logit} this should be \code{inv_logit}.}
 
+\item{link_deriv}{The derivative of \code{link}. For example if \code{link}
+is \code{logit} this should be \code{deriv_logit} (i.e. \code{function(pif) 1 / (pif * (1 - pif))}).}
+
 \item{p}{Prevalence (proportion) of the exposed individuals for
 each of the \code{N} exposure levels.}
 
@@ -66,11 +78,11 @@ available (usually its either the relative risk directly or the log
 of the relative risk as most RRs, ORs and HRs come from exponential
 models).}
 
-\item{sigma_p}{Estimate of the covariance matrix of \code{p} where the entry
-\code{sigma_p[i,j]} represents the covariance between \code{p[i]} and \code{p[j]}.}
+\item{sigma_p}{Estimate of the colink_variance matrix of \code{p} where the entry
+\code{sigma_p[i,j]} represents the colink_variance between \code{p[i]} and \code{p[j]}.}
 
-\item{sigma_beta}{Estimate of the covariance matrix of \code{beta} where the entry
-\code{sigma_beta[i,j]} represents the covariance between \code{beta[i]} and \code{beta[j]}.}
+\item{sigma_beta}{Estimate of the colink_variance matrix of \code{beta} where the entry
+\code{sigma_beta[i,j]} represents the colink_variance between \code{beta[i]} and \code{beta[j]}.}
 
 \item{rr_link}{Link function such that the relative risk is given by
 \code{rr_link(beta)}.}
@@ -79,16 +91,20 @@ models).}
 The constructor tries to build it automatically from \code{rr_link} using
 \code{\link[Deriv:Deriv]{Deriv::Deriv()}}.}
 
-\item{link_deriv}{The derivative of \code{link}. For example if \code{link}
-is \code{logit} this should be \code{deriv_logit} (i.e. \code{function(pif) 1 / (pif * (1 - pif))}).}
+\item{upper_bound_p}{Whether the values for the \code{p} component
+of the link_variance should be approximated by an upper bound.}
 
-\item{sigma_p_upper_bound}{Whether the values for the \code{p} component
-of the variance should be approximated by an upper bound.}
+\item{upper_bound_beta}{Whether the values for the \code{beta} component
+of the link_variance should be approximated by an upper bound.}
 
-\item{sigma_beta_upper_bound}{Whether the values for the \code{beta} component
-of the variance should be approximated by an upper bound.}
+\item{pif_list}{A list of potential impact fractions \code{pif_class} so that
+the total can be computed from it.}
 
-\item{.data}{A \code{list} of \code{pif_atomic_class}  or \code{pif_list_class} entries.}
+\item{weights}{Weights for calculating the total PIF (respectively PAF)
+in \code{pif_total}.}
+
+\item{sigma_weights}{Colink_variance matrix for the weights when calculating the
+total PIF (respectively PAF) in \code{pif_total}.}
 }
 \description{
 Objects for handling potential impact fractions for a categorical exposure
@@ -101,6 +117,7 @@ considering an observed prevalence of  \code{p} and a relative risk
 \item{\code{ci}}{\code{numeric(2)} — Lower and upper confidence limits at level \code{conf_level}.}
 \item{\code{link_vals}}{\code{numeric} — Entrywise evaluation of the link function at pif: \code{link(pif)}.}
 \item{\code{link_deriv_vals}}{\code{character} — Entrywise evaluation of the derivative of the link function (\code{link_deriv}) at pif: \code{link(pif)}.}
+\item{\code{link_variance}}{\code{numeric} - Estimate for the linked potential impact fraction's variance: \code{var(link(pif))}.}
 }
 }
 
@@ -111,7 +128,6 @@ The \code{pif_atomic_class} inherits the properties of a \code{pif_class} as wel
 \item{\code{mu_obs}}{\code{numeric} — Average relative risk in the observed population.}
 \item{\code{mu_cft}}{\code{numeric} — Average relative risk in the counterfactual population.}
 \item{\code{pif}}{\code{numeric} — Estimate of the potential impact fraction.}
-\item{\code{variance}}{\code{numeric} — Estimate of the variance of \code{link(pif)}.}
 \item{\code{rr_link_deriv_vals}}{\code{character} — Entrywise evaluation of the derivative of the link function (\code{link_deriv}) at pif: \code{link(pif)}.}
 }
 }
@@ -120,7 +136,7 @@ The \code{pif_atomic_class} inherits the properties of a \code{pif_class} as wel
 
 Wald-type confidence intervals are calculated for \code{link(pif)} as follows:
 \deqn{
- \text{CI}_{\text{Link}} = \text{link}\big(\text{PIF}\big) \pm Z_{\alpha/2}\cdot\sqrt{\textrm{Variance}}
+ \text{CI}_{\text{Link}} = \text{link}\big(\text{PIF}\big) \pm Z_{\alpha/2}\cdot\sqrt{\textrm{link\_variance}}
 }
 and then transformed back using the inverse of the link function \code{inv_link}:
 \deqn{
@@ -143,18 +159,18 @@ Walter:
    \sum\limits_{i=1}^N p_i \text{RR}_i
   }
 }
-where the relative risk is a function of a parameter \eqn{\theta_i}
+where the relative risk is a function of a parameter \eqn{\beta_i}
 \deqn{
- \text{RR}_i = g(\theta_i)
+ \text{RR}_i = g(\beta_i)
 }
-and the variance is calculated for a function of PIF: \eqn{f(\textrm{PIF})}
+and the link_variance is calculated for a function of PIF: \eqn{f(\textrm{PIF})}
 The \code{pif_atomic_class} only contains one potential impact fraction
 and the parameters to estimate it.
 
 The \code{pif_additive_class} is a type of \code{pif_class} that can be computed
 as a sum of weighted transformations of potential impact fractions
 where the weights can be random. Elements of a \code{pif_additive_class}
-have a variance estimated for the following expression:
+have a link_variance estimated for the following expression:
 \deqn{
  f\big(\textrm{PIF}_{+}\big) = \sum\limits_{i = 1}^{N} q_i \cdot  f_i\Big(\textrm{PIF}_i\Big)
 }
@@ -181,7 +197,7 @@ as it can be transformed into
 \examples{
 #Create a new pif parent class element
 pif_class(pif = 0.3, var = 0.01, conf_level = 0.95, type = "PIF",
-  link = identity, link_inv = identity)
+  link = logit, link_inv = inv_logit, link_deriv = deriv_logit)
 
 #Create a new potential impact fraction from the Walter's formula
 pif_atomic_class(
@@ -189,40 +205,41 @@ pif_atomic_class(
   link = logit, link_inv = inv_logit, link_deriv = deriv_logit,
   rr_link = identity, rr_link_deriv = function(x) 1,
   conf_level = 0.95, type = "PAF",
-  sigma_p_upper_bound = FALSE,
-  sigma_beta_upper_bound = FALSE
+  upper_bound_p = FALSE,
+  upper_bound_beta = FALSE
 )
 
 #Create a list of pif
 pif1 <- pif_atomic_class(
-  p = 0.499, p_cft = 0, beta = 3.6, sigma_p = 0.1, sigma_beta = 3,
+  p = 0.499, p_cft = 0, beta = 3.6, sigma_p = 0.01, sigma_beta = 0.03,
   link = logit, link_inv = inv_logit, link_deriv = deriv_logit,
   rr_link = identity, rr_link_deriv = function(x) 1,
   conf_level = 0.95, type = "PAF",
-  sigma_p_upper_bound = FALSE,
-  sigma_beta_upper_bound = FALSE
+  upper_bound_p = FALSE,
+  upper_bound_beta = FALSE
 )
 pif2 <- pif_atomic_class(
-  p = 0.79, p_cft = 0, beta = 3.6, sigma_p = 0.1, sigma_beta = 3,
+  p = 0.79, p_cft = 0, beta = 3.6, sigma_p = 0.01, sigma_beta = 0.03,
   link = logit, link_inv = inv_logit, link_deriv = deriv_logit,
   rr_link = identity, rr_link_deriv = function(x) 1,
   conf_level = 0.95, type = "PAF",
-  sigma_p_upper_bound = FALSE,
-  sigma_beta_upper_bound = FALSE
+  upper_bound_p = FALSE,
+  upper_bound_beta = FALSE
 )
-pif_list_class(list(pif1, pif2))
-
-#A list can be constructed out of lists
-pif_list_class_1 <- pif_list_class(list(pif1, pif2))
 pif3 <- pif_atomic_class(
-  p = 0.8, p_cft = 0, beta = 3.6, sigma_p = 0.1, sigma_beta = 3,
+  p = 0.8, p_cft = 0, beta = 3.6, sigma_p = 0.01, sigma_beta = 0.03,
   link = logit, link_inv = inv_logit, link_deriv = deriv_logit,
   rr_link = identity, rr_link_deriv = function(x) 1,
   conf_level = 0.95, type = "PAF",
-  sigma_p_upper_bound = FALSE,
-  sigma_beta_upper_bound = FALSE
+  upper_bound_p = FALSE,
+  upper_bound_beta = FALSE
 )
-pif_list_class(list(pif3, pif_list_class_1))
 
-pif_total_class(pif_list = list(pif1, pif2, pif3), weights = c(0.5, 0.2, 0.3))
+tp1 <- pif_total_class(pif_list = list(pif1, pif2),
+  weights = c(0.5, 0.2), sigma_weights = diag(0.001, ncol = 2, nrow = 2),
+  link = identity, link_inv = identity, link_deriv = identity)
+
+pif_total_class(pif_list = list(tp1, pif3),
+  weights = c(0.7, 0.3), sigma_weights = diag(0.001, ncol = 2, nrow = 2),
+  link = identity, link_inv = identity, link_deriv = identity)
 }

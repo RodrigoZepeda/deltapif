@@ -45,11 +45,11 @@ available (usually its either the relative risk directly or the log
 of the relative risk as most RRs, ORs and HRs come from exponential
 models).}
 
-\item{sigma_p}{Estimate of the covariance matrix of \code{p} where the entry
-\code{sigma_p[i,j]} represents the covariance between \code{p[i]} and \code{p[j]}.}
+\item{sigma_p}{Estimate of the colink_variance matrix of \code{p} where the entry
+\code{sigma_p[i,j]} represents the colink_variance between \code{p[i]} and \code{p[j]}.}
 
-\item{sigma_beta}{Estimate of the covariance matrix of \code{beta} where the entry
-\code{sigma_beta[i,j]} represents the covariance between \code{beta[i]} and \code{beta[j]}.}
+\item{sigma_beta}{Estimate of the colink_variance matrix of \code{beta} where the entry
+\code{sigma_beta[i,j]} represents the colink_variance between \code{beta[i]} and \code{beta[j]}.}
 
 \item{rr_link}{Link function such that the relative risk is given by
 \code{rr_link(beta)}.}
@@ -137,17 +137,19 @@ the population attributable fraction.
 # Calculates PAF (i.e. counterfactual is no smoking)
 paf(p = 0.499, beta = 3.6)
 
-# Assuming that beta and p had a variance
+# Assuming that beta and p had a link_variance
 paf(p = 0.499, beta = 3.6, sigma_p = 0.001, sigma_beta = 1)
 
-# If the variance was to high a logistic transform would be required
+# If the link_variance was to high a logistic transform would be required
 # Generates incorrect values for the interval:
 paf(p = 0.499, beta = 3.6, sigma_p = 0.1, sigma_beta = 3)
 
 # Logit fixes it
-paf(p = 0.499, beta = 3.6, sigma_p = 0.1, sigma_beta = 3, link = "logit", quiet = T)
+paf(p = 0.499, beta = 3.6, sigma_p = 0.1, sigma_beta = 3,
+    link = "logit", quiet = TRUE)
 
 # If the counterfactual was reducing the smoking population by 1/2
-pif(p = 0.499, beta = 3.6, p_cft = 0.499/2, sigma_p = 0.001, sigma_beta = 1, link = "logit", quiet = T)
+pif(p = 0.499, beta = 1.6, p_cft = 0.499/2, sigma_p = 0.001,
+    sigma_beta = 1, link = "logit", quiet = TRUE)
 
 }
