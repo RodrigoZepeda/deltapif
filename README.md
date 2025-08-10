@@ -24,7 +24,7 @@ You can install the development version of pifes like so:
 remotes::install_github("RodrigoZepeda/deltapif")
 ```
 
-## Calculating a fraction
+## Calculating a population attributable fraction
 
 To estimate a population attributable fraction two ingredients are
 required:
@@ -67,6 +67,18 @@ paf(p = 0.085, beta = 1.59, quiet = TRUE)
 #> sd(link(paf)) = 0.000
 ```
 
+Note that this follows the formula by
+[Levin](https://doi.org/10.1016/j.gloepi.2021.100062):
+
+``` math
+\textrm{PAF} = \frac{p \cdot (\text{RR} - 1)}{1 + p \cdot (\text{RR} - 1)}
+```
+
+Additional examples show how to calculate the PAF for multiple
+categories.
+
+### Adding uncertainty
+
 Note that there is no uncertainty in the fraction as we have not inputed
 the standard deviation of `beta`. To do so we notice that the variance
 for the relative risk is actually for the log of beta. We follow the
@@ -97,6 +109,8 @@ paf(p = 0.085, beta = 0.4637, var_beta = 0.02766639, var_p = 0, rr_link = "expon
 #> sd(paf %) = 2.038
 #> sd(link(paf)) = 0.021
 ```
+
+## Calculating a potential impact fraction
 
 The paper also considers the potential impact fraction of a 15%
 reduction of smoking this can be achieved with the `pif` function by

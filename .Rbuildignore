@@ -7,3 +7,6 @@ oldstuff
 ^README\.Rmd$
 ^\.github$
 logo
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
