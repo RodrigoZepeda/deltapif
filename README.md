@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# deltapif
+# deltapif <img src="man/figures/logo.png" align="right" height="127" alt="The logo of the deltapif method showing an observed and a counterfactual population with coloured squares. A line partitions them in the middle. The image reads 'deltapif'." />
 
 <!-- badges: start -->
 

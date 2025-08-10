@@ -14,6 +14,7 @@
 \alias{get_ci}
 \alias{get_total_coefs}
 \alias{get_ensemble_coefs}
+\alias{get_ensemble_pif}
 \alias{get_total_pif}
 \alias{get_total_type}
 \alias{get_ensemble_type}
@@ -46,6 +47,8 @@ get_ci(self)
 get_total_coefs(self)
 
 get_ensemble_coefs(self)
+
+get_ensemble_pif(self)
 
 get_total_pif(self)
 

@@ -6,3 +6,4 @@ oldstuff
 \.DS_Store
 ^README\.Rmd$
 ^\.github$
+logo

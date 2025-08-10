@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# deltapif
+# deltapif <img src="man/figures/logo.png" align="right" height="127" alt="The logo of the deltapif method showing an observed and a counterfactual population with coloured squares. A line partitions them in the middle. The image reads 'deltapif'." />
 
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/pifes)](https://CRAN.R-project.org/package=deltapif)

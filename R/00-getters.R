@@ -111,6 +111,7 @@ get_ensemble_coefs <- function(self){
 }
 
 #' Get the ensemble coefficients
+#' @rdname getters
 get_ensemble_pif <- function(self){
   exp(sum(log(self@coefs)))
 }
