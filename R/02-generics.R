@@ -50,7 +50,7 @@ print_pif_class <- function(x, accuracy){
 #' @param accuracy The accuracy of the printed value
 #'
 #' @examples
-#' my_pif <- pif(p = 0.2, beta = 1.3, sigma_beta = 0.1)
+#' my_pif <- pif(p = 0.2, beta = 1.3, var_beta = 0.1)
 #' print(my_pif)
 #'
 #' # Change the ammount of digits to show just 1
@@ -76,7 +76,7 @@ S7::method(print, pif_class) <- function(x, ..., accuracy = 0.001) {
 #' @param ... Additional parameters to pass to `coef` (ignored)
 #'
 #' @examples
-#' my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, sigma_p = 0.1, sigma_beta = 0.2)
+#' my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1, var_beta = 0.2)
 #' coef(my_pif)
 #' @name coef
 #' @export
@@ -93,7 +93,7 @@ S7::method(coef, pif_class) <- function(object, ...) {
 #' @param ... Additional parameters to pass to `confint` (ignored)
 #'
 #' @examples
-#' my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, sigma_p = 0.1, sigma_beta = 0.2)
+#' my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1, var_beta = 0.2)
 #' #Default 95% CI
 #' confint(my_pif)
 #'
@@ -117,7 +117,7 @@ S7::method(confint, pif_class) <- function(object, ..., level = 0.95) {
 #' @param ... Additional parameters to pass to `summary` (ignored)
 #'
 #' @examples
-#' my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, sigma_p = 0.1, sigma_beta = 0.2)
+#' my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1, var_beta = 0.2)
 #' summary(my_pif)
 #' @name summary
 #' @export
@@ -142,7 +142,7 @@ S7::method(summary, pif_class) <- function(object, level = 0.95, ...) {
 #' @param ... Additional parameters (ignored)
 #'
 #' @examples
-#' my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, sigma_p = 0.1, sigma_beta = 0.2)
+#' my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1, var_beta = 0.2)
 #' as.data.frame(my_pif)
 #' @name as.data.frame
 #' @export

@@ -22,8 +22,8 @@ pif_atomic_class(
   p,
   p_cft,
   beta,
-  sigma_p,
-  sigma_beta,
+  var_p,
+  var_beta,
   rr_link,
   rr_link_deriv,
   link,
@@ -78,11 +78,11 @@ available (usually its either the relative risk directly or the log
 of the relative risk as most RRs, ORs and HRs come from exponential
 models).}
 
-\item{sigma_p}{Estimate of the colink_variance matrix of \code{p} where the entry
-\code{sigma_p[i,j]} represents the colink_variance between \code{p[i]} and \code{p[j]}.}
+\item{var_p}{Estimate of the colink_variance matrix of \code{p} where the entry
+\code{var_p[i,j]} represents the colink_variance between \code{p[i]} and \code{p[j]}.}
 
-\item{sigma_beta}{Estimate of the colink_variance matrix of \code{beta} where the entry
-\code{sigma_beta[i,j]} represents the colink_variance between \code{beta[i]} and \code{beta[j]}.}
+\item{var_beta}{Estimate of the colink_variance matrix of \code{beta} where the entry
+\code{var_beta[i,j]} represents the colink_variance between \code{beta[i]} and \code{beta[j]}.}
 
 \item{rr_link}{Link function such that the relative risk is given by
 \code{rr_link(beta)}.}
@@ -201,7 +201,7 @@ pif_class(pif = 0.3, var = 0.01, conf_level = 0.95, type = "PIF",
 
 #Create a new potential impact fraction from the Walter's formula
 pif_atomic_class(
-  p = 0.499, p_cft = 0, beta = 3.6, sigma_p = 0.1, sigma_beta = 3,
+  p = 0.499, p_cft = 0, beta = 3.6, var_p = 0.1, var_beta = 3,
   link = logit, link_inv = inv_logit, link_deriv = deriv_logit,
   rr_link = identity, rr_link_deriv = function(x) 1,
   conf_level = 0.95, type = "PAF",
@@ -211,7 +211,7 @@ pif_atomic_class(
 
 #Create a list of pif
 pif1 <- pif_atomic_class(
-  p = 0.499, p_cft = 0, beta = 3.6, sigma_p = 0.01, sigma_beta = 0.03,
+  p = 0.499, p_cft = 0, beta = 3.6, var_p = 0.01, var_beta = 0.03,
   link = logit, link_inv = inv_logit, link_deriv = deriv_logit,
   rr_link = identity, rr_link_deriv = function(x) 1,
   conf_level = 0.95, type = "PAF",
@@ -219,7 +219,7 @@ pif1 <- pif_atomic_class(
   upper_bound_beta = FALSE
 )
 pif2 <- pif_atomic_class(
-  p = 0.79, p_cft = 0, beta = 3.6, sigma_p = 0.01, sigma_beta = 0.03,
+  p = 0.79, p_cft = 0, beta = 3.6, var_p = 0.01, var_beta = 0.03,
   link = logit, link_inv = inv_logit, link_deriv = deriv_logit,
   rr_link = identity, rr_link_deriv = function(x) 1,
   conf_level = 0.95, type = "PAF",
@@ -227,7 +227,7 @@ pif2 <- pif_atomic_class(
   upper_bound_beta = FALSE
 )
 pif3 <- pif_atomic_class(
-  p = 0.8, p_cft = 0, beta = 3.6, sigma_p = 0.01, sigma_beta = 0.03,
+  p = 0.8, p_cft = 0, beta = 3.6, var_p = 0.01, var_beta = 0.03,
   link = logit, link_inv = inv_logit, link_deriv = deriv_logit,
   rr_link = identity, rr_link_deriv = function(x) 1,
   conf_level = 0.95, type = "PAF",

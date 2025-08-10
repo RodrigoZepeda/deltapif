@@ -12,8 +12,8 @@
 cov_total_pif(
   pif1,
   pif2,
-  sigma_p = NULL,
-  sigma_beta = NULL,
+  var_p = NULL,
+  var_beta = NULL,
   independent_p = "guess",
   independent_beta = "guess",
   quiet = FALSE
@@ -22,8 +22,8 @@ cov_total_pif(
 cov(
   x,
   ...,
-  sigma_p = NULL,
-  sigma_beta = NULL,
+  var_p = NULL,
+  var_beta = NULL,
   independent_p = "guess",
   independent_beta = "guess",
   quiet = FALSE
@@ -36,8 +36,8 @@ sd(x, ...)
 cor(
   x,
   ...,
-  sigma_p = NULL,
-  sigma_beta = NULL,
+  var_p = NULL,
+  var_beta = NULL,
   independent_p = "guess",
   independent_beta = "guess",
   quiet = FALSE
@@ -48,10 +48,10 @@ cor(
 
 \item{pif2}{Either a \code{pif_atomic_class} or a \code{pif_total_class}}
 
-\item{sigma_p}{Colink_variance matrix for the prevalences in all \code{pif1} and
+\item{var_p}{Colink_variance matrix for the prevalences in all \code{pif1} and
 the ones included in \code{...}.}
 
-\item{sigma_beta}{Colink_variance matrix for the parameter \code{beta} in all \code{pif1}
+\item{var_beta}{Colink_variance matrix for the parameter \code{beta} in all \code{pif1}
 and the ones included in \code{...}.}
 
 \item{independent_p}{If all the pifs share the same prevalence data. Either
@@ -80,7 +80,7 @@ potential impact fractions and the link_variance \code{var} and standard deviati
 }
 \examples{
 # Get the approximate link_variance of a pif object
-my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, sigma_p = 0.1, sigma_beta = 0.2)
+my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1, var_beta = 0.2)
 var(my_pif)
 
 # This is the same as colink_variance with just 1 pIF
@@ -88,31 +88,31 @@ cov(my_pif)
 
 # Calculate the colink_variance between 3 fractions with shared relative risk
 beta <- 0.3
-sigma_beta <- 0.1
-pif1 <- pif(0.5, 0.2, beta, sigma_p = 0.5 * (1 - 0.5) / 100, sigma_beta = sigma_beta)
-pif2 <- pif(0.3, 0.1, beta, sigma_p = 0.3 * (1 - 0.3) / 100, sigma_beta = sigma_beta)
-pif3 <- pif(0.7, 0.3, beta, sigma_p = 0.7 * (1 - 0.7) / 100, sigma_beta = sigma_beta)
+var_beta <- 0.1
+pif1 <- pif(0.5, 0.2, beta, var_p = 0.5 * (1 - 0.5) / 100, var_beta = var_beta)
+pif2 <- pif(0.3, 0.1, beta, var_p = 0.3 * (1 - 0.3) / 100, var_beta = var_beta)
+pif3 <- pif(0.7, 0.3, beta, var_p = 0.7 * (1 - 0.7) / 100, var_beta = var_beta)
 cov(pif1, pif2, pif3, independent_beta = FALSE)
 
 # The colink_variance between a pif and itself only has the link_variance as entries
 cov(pif1, pif1, independent_beta = FALSE, independent_p = FALSE)
 
 # Or if there is a colink_variance structure between different betas you can specify with
-# sigma_beta in the colink_variance
+# var_beta in the colink_variance
 betas <- c(1.3, 1.2, 1.27)
 
 # Colink_variance among all betas
-sigma_beta <- matrix(c(
+var_beta <- matrix(c(
   1.0000000, -0.12123053, 0.35429369,
   -0.1212305, 1.00000000, -0.04266409,
   0.3542937, -0.04266409, 1.00000000
 ), byrow = TRUE, ncol = 3)
-pif1 <- pif(0.5, 0.2, betas[1], sigma_p = 0.5 * (1 - 0.5) / 100, sigma_beta = sigma_beta[1, 1])
-pif2 <- pif(0.3, 0.1, betas[2], sigma_p = 0.3 * (1 - 0.3) / 100, sigma_beta = sigma_beta[2, 2])
-pif3 <- pif(0.3, 0.1, betas[3], sigma_p = 0.3 * (1 - 0.3) / 100, sigma_beta = sigma_beta[3, 3])
-cov(pif1, pif2, pif3, sigma_beta = sigma_beta)
+pif1 <- pif(0.5, 0.2, betas[1], var_p = 0.5 * (1 - 0.5) / 100, var_beta = var_beta[1, 1])
+pif2 <- pif(0.3, 0.1, betas[2], var_p = 0.3 * (1 - 0.3) / 100, var_beta = var_beta[2, 2])
+pif3 <- pif(0.3, 0.1, betas[3], var_p = 0.3 * (1 - 0.3) / 100, var_beta = var_beta[3, 3])
+cov(pif1, pif2, pif3, var_beta = var_beta)
 
 # Compute the correlation
-cor(pif1, pif2, pif3, sigma_beta = sigma_beta, quiet = TRUE)
+cor(pif1, pif2, pif3, var_beta = var_beta, quiet = TRUE)
 }
 \keyword{internal}

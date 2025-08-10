@@ -7,8 +7,8 @@
 pif_class_atomic_variance(
   pif1,
   pif2,
-  sigma_p = NULL,
-  sigma_beta = NULL,
+  var_p = NULL,
+  var_beta = NULL,
   independent_p = "guess",
   independent_beta = "guess",
   quiet = FALSE
@@ -19,9 +19,9 @@ pif_class_atomic_variance(
 
 \item{pif2}{A \code{pif_class} object}
 
-\item{sigma_p}{Colink_variance matrix for the prevalences in both \code{pif1} and \code{pif2}.}
+\item{var_p}{Colink_variance matrix for the prevalences in both \code{pif1} and \code{pif2}.}
 
-\item{sigma_beta}{Colink_variance matrix for the parameter \code{beta} in both \code{pif1}
+\item{var_beta}{Colink_variance matrix for the parameter \code{beta} in both \code{pif1}
 and \code{pif2}.}
 
 \item{independent_p}{If \code{pif1} and \code{pif2} share the same prevalence data. Either
@@ -37,18 +37,18 @@ Get the colink_variances between two pif classes (atomic pifs)
 }
 \section{Colink_variance matrices}{
 
-By default if no \code{sigma_p} is specified this assumes the colink_variances
+By default if no \code{var_p} is specified this assumes the colink_variances
 between the parameters \code{p} of \code{pif1} and \code{pif2} are uncorrelated.
 However, if \code{pif1} and \code{pif2} share the same prevalence estimates
 (i.e. share the same \code{p}s, then the user should set \code{independent_p = TRUE}
 to account for that correlation).
 
-The same thing happens with \code{sigma_beta}. If no \code{sigma_beta} is specified
+The same thing happens with \code{var_beta}. If no \code{var_beta} is specified
 then the assumption is that the \code{beta} parameters from \code{pif1} and
 from \code{pif2} are uncorrelated unless \code{independent_beta} is set to \code{TRUE}.
 
-If the user provides a colink_variance matrix for \code{sigma_p} then \code{independent_p}
-is disregarded. Similarly, if the user provides \code{sigma_beta} then
+If the user provides a colink_variance matrix for \code{var_p} then \code{independent_p}
+is disregarded. Similarly, if the user provides \code{var_beta} then
 \code{independent_beta} is ignored.
 }
 

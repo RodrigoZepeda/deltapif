@@ -14,7 +14,7 @@
 Gets the confidence interval for the potential impact fraction
 }
 \examples{
-my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, sigma_p = 0.1, sigma_beta = 0.2)
+my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1, var_beta = 0.2)
 #Default 95\% CI
 confint(my_pif)
 

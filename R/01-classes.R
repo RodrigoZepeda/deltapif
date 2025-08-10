@@ -35,11 +35,11 @@
 #' of the relative risk as most RRs, ORs and HRs come from exponential
 #' models).
 #'
-#' @param sigma_p Estimate of the colink_variance matrix of `p` where the entry
-#' `sigma_p[i,j]` represents the colink_variance between `p[i]` and `p[j]`.
+#' @param var_p Estimate of the colink_variance matrix of `p` where the entry
+#' `var_p[i,j]` represents the colink_variance between `p[i]` and `p[j]`.
 #'
-#' @param sigma_beta Estimate of the colink_variance matrix of `beta` where the entry
-#' `sigma_beta[i,j]` represents the colink_variance between `beta[i]` and `beta[j]`.
+#' @param var_beta Estimate of the colink_variance matrix of `beta` where the entry
+#' `var_beta[i,j]` represents the colink_variance between `beta[i]` and `beta[j]`.
 #'
 #' @param rr_link Link function such that the relative risk is given by
 #' `rr_link(beta)`.
@@ -145,7 +145,7 @@
 #'
 #' #Create a new potential impact fraction from the Walter's formula
 #' pif_atomic_class(
-#'   p = 0.499, p_cft = 0, beta = 3.6, sigma_p = 0.1, sigma_beta = 3,
+#'   p = 0.499, p_cft = 0, beta = 3.6, var_p = 0.1, var_beta = 3,
 #'   link = logit, link_inv = inv_logit, link_deriv = deriv_logit,
 #'   rr_link = identity, rr_link_deriv = function(x) 1,
 #'   conf_level = 0.95, type = "PAF",
@@ -155,7 +155,7 @@
 #'
 #' #Create a list of pif
 #' pif1 <- pif_atomic_class(
-#'   p = 0.499, p_cft = 0, beta = 3.6, sigma_p = 0.01, sigma_beta = 0.03,
+#'   p = 0.499, p_cft = 0, beta = 3.6, var_p = 0.01, var_beta = 0.03,
 #'   link = logit, link_inv = inv_logit, link_deriv = deriv_logit,
 #'   rr_link = identity, rr_link_deriv = function(x) 1,
 #'   conf_level = 0.95, type = "PAF",
@@ -163,7 +163,7 @@
 #'   upper_bound_beta = FALSE
 #' )
 #' pif2 <- pif_atomic_class(
-#'   p = 0.79, p_cft = 0, beta = 3.6, sigma_p = 0.01, sigma_beta = 0.03,
+#'   p = 0.79, p_cft = 0, beta = 3.6, var_p = 0.01, var_beta = 0.03,
 #'   link = logit, link_inv = inv_logit, link_deriv = deriv_logit,
 #'   rr_link = identity, rr_link_deriv = function(x) 1,
 #'   conf_level = 0.95, type = "PAF",
@@ -171,7 +171,7 @@
 #'   upper_bound_beta = FALSE
 #' )
 #' pif3 <- pif_atomic_class(
-#'   p = 0.8, p_cft = 0, beta = 3.6, sigma_p = 0.01, sigma_beta = 0.03,
+#'   p = 0.8, p_cft = 0, beta = 3.6, var_p = 0.01, var_beta = 0.03,
 #'   link = logit, link_inv = inv_logit, link_deriv = deriv_logit,
 #'   rr_link = identity, rr_link_deriv = function(x) 1,
 #'   conf_level = 0.95, type = "PAF",
@@ -295,10 +295,10 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
      beta          = S7::class_numeric,
 
      # Colink_variance matrix for p
-     sigma_p       = S7::class_numeric,
+     var_p       = S7::class_numeric,
 
      # Colink_variance matrix for beta
-     sigma_beta    = S7::class_numeric,
+     var_beta    = S7::class_numeric,
 
      # Relative risk link function RR = rr_link(beta)
      rr_link       = S7::class_function,
@@ -396,10 +396,10 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
      }
 
      # Check the matrices are positive definite
-     if (is.matrix(self@sigma_beta) && !isSymmetric(self@sigma_beta, trans = "T")) {
+     if (is.matrix(self@var_beta) && !isSymmetric(self@var_beta, trans = "T")) {
        cli::cli_abort(
          paste0(
-            "Matrix {.code sigma_beta} is not symmetric. ",
+            "Matrix {.code var_beta} is not symmetric. ",
             "Entry in row i and column j must be equal ",
             "to entry in row j and column i."
          )
@@ -407,43 +407,43 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
      }
 
      # Check the matrices are positive definite
-     if (is.matrix(self@sigma_p) && !isSymmetric(self@sigma_p, trans = "T")) {
+     if (is.matrix(self@var_p) && !isSymmetric(self@var_p, trans = "T")) {
        cli::cli_abort(
          paste0(
-           "Matrix {.code sigma_p} is not symmetric. ",
+           "Matrix {.code var_p} is not symmetric. ",
            "Entry in row i and column j must be equal ",
            "to entry in row j and column i."
          )
        )
      }
 
-     if (is.matrix(self@sigma_p) &&
+     if (is.matrix(self@var_p) &&
          (
-           (ncol(self@sigma_p) != length(self@p)) |
-           (nrow(self@sigma_p) != length(self@p))
+           (ncol(self@var_p) != length(self@p)) |
+           (nrow(self@var_p) != length(self@p))
           )
          ) {
          cli::cli_abort(
            paste0(
              "Exposure prevalence vector {.code p} has ",
              "different length than its colink_variance matrix",
-             "{.code sigma_p}."
+             "{.code var_p}."
            )
          )
      }
 
-     # Validate the length of sigma_beta
-     if (is.matrix(self@sigma_beta) &&
+     # Validate the length of var_beta
+     if (is.matrix(self@var_beta) &&
          (
-           (ncol(self@sigma_beta) != length(self@beta)) |
-           (nrow(self@sigma_beta) != length(self@beta))
+           (ncol(self@var_beta) != length(self@beta)) |
+           (nrow(self@var_beta) != length(self@beta))
          )
         ){
          cli::cli_abort(
            paste0(
              "Exposure prevalence vector {.code p} has ",
              "different length than its colink_variance ",
-             "matrix {.code sigma_p}."
+             "matrix {.code var_p}."
            )
          )
      }
@@ -468,7 +468,7 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
        )
      }
    },
-   constructor = function(p, p_cft, beta, sigma_p, sigma_beta, rr_link,
+   constructor = function(p, p_cft, beta, var_p, var_beta, rr_link,
                           rr_link_deriv, link, link_deriv, link_inv, conf_level,
                           type, upper_bound_p, upper_bound_beta) {
 
@@ -486,8 +486,8 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
                     p             = p,
                     p_cft         = p_cft,
                     beta          = beta,
-                    sigma_p       = sigma_p,
-                    sigma_beta    = sigma_beta,
+                    var_p       = var_p,
+                    var_beta    = var_beta,
                     rr_link       = rr_link,
                     rr_link_deriv = rr_link_deriv,
                     upper_bound_p = upper_bound_p,

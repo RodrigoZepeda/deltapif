@@ -9,8 +9,8 @@
 paf(
   p,
   beta,
-  sigma_p = NULL,
-  sigma_beta = NULL,
+  var_p = NULL,
+  var_beta = NULL,
   rr_link = "identity",
   rr_link_deriv = NULL,
   link = "log-complement",
@@ -24,8 +24,8 @@ pif(
   p,
   p_cft = rep(0, length(p)),
   beta,
-  sigma_p = NULL,
-  sigma_beta = NULL,
+  var_p = NULL,
+  var_beta = NULL,
   rr_link = "identity",
   rr_link_deriv = NULL,
   link = "log-complement",
@@ -45,11 +45,11 @@ available (usually its either the relative risk directly or the log
 of the relative risk as most RRs, ORs and HRs come from exponential
 models).}
 
-\item{sigma_p}{Estimate of the colink_variance matrix of \code{p} where the entry
-\code{sigma_p[i,j]} represents the colink_variance between \code{p[i]} and \code{p[j]}.}
+\item{var_p}{Estimate of the colink_variance matrix of \code{p} where the entry
+\code{var_p[i,j]} represents the colink_variance between \code{p[i]} and \code{p[j]}.}
 
-\item{sigma_beta}{Estimate of the colink_variance matrix of \code{beta} where the entry
-\code{sigma_beta[i,j]} represents the colink_variance between \code{beta[i]} and \code{beta[j]}.}
+\item{var_beta}{Estimate of the colink_variance matrix of \code{beta} where the entry
+\code{var_beta[i,j]} represents the colink_variance between \code{beta[i]} and \code{beta[j]}.}
 
 \item{rr_link}{Link function such that the relative risk is given by
 \code{rr_link(beta)}.}
@@ -138,18 +138,18 @@ the population attributable fraction.
 paf(p = 0.499, beta = 3.6)
 
 # Assuming that beta and p had a link_variance
-paf(p = 0.499, beta = 3.6, sigma_p = 0.001, sigma_beta = 1)
+paf(p = 0.499, beta = 3.6, var_p = 0.001, var_beta = 1)
 
 # If the link_variance was to high a logistic transform would be required
 # Generates incorrect values for the interval:
-paf(p = 0.499, beta = 3.6, sigma_p = 0.1, sigma_beta = 3)
+paf(p = 0.499, beta = 3.6, var_p = 0.1, var_beta = 3)
 
 # Logit fixes it
-paf(p = 0.499, beta = 3.6, sigma_p = 0.1, sigma_beta = 3,
+paf(p = 0.499, beta = 3.6, var_p = 0.1, var_beta = 3,
     link = "logit", quiet = TRUE)
 
 # If the counterfactual was reducing the smoking population by 1/2
-pif(p = 0.499, beta = 1.6, p_cft = 0.499/2, sigma_p = 0.001,
-    sigma_beta = 1, link = "logit", quiet = TRUE)
+pif(p = 0.499, beta = 1.6, p_cft = 0.499/2, var_p = 0.001,
+    var_beta = 1, link = "logit", quiet = TRUE)
 
 }

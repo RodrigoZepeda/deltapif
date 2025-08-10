@@ -7,8 +7,8 @@
 cov_atomic_pif(
   pif1,
   pif2,
-  sigma_p = NULL,
-  sigma_beta = NULL,
+  var_p = NULL,
+  var_beta = NULL,
   independent_p = "guess",
   independent_beta = "guess",
   quiet = FALSE
@@ -19,10 +19,10 @@ cov_atomic_pif(
 
 \item{pif2}{A \code{pif_atomic_class} object}
 
-\item{sigma_p}{Colink_variance matrix for the prevalences in all \code{pif1} and
+\item{var_p}{Colink_variance matrix for the prevalences in all \code{pif1} and
 the ones included in \code{...}.}
 
-\item{sigma_beta}{Colink_variance matrix for the parameter \code{beta} in all \code{pif1}
+\item{var_beta}{Colink_variance matrix for the parameter \code{beta} in all \code{pif1}
 and the ones included in \code{...}.}
 
 \item{independent_p}{If all the pifs share the same prevalence data. Either

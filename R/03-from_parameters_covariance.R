@@ -19,7 +19,7 @@
 #' first potential impact fraction.
 #' @param mu_cft2 Average relative risk in the counterfactual of the second
 #' potential impact fraction.
-#' @param sigma_p Covariance matrix with the entry `sigma_p[i,j]` corresponding
+#' @param var_p Covariance matrix with the entry `var_p[i,j]` corresponding
 #' to the covariance between `p1[i]` and `p2[j]`.
 #' @param upper_bound Whether the variance should be calculated or an upper
 #' bound for the variance (assuming perfect correlation).
@@ -64,7 +64,7 @@ NULL
 #' @export
 from_parameters_covariance_p_component <- function(
     p1, p2, p1_cft, p2_cft, rr1, rr2, mu_obs1, mu_obs2, mu_cft1, mu_cft2,
-    sigma_p, upper_bound) {
+    var_p, upper_bound) {
 
   # Get the derivatives
   vcp_deriv1 <- deriv_pif_p(
@@ -82,14 +82,14 @@ from_parameters_covariance_p_component <- function(
     vcp_deriv2 <- abs(vcp_deriv2)
   }
 
-  t(vcp_deriv1) %*% sigma_p %*% vcp_deriv2
+  t(vcp_deriv1) %*% var_p %*% vcp_deriv2
 }
 
 #' @rdname covariance_from_parameters
 #' @export
 from_parameters_covariance_beta_component <- function(
     p1, p2, p1_cft, p2_cft, rr1, rr2, rr_link_deriv_vals1, rr_link_deriv_vals2,
-    mu_obs1, mu_obs2, mu_cft1, mu_cft2, sigma_beta, upper_bound) { #FIXME: The upper bound is not used upper in the ladder
+    mu_obs1, mu_obs2, mu_cft1, mu_cft2, var_beta, upper_bound) { #FIXME: The upper bound is not used upper in the ladder
   # Get the derivatives
   vcbeta_deriv1 <- deriv_pif_beta(
     p = p1, p_cft = p1_cft, rr = rr1,
@@ -109,14 +109,14 @@ from_parameters_covariance_beta_component <- function(
     vcbeta_deriv2 <- abs(vcbeta_deriv2)
   }
 
-  t(vcbeta_deriv1) %*% sigma_beta %*% vcbeta_deriv2
+  t(vcbeta_deriv1) %*% var_beta %*% vcbeta_deriv2
 }
 
 #' @rdname covariance_from_parameters
 #' @export
 from_parameters_pif_covariance <- function(
     p1, p2, p1_cft, p2_cft, rr1, rr2, rr_link_deriv_vals1, rr_link_deriv_vals2,
-    mu_obs1, mu_obs2, mu_cft1, mu_cft2, sigma_p, sigma_beta,
+    mu_obs1, mu_obs2, mu_cft1, mu_cft2, var_p, var_beta,
     upper_bound_p = FALSE, upper_bound_beta = FALSE) {
 
   p_component <- from_parameters_covariance_p_component(
@@ -129,7 +129,7 @@ from_parameters_pif_covariance <- function(
     mu_obs2 = mu_obs2,
     mu_cft1 = mu_cft1,
     mu_cft2 = mu_cft2,
-    sigma_p = sigma_p,
+    var_p = var_p,
     upper_bound = upper_bound_p
   )
 
@@ -145,7 +145,7 @@ from_parameters_pif_covariance <- function(
     mu_obs2 = mu_obs2,
     mu_cft1 = mu_cft1,
     mu_cft2 = mu_cft2,
-    sigma_beta = sigma_beta,
+    var_beta = var_beta,
     upper_bound = upper_bound_beta
   )
 
@@ -155,8 +155,8 @@ from_parameters_pif_covariance <- function(
 #' @rdname covariance_from_parameters
 #' @export
 from_parameters_pif_variance <- function(
-    p, p_cft, rr, rr_link_deriv_vals, mu_obs, mu_cft, sigma_p,
-    sigma_beta, upper_bound_p = FALSE, upper_bound_beta = FALSE) {
+    p, p_cft, rr, rr_link_deriv_vals, mu_obs, mu_cft, var_p,
+    var_beta, upper_bound_p = FALSE, upper_bound_beta = FALSE) {
 
   from_parameters_pif_covariance(
     p1 = p,
@@ -171,8 +171,8 @@ from_parameters_pif_variance <- function(
     mu_obs2 = mu_obs,
     mu_cft1 = mu_cft,
     mu_cft2 = mu_cft,
-    sigma_p = sigma_p,
-    sigma_beta = sigma_beta,
+    var_p = var_p,
+    var_beta = var_beta,
     upper_bound_p = upper_bound_p,
     upper_bound_beta = upper_bound_beta
   )

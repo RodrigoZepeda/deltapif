@@ -82,8 +82,8 @@ get_variance_atomic <- function(self) {
     p = self@p, p_cft = self@p_cft, rr = self@rr,
     rr_link_deriv_vals = self@rr_link_deriv_vals,
     mu_obs = self@mu_obs,
-    mu_cft = self@mu_cft, sigma_p = self@sigma_p,
-    sigma_beta = self@sigma_beta,
+    mu_cft = self@mu_cft, var_p = self@var_p,
+    var_beta = self@var_beta,
     upper_bound_p = self@upper_bound_p,
     upper_bound_beta = self@upper_bound_beta
   )

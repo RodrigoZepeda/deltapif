@@ -27,8 +27,8 @@ or population attributable fraction to a different link.
 }
 \examples{
 #A potential impact fraction
-pif1 <- pif(p = 0.2, p_cft = 0.1, beta = 1.2, sigma_p = 0.01,
-  sigma_beta = 0.2)
+pif1 <- pif(p = 0.2, p_cft = 0.1, beta = 1.2, var_p = 0.01,
+  var_beta = 0.2)
 pif1
 
 #Now change the pif to logit to control the negatives

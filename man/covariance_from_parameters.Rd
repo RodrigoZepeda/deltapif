@@ -19,7 +19,7 @@ from_parameters_covariance_p_component(
   mu_obs2,
   mu_cft1,
   mu_cft2,
-  sigma_p,
+  var_p,
   upper_bound
 )
 
@@ -36,7 +36,7 @@ from_parameters_covariance_beta_component(
   mu_obs2,
   mu_cft1,
   mu_cft2,
-  sigma_beta,
+  var_beta,
   upper_bound
 )
 
@@ -53,8 +53,8 @@ from_parameters_pif_covariance(
   mu_obs2,
   mu_cft1,
   mu_cft2,
-  sigma_p,
-  sigma_beta,
+  var_p,
+  var_beta,
   upper_bound_p = FALSE,
   upper_bound_beta = FALSE
 )
@@ -66,8 +66,8 @@ from_parameters_pif_variance(
   rr_link_deriv_vals,
   mu_obs,
   mu_cft,
-  sigma_p,
-  sigma_beta,
+  var_p,
+  var_beta,
   upper_bound_p = FALSE,
   upper_bound_beta = FALSE
 )
@@ -99,7 +99,7 @@ first potential impact fraction.}
 \item{mu_cft2}{Average relative risk in the counterfactual of the second
 potential impact fraction.}
 
-\item{sigma_p}{Covariance matrix with the entry \code{sigma_p[i,j]} corresponding
+\item{var_p}{Covariance matrix with the entry \code{var_p[i,j]} corresponding
 to the covariance between \code{p1[i]} and \code{p2[j]}.}
 
 \item{upper_bound}{Whether the variance should be calculated or an upper
@@ -111,8 +111,8 @@ risk function evaluated at \code{theta} (the relative risk parameter).}
 \item{rr_link_deriv_vals2}{Values for the derivative of the relative
 risk function evaluated at \code{theta} (the relative risk parameter).}
 
-\item{sigma_beta}{Estimate of the colink_variance matrix of \code{beta} where the entry
-\code{sigma_beta[i,j]} represents the colink_variance between \code{beta[i]} and \code{beta[j]}.}
+\item{var_beta}{Estimate of the colink_variance matrix of \code{beta} where the entry
+\code{var_beta[i,j]} represents the colink_variance between \code{beta[i]} and \code{beta[j]}.}
 
 \item{upper_bound_p}{Whether the values for the \code{p} component
 of the link_variance should be approximated by an upper bound.}

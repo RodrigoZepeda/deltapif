@@ -99,32 +99,32 @@ fraction of the \eqn{\ell}-th risk factor for the same population.
 
 \examples{
 #Potential impact fraction for women
-pif_women <- pif(0.32, 0.1, 1.2, quiet = TRUE, sigma_p = 0.1)
+pif_women <- pif(0.32, 0.1, 1.2, quiet = TRUE, var_p = 0.1)
 
 #Potential impact fraction for men
-pif_men <- pif(0.27, 0.1, 1.3, quiet = TRUE, sigma_p = 0.1)
+pif_men <- pif(0.27, 0.1, 1.3, quiet = TRUE, var_p = 0.1)
 
 #Population potential impact fraction with 49\% men and 51\% women
 pif_total(pif_men, pif_women, weights = c(0.49, 0.51), link = "logit")
 
 #Population attributable  fraction for women
-paf_women <- paf(0.32, 1.3, quiet = TRUE, sigma_p = 0.1)
+paf_women <- paf(0.32, 1.3, quiet = TRUE, var_p = 0.1)
 
 #Population attributable  fraction for men
-paf_men <- paf(0.27, 1.3, quiet = TRUE, sigma_p = 0.1)
+paf_men <- paf(0.27, 1.3, quiet = TRUE, var_p = 0.1)
 paf_total(paf_men, paf_women, weights = c(0.49, 0.51), link = "logit")
 
 # Calculate the ensemble from lead and radiation exposure
-paf_lead <- paf(0.2, 2.2, quiet = T, sigma_p = 0.001)
-paf_rad  <- paf(0.1, 1.2, quiet = T, sigma_p = 0.0001)
+paf_lead <- paf(0.2, 2.2, quiet = TRUE, var_p = 0.001)
+paf_rad  <- paf(0.1, 1.2, quiet = TRUE, var_p = 0.0001)
 pif_ensemble(paf_lead, paf_rad)
 
 # Totals and ensembles can be combined
-pif_lead_women <- paf(0.27, 2.2, quiet = T, sigma_p = 0.001)
-pif_rad_women  <- paf(0.12, 1.2, quiet = T, sigma_p = 0.001)
+pif_lead_women <- paf(0.27, 2.2, quiet = TRUE, var_p = 0.001)
+pif_rad_women  <- paf(0.12, 1.2, quiet = TRUE, var_p = 0.001)
 pif_women      <- pif_ensemble(pif_lead_women, pif_rad_women)
-pif_lead_men   <- paf(0.30, 2.2, quiet = T, sigma_p = 0.001)
-pif_rad_men    <- paf(0.10, 1.2, quiet = T, sigma_p = 0.001)
+pif_lead_men   <- paf(0.30, 2.2, quiet = TRUE, var_p = 0.001)
+pif_rad_men    <- paf(0.10, 1.2, quiet = TRUE, var_p = 0.001)
 pif_men        <- pif_ensemble(pif_lead_men, pif_rad_men)
 
 pif_total(pif_men, pif_women, weights = c(0.49, 0.51))
