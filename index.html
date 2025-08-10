@@ -33,6 +33,12 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="articles/Introduction.html">Introduction</a></li>
+  </ul>
+</li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -84,52 +90,51 @@
 <p>We can calculate a point estimate of the PAF as follows:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rodrigozepeda.github.io/deltapif/">deltapif</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'deltapif'</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     cor, cov, sd, var</span></span>
 <span><span class="fu"><a href="reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.085</span>, beta <span class="op">=</span> <span class="fl">1.59</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Population Attributable Fraction ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; PAF = 4.776% [95% CI: 4.776% to 4.776%]</span></span>
-<span><span class="co">#&gt; sd(paf %) = 0.000</span></span>
-<span><span class="co">#&gt; sd(link(paf)) = 0.000</span></span></code></pre></div>
+<span><span class="co">#&gt; standard_deviation(paf %) = 0.000</span></span>
+<span><span class="co">#&gt; standard_deviation(link(paf)) = 0.000</span></span></code></pre></div>
 <p>Note that this follows the formula by <a href="https://doi.org/10.1016/j.gloepi.2021.100062" class="external-link">Levin</a>:</p>
-<pre class="math"><code>\textrm{PAF} = \frac{p \cdot (\text{RR} - 1)}{1 + p \cdot (\text{RR} - 1)}</code></pre>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">PAF</mtext><mo>=</mo><mfrac><mrow><mi>p</mi><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">RR</mtext><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mn>1</mn><mo>+</mo><mi>p</mi><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">RR</mtext><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+\textrm{PAF} = \frac{p \cdot (\text{RR} - 1)}{1 + p \cdot (\text{RR} - 1)}
+</annotation></semantics></math></p>
 <p>Additional examples show how to calculate the PAF for multiple categories.</p>
 <div class="section level3">
 <h3 id="adding-uncertainty">Adding uncertainty<a class="anchor" aria-label="anchor" href="#adding-uncertainty"></a>
 </h3>
 <p>Note that there is no uncertainty in the fraction as we have not inputed the standard deviation of <code>beta</code>. To do so we notice that the variance for the relative risk is actually for the log of beta. We follow the formula from <a href="https://handbook-5-1.cochrane.org/chapter_7/7_7_3_2_obtaining_standard_deviations_from_standard_errors_and.htm" class="external-link">Cochrane’s handbook</a>:</p>
-<pre class="math"><code>\text{var}_{\ln(\beta)} = \Bigg(\frac{\ln(\text{upper limit}) - \ln(\text{lower limit})}{2\times 1.95}\Bigg)^2</code></pre>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">variance</mtext><mrow><mo>ln</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>β</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msub><mo>=</mo><mo minsize="3.0" maxsize="3.0" stretchy="false" form="prefix">(</mo><mfrac><mrow><mo>ln</mo><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">upper limit</mtext><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mo>ln</mo><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">lower limit</mtext><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mn>2</mn><mo>×</mo><mn>1.95</mn></mrow></mfrac><msup><mo minsize="3.0" maxsize="3.0" stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">
+\text{variance}_{\ln(\beta)} = \Bigg(\frac{\ln(\text{upper limit}) - \ln(\text{lower limit})}{2\times 1.95}\Bigg)^2
+</annotation></semantics></math></p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">(</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">2.20</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.15</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="fl">1.95</span><span class="op">)</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span></span>
 <span><span class="co">#&gt; [1] 0.02766639</span></span></code></pre></div>
 <p>And because the uncertainty was specified for the log of the relative risk we use the natural logarithm <code>ln</code> of <code>1.59</code> as our beta where <code>log(1.59) = 0.4637</code> and specify that the way to get our relative risk is through the exponential function. Finally as no uncertainty was given for <code>p</code> we set <code>var_p = 0</code>.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.085</span>, beta <span class="op">=</span> <span class="fl">0.4637</span>, var_beta <span class="op">=</span> <span class="fl">0.02766639</span>, var_p <span class="op">=</span> <span class="fl">0</span>, rr_link <span class="op">=</span> <span class="st">"exponential"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.085</span>, beta <span class="op">=</span> <span class="fl">0.4637</span>, var_beta <span class="op">=</span> <span class="fl">0.02766639</span>, var_p <span class="op">=</span> <span class="fl">0</span>, rr_link <span class="op">=</span> <span class="va">exp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Population Attributable Fraction ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; PAF = 4.775% [95% CI: 0.695% to 8.688%]</span></span>
-<span><span class="co">#&gt; sd(paf %) = 2.038</span></span>
-<span><span class="co">#&gt; sd(link(paf)) = 0.021</span></span></code></pre></div>
+<span><span class="co">#&gt; standard_deviation(paf %) = 2.038</span></span>
+<span><span class="co">#&gt; standard_deviation(link(paf)) = 0.021</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="calculating-a-potential-impact-fraction">Calculating a potential impact fraction<a class="anchor" aria-label="anchor" href="#calculating-a-potential-impact-fraction"></a>
 </h2>
 <p>The paper also considers the potential impact fraction of a 15% reduction of smoking this can be achieved with the <code>pif</code> function by specifying the counterfactual distribution (in this case the 15% reduction results in <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.085</mn><mo>×</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mn>0.15</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>0.07225</mn></mrow><annotation encoding="application/x-tex">0.085 \times (1 - 0.15) = 0.07225</annotation></semantics></math>)</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/pifpaf.html">pif</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.085</span>, p_cft <span class="op">=</span> <span class="fl">0.07225</span>, beta <span class="op">=</span> <span class="fl">0.4637</span>, var_beta <span class="op">=</span> <span class="fl">0.02766639</span>, var_p <span class="op">=</span> <span class="fl">0</span>, rr_link <span class="op">=</span> <span class="st">"exponential"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/pifpaf.html">pif</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.085</span>, p_cft <span class="op">=</span> <span class="fl">0.07225</span>, beta <span class="op">=</span> <span class="fl">0.4637</span>, var_beta <span class="op">=</span> <span class="fl">0.02766639</span>, var_p <span class="op">=</span> <span class="fl">0</span>, rr_link <span class="op">=</span> <span class="va">exp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Potential Impact Fraction ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; PIF = 0.716% [95% CI: 0.115% to 1.314%]</span></span>
-<span><span class="co">#&gt; sd(pif %) = 0.306</span></span>
-<span><span class="co">#&gt; sd(link(pif)) = 0.003</span></span></code></pre></div>
+<span><span class="co">#&gt; standard_deviation(pif %) = 0.306</span></span>
+<span><span class="co">#&gt; standard_deviation(link(pif)) = 0.003</span></span></code></pre></div>
 <p>Note that both the PIF and PAF result in similar point estimates and CIs as in <em>Lee et al</em> who report:</p>
 <ul>
 <li>
@@ -137,6 +142,11 @@
 <li>
 <strong>PIF</strong>: 0.7 (0.2-1.4)</li>
 </ul>
+</div>
+<div class="section level2">
+<h2 id="more">More<a class="anchor" aria-label="anchor" href="#more"></a>
+</h2>
+<p>Visit the <a href="https://rodrigozepeda.github.io/deltapif/">deltapif</a> website for more examples and additional operations you can do with <code>PIF</code>.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="license">

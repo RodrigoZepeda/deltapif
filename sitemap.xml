@@ -2,9 +2,13 @@
 <url><loc>https://rodrigozepeda.github.io/deltapif/404.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/LICENSE-text.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/LICENSE.html</loc></url>
+<url><loc>https://rodrigozepeda.github.io/deltapif/articles/Introduction.html</loc></url>
+<url><loc>https://rodrigozepeda.github.io/deltapif/articles/index.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/authors.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/index.html</loc></url>
+<url><loc>https://rodrigozepeda.github.io/deltapif/reference/alcohol.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/as.data.frame.html</loc></url>
+<url><loc>https://rodrigozepeda.github.io/deltapif/reference/cancer_rr.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/change_link.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/check_links.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/check_rr_links.html</loc></url>
@@ -14,6 +18,8 @@
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/cov_atomic_pif.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/covariance_from_parameters.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/covcor.html</loc></url>
+<url><loc>https://rodrigozepeda.github.io/deltapif/reference/dementiacov.html</loc></url>
+<url><loc>https://rodrigozepeda.github.io/deltapif/reference/dementiarisk.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/deriv_linkfuns.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/derivatives.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/fraction_type.html</loc></url>

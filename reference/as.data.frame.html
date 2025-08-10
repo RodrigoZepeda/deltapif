@@ -18,6 +18,10 @@ interval values"><meta property="og:image" content="https://rodrigozepeda.github
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/Introduction.html">Introduction</a></li>
+  </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
       </ul></div>
@@ -55,10 +59,8 @@ interval values</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">my_pif</span> <span class="op">&lt;-</span> <span class="fu"><a href="pifpaf.html">pif</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.5</span>, p_cft <span class="op">=</span> <span class="fl">0.25</span>, beta <span class="op">=</span> <span class="fl">1.3</span>, var_p <span class="op">=</span> <span class="fl">0.1</span>, var_beta <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">as.data.frame</span><span class="op">(</span><span class="va">my_pif</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   type              value                sd             ci_low</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  PIF 0.0652173913043478 0.114426861662194 -0.188245877912132</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               ci_up confidence</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.264614721781963       0.95</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          PIF standard_deviation     ci_low     ci_up confidence</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.06521739          0.1144269 -0.1882459 0.2646147       0.95</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -22,6 +22,10 @@ an observed prevalence of  p and a relative risk
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/Introduction.html">Introduction</a></li>
+  </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
       </ul></div>
@@ -208,14 +212,14 @@ the population attributable fraction.</p>
 <span class="r-in"><span><span class="co"># Proportion of individuals smoking where 49.9%</span></span></span>
 <span class="r-in"><span><span class="co"># Calculates PAF (i.e. counterfactual is no smoking)</span></span></span>
 <span class="r-in"><span><span class="fu">paf</span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.499</span>, beta <span class="op">=</span> <span class="fl">3.6</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Assuming parameters `p` have no link_variance. Use `var_p` to input their link_variances and/or colink_variances</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Assuming parameters `beta` have no link_variance. Use `var_beta` to input their link_variances and/or colink_variances</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Assuming parameters `p` have no variance Use `var_p` to input their link_variances and/or covariance</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Assuming parameters `beta` have no variance Use `var_beta` to input their link_variances and/or covariance</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 56.473% [<span style="font-style: italic;">95% CI</span>: 56.473% to 56.473%]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> sd(paf %) = 0.000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> sd(link(paf)) = 0.000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(paf %) = 0.000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(link(paf)) = 0.000</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Assuming that beta and p had a link_variance</span></span></span>
 <span class="r-in"><span><span class="fu">paf</span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.499</span>, beta <span class="op">=</span> <span class="fl">3.6</span>, var_p <span class="op">=</span> <span class="fl">0.001</span>, var_beta <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
@@ -223,8 +227,8 @@ the population attributable fraction.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 56.473% [<span style="font-style: italic;">95% CI</span>: 32.990% to 71.726%]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> sd(paf %) = 9.582</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> sd(link(paf)) = 0.220</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(paf %) = 9.582</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(link(paf)) = 0.220</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># If the link_variance was to high a logistic transform would be required</span></span></span>
 <span class="r-in"><span><span class="co"># Generates incorrect values for the interval:</span></span></span>
@@ -233,8 +237,8 @@ the population attributable fraction.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 56.473% [<span style="font-style: italic;">95% CI</span>: -20.431% to 84.268%]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> sd(paf %) = 22.601</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> sd(link(paf)) = 0.519</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(paf %) = 22.601</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(link(paf)) = 0.519</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Logit fixes it</span></span></span>
 <span class="r-in"><span><span class="fu">paf</span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.499</span>, beta <span class="op">=</span> <span class="fl">3.6</span>, var_p <span class="op">=</span> <span class="fl">0.1</span>, var_beta <span class="op">=</span> <span class="fl">3</span>,</span></span>
@@ -243,8 +247,8 @@ the population attributable fraction.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 56.473% [<span style="font-style: italic;">95% CI</span>: 17.628% to 88.720%]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> sd(paf %) = 22.601</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> sd(link(paf)) = 0.919</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(paf %) = 22.601</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(link(paf)) = 0.919</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># If the counterfactual was reducing the smoking population by 1/2</span></span></span>
 <span class="r-in"><span><span class="fu">pif</span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.499</span>, beta <span class="op">=</span> <span class="fl">1.6</span>, p_cft <span class="op">=</span> <span class="fl">0.499</span><span class="op">/</span><span class="fl">2</span>, var_p <span class="op">=</span> <span class="fl">0.001</span>,</span></span>
@@ -253,8 +257,8 @@ the population attributable fraction.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Potential Impact Fraction</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> PIF = 11.521% [<span style="font-style: italic;">95% CI</span>: 0.746% to 69.285%]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> sd(pif %) = 14.833</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> sd(link(pif)) = 1.455</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(pif %) = 14.833</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(link(pif)) = 1.455</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
