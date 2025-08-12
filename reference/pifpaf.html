@@ -187,15 +187,68 @@ $$</p>
 
 
 
+<p>By default the <code>pif</code> and <code>paf</code> calculations use the <code>log-complement</code> link
+which guarantees the impact fractions' intervals have valid values (between -oo and 1).
+Depending on the application the following link functions are also implemented:</p>
+<dl><dt>log-complement</dt>
+<dd><p>To achieve fractions between (-Inf, 1). This is the function <code>f(x) = ln(1 - x)</code> with inverse <code>finv(x) = 1 - exp(x)</code></p></dd>
+
+<dt>logit</dt>
+<dd><p>To achieve strictly positive fractions in (0,1). This is the function <code>f(x) = ln(x / (1 - x))</code> with inverse <code>finv(x) = 1 / (1 + exp(-x))</code></p></dd>
+
+<dt>identity</dt>
+<dd><p>An approximation for not-so-extreme fractions. This is the function <code>f(x) = x</code>.with inverse <code>finv(x) = x</code></p></dd>
+
+<dt>hawkins</dt>
+<dd><p>Hawkins' fraction for controlling variance. This is the function <code>f(x) = ln(x + sqrt(x^2 + 1))</code> with inverse <code>finv(x) = 0.5 * exp(-x) * (exp(2 * x) - 1)</code></p></dd>
+
+
+</dl><p>In general, <code>logit</code> should be preferred if it is known and certain that the fractions
+can only be positive (i.e. when all relative risks (including CIs) are &gt; 1 and
+prevalence &gt; 0 and there is an epidemiological / biological explanation).</p>
+<p>Mathematically the variance that is calculated is
+$$
+\sigma_f^2 = \text{Var}\Big[ f(\textrm{PIF}) \Big]
+$$
+and the intervals are constructed as:
+$$
+\text{CI} = f^{-1}\Big(  f(\textrm{PIF})  \pm Z_{\alpha/2} \cdot \sigma_f \Big)
+$$</p>
+<p>Custom link functions can be implemented as long as they are invertible
+in the range of interest by providing the function <code>link</code>,
+its inverse <code>link_inv</code> and its derivative <code>link_deriv</code>. If no derivative
+is provided the package does an attempt to estimate it symbolically
+using <code><a href="https://rdrr.io/pkg/Deriv/man/Deriv.html" class="external-link">Deriv::Deriv()</a></code> however there is no guarantee that this
+will work non-standard functions (i.e. not logarithm / trigonometric /
+exponential)</p>
     </div>
     <div class="section level2">
     <h2 id="link-functions-for-beta">Link functions for beta<a class="anchor" aria-label="anchor" href="#link-functions-for-beta"></a></h2>
 
 
 
+<p>By default the <code>pif</code> and <code>paf</code> use the <code>identity</code> link which means that
+the values for <code>beta</code> are the relative risks directly and the
+variance <code>var_beta</code> corresponds to the relative risk's variance. Depending
+on the relative risk's source the following options are available:</p>
+<dl><dt>identity</dt>
+<dd><p>An approximation for not-so-extreme fractions. This is the function <code>f(beta) = beta</code>.with inverse <code>finv(rr) = rr = beta</code></p></dd>
+
+<dt>exponential</dt>
+<dd><p>The exponential function <code>f(beta) = exp(beta)</code> with inverse <code>finv(rr) = log(rr) = beta</code></p></dd>
+
+
+</dl><p>As in the previous section, custom link functions can be implemented
+as long as they are invertible in the range of interest by providing the
+function <code>rr_link</code> and its derivative <code>rr_link_deriv</code>. If no derivative
+is provided the package does an attempt to estimate it symbolically
+using <code><a href="https://rdrr.io/pkg/Deriv/man/Deriv.html" class="external-link">Deriv::Deriv()</a></code> however there is no guarantee that this
+will work non-standard functions (i.e. not logarithm / trigonometric /
+exponential)</p>
     </div>
     <div class="section level2">
     <h2 id="population-attributable-fraction">Population Attributable Fraction<a class="anchor" aria-label="anchor" href="#population-attributable-fraction"></a></h2>
+
 
 
 <p>The population attributable fraction corresponds to the potential impact

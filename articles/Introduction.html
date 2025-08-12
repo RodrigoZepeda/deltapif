@@ -148,7 +148,7 @@ of <code>beta = 0.4637340</code> with variance of
 their paf is:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paf_hispanic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.069</span>, beta <span class="op">=</span> <span class="fl">0.4637340</span>, var_beta <span class="op">=</span> <span class="fl">0.0273858</span>, </span>
-<span>                    rr_link <span class="op">=</span> <span class="va">exp</span><span class="op">)</span></span>
+<span>                    rr_link <span class="op">=</span> <span class="va">exp</span>, link <span class="op">=</span> <span class="va">logit</span>, link_inv <span class="op">=</span> <span class="va">inv_logit</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Assuming parameters `p` have no variance Use `var_p` to input their link_variances and/or covariance</span></span></code></pre></div>
 <p>Note that the model throws a warning for us not specifying the
 variance of <code>var_p</code>. We will assume that the value was
