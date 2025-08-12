@@ -47,6 +47,18 @@ deriv_pif_p <- function(p, p_cft, rr, mu_obs = NULL, mu_cft = NULL) {
     mu_cft <- mu_cft_fun(p_cft, rr)
   }
 
+  if (is.nan(mu_obs) || is.na(mu_obs) || is.infinite(mu_obs) || mu_obs == 0){
+    cli::cli_abort(
+      "Invalid value for `mu_obs` {mu_obs}"
+    )
+  }
+
+  if (is.nan(mu_cft) || is.na(mu_cft) || is.infinite(mu_cft)){
+    cli::cli_abort(
+      "Invalid value for `mu_cft` {mu_cft}"
+    )
+  }
+
   # The derivative of pif
   (mu_cft / (mu_obs)^2) * (rr - 1)
 }
@@ -61,6 +73,18 @@ deriv_pif_beta <- function(p, p_cft, rr, rr_link_deriv_vals, mu_obs = NULL,
 
   if (is.null(mu_cft)) {
     mu_cft <- mu_cft_fun(p_cft, rr)
+  }
+
+  if (length(rr) != length(rr_link_deriv_vals)){
+    cli::cli_abort(
+      "rr and rr_link_deriv_vals have different lengths"
+    )
+  }
+
+  if (any(is.na(rr_link_deriv_vals))){
+    cli::cli_abort(
+      "Missing values in `rr_link_deriv_vals`"
+    )
   }
 
   # The derivative of pif

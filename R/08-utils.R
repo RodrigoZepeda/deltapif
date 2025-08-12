@@ -6,6 +6,40 @@
 #'
 #' @keywords internal
 mu_obs_fun <- function(p, rr) {
+  if (any(is.na(p)) || any(is.na(rr))){
+    cli::cli_abort(
+      "One of the following parameters: `p`, `p_cft`, `rr` has missing values"
+    )
+  }
+
+  if (length(p) < 1 || length(rr) < 1){
+    cli::cli_abort(
+      "Not enough values passed to `p`, `p_cft` or `rr` (length < 0)!"
+    )
+  }
+
+  if (sum(p) > 1){
+    cli::cli_abort(
+      "Probabilities cannot sum > 1. They sum to {sum(p)}"
+    )
+  }
+
+  if (length(p) != length(rr)){
+    cli::cli_abort(
+      "p and r have different lengths"
+    )
+  }
+  if (any(p < 0) || any(p > 1)){
+    cli::cli_abort(
+      "Invalid probability has value {p[c(which(p < 0), which(p > 1))]} outside [0,1]."
+    )
+  }
+  if (any(rr <= 0)){
+    cli::cli_abort(
+      "Invalid relative risk has value {rr[which(rr <= 0)]} which is <= 0"
+    )
+  }
+
   as.numeric(1 + p %*% (rr - 1))
 }
 
@@ -45,6 +79,17 @@ pif_fun <- function(p, p_cft, rr) {
 #' @keywords internal
 pif_fun2 <- function(mu_obs, mu_cft) {
   # Calculate the potential impact fraction
+  if (is.na(mu_obs) || is.na(mu_cft)){
+    cli::cli_abort(
+      "Missing input for `mu_obs` or `mu_cft`"
+    )
+  }
+  # Calculate the potential impact fraction
+  if (length(mu_obs) != 1 || length(mu_cft) != 1){
+    cli::cli_abort(
+      "Variables `mu_obs` and `mu_cft` have to be of length 1."
+    )
+  }
   1 - (mu_cft / mu_obs)
 }
 
@@ -61,6 +106,18 @@ pif_fun2 <- function(mu_obs, mu_cft) {
 #'
 #' @keywords internal
 pif_atomic_ci <- function(link_vals, link_variance, conf_level, link_inv) {
+  if (is.na(link_vals) || is.na(link_variance)){
+    cli::cli_abort(
+      "Missing values in confidence interval"
+    )
+  }
+
+  if (length(link_vals) != 1 || length(link_variance) != 1){
+    cli::cli_abort(
+      "Variables `link_vals` and `link_variance` should be of length 1."
+    )
+  }
+
   b1 <- link_inv(link_vals - stats::qnorm((1 - conf_level)/2) * sqrt(link_variance))
   b2 <- link_inv(link_vals + stats::qnorm((1 - conf_level)/2) * sqrt(link_variance))
   sort(c(b1, b2))

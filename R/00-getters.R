@@ -62,7 +62,7 @@ get_link_deriv_vals <- function(self) {
 #' Get the derivative of the rr-link function evaluated at beta
 #' @rdname getters
 get_rr_link_deriv_vals <- function(self) {
-  deriv_vals <- rep(NA_real_, length(self@pif))
+  deriv_vals <- rep(NA_real_, length(self@beta))
   for (j in 1:length(deriv_vals)) {
     deriv_vals[j] <- self@rr_link_deriv(self@beta[j])
   }

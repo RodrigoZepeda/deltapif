@@ -6,12 +6,12 @@
 <!-- badges: start -->
 
 [![CRAN
-status](https://www.r-pkg.org/badges/version/pifes)](https://CRAN.R-project.org/package=deltapif)
+status](https://www.r-pkg.org/badges/version/deltapif)](https://CRAN.R-project.org/package=deltapif)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![R-CMD-check](https://github.com/RodrigoZepeda/pifes/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/RodrigoZepeda/deltapif/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/RodrigoZepeda/deltapif/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/RodrigoZepeda/deltapif/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
-coverage](https://codecov.io/gh/RodrigoZepeda/pifes/graph/badge.svg)](https://app.codecov.io/gh/RodrigoZepeda/pifes)
+coverage](https://codecov.io/gh/RodrigoZepeda/pifes/graph/badge.svg)](https://app.codecov.io/gh/RodrigoZepeda/deltapif)
 <!-- badges: end -->
 
 Calculate both **Potential Impact Fractions (PIF)** and **Population
