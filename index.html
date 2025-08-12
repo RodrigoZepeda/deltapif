@@ -6,7 +6,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Estimate Potential Impact and Population Attributable Fractions with Aggregated Data • deltapif</title>
-<script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- mathjax math --><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script><script>
+  window.MathJax = {
+    chtml: {
+      fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
+    }
+  };
+</script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -62,7 +68,7 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the development version of pifes like so:</p>
+<p>You can install the development version of deltapif with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"RodrigoZepeda/deltapif"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -76,7 +82,11 @@
 <li>
 <code>p</code>: the exposure prevalence (with variance <code>var_p</code>).</li>
 </ul>
-<p>and in the case of potential impact fractions we also require: - <code>p_cft</code>: the counterfactual prevalence.</p>
+<p>and in the case of potential impact fractions we also require:</p>
+<ul>
+<li>
+<code>p_cft</code>: the counterfactual prevalence.</li>
+</ul>
 <blockquote>
 <p><strong>Note</strong> An important hypothesis of the current method is that the relative risk estimate and the prevalence of exposure are both independent in the sense that they were estimated in different populations and studies.</p>
 </blockquote>
@@ -98,21 +108,21 @@
 <span><span class="co">#&gt; standard_deviation(paf %) = 0.000</span></span>
 <span><span class="co">#&gt; standard_deviation(link(paf)) = 0.000</span></span></code></pre></div>
 <p>Note that this follows the formula by <a href="https://doi.org/10.1016/j.gloepi.2021.100062" class="external-link">Levin</a>:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">PAF</mtext><mo>=</mo><mfrac><mrow><mi>p</mi><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">RR</mtext><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mn>1</mn><mo>+</mo><mi>p</mi><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">RR</mtext><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+<p><span class="math display">\[
 \textrm{PAF} = \frac{p \cdot (\text{RR} - 1)}{1 + p \cdot (\text{RR} - 1)}
-</annotation></semantics></math></p>
+\]</span></p>
 <p>Additional examples show how to calculate the PAF for multiple categories.</p>
 <div class="section level3">
 <h3 id="adding-uncertainty">Adding uncertainty<a class="anchor" aria-label="anchor" href="#adding-uncertainty"></a>
 </h3>
-<p>Note that there is no uncertainty in the fraction as we have not inputed the standard deviation of <code>beta</code>. To do so we notice that the variance for the relative risk is actually for the log of beta. We follow the formula from <a href="https://handbook-5-1.cochrane.org/chapter_7/7_7_3_2_obtaining_standard_deviations_from_standard_errors_and.htm" class="external-link">Cochrane’s handbook</a>:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">variance</mtext><mrow><mo>ln</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>β</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msub><mo>=</mo><mo minsize="3.0" maxsize="3.0" stretchy="false" form="prefix">(</mo><mfrac><mrow><mo>ln</mo><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">upper limit</mtext><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mo>ln</mo><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">lower limit</mtext><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mn>2</mn><mo>×</mo><mn>1.95</mn></mrow></mfrac><msup><mo minsize="3.0" maxsize="3.0" stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">
-\text{variance}_{\ln(\beta)} = \Bigg(\frac{\ln(\text{upper limit}) - \ln(\text{lower limit})}{2\times 1.95}\Bigg)^2
-</annotation></semantics></math></p>
+<p>Note that there is no uncertainty in the fraction as we have not inputed the standard deviation of the relative risk. To do so we notice that the variance for the relative risk is actually for the log of the relative risk. We follow the formula from <a href="https://handbook-5-1.cochrane.org/chapter_7/7_7_3_2_obtaining_standard_deviations_from_standard_errors_and.htm" class="external-link">Cochrane’s handbook</a>:</p>
+<p><span class="math display">\[
+\text{variance}_{\ln(\text{RR})} = \Bigg(\frac{\ln(\text{upper limit}) - \ln(\text{lower limit})}{2\times 1.95}\Bigg)^2
+\]</span></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">(</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">2.20</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.15</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="fl">1.95</span><span class="op">)</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span></span>
 <span><span class="co">#&gt; [1] 0.02766639</span></span></code></pre></div>
-<p>And because the uncertainty was specified for the log of the relative risk we use the natural logarithm <code>ln</code> of <code>1.59</code> as our beta where <code>log(1.59) = 0.4637</code> and specify that the way to get our relative risk is through the exponential function. Finally as no uncertainty was given for <code>p</code> we set <code>var_p = 0</code>.</p>
+<p>And because the uncertainty was specified for the log of the relative risk we use the natural logarithm <code>ln</code> of <code>1.59</code> as our <code>beta</code> where <code>log(1.59) = 0.4637</code> and specify that the way to get our relative risk is through the exponential (<code>exp</code>) function. Finally as no uncertainty was given for <code>p</code> we set <code>var_p = 0</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.085</span>, beta <span class="op">=</span> <span class="fl">0.4637</span>, var_beta <span class="op">=</span> <span class="fl">0.02766639</span>, var_p <span class="op">=</span> <span class="fl">0</span>, rr_link <span class="op">=</span> <span class="va">exp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -126,7 +136,7 @@
 <div class="section level2">
 <h2 id="calculating-a-potential-impact-fraction">Calculating a potential impact fraction<a class="anchor" aria-label="anchor" href="#calculating-a-potential-impact-fraction"></a>
 </h2>
-<p>The paper also considers the potential impact fraction of a 15% reduction of smoking this can be achieved with the <code>pif</code> function by specifying the counterfactual distribution (in this case the 15% reduction results in <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.085</mn><mo>×</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mn>0.15</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>0.07225</mn></mrow><annotation encoding="application/x-tex">0.085 \times (1 - 0.15) = 0.07225</annotation></semantics></math>)</p>
+<p>The paper also considers the potential impact fraction of a 15% reduction of smoking this can be achieved with the <code>pif</code> function by specifying the counterfactual distribution (in this case the 15% reduction results in <span class="math inline">\(0.085 \times (1 - 0.15) = 0.07225\)</span>)</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/pifpaf.html">pif</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.085</span>, p_cft <span class="op">=</span> <span class="fl">0.07225</span>, beta <span class="op">=</span> <span class="fl">0.4637</span>, var_beta <span class="op">=</span> <span class="fl">0.02766639</span>, var_p <span class="op">=</span> <span class="fl">0</span>, rr_link <span class="op">=</span> <span class="va">exp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
