@@ -20,7 +20,7 @@ intervals using the delta method.
 
 ## Installation
 
-You can install the development version of pifes like so:
+You can install the development version of deltapif with:
 
 ``` r
 remotes::install_github("RodrigoZepeda/deltapif")
@@ -35,8 +35,9 @@ required:
   relative risk (with variance `var_beta`).
 - `p`: the exposure prevalence (with variance `var_p`).
 
-and in the case of potential impact fractions we also require: -
-`p_cft`: the counterfactual prevalence.
+and in the case of potential impact fractions we also require:
+
+- `p_cft`: the counterfactual prevalence.
 
 > **Note** An important hypothesis of the current method is that the
 > relative risk estimate and the prevalence of exposure are both
@@ -77,13 +78,13 @@ categories.
 ### Adding uncertainty
 
 Note that there is no uncertainty in the fraction as we have not inputed
-the standard deviation of `beta`. To do so we notice that the variance
-for the relative risk is actually for the log of beta. We follow the
-formula from [Cochrane’s
+the standard deviation of the relative risk. To do so we notice that the
+variance for the relative risk is actually for the log of the relative
+risk. We follow the formula from [Cochrane’s
 handbook](https://handbook-5-1.cochrane.org/chapter_7/7_7_3_2_obtaining_standard_deviations_from_standard_errors_and.htm):
 
 $$
-\text{variance}_{\ln(\beta)} = \Bigg(\frac{\ln(\text{upper limit}) - \ln(\text{lower limit})}{2\times 1.95}\Bigg)^2
+\text{variance}_{\ln(\text{RR})} = \Bigg(\frac{\ln(\text{upper limit}) - \ln(\text{lower limit})}{2\times 1.95}\Bigg)^2
 $$
 
 ``` r
@@ -92,10 +93,10 @@ $$
 ```
 
 And because the uncertainty was specified for the log of the relative
-risk we use the natural logarithm `ln` of `1.59` as our beta where
+risk we use the natural logarithm `ln` of `1.59` as our `beta` where
 `log(1.59) = 0.4637` and specify that the way to get our relative risk
-is through the exponential function. Finally as no uncertainty was given
-for `p` we set `var_p = 0`.
+is through the exponential (`exp`) function. Finally as no uncertainty
+was given for `p` we set `var_p = 0`.
 
 ``` r
 paf(p = 0.085, beta = 0.4637, var_beta = 0.02766639, var_p = 0, rr_link = exp)

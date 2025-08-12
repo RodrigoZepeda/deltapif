@@ -83,7 +83,7 @@ Among hispanic individuals 6.9% (`p = 0.069`) smoke. Hence their paf is:
 
 ```{r}
 paf_hispanic <- paf(p = 0.069, beta = 0.4637340, var_beta = 0.0273858, 
-                    rr_link = exp, link = logit, link_inv = inv_logit)
+                    rr_link = exp)
 ```
 
 Note that the model throws a warning for us not specifying the variance of `var_p`. We will 
