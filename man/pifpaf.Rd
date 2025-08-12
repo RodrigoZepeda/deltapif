@@ -115,13 +115,64 @@ when there is only \code{1} exposure category:
 
 \section{Link functions for the PIF}{
 
+
+By default the \code{pif} and \code{paf} calculations use the \code{log-complement} link
+which guarantees the impact fractions' intervals have valid values (between -oo and 1).
+Depending on the application the following link functions are also implemented:
+
+\describe{
+\item{log-complement}{To achieve fractions between (-Inf, 1). This is the function \code{f(x) = ln(1 - x)} with inverse \code{finv(x) = 1 - exp(x)}}
+\item{logit}{To achieve strictly positive fractions in (0,1). This is the function \code{f(x) = ln(x / (1 - x))} with inverse \code{finv(x) = 1 / (1 + exp(-x))}}
+\item{identity}{An approximation for not-so-extreme fractions. This is the function \code{f(x) = x}.with inverse \code{finv(x) = x}}
+\item{hawkins}{Hawkins' fraction for controlling variance. This is the function \code{f(x) = ln(x + sqrt(x^2 + 1))} with inverse \code{finv(x) = 0.5 * exp(-x) * (exp(2 * x) - 1)}}
+}
+
+In general, \code{logit} should be preferred if it is known and certain that the fractions
+can only be positive (i.e. when all relative risks (including CIs) are > 1 and
+prevalence > 0 and there is an epidemiological / biological explanation).
+
+Mathematically the variance that is calculated is
+\deqn{
+\sigma_f^2 = \text{Var}\Big[ f(\textrm{PIF}) \Big]
+}
+and the intervals are constructed as:
+\deqn{
+\text{CI} = f^{-1}\Big(  f(\textrm{PIF})  \pm Z_{\alpha/2} \cdot \sigma_f \Big)
+}
+
+Custom link functions can be implemented as long as they are invertible
+in the range of interest by providing the function \code{link},
+its inverse \code{link_inv} and its derivative \code{link_deriv}. If no derivative
+is provided the package does an attempt to estimate it symbolically
+using \code{\link[Deriv:Deriv]{Deriv::Deriv()}} however there is no guarantee that this
+will work non-standard functions (i.e. not logarithm / trigonometric /
+exponential)
 }
 
 \section{Link functions for beta}{
 
+
+By default the \code{pif} and \code{paf} use the \code{identity} link which means that
+the values for \code{beta} are the relative risks directly and the
+variance \code{var_beta} corresponds to the relative risk's variance. Depending
+on the relative risk's source the following options are available:
+
+\describe{
+\item{identity}{An approximation for not-so-extreme fractions. This is the function \code{f(beta) = beta}.with inverse \code{finv(rr) = rr = beta}}
+\item{exponential}{The exponential function \code{f(beta) = exp(beta)} with inverse \code{finv(rr) = log(rr) = beta}}
+}
+
+As in the previous section, custom link functions can be implemented
+as long as they are invertible in the range of interest by providing the
+function \code{rr_link} and its derivative \code{rr_link_deriv}. If no derivative
+is provided the package does an attempt to estimate it symbolically
+using \code{\link[Deriv:Deriv]{Deriv::Deriv()}} however there is no guarantee that this
+will work non-standard functions (i.e. not logarithm / trigonometric /
+exponential)
 }
 
 \section{Population Attributable Fraction}{
+
 
 The population attributable fraction corresponds to the potential impact
 fraction at the theoretical minimum risk level. It is assumed that the

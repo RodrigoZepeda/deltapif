@@ -44,9 +44,60 @@
 #'
 #' @section Link functions for the PIF:
 #'
+#' By default the `pif` and `paf` calculations use the `log-complement` link
+#' which guarantees the impact fractions' intervals have valid values (between -oo and 1).
+#' Depending on the application the following link functions are also implemented:
+#'
+#' \describe{
+#'   \item{log-complement}{To achieve fractions between (-Inf, 1). This is the function `f(x) = ln(1 - x)` with inverse `finv(x) = 1 - exp(x)`}
+#'   \item{logit}{To achieve strictly positive fractions in (0,1). This is the function `f(x) = ln(x / (1 - x))` with inverse `finv(x) = 1 / (1 + exp(-x))`}
+#'   \item{identity}{An approximation for not-so-extreme fractions. This is the function `f(x) = x`.with inverse `finv(x) = x`}
+#'   \item{hawkins}{Hawkins' fraction for controlling variance. This is the function `f(x) = ln(x + sqrt(x^2 + 1))` with inverse `finv(x) = 0.5 * exp(-x) * (exp(2 * x) - 1)`}
+#' }
+#'
+#' In general, `logit` should be preferred if it is known and certain that the fractions
+#' can only be positive (i.e. when all relative risks (including CIs) are > 1 and
+#' prevalence > 0 and there is an epidemiological / biological explanation).
+#'
+#' Mathematically the variance that is calculated is
+#' \deqn{
+#' \sigma_f^2 = \text{Var}\Big[ f(\textrm{PIF}) \Big]
+#' }
+#' and the intervals are constructed as:
+#' \deqn{
+#' \text{CI} = f^{-1}\Big(  f(\textrm{PIF})  \pm Z_{\alpha/2} \cdot \sigma_f \Big)
+#' }
+#'
+#' Custom link functions can be implemented as long as they are invertible
+#' in the range of interest by providing the function `link`,
+#' its inverse `link_inv` and its derivative `link_deriv`. If no derivative
+#' is provided the package does an attempt to estimate it symbolically
+#' using [Deriv::Deriv()] however there is no guarantee that this
+#' will work non-standard functions (i.e. not logarithm / trigonometric /
+#' exponential)
+#'
 #' @section Link functions for beta:
 #'
+#' By default the `pif` and `paf` use the `identity` link which means that
+#' the values for `beta` are the relative risks directly and the
+#' variance `var_beta` corresponds to the relative risk's variance. Depending
+#' on the relative risk's source the following options are available:
+#'
+#' \describe{
+#'   \item{identity}{An approximation for not-so-extreme fractions. This is the function `f(beta) = beta`.with inverse `finv(rr) = rr = beta`}
+#'   \item{exponential}{The exponential function `f(beta) = exp(beta)` with inverse `finv(rr) = log(rr) = beta`}
+#' }
+#'
+#' As in the previous section, custom link functions can be implemented
+#' as long as they are invertible in the range of interest by providing the
+#' function `rr_link` and its derivative `rr_link_deriv`. If no derivative
+#' is provided the package does an attempt to estimate it symbolically
+#' using [Deriv::Deriv()] however there is no guarantee that this
+#' will work non-standard functions (i.e. not logarithm / trigonometric /
+#' exponential)
+#'
 #' @section Population Attributable Fraction:
+#'
 #' The population attributable fraction corresponds to the potential impact
 #' fraction at the theoretical minimum risk level. It is assumed that the
 #' theoretical minimum risk level is a relative risk of 1. If no
