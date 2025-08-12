@@ -35,18 +35,27 @@ NULL
 #' @rdname linkfuns
 #' @export
 logit <- function(pif) {
+  if (pif > 1 || pif < 0){
+    cli::cli_abort("Invalid value for pif = {round(pif,2)}. PIF must be in (0,1)")
+  }
   log(pif / (1 - pif))
 }
 
 #' @rdname linkfuns
 #' @export
 log_complement <- function(pif) {
+  if (pif > 1){
+    cli::cli_abort("Invalid value for pif = {round(pif,2)} > 1.")
+  }
   log(1 - pif)
 }
 
 #' @rdname linkfuns
 #' @export
 hawkins <- function(pif) {
+  if (pif > 1){
+    cli::cli_alert_warning("Invalid value for pif = {round(pif,2)} > 1.")
+  }
   log(pif + sqrt(pif^2 + 1))
 }
 
@@ -141,18 +150,27 @@ NULL
 #' @rdname deriv_linkfuns
 #' @export
 deriv_logit <- function(pif) {
+  if (pif > 1 || pif < 0){
+    cli::cli_abort("Invalid value for pif = {round(pif,2)}. PIF must be in (0,1)")
+  }
   1 / (pif * (1 - pif))
 }
 
 #' @rdname deriv_linkfuns
 #' @export
 deriv_log_complement <- function(pif) {
+  if (pif > 1){
+    cli::cli_abort("Invalid value for pif = {round(pif,2)} > 1.")
+  }
   1 / (pif - 1)
 }
 
 #' @rdname deriv_linkfuns
 #' @export
 deriv_hawkins <- function(pif) {
+  if (pif > 1){
+    cli::cli_alert_warning("Invalid value for pif = {round(pif,2)} > 1.")
+  }
   1 / (sqrt(pif^2 + 1))
 }
 
