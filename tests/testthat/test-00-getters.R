@@ -161,9 +161,14 @@ test_that("Composite mock_pif getters work with S7 objects", {
 })
 
 test_that("Covariance getters work with S7 objects", {
-  mock_pif <- pif_total(paf(0.1, 0.2, var_p = 0.01, var_beta = 0),
-                        paf(0.1, 0.2, var_p = 0.01, var_beta = 0),
-                        weights = c(0.1, 0.9))
+  mock_pif <- pif_total(
+    paf(0.1, 0.2, var_p = 0.01, var_beta = 0, link = logit,
+        link_deriv = deriv_logit, link_inv = inv_logit,
+        rr_link = identity, rr_link_deriv = function(x) {1}), #Github actions crashes if not specifying compeltely this
+    paf(0.1, 0.2, var_p = 0.01, var_beta = 0, link = logit,
+        link_deriv = deriv_logit, link_inv = inv_logit,
+        rr_link = identity, rr_link_deriv = function(x) {1})
+  )
 
   # Test only work with total pif not with mock
   expect_equal(get_total_coefs(mock_pif),

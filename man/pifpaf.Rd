@@ -95,6 +95,7 @@ package should be preferred).
 
 This function computed the potential impact fraction and its confidence
 intervals using Walter's formula:
+
 \deqn{
  \dfrac{
    \sum\limits_{i=1}^N p_i \text{RR}_i - \sum\limits_{i=1}^N p_i^{\text{cft}} \text{RR}_i
@@ -102,8 +103,10 @@ intervals using Walter's formula:
    \sum\limits_{i=1}^N p_i \text{RR}_i
   }
 }
+
 in the case of \code{N} exposure categories which is equivalent to Levine's formula
 when there is only \code{1} exposure category:
+
 \deqn{
  \dfrac{
    p (\text{RR} - 1) - p^{\text{cft}} (\text{RR} - 1)
@@ -132,10 +135,12 @@ can only be positive (i.e. when all relative risks (including CIs) are > 1 and
 prevalence > 0 and there is an epidemiological / biological explanation).
 
 Mathematically the variance that is calculated is
+
 \deqn{
 \sigma_f^2 = \text{Var}\Big[ f(\textrm{PIF}) \Big]
 }
 and the intervals are constructed as:
+
 \deqn{
 \text{CI} = f^{-1}\Big(  f(\textrm{PIF})  \pm Z_{\alpha/2} \cdot \sigma_f \Big)
 }

@@ -23,6 +23,7 @@ for the potential impact fraction.
 }
 \details{
 The functions programmed are as follows
+
 \deqn{
  \text{deriv\_logit}(\text{PIF}) = \dfrac{
    1
@@ -30,6 +31,7 @@ The functions programmed are as follows
    \text{PIF} \cdot (1 - \text{PIF})
   },
 }
+
 \deqn{
  \text{deriv\_log-complement}(\text{PIF}) = \dfrac{
    1
@@ -37,7 +39,9 @@ The functions programmed are as follows
    \text{PIF} - 1
   },
 }
+
 and
+
 \deqn{
  \text{deriv\_Hawkins}(\text{PIF}) = \dfrac{
    1

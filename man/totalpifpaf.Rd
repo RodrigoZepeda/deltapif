@@ -75,9 +75,11 @@ subpopulations each of them with a different potential impact fraction
 (or population attributable fraction) we can estimate
 the total population attributable fraction or potential impact
 fraction of the whole population as:
+
 \deqn{
  \text{PIF}_{\text{Total}} = \sum\limits_{i = 1}^{N} \pi_i \cdot \text{PIF}_i
 }
+
 where each \eqn{\text{PIF}_i} corresponds to the potential impact
 fraction of the i-th subpopulation and \eqn{\pi_i} correspond to
 the proportion of the total population occupied by \eqn{\text{PIF}_i}.
@@ -90,9 +92,11 @@ The weights are such that \eqn{\sum_{i=1}^{N} \pi_i = 1}.
 If a population is exposed to \eqn{K} different independent risk factors
 then the ensemble impact fraction of the combination of those factors
 can be written as:
+
 \deqn{
  \text{PIF}_{\text{Ensemble}} = 1 - \prod\limits_{\ell = 1}^{K} \Big(1 - \cdot \text{PIF}_{\ell}\Big)
 }
+
 where each \eqn{\text{PIF}_{\ell}} corresponds to the potential impact
 fraction of the \eqn{\ell}-th risk factor for the same population.
 }

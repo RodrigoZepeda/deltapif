@@ -23,6 +23,7 @@ the  potential impact fraction.
 }
 \details{
 The functions programmed are as follows
+
 \deqn{
  \text{logit}(\text{PIF}) = \ln\Bigg(\dfrac{
    \text{PIF}
@@ -30,10 +31,13 @@ The functions programmed are as follows
    1 - \text{PIF}
   }\Bigg),
 }
+
 \deqn{
  \text{log-complement}(\text{PIF}) = \ln\big(1 - \text{PIF}\big),
 }
+
 and
+
 \deqn{
  \text{Hawkins}(\text{PIF}) = \ln\Big(\text{PIF} + \sqrt{\text{PIF}^2 + 1}\Big).
 }

@@ -37,13 +37,16 @@
 #' @section Formulas:
 #' The following represents the covariance components.
 #' For `p`:
+#'
 #' \deqn{
 #' \text{CC}_{p} = \dfrac{
 #'  \partial \textrm{PIF}_i}{\partial p_i}^{\top}
 #'  \textrm{covariance}\big( \hat{p}_i, \hat{p}_j\big)
 #'  \dfrac{\partial \textrm{PIF}_j}{\partial p_j}
 #' }
+#'
 #' and for `beta`:
+#'
 #' \deqn{
 #' \text{CC}_{\theta} =  \dfrac{
 #' \partial \textrm{PIF}_i}{\partial \theta_i}^{\top}

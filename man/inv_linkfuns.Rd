@@ -23,6 +23,7 @@ for the potential impact fraction.
 }
 \details{
 The functions programmed are as follows
+
 \deqn{
  \text{inv\_logit}(\text{PIF}) = \dfrac{
    1
@@ -30,10 +31,13 @@ The functions programmed are as follows
    1 + \exp(-x)
   },
 }
+
 \deqn{
  \text{inv\_log-complement}(\text{PIF}) = 1 - \exp(x),
 }
+
 and
+
 \deqn{
  \text{inv\_Hawkins}(\text{PIF}) =
   \frac{1}{2} \exp(-x) \cdot \big(\exp(x) - 1\big) \cdot \big(\exp(x) + 1\big)

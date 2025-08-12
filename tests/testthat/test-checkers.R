@@ -151,6 +151,7 @@ test_that("check_rr_links validates function properties", {
   #This one depends oncheckers but should pass:
   expect_silent(
     paf(p = 0.069, beta = 0.4637340, var_beta = 0.0273858,
-        rr_link = exp, link = logit, link_inv = inv_logit, var_p = 0)
+        rr_link = exp, rr_link_deriv = exp,
+        link = logit, link_inv = inv_logit, link_deriv = deriv_logit, var_p = 0)
   )
 })
