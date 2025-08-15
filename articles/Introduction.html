@@ -155,7 +155,14 @@ their paf is:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paf_hispanic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.069</span>, beta <span class="op">=</span> <span class="fl">0.4637340</span>, var_beta <span class="op">=</span> <span class="fl">0.0273858</span>, </span>
 <span>                    rr_link <span class="op">=</span> <span class="va">exp</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Assuming parameters `p` have no variance Use `var_p` to input their link_variances and/or covariance</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Assuming parameters `p` have no variance Use `var_p` to input their link_variances and/or covariance</span></span>
+<span><span class="va">paf_hispanic</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction</span> ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; PAF = 3.912% [<span style="font-style: italic;">95% CI</span>: 0.569% to 7.142%]</span></span>
+<span><span class="co">#&gt; standard_deviation(paf %) = 1.676</span></span>
+<span><span class="co">#&gt; standard_deviation(link(paf)) = 0.017</span></span></code></pre></div>
 <p>Note that the model throws a warning for us not specifying the
 variance of <code>var_p</code>. We will assume that the value was
 perfectly estimated and it has no associated variance thus setting
@@ -198,6 +205,9 @@ non-hispanic whites smoke:</p>
 <span><span class="co">#&gt; [2,] 0.0003363365 0.0002809952 0.0002041506 0.0004515599</span></span>
 <span><span class="co">#&gt; [3,] 0.0002443575 0.0002041506 0.0001483209 0.0003280704</span></span>
 <span><span class="co">#&gt; [4,] 0.0005404935 0.0004515599 0.0003280704 0.0007256577</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="combining-subpopulations-into-a-total">Combining subpopulations into a total<a class="anchor" aria-label="anchor" href="#combining-subpopulations-into-a-total"></a>
+</h3>
 <p>We can calculate the total population attributable fraction by
 combining the fractions of the subpopulations weighted by the proportion
 of the population. According to Wikipedia the distribution in 2020 was
@@ -220,6 +230,7 @@ as follows:</p>
 <p>where we set <code>sigma_weights = 0</code> as no covariance matrix
 was known for the race distribution data (it does exist its just not on
 Wikipedia).</p>
+</div>
 <div class="section level3">
 <h3 id="why-are-we-using-logrr">Why are we using <code>logrr</code>?<a class="anchor" aria-label="anchor" href="#why-are-we-using-logrr"></a>
 </h3>
