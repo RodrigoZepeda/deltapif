@@ -1,80 +1,20 @@
-# Mock S7 class definitions for testing
-mock_pif_atomic_class <- S7::new_class(
-  "deltapif::pif_atomic_class",
-  properties = list(
-    p = S7::class_numeric,
-    p_cft = S7::class_numeric,
-    beta = S7::class_numeric,
-    rr = S7::class_numeric,
-    rr_link = S7::class_function,
-    rr_link_deriv = S7::class_function,
-    mu_obs = S7::class_numeric,
-    mu_cft = S7::class_numeric,
-    pif = S7::class_numeric,
-    link = S7::class_function,
-    link_deriv = S7::class_function,
-    link_inv = S7::class_function,
-    variance = S7::class_numeric,
-    var_p = S7::class_numeric,
-    var_beta = S7::class_numeric,
-    upper_bound_p = S7::class_numeric,
-    upper_bound_beta = S7::class_numeric,
-    conf_level = S7::class_numeric,
-    link_vals = S7::class_numeric,
-    link_deriv_vals = S7::class_numeric,
-    rr_link_deriv_vals = S7::class_numeric,
-    link_variance = S7::class_numeric
-  )
-)
-
-mock_pif_class <- S7::new_class(
-  "deltapif::pif_class",
-  properties = list(
-    pif_list = S7::class_list,
-    weights = S7::class_numeric,
-    sigma_weights = S7::class_numeric,
-    coefs = S7::class_numeric,
-    covariance = S7::class_numeric
-  )
-)
-
 # Helper to create mock pif_atomic_class object
-create_mock_pif_atomic <- function() {
-  mock_pif_atomic_class(
+create_mock_pif_atomic <- function(type = "PIF") {
+  pif_atomic_class(
     p = c(0.3, 0.7),
     p_cft = c(0.2, 0.5),
     beta = c(0.5, 1.0),
-    rr = c(1.5, 2.0),
     rr_link = function(x) exp(x),
     rr_link_deriv = function(x) exp(x),
-    mu_obs = mu_obs_fun(c(0.3, 0.7), c(1.5, 2.0)),
-    mu_cft = mu_cft_fun(c(0.2, 0.5), c(1.5, 2.0)),
-    pif = pif_fun2(
-      mu_obs_fun(c(0.3, 0.7), c(1.5, 2.0)),
-      mu_cft_fun(c(0.2, 0.5), c(1.5, 2.0))
-    ),
     link = logit,
     link_deriv = deriv_logit,
     link_inv = inv_logit,
-    variance = 0.01,
     var_p = matrix(c(0.01, 0, 0, 0.01), nrow = 2),
     var_beta = matrix(c(0.02, 0, 0, 0.02), nrow = 2),
-    upper_bound_p = 1,
-    upper_bound_beta = Inf,
+    upper_bound_p = FALSE,
+    upper_bound_beta = FALSE,
     conf_level = 0.95,
-    link_vals = logit(pif_fun2(
-      mu_obs_fun(c(0.3, 0.7), c(1.5, 2.0)),
-      mu_cft_fun(c(0.2, 0.5), c(1.5, 2.0))
-    )),
-    link_deriv_vals = deriv_logit(pif_fun2(
-      mu_obs_fun(c(0.3, 0.7), c(1.5, 2.0)),
-      mu_cft_fun(c(0.2, 0.5), c(1.5, 2.0))
-    )),
-    rr_link_deriv_vals = exp(c(0.5, 1.0)),
-    link_variance = (deriv_logit(pif_fun2(
-      mu_obs_fun(c(0.3, 0.7), c(1.5, 2.0)),
-      mu_cft_fun(c(0.2, 0.5), c(1.5, 2.0))
-    )))^2 * 0.01
+    type = type
   )
 }
 
@@ -82,12 +22,13 @@ create_mock_pif_atomic <- function() {
 create_mock_pif <- function() {
   pif1 <- create_mock_pif_atomic()
   pif2 <- create_mock_pif_atomic()
-  mock_pif_class(
+  pif_total_class(
     pif_list = list(pif1, pif2),
     weights = c(0.5, 0.5),
     sigma_weights = matrix(c(0.01, 0, 0, 0.01), nrow = 2),
-    coefs = c(pif1@pif, pif2@pif),
-    covariance = matrix(c(0.01, 0.005, 0.005, 0.01), nrow = 2)
+    link = logit,
+    link_deriv = deriv_logit,
+    link_inv = inv_logit,
   )
 }
 
@@ -189,42 +130,43 @@ test_that("Covariance getters work with S7 objects", {
   expect_equal(dim(ens_cov), c(2, 2))
 })
 
-test_that("Edge cases are handled properly", {
-  # Test with empty mock_pif object
-  empty_pif <- mock_pif_atomic_class(
-    p = numeric(0),
-    p_cft = numeric(0),
-    beta = numeric(0),
-    rr = numeric(0),
-    rr_link = function(x) numeric(0),
-    rr_link_deriv = function(x) numeric(0),
-    mu_obs = NA_real_,
-    mu_cft = NA_real_,
-    pif = NA_real_,
-    link = identity,
-    link_deriv = function(x) NA_real_,
-    link_inv = identity,
-    variance = NA_real_,
-    var_p = matrix(numeric(0), nrow = 0),
-    var_beta = matrix(numeric(0), nrow = 0),
-    upper_bound_p = NA_real_,
-    upper_bound_beta = NA_real_,
-    conf_level = 0.95,
-    link_vals = NA_real_,
-    link_deriv_vals = NA_real_,
-    rr_link_deriv_vals = numeric(0),
-    link_variance = NA_real_
-  )
-
-  expect_equal(get_rr(empty_pif), numeric(0))
-  expect_error(get_mu_obs(empty_pif))
-  expect_error(get_mu_cft(empty_pif))
-  expect_error(get_pif(empty_pif))
-  expect_error(get_variance_atomic(empty_pif))
-  expect_error(get_ci(empty_pif))
-})
 
 test_that("Input validation works with S7 objects", {
   expect_error(get_rr("not a mock_pif object"))
   expect_error(get_pif(list()))
+})
+
+
+test_that("Types for totals", {
+  pif1 <- create_mock_pif_atomic("PIF")
+  pif2 <- create_mock_pif_atomic("PIF")
+  paf1 <- create_mock_pif_atomic("PAF")
+  paf2 <- create_mock_pif_atomic("PAF")
+
+  tp <- pif_total_class(list(pif1, pif2), link = identity,
+                        link_inv = identity, link_deriv = function(x) rep(1, length(x)),
+                        weights = c(0.5, 0.5), sigma_weights = matrix(0, 2, 2))
+
+  ep <- pif_ensemble_class(list(pif1, pif2))
+
+  expect_equal(get_total_type(tp), "PIF")
+  expect_equal(get_ensemble_type(ep), "PIF")
+
+  tp <- pif_total_class(list(paf1, pif2), link = identity,
+                        link_inv = identity, link_deriv = function(x) rep(1, length(x)),
+                        weights = c(0.5, 0.5), sigma_weights = matrix(0, 2, 2))
+
+  ep <- pif_ensemble_class(list(pif1, paf2))
+
+  expect_equal(get_total_type(tp), "PIF")
+  expect_equal(get_ensemble_type(ep), "PIF")
+
+  tp <- pif_total_class(list(paf1, paf2), link = identity,
+                        link_inv = identity, link_deriv = function(x) rep(1, length(x)),
+                        weights = c(0.5, 0.5), sigma_weights = matrix(0, 2, 2))
+
+  ep <- pif_ensemble_class(list(paf1, paf2))
+
+  expect_equal(get_total_type(tp), "PAF")
+  expect_equal(get_ensemble_type(ep), "PAF")
 })

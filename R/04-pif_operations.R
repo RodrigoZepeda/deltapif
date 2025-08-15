@@ -148,8 +148,15 @@ pif_total <- function(pif1, ..., weights, sigma_weights = 0, conf_level = 0.95,
     )
   }
 
+  if (!is.matrix(sigma_weights) & !is.vector(sigma_weights) & !is.numeric(sigma_weights)){
+    cli::cli_abort(
+      "`sigma_weights` should be a number, vector or matrix."
+    )
+  }
+
+
   #Check sigma weights
-  if (length(sigma_weights) == 1){
+  if (length(sigma_weights) == 1 && is.numeric(sigma_weights)){
     sigma_weights <- matrix(sigma_weights, nrow = npifs, ncol = npifs)
   } else if (is.vector(sigma_weights)) {
     sigma_weights <- sigma_weights %*% t(sigma_weights)
@@ -162,7 +169,9 @@ pif_total <- function(pif1, ..., weights, sigma_weights = 0, conf_level = 0.95,
         )
       )
     }
-  } else if (is.matrix(sigma_weights)){
+  }
+
+  if (is.matrix(sigma_weights)){
 
     if (ncol(sigma_weights) != npifs){
       cli::cli_abort(
@@ -176,11 +185,8 @@ pif_total <- function(pif1, ..., weights, sigma_weights = 0, conf_level = 0.95,
     if (!isSymmetric(sigma_weights, trans = "T")){
       cli::cli_abort("Matrix `sigma_weights` is not symmetric.")
     }
-  } else {
-    cli::cli_abort(
-      "`sigma_weights` should be a number, vector or matrix."
-    )
   }
+
 
   pif <- pif_total_class(pif_list = pif_list,
                   weights = weights,

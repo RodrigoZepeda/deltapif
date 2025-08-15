@@ -100,6 +100,9 @@ test_that("Input validation works", {
     # Test for invalid probabilities
     expect_error(deriv_pif_p(c(-0.1, 0.2), p_cft, rr))
     expect_error(deriv_pif_p(c(0.1, 1.2), p_cft, rr))
+    expect_error(deriv_pif_p(p, c(-0.1, 0.2), rr))
+    expect_error(deriv_pif_beta(c(-0.1, 0.2), p_cft, rr, rr_deriv))
+    expect_error(deriv_pif_beta(p, c(-0.1, 0.2), rr, rr_deriv))
     expect_error(deriv_pif_beta(p, c(0.5, 0.6), rr, rr_deriv)) # sums > 1
 
     # Test for invalid relative risks
