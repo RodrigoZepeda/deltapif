@@ -191,7 +191,7 @@ pif <- function(p,
   #Check that type is not PAF if p_cft has values
   if (type == "PAF" & any(p_cft > 0)){
     if (!quiet){
-      cli::cli_alert_danger(
+      cli::cli_warn(
         paste0(
           "type `PAF` was selected but the counterfactual prevalence `p_cft` ",
           "has non-zero values. Are you sure you are not calculating a PIF ",
@@ -314,7 +314,7 @@ pif <- function(p,
   )
 
   if (is.character(link_name) && link_name == "logit" && coef(pif) <= 0){
-    cli::cli_alert_danger(
+    cli::cli_warn(
       paste0(
         "Value for {fraction_type(pif)} = {round(coef(pif),2)} <= 0. ",
         "Change link to a different value as `logit` is only ",

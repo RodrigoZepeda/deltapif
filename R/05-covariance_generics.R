@@ -380,7 +380,7 @@ S7::method(covariance, S7::new_union(pif_total_class, pif_atomic_class)) <- func
 variance <- S7::new_generic("variance", "x")
 S7::method(variance, S7::new_union(pif_total_class, pif_atomic_class)) <- function(x, ...) {
   if (length(list(...)) > 0) {
-    cli::cli_alert_danger(
+    cli::cli_warn(
       "Currently this function does not support more than 1 argument. Ignoring the rest."
     )
   }

@@ -197,7 +197,7 @@ pif_total <- function(pif1, ..., weights, sigma_weights = 0, conf_level = 0.95,
                   link_deriv = link_deriv)
 
   if (is.character(link_name) && link_name == "logit" && coef(pif) <= 0){
-    cli::cli_alert_danger(
+    cli::cli_warn(
       paste0(
         "Value for {fraction_type(pif)} = {round(coef(pif),2)} <= 0. ",
         "Change link to a different value as `logit` is only ",
