@@ -90,12 +90,7 @@ pif_fun2 <- function(mu_obs, mu_cft) {
       "Missing input for `mu_obs` or `mu_cft`"
     )
   }
-  # Calculate the potential impact fraction
-  if (length(mu_obs) != 1 || length(mu_cft) != 1){
-    cli::cli_abort(
-      "Variables `mu_obs` and `mu_cft` have to be of length 1."
-    )
-  }
+
   1 - (mu_cft / mu_obs)
 }
 
@@ -115,7 +110,7 @@ pif_atomic_ci <- function(link_vals, link_variance, conf_level, link_inv) {
 
   if (length(link_vals) != 1 || length(link_variance) != 1){
     cli::cli_abort(
-      "Invalid length != 1 for `link_vals` or `link_variance`"
+      "Variables `link_vals` and `link_variance` should be of length 1."
     )
   }
 
@@ -128,12 +123,6 @@ pif_atomic_ci <- function(link_vals, link_variance, conf_level, link_inv) {
   if (conf_level > 1 || conf_level < 0){
     cli::cli_abort(
       "Invalid confidence level not in (0,1)"
-    )
-  }
-
-  if (length(link_vals) != 1 || length(link_variance) != 1){
-    cli::cli_abort(
-      "Variables `link_vals` and `link_variance` should be of length 1."
     )
   }
 
@@ -158,14 +147,14 @@ pif_class_apply_1st <- function(x, fun, property){
     )
   }
 
-  if (S7::S7_inherits(x, pif_total_class)){
-    return(
-      pif_class_apply_1st(x@pif_list[[1]], fun, property)
-    )
-  }
+  # if (S7::S7_inherits(x, pif_total_class)){
+  #   return(
+  #     pif_class_apply_1st(x@pif_list[[1]], fun, property)
+  #   )
+  # }
 
   cli::cli_abort(
-    "Invalid class for `x` should be a `pif_class` or `pif_class_apply_1st`"
+    "Invalid class for `x` should be a `pif_class`"
   )
 }
 

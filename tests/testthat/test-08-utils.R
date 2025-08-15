@@ -104,8 +104,8 @@ test_that("mu_obs_fun calculates correctly and validates inputs", {
    expect_error(pif_atomic_ci(0.2, NA, 0.95, identity), "Missing values")
 
    # Length > 1
-   expect_error(pif_atomic_ci(c(0.2, 0.3), 0.01, 0.95, identity), "Invalid length")
-   expect_error(pif_atomic_ci(0.2, c(0.01, 0.02), 0.95, identity), "Invalid length")
+   expect_error(pif_atomic_ci(c(0.2, 0.3), 0.01, 0.95, identity), "should be of length 1")
+   expect_error(pif_atomic_ci(0.2, c(0.01, 0.02), 0.95, identity), "should be of length 1")
 
    # Invalid confidence level
    expect_error(pif_atomic_ci(0.2, 0.01, 1.1, identity), "Invalid confidence level")
@@ -141,6 +141,8 @@ test_that("mu_obs_fun calculates correctly and validates inputs", {
      pif_class_apply_1st(list(), identity, "pif"),
      "Invalid class"
    )
+
+
  })
 
  test_that("link_deriv_vals works correctly", {

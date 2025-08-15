@@ -45,8 +45,8 @@ pif_class_atomic_variance <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
   if (length(pif1@p) != length(pif2@p)) {
     cli::cli_abort(
       paste0(
-        "pif1 has {.code length(pif1@p) = {length(pif1@p)}} exposure",
-        "categories and pif2 has {.code length(pif2@p) = {length(pif2@p)}}.",
+        "pif1 has {.code length(pif1@p) = {length(pif1@p)}} exposure ",
+        "categories and pif2 has {.code length(pif2@p) = {length(pif2@p)}}. ",
         "They don't seem to represent the same population. They need to ",
         "be of the same length. Are you missing some categories with 0% ",
         "prevalence perhaps?"
@@ -58,8 +58,8 @@ pif_class_atomic_variance <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
   if (length(pif1@p_cft) != length(pif2@p_cft)) {
     cli::cli_abort(
       paste0(
-        "pif1 has {.code length(pif1@p_cft) = {length(pif1@p_cft)}} counterfactual exposure",
-        "categories and pif2 has {.code length(pif2@p_cft) = {length(pif2@p_cft)}}.",
+        "pif1 has {.code length(pif1@p_cft) = {length(pif1@p_cft)}} counterfactual exposure ",
+        "categories and pif2 has {.code length(pif2@p_cft) = {length(pif2@p_cft)}}. ",
         "They don't seem to represent the same population. They need to ",
         "be of the same length. Are you missing some categories with 0% ",
         "prevalence perhaps?"
