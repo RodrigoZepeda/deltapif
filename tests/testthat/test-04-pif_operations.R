@@ -22,11 +22,9 @@ test_that("paf_total validates inputs correctly", {
   # Create mock PAFs
   paf1 <- create_mock_pif_atomic(type = "PAF")
   paf2 <- create_mock_pif_atomic(type = "PAF")
-  pif <- create_mock_pif_atomic(type = "PIF") # This is PIF, not PAF
 
   # Valid case
   expect_silent(paf_total(paf1, paf2, weights = c(0.5, 0.5)))
-  expect_silent(paf_total(paf1, pif, weights = c(0.1, 0.9)))
 
 })
 
@@ -53,6 +51,11 @@ test_that("pif_total validates inputs correctly", {
   expect_error(
     pif_total(pif1, pif2, weights = c(0.5, 0.5), sigma_weights = matrix(1:4, nrow = 2)),
     "is not symmetric"
+  )
+
+  expect_error(
+    pif_total(pif1, pif2, weights = c(0.5, 0.5), sigma_weights = "a"),
+    "should be a number"
   )
 
   expect_error(
@@ -115,3 +118,35 @@ test_that("pif_ensemble calculates correctly", {
   expect_true(result@variance > 0)
 })
 
+
+test_that("paf_total validates inputs correctly", {
+  pif1 <- create_mock_pif_atomic("PIF")
+  paf1 <- create_mock_pif_atomic("PAF")
+  paf2 <- create_mock_pif_atomic("PAF")
+
+  # Valid cases
+  expect_silent(paf_total(paf1, paf2, weights = c(0.5, 0.5)))
+  expect_error(
+    paf_total(paf1, pif1, weights = c(0.4, 0.6)),
+    "is not a Population Attributable Fraction"
+  )
+  expect_error(
+    paf_total(pif1, paf1, weights = c(0.4, 0.6)),
+    "is not a Population Attributable Fraction"
+  )
+
+
+})
+
+test_that("logit link for negative pif", {
+
+  pif1 <- pif(0.4, 0.2, 1.1, var_p = 0, var_beta = 0)
+  pif2 <- pif(0.4, 0.8, 1.1, var_p = 0, var_beta = 0)
+
+  # Valid cases
+  expect_warning(
+    pif_total(pif1, pif2, weights = c(0.1, 0.9), link = "logit"),
+    "is only valid for strictly positive PIF"
+  )
+
+})

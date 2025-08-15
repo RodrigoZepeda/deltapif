@@ -94,7 +94,7 @@ paf_total <- function(paf1, ..., weights, sigma_weights = 0, conf_level = 0.95,
                       quiet = FALSE){
 
   paf_list <- append(list(paf1), list(...))
-  for (i in seq_along(length(paf_list))){
+  for (i in seq_along(1:length(paf_list))){
     if (fraction_type(paf_list[[i]]) == "PIF"){
       cli::cli_abort(
         paste0(
@@ -148,7 +148,7 @@ pif_total <- function(pif1, ..., weights, sigma_weights = 0, conf_level = 0.95,
     )
   }
 
-  if (!is.matrix(sigma_weights) & !is.vector(sigma_weights) & !is.numeric(sigma_weights)){
+  if (!is.numeric(sigma_weights)){
     cli::cli_abort(
       "`sigma_weights` should be a number, vector or matrix."
     )
