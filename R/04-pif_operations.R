@@ -124,17 +124,23 @@ pif_total <- function(pif1, ..., weights, sigma_weights = 0, conf_level = 0.95,
 
   # Get the links
   link_name <- link #Save for later evaluation
+
+  # Get the inverse function
   if (is.null(link_inv) & is.character(link)) {
     link_inv <- parse_inv_link(link)
+  }
+
+  if (is.null(link_deriv) & is.character(link)){
+    link_deriv <- parse_deriv_link(link)
   }
 
   # Get the functions
   link    <- parse_link(link)
 
-  # Get the derivative
-  if (is.null(link_deriv)) {
+  if (!is.function(link_deriv) && is.null(link_deriv)) {
     link_deriv <- Deriv::Deriv(link)
   }
+
 
   if (abs(sum(weights) - 1) > sqrt(.Machine$double.eps)){
     cli::cli_abort(

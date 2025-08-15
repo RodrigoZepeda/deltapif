@@ -186,6 +186,13 @@ deriv_hawkins <- function(pif) {
   1 / (sqrt(pif^2 + 1))
 }
 
+#' @rdname deriv_linkfuns
+#' @export
+deriv_identity <- function(pif) {
+  rep(1, length(pif))
+}
+
+
 #' Link parsers
 #'
 #' Functions to parse the link (or inverse link) from a word to a function
@@ -262,6 +269,37 @@ parse_inv_link <- function(link_name) {
     return(inv_hawkins)
   } else if (link_name == "exponential" || link_name == "exp") {
     return(log)
+  } else {
+    cli::cli_abort(
+      paste0(
+        "Cannot find link {.val {link_name}}. Please specify the",
+        "function using {.code rr_link}"
+      )
+    )
+  }
+}
+
+#' @rdname link_parsers
+#' @export
+parse_deriv_link <- function(link_name) {
+  if (is.function(link_name)) {
+    return(link_name)
+  }
+
+  link_name <- tolower(link_name)
+  link_name <- gsub("[ _-]+", "", link_name)
+
+
+  if (link_name == "identity") {
+    return(deriv_identity)
+  } else if (link_name == "logit") {
+    return(deriv_logit)
+  } else if (link_name == "logcomplement") {
+    return(deriv_log_complement)
+  } else if (link_name == "hawkins") {
+    return(deriv_hawkins)
+  } else if (link_name == "exponential" || link_name == "exp") {
+    return(exp)
   } else {
     cli::cli_abort(
       paste0(

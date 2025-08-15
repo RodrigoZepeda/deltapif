@@ -97,8 +97,15 @@ This function computed the potential impact fraction and its confidence
 intervals using Walter's formula:
 
 \deqn{
+\textrm{PIF} =
  \dfrac{
    \sum\limits_{i=1}^N p_i \text{RR}_i - \sum\limits_{i=1}^N p_i^{\text{cft}} \text{RR}_i
+  }{
+   \sum\limits_{i=1}^N p_i \text{RR}_i
+  }, \quad \text{ and } \quad
+\textrm{PAF} =
+ \dfrac{
+   \sum\limits_{i=1}^N p_i \text{RR}_i - 1
   }{
    \sum\limits_{i=1}^N p_i \text{RR}_i
   }
@@ -108,8 +115,16 @@ in the case of \code{N} exposure categories which is equivalent to Levine's form
 when there is only \code{1} exposure category:
 
 \deqn{
+\textrm{PIF} =
  \dfrac{
    p (\text{RR} - 1) - p^{\text{cft}} (\text{RR} - 1)
+  }{
+   1 + p (\text{RR} - 1)
+  }
+  \quad \textrm{ and } \quad
+\textrm{PAF} =
+ \dfrac{
+   p (\text{RR} - 1)
   }{
    1 + p (\text{RR} - 1)
   }

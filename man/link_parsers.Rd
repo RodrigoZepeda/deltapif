@@ -4,11 +4,14 @@
 \alias{link_parsers}
 \alias{parse_link}
 \alias{parse_inv_link}
+\alias{parse_deriv_link}
 \title{Link parsers}
 \usage{
 parse_link(link_name)
 
 parse_inv_link(link_name)
+
+parse_deriv_link(link_name)
 }
 \arguments{
 \item{link_name}{The name of the link or a function.}

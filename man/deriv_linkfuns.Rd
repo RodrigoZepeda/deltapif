@@ -5,6 +5,7 @@
 \alias{deriv_logit}
 \alias{deriv_log_complement}
 \alias{deriv_hawkins}
+\alias{deriv_identity}
 \title{Derivatives of link functions}
 \usage{
 deriv_logit(pif)
@@ -12,6 +13,8 @@ deriv_logit(pif)
 deriv_log_complement(pif)
 
 deriv_hawkins(pif)
+
+deriv_identity(pif)
 }
 \arguments{
 \item{pif}{The value of a potential impact fraction or a

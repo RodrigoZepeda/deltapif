@@ -242,12 +242,17 @@ change_link <- function(x, link = "identity", link_inv = NULL, link_deriv = NULL
     link_inv <- parse_inv_link(link)
   }
 
+  if (is.null(link_deriv) & is.character(link)){
+    link_deriv <- parse_deriv_link(link)
+  }
+
   # Get the functions
   link    <- parse_link(link)
 
-  if (is.null(link_deriv)) {
+  if (!is.function(link_deriv) && is.null(link_deriv)) {
     link_deriv <- Deriv::Deriv(link)
   }
+
 
   x@link       <- link
   x@link_inv   <- link_inv

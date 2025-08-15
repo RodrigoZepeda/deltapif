@@ -168,7 +168,10 @@ test_that("Covariance getters work with S7 objects", {
     paf(0.1, 1.2, var_p = 0.01, var_beta = 0, link = logit,
         link_deriv = deriv_logit, link_inv = inv_logit,
         rr_link = identity, rr_link_deriv = function(x) {1}),
-    weights = c(0.5, 0.5)
+    weights = c(0.5, 0.5),
+    link = logit,
+    link_inv = inv_logit,
+    link_deriv = deriv_logit
   )
 
   # Test only work with total pif not with mock

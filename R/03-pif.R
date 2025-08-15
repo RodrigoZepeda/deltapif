@@ -27,8 +27,15 @@
 #' intervals using Walter's formula:
 #'
 #' \deqn{
+#' \textrm{PIF} =
 #'  \dfrac{
 #'    \sum\limits_{i=1}^N p_i \text{RR}_i - \sum\limits_{i=1}^N p_i^{\text{cft}} \text{RR}_i
+#'   }{
+#'    \sum\limits_{i=1}^N p_i \text{RR}_i
+#'   }, \quad \text{ and } \quad
+#' \textrm{PAF} =
+#'  \dfrac{
+#'    \sum\limits_{i=1}^N p_i \text{RR}_i - 1
 #'   }{
 #'    \sum\limits_{i=1}^N p_i \text{RR}_i
 #'   }
@@ -38,8 +45,16 @@
 #' when there is only `1` exposure category:
 #'
 #' \deqn{
+#' \textrm{PIF} =
 #'  \dfrac{
 #'    p (\text{RR} - 1) - p^{\text{cft}} (\text{RR} - 1)
+#'   }{
+#'    1 + p (\text{RR} - 1)
+#'   }
+#'   \quad \textrm{ and } \quad
+#' \textrm{PAF} =
+#'  \dfrac{
+#'    p (\text{RR} - 1)
 #'   }{
 #'    1 + p (\text{RR} - 1)
 #'   }
@@ -196,16 +211,24 @@ pif <- function(p,
     link_inv <- parse_inv_link(link)
   }
 
+  if (is.null(link_deriv) & is.character(link)){
+    link_deriv <- parse_deriv_link(link)
+  }
+
+  if (is.null(rr_link_deriv) & is.character(rr_link)){
+    rr_link_deriv <- parse_deriv_link(rr_link)
+  }
+
   # Get the functions
   rr_link <- parse_link(rr_link)
   link    <- parse_link(link)
 
   # Get the derivatives of the links
-  if (is.null(rr_link_deriv)) {
+  if (!is.function(rr_link_deriv) && is.null(rr_link_deriv)) {
     rr_link_deriv <- Deriv::Deriv(rr_link)
   }
 
-  if (is.null(link_deriv)) {
+  if (!is.function(link_deriv) && is.null(link_deriv)) {
     link_deriv <- Deriv::Deriv(link)
   }
 
