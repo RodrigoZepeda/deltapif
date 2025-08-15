@@ -27,7 +27,7 @@ test_that("deriv_pif_p works correctly", {
   )
 
   expect_equal(
-    deriv_pif_p(rr = rr, mu_obs = mu_obs, mu_cft = mu_cft),
+    deriv_pif_p(p, p_cft, rr = rr, mu_obs = mu_obs, mu_cft = mu_cft),
     expected
   )
 
@@ -60,7 +60,7 @@ test_that("deriv_pif_beta works correctly", {
   # Calculate expected values manually
   mu_obs    <- sum(p * rr) # 1.5
   mu_cft    <- sum(p_cft * rr) # 1.4
-  numerator <- (mu_obs * p_cft - mu_cft * p)
+  numerator <- (mu_cft * p - mu_obs * p_cft)
   expected  <- (numerator / (mu_obs^2)) * rr_deriv
 
   # Test with pre-calculated mu values
