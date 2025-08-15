@@ -217,6 +217,9 @@ as follows:</p>
 <span><span class="co">#&gt; PAF = 4.663% [<span style="font-style: italic;">95% CI</span>: 0.704% to 8.464%]</span></span>
 <span><span class="co">#&gt; standard_deviation(paf %) = 1.979</span></span>
 <span><span class="co">#&gt; standard_deviation(link(paf)) = 0.021</span></span></code></pre></div>
+<p>where we set <code>sigma_weights = 0</code> as no covariance matrix
+was known for the race distribution data (it does exist its just not on
+Wikipedia).</p>
 <div class="section level3">
 <h3 id="why-are-we-using-logrr">Why are we using <code>logrr</code>?<a class="anchor" aria-label="anchor" href="#why-are-we-using-logrr"></a>
 </h3>
@@ -242,9 +245,13 @@ and:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.59</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.15</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0.3239721</span></span></code></pre></div>
-<p>which implies that the uncertainty was estimated in the log-scale and
-hence we need to use the log relative risk as beta and exponentiate it
-(<code>link = "exponential"</code>).</p>
+<p>which suggests that the uncertainty was estimated in the log-scale
+and hence we need to use the log relative risk as beta and exponentiate
+it (<code>link = "exponential"</code>). Furthermore we can go to the
+original paper, check the methodology and conclude that it was estimated
+using the log relative risk and then exponentiated. Hence the
+uncertainty should be propagated for the log risk and then
+exponentiated.</p>
 <p>Mathematically the explanation of why this happens is because usually
 relative risks, odds ratios and hazard ratios are transformed to the
 log-scale to estimate the confidence intervals. You can see in
