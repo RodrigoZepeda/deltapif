@@ -119,7 +119,7 @@ to 6% can be calculated as follows:</p>
 different scenarios as well as how to combine the fractions of
 subpopulations and of different risk estimates.</p>
 <div class="section level2">
-<h2 id="example-1-a-potential-impact-fraction">Example 1: A potential impact fraction<a class="anchor" aria-label="anchor" href="#example-1-a-potential-impact-fraction"></a>
+<h2 id="example-1-a-dichotomous-potential-impact-fraction">Example 1: A dichotomous potential impact fraction<a class="anchor" aria-label="anchor" href="#example-1-a-dichotomous-potential-impact-fraction"></a>
 </h2>
 <p>The article <a href="https://doi.org/10.1001/jamanetworkopen.2022.19672" class="external-link"><span class="citation">(1)</span></a> discusses the population attributable
 fraction (PAF) of dementia associated with 12 different risk factors in
@@ -232,23 +232,24 @@ was known for the race distribution data (it does exist its just not on
 Wikipedia).</p>
 </div>
 <div class="section level3">
-<h3 id="why-are-we-using-logrr">Why are we using <code>logrr</code>?<a class="anchor" aria-label="anchor" href="#why-are-we-using-logrr"></a>
+<h3 id="why-are-we-using-the-log-relative-risk">Why are we using the log relative risk?<a class="anchor" aria-label="anchor" href="#why-are-we-using-the-log-relative-risk"></a>
 </h3>
-<p>A common question is why in this case we are using <code>logrr</code>
-with <code>exponential</code> link and not the relative risks. The
-reason depends on what standard deviation can be properly recovered.
-Recall that the classic (Wald-type) confidence intervals should have the
-same distance from the point estimate (in this case the <code>RR</code>)
-to the bounds. We can see that this does not happen here as for example
-in the case of <strong>smoking</strong> the RR is 1.59 [1.15-2.20]
-and:</p>
+<p>A common question is why in this case we are using the log relative
+risk (<code>logrr</code>) with <code>exponential</code> link and not the
+relative risks. The reason depends on what standard deviation can be
+properly recovered. Recall that the classic (Wald-type) confidence
+intervals should have the same distance from the point estimate (in this
+case the <code>RR</code>) to the bounds. We can see that this does not
+happen here as for example in the case of <strong>smoking</strong> the
+RR is 1.59 [1.15-2.20] and:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fl">2.20</span> <span class="op">-</span> <span class="fl">1.59</span></span>
 <span><span class="co">#&gt; [1] 0.61</span></span></code></pre></div>
+<p>while</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fl">1.59</span> <span class="op">-</span> <span class="fl">1.15</span></span>
 <span><span class="co">#&gt; [1] 0.44</span></span></code></pre></div>
-<p>the distances are not the same!</p>
+<p>The distances are not the same!</p>
 <p>However in the log-scale they are much more similar:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">2.20</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.59</span><span class="op">)</span></span>
@@ -259,71 +260,105 @@ and:</p>
 <p>which suggests that the uncertainty was estimated in the log-scale
 and hence we need to use the log relative risk as beta and exponentiate
 it (<code>link = "exponential"</code>). Furthermore we can go to the
-original paper, check the methodology and conclude that it was estimated
-using the log relative risk and then exponentiated. Hence the
-uncertainty should be propagated for the log risk and then
-exponentiated.</p>
+original paper, check the methodology and conclude that the confidence
+interval (and hence the variance!) was estimated using the log relative
+risk and then exponentiated. Hence the uncertainty should be propagated
+for the log risk and then exponentiated.</p>
 <p>Mathematically the explanation of why this happens is because usually
 relative risks, odds ratios and hazard ratios are transformed to the
 log-scale to estimate the confidence intervals. You can see in
 Wikipedia, for example, the classic formulas for the <a href="https://en.wikipedia.org/wiki/Relative_risk" class="external-link">relative risks
 CIs</a> and for the <a href="https://en.wikipedia.org/wiki/Odds_ratio#Statistical_inference" class="external-link">odds
 ratios</a> all involve a log-transform.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="example-2-a-categorical-population-attributable-fraction">Example 2: A categorical population attributable fraction<a class="anchor" aria-label="anchor" href="#example-2-a-categorical-population-attributable-fraction"></a>
+</h2>
+<p>The article <a href="https://doi.org/10.1111/1753-6405.12456" class="external-link"><span class="citation">(2)</span></a> estimates the population attributable
+fraction of different cancers given distinct levels of alcohol
+consumption for the Australian population.</p>
+<p>The <code>alcohol</code> dataframe included in the package contains
+an estimate of the intake of alcohol by sex as well as the proportion of
+individuals in each of the intake-categories:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">alcohol</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt;       sex alcohol_g median_intake age_18_plus</span></span>
+<span><span class="co">#&gt; 1    MALE      None           0.0        47.2</span></span>
+<span><span class="co">#&gt; 2    MALE   &gt;0-&lt;1 g           0.8         1.4</span></span>
+<span><span class="co">#&gt; 3    MALE     1-&lt;2g           1.6         2.2</span></span>
+<span><span class="co">#&gt; 4    MALE     2-&lt;5g           3.2         8.1</span></span>
+<span><span class="co">#&gt; 5    MALE    5-&lt;10g           7.1         8.1</span></span>
+<span><span class="co">#&gt; 6    MALE   10-&lt;15g          12.6         6.9</span></span>
+<span><span class="co">#&gt; 7    MALE   15-&lt;20g          17.4         4.6</span></span>
+<span><span class="co">#&gt; 8    MALE   20-&lt;30g          24.5         7.3</span></span>
+<span><span class="co">#&gt; 9    MALE   30-&lt;40g          34.7         4.2</span></span>
+<span><span class="co">#&gt; 10   MALE   40-&lt;50g          44.2         3.2</span></span>
+<span><span class="co">#&gt; 11   MALE   50-&lt;60g          54.4         2.0</span></span>
+<span><span class="co">#&gt; 12   MALE      ≥60g          85.2         4.8</span></span>
+<span><span class="co">#&gt; 13 FEMALE      None           0.0        60.3</span></span>
+<span><span class="co">#&gt; 14 FEMALE   &gt;0-&lt;1 g           0.8         2.0</span></span>
+<span><span class="co">#&gt; 15 FEMALE     1-&lt;2g           1.6         5.4</span></span>
+<span><span class="co">#&gt; 16 FEMALE     2-&lt;5g           3.9         9.1</span></span>
+<span><span class="co">#&gt; 17 FEMALE    5-&lt;10g           7.1         8.1</span></span>
+<span><span class="co">#&gt; 18 FEMALE   10-&lt;15g          12.6         6.1</span></span>
+<span><span class="co">#&gt; 19 FEMALE   15-&lt;20g          17.4         2.6</span></span>
+<span><span class="co">#&gt; 20 FEMALE   20-&lt;30g          24.5         3.4</span></span>
+<span><span class="co">#&gt; 21 FEMALE   30-&lt;40g          34.7         1.5</span></span>
+<span><span class="co">#&gt; 22 FEMALE   40-&lt;50g          44.2         0.7</span></span>
+<span><span class="co">#&gt; 23 FEMALE   50-&lt;60g          54.4         0.3</span></span>
+<span><span class="co">#&gt; 24 FEMALE      ≥60g          78.1         0.5</span></span></code></pre>
+<p>The relative risk of alcohol varies by consumption level
+(<code>algohol_g</code>). For example in the case of rectal cancer the
+estimated relative risk is 1.10 (1.07–1.12) per 10g/day. We will need to
+compute the relative risk for each of the consumption level groups using
+their median intake as follows:</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#Get alcohol intake for men divided by 10 cause RR is per 10g/day</span></span>
+<span><span class="va">alcohol_men_intake</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.8</span>, <span class="fl">1.6</span>, <span class="fl">3.2</span>, <span class="fl">7.1</span>, <span class="fl">12.6</span>, <span class="fl">17.4</span>, <span class="fl">24.5</span>, <span class="fl">34.7</span>, <span class="fl">44.2</span>, <span class="fl">54.4</span>, <span class="fl">85.2</span><span class="op">)</span> <span class="op">/</span> <span class="fl">10</span> </span>
+<span></span>
+<span><span class="co">#Divided by 10 cause risk is per 10 g/day</span></span>
+<span><span class="va">relative_risk</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.10</span><span class="op">)</span><span class="op">*</span><span class="va">alcohol_men_intake</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#Divide by 100 to get the prevalence in decimals</span></span>
+<span><span class="va">prevalence</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.472</span>, <span class="fl">0.014</span>, <span class="fl">0.022</span>, <span class="fl">0.081</span>, <span class="fl">0.081</span>, <span class="fl">0.069</span>, <span class="fl">0.046</span>, <span class="fl">0.073</span>, <span class="fl">0.042</span>, <span class="fl">0.032</span>, <span class="fl">0.02</span>, <span class="fl">0.048</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#Calculate the paf</span></span>
+<span><span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span><span class="va">prevalence</span>, beta <span class="op">=</span> <span class="va">relative_risk</span>, var_p <span class="op">=</span> <span class="fl">0</span>, var_b <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction</span> ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; PAF = 13.184% [<span style="font-style: italic;">95% CI</span>: 13.184% to 13.184%]</span></span>
+<span><span class="co">#&gt; standard_deviation(paf %) = 0.000</span></span>
+<span><span class="co">#&gt; standard_deviation(link(paf)) = 0.000</span></span></code></pre></div>
+<p>If we want to add uncertainty we can approximate the covariance of
+the relative risk as follows:</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#Calculate an approximate covariance of the betas this is given by var*intake*intake </span></span>
+<span><span class="va">beta_sd</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fl">1.12</span> <span class="op">-</span> <span class="fl">1.07</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fl">0.975</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">beta_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="cn">NA</span>, ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">prevalence</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">prevalence</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">k</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">prevalence</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">prevalence</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
+<span>    <span class="va">beta_var</span><span class="op">[</span><span class="va">k</span>,<span class="va">j</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">beta_sd</span><span class="op">^</span><span class="fl">2</span><span class="op">*</span><span class="op">(</span><span class="va">alcohol_men_intake</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">/</span><span class="fl">10</span><span class="op">)</span><span class="op">*</span><span class="op">(</span><span class="va">alcohol_men_intake</span><span class="op">[</span><span class="va">k</span><span class="op">]</span><span class="op">/</span><span class="fl">10</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span></span>
+<span><span class="co">#Calculate the paf</span></span>
+<span><span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span><span class="va">prevalence</span>, beta <span class="op">=</span> <span class="va">relative_risk</span>, var_p <span class="op">=</span> <span class="fl">0</span>, var_b <span class="op">=</span> <span class="va">beta_var</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction</span> ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; PAF = 13.184% [<span style="font-style: italic;">95% CI</span>: 12.951% to 13.417%]</span></span>
+<span><span class="co">#&gt; standard_deviation(paf %) = 0.119</span></span>
+<span><span class="co">#&gt; standard_deviation(link(paf)) = 0.001</span></span></code></pre></div>
 <!--
-
-## Example 2: A Population Attributable Fraction
-
-The article [@pandeya](https://doi.org/10.1111/1753-6405.12456)
-estimates the population attributable fraction of different cancers given
-distinct levels of alcohol consumption for the Australian population. 
-
-The `alcohol` dataframe included in the package contains an estimate
-of the intake of alcohol by sex as well as the proportion of
-individuals in each of the intake-categories:
-
-
-``` r
-data(alcohol)
-```
-
-
-```
-#>       sex alcohol_g median_intake age_18_plus
-#> 1    MALE      None           0.0        47.2
-#> 2    MALE   >0-<1 g           0.8         1.4
-#> 3    MALE     1-<2g           1.6         2.2
-#> 4    MALE     2-<5g           3.2         8.1
-#> 5    MALE    5-<10g           7.1         8.1
-#> 6    MALE   10-<15g          12.6         6.9
-#> 7    MALE   15-<20g          17.4         4.6
-#> 8    MALE   20-<30g          24.5         7.3
-#> 9    MALE   30-<40g          34.7         4.2
-#> 10   MALE   40-<50g          44.2         3.2
-#> 11   MALE   50-<60g          54.4         2.0
-#> 12   MALE      ≥60g          85.2         4.8
-#> 13 FEMALE      None           0.0        60.3
-#> 14 FEMALE   >0-<1 g           0.8         2.0
-#> 15 FEMALE     1-<2g           1.6         5.4
-#> 16 FEMALE     2-<5g           3.9         9.1
-#> 17 FEMALE    5-<10g           7.1         8.1
-#> 18 FEMALE   10-<15g          12.6         6.1
-#> 19 FEMALE   15-<20g          17.4         2.6
-#> 20 FEMALE   20-<30g          24.5         3.4
-#> 21 FEMALE   30-<40g          34.7         1.5
-#> 22 FEMALE   40-<50g          44.2         0.7
-#> 23 FEMALE   50-<60g          54.4         0.3
-#> 24 FEMALE      ≥60g          78.1         0.5
-```
-
-
-
 ## Example 3: Negative fractions
 
 ## Example 4: Combining fractions of different risks into an ensemble
 
 graphPAF::paf_levin(conf_prev = 0.085, conf_RR=c(1.15, 2.20))
 -->
-</div>
 </div>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
@@ -336,6 +371,13 @@ M, Whitsel E, Avery C, et al. Variation in population attributable
 fraction of dementia associated with potentially modifiable risk factors
 by race and ethnicity in the US. <em>JAMA network open</em>.
 2022;5(7):e2219672–e2219672. </div>
+</div>
+<div id="ref-pandeya" class="csl-entry">
+<div class="csl-left-margin">2. </div>
+<div class="csl-right-inline">Pandeya N, Wilson LF, Webb PM, et al. Cancers
+in australia in 2010 attributable to the consumption of alcohol.
+<em>Australian and New Zealand journal of public health</em>.
+2015;39(5):408–413. </div>
 </div>
 </div>
 </div>
