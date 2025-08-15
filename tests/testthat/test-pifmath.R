@@ -35,6 +35,27 @@ test_that("pif and paf compute to known values", {
     coef(pif(p = p2, p_cft = p_cft2, beta = rr2, quiet = TRUE))
   )
 
+  #Removing the reference category should not change anything
+  p      <- c(0.4, 0.2)
+  rr     <- c(1, 0.3)
+  p_cft  <- c(0.0, 1.0)
+  expect_equal(
+    coef(pif(p = p, p_cft = p_cft, beta = rr, quiet = TRUE)),
+    1 - (0.3 / (0.8*1 + 0.2*0.3))
+  )
+
+  #Changing the reference category gives same pif
+  p      <- c(0.4, 0.2)
+  rr     <- c(1.4, 1.5)
+  p_cft  <- c(0.3, 0.2)
+  rr2    <- c(1.0/1.5, rr[1]/1.5)
+  p_cft2 <- c(1 - sum(p_cft), p_cft[1])
+  p2     <- c(1 - sum(p), p[1])
+  expect_equal(
+    coef(pif(p = p, p_cft = p_cft, beta = rr, quiet = TRUE)),
+    coef(pif(p = p2, p_cft = p_cft2, beta = rr2, quiet = TRUE))
+  )
+
   #Variance computation
   p      <- c(0.4, 0.2)
   rr     <- c(1.2, 1.5)

@@ -245,6 +245,10 @@ pif <- function(p,
     }
   }
 
+  if (length(var_p) == 1 && var_p == 0){
+    var_p <- matrix(0, ncol = length(p), nrow = length(p))
+  }
+
   if (is.null(var_beta)) {
     var_beta <- matrix(0, ncol = length(beta), nrow = length(beta))
     if (!quiet){
@@ -255,6 +259,10 @@ pif <- function(p,
         )
       )
     }
+  }
+
+  if (length(var_beta) == 1 &&  var_beta == 0){
+    var_beta <- matrix(0, ncol = length(beta), nrow = length(beta))
   }
 
   # If vectors provided then transform to approximate matrices
@@ -292,8 +300,8 @@ pif <- function(p,
      p          = p,
      p_cft      = p_cft,
      beta       = beta,
-     var_p    = var_p,
-     var_beta = var_beta,
+     var_p      = var_p,
+     var_beta   = var_beta,
      link       = link,
      link_inv   = link_inv,
      link_deriv = link_deriv,

@@ -157,7 +157,7 @@ test_that("Composite mock_pif getters work with S7 objects", {
 
   # Test get_ensemble_pif
   expect_equal(get_ensemble_pif(mock_pif),
-               exp(sum(log(mock_pif@coefs))))
+               1 - exp(sum(log(1 - mock_pif@coefs))))
 })
 
 test_that("Covariance getters work with S7 objects", {

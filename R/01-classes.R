@@ -419,14 +419,14 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
 
      if (is.matrix(self@var_p) &&
          (
-           (ncol(self@var_p) != length(self@p)) |
+           (ncol(self@var_p) != length(self@p)) ||
            (nrow(self@var_p) != length(self@p))
           )
          ) {
          cli::cli_abort(
            paste0(
              "Exposure prevalence vector {.code p} has ",
-             "different length than its colink_variance matrix",
+             "different length than its covariance matrix",
              "{.code var_p}."
            )
          )
@@ -441,9 +441,9 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
         ){
          cli::cli_abort(
            paste0(
-             "Exposure prevalence vector {.code p} has ",
-             "different length than its colink_variance ",
-             "matrix {.code var_p}."
+             "Relative risk parameter vector {.code beta} has ",
+             "different length than its covariance ",
+             "matrix {.code var_beta}."
            )
          )
      }
@@ -529,7 +529,7 @@ pif_total_class <- S7::new_class(
     if (length(self@weights) != length(self@pif_list)){
       cli::cli_abort(
         paste0(
-          "Weights provided have length {length(self@weights)} but",
+          "Weights provided have length {length(self@weights)} but ",
           "{length(self@pif_list)} fractions were provided."
         )
       )

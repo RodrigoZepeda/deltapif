@@ -56,7 +56,7 @@ as well as how to combine the fractions of subpopulations and of different risk 
 
 
 
-## Example 1: A potential impact fraction
+## Example 1: A dichotomous potential impact fraction
 
 The article [@lee](https://doi.org/10.1001/jamanetworkopen.2022.19672)
 discusses the population attributable fraction (PAF) of dementia associated with 12 
@@ -139,9 +139,9 @@ paf_total(paf_white, paf_hispanic, paf_black, paf_asian, weights = weights, sigm
 
 where we set `sigma_weights = 0` as no covariance matrix was known for the race distribution data (it does exist its just not on Wikipedia). 
 
-### Why are we using `logrr`?
+### Why are we using the log relative risk?
 
-A common question is why in this case we are using `logrr` with `exponential` link
+A common question is why in this case we are using the log relative risk (`logrr`) with `exponential` link
 and not the relative risks. The reason depends on what standard deviation can be properly
 recovered. Recall that the classic (Wald-type) confidence intervals should have the same
 distance from the point estimate (in this case the `RR`) to the bounds. We can see that
@@ -152,11 +152,13 @@ this does not happen here as for example in the case of **smoking** the RR is
 2.20 - 1.59
 ```
 
+while 
+
 ```{r}
 1.59 - 1.15
 ```
 
-the distances are not the same!
+The distances are not the same!
 
 However in the log-scale they are much more similar:
 
@@ -172,8 +174,9 @@ log(1.59) - log(1.15)
 which suggests that the uncertainty was estimated in the log-scale and hence we
 need to use the log relative risk as beta and exponentiate it (`link = "exponential"`). 
 Furthermore we can go to the original paper, check the methodology and conclude
-that it was estimated using the log relative risk and then exponentiated. Hence 
-the uncertainty should be propagated for the log risk and then exponentiated. 
+that the confidence interval (and hence the variance!) was estimated using the log relative risk 
+and then exponentiated. Hence  the uncertainty should be propagated for the 
+log risk and then exponentiated. 
 
 Mathematically the explanation of why this happens is because usually relative risks,
 odds ratios and hazard ratios are transformed to the log-scale to estimate
@@ -182,9 +185,8 @@ the classic formulas for the [relative risks CIs](https://en.wikipedia.org/wiki/
 and for the [odds ratios](https://en.wikipedia.org/wiki/Odds_ratio#Statistical_inference)
 all involve a log-transform. 
 
-<!--
 
-## Example 2: A Population Attributable Fraction
+## Example 2: A categorical population attributable fraction
 
 The article [@pandeya](https://doi.org/10.1111/1753-6405.12456)
 estimates the population attributable fraction of different cancers given
@@ -202,8 +204,42 @@ data(alcohol)
 alcohol[,c("sex", "alcohol_g", "median_intake", "age_18_plus")]
 ```
 
+The relative risk of alcohol varies by consumption level (`algohol_g`). For example
+in the case of rectal cancer the estimated relative risk is 1.10 (1.07–1.12) per 10g/day. We will need to compute
+the relative risk for each of the consumption level groups using their median intake as follows:
+
+```{r}
+#Get alcohol intake for men divided by 10 cause RR is per 10g/day
+alcohol_men_intake <- c(0, 0.8, 1.6, 3.2, 7.1, 12.6, 17.4, 24.5, 34.7, 44.2, 54.4, 85.2) / 10 
+
+#Divided by 10 cause risk is per 10 g/day
+relative_risk <- exp(log(1.10)*alcohol_men_intake)
+
+#Divide by 100 to get the prevalence in decimals
+prevalence    <- c(0.472, 0.014, 0.022, 0.081, 0.081, 0.069, 0.046, 0.073, 0.042, 0.032, 0.02, 0.048)
+
+#Calculate the paf
+paf(prevalence, beta = relative_risk, var_p = 0, var_b = 0)
+```
+
+If we want to add uncertainty we can approximate the covariance of the relative risk as follows:
+
+```{r}
+#Calculate an approximate covariance of the betas this is given by var*intake*intake 
+beta_sd <- (1.12 - 1.07) / (2*qnorm(0.975))
+beta_var <- matrix(NA, ncol = length(prevalence), nrow = length(prevalence))
+for (k in 1:length(prevalence)){
+  for (j in 1:length(prevalence)){
+    beta_var[k,j] <- beta_sd^2*(alcohol_men_intake[j]/10)*(alcohol_men_intake[k]/10)
+  }
+}
 
 
+#Calculate the paf
+paf(prevalence, beta = relative_risk, var_p = 0, var_b = beta_var)
+```
+
+<!--
 ## Example 3: Negative fractions
 
 ## Example 4: Combining fractions of different risks into an ensemble
