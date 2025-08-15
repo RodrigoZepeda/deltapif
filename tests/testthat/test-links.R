@@ -28,6 +28,7 @@ test_that("Inverse link functions work correctly", {
   expect_equal(inv_hawkins(log(1 + sqrt(2))), 1, tolerance = 1e-7)
 })
 
+
 test_that("Derivatives of link functions work correctly", {
   # Test deriv_logit
   expect_equal(deriv_logit(0.5), 4)
@@ -57,14 +58,22 @@ test_that("Link parsers work correctly", {
   expect_identical(parse_inv_link("identity"), identity)
   expect_identical(parse_inv_link("exponential"), log)
 
+  expect_identical(parse_deriv_link("logit"), deriv_logit)
+  expect_identical(parse_deriv_link("log-complement"), deriv_log_complement)
+  expect_identical(parse_deriv_link("hawkins"), deriv_hawkins)
+  expect_identical(parse_deriv_link("identity"), deriv_identity)
+  expect_identical(parse_deriv_link("exponential"), exp)
+
   # Test function passthrough
   custom_fn <- function(x) x^2
   expect_identical(parse_link(custom_fn), custom_fn)
   expect_identical(parse_inv_link(custom_fn), custom_fn)
+  expect_identical(parse_deriv_link(custom_fn), custom_fn)
 
   # Test error for unknown link
   expect_error(parse_link("unknown_link"))
   expect_error(parse_inv_link("unknown_link"))
+  expect_error(parse_deriv_link("unknown_link"))
 })
 
 test_that("Link and inverse functions are inverses of each other", {

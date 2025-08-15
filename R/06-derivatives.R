@@ -39,6 +39,19 @@ NULL
 #' @rdname derivatives
 #' @export
 deriv_pif_p <- function(p, p_cft, rr, mu_obs = NULL, mu_cft = NULL) {
+
+  if (any(p < 0)){
+    cli::cli_abort(
+      "Invalid probability p < 0"
+    )
+  }
+
+  if (any(p_cft < 0)){
+    cli::cli_abort(
+      "Invalid counterfactual probability p_cft < 0"
+    )
+  }
+
   if (is.null(mu_obs)) {
     mu_obs <- mu_obs_fun(p, rr)
   }
@@ -67,6 +80,20 @@ deriv_pif_p <- function(p, p_cft, rr, mu_obs = NULL, mu_cft = NULL) {
 #' @rdname derivatives
 deriv_pif_beta <- function(p, p_cft, rr, rr_link_deriv_vals, mu_obs = NULL,
                            mu_cft = NULL) {
+
+  if (any(p < 0)){
+    cli::cli_abort(
+      "Invalid probability p < 0"
+    )
+  }
+
+  if (any(p_cft < 0)){
+    cli::cli_abort(
+      "Invalid counterfactual probability p_cft < 0"
+    )
+  }
+
+
   if (is.null(mu_obs)) {
     mu_obs <- mu_obs_fun(p, rr)
   }
