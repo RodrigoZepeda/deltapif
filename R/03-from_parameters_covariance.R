@@ -92,7 +92,7 @@ from_parameters_covariance_p_component <- function(
 #' @export
 from_parameters_covariance_beta_component <- function(
     p1, p2, p1_cft, p2_cft, rr1, rr2, rr_link_deriv_vals1, rr_link_deriv_vals2,
-    mu_obs1, mu_obs2, mu_cft1, mu_cft2, var_beta, upper_bound) { #FIXME: The upper bound is not used upper in the ladder
+    mu_obs1, mu_obs2, mu_cft1, mu_cft2, var_beta, upper_bound) {
   # Get the derivatives
   vcbeta_deriv1 <- deriv_pif_beta(
     p = p1, p_cft = p1_cft, rr = rr1,

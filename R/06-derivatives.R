@@ -115,5 +115,5 @@ deriv_pif_beta <- function(p, p_cft, rr, rr_link_deriv_vals, mu_obs = NULL,
   }
 
   # The derivative of pif
-  ((mu_obs * p_cft - mu_cft * p) / (mu_obs^2)) * rr_link_deriv_vals
+  ((mu_cft * p - mu_obs * p_cft) / (mu_obs^2)) * rr_link_deriv_vals
 }

@@ -35,7 +35,101 @@ test_that("pif and paf compute to known values", {
     coef(pif(p = p2, p_cft = p_cft2, beta = rr2, quiet = TRUE))
   )
 
-  #TODO: Add computations by hand of the variance
+  #Variance computation
+  p      <- c(0.4, 0.2)
+  rr     <- c(1.2, 1.5)
+  p_cft  <- c(0.5, 0.1)
+  sigma_p <- matrix(c(0.01, 0.002, 0.002, 0.01), ncol = 2)
+  sigma_b <- matrix(c(0.05, -0.001, -0.001, 0.007), ncol = 2)
+  mu_obs  <- 1 + as.numeric(p %*% (rr - 1))
+  mu_cft  <- 1 + as.numeric(p_cft %*% (rr - 1))
+
+  varp_component <- 0
+  for (i in 1:length(p)){
+    for(j in 1:length(p)){
+      varp_component <- varp_component + sigma_p[i,j]*(rr[i] - 1)*(rr[j] - 1)
+    }
+  }
+  varp_component <- (mu_cft / mu_obs^2)^2*varp_component
+
+  varb_component <- 0
+  for (i in 1:length(rr)){
+    for(j in 1:length(rr)){
+      varb_component <- varb_component +
+        sigma_b[i,j]*rr[i]*rr[j]*(mu_cft*p[i] - mu_obs*p_cft[i])*(mu_cft*p[j] - mu_obs*p_cft[j])
+    }
+  }
+  varb_component <- varb_component / mu_obs^4
+
+  variance_pif <- as.numeric(varp_component + varb_component)
+
+  mypif <- pif(p = p, p_cft = p_cft, beta = log(rr), var_p = sigma_p, var_beta = sigma_b,
+               rr_link = "exp")
+
+  #Check the p component of the variance
+  expect_equal(
+    as.numeric(from_parameters_covariance_p_component(p, p, p_cft, p_cft, rr, rr, mu_obs, mu_obs,
+                                           mu_cft, mu_cft, sigma_p, upper_bound = FALSE)),
+    varp_component
+  )
+
+  #Check the beta component of the variance
+  expect_equal(
+    as.numeric(from_parameters_covariance_beta_component(p, p, p_cft, p_cft, rr, rr, rr, rr, mu_obs, mu_obs,
+                                            mu_cft, mu_cft, sigma_b, upper_bound = FALSE)),
+    varb_component
+  )
+
+  #Check the complete variance
+  expect_equal(
+    from_parameters_pif_variance(
+      p, p_cft, rr, rr, mu_obs, mu_cft, sigma_p, sigma_b
+    ),
+    variance_pif
+  )
+
+  #Check the complete variance in the pif object
+  expect_equal(
+    mypif@variance,
+    variance_pif
+  )
+
+  #Check the complete variance in the pif object
+  expect_equal(
+    variance(mypif),
+    variance_pif
+  )
+
+})
+
+test_that("nothing changes when constructing a pif object", {
+
+  p      <- c(0.4, 0.2)
+  rr     <- c(1.2, 1.5)
+  p_cft  <- c(0.5, 0.1)
+  sigma_p <- matrix(c(0.01, 0.002, 0.002, 0.01), ncol = 2)
+  sigma_b <- matrix(c(0.05, -0.001, -0.001, 0.007), ncol = 2)
+  mu_obs  <- as.numeric(1 + p %*% (rr - 1))
+  mu_cft  <- as.numeric(1 + p_cft %*% (rr - 1))
+
+  mypif <- pif(p = p, p_cft = p_cft, beta = log(rr), var_p = sigma_p, var_beta = sigma_b,
+               rr_link = "exp", link = "logit", conf_level = 0.9)
+
+  expect_equal(mypif@p, p)
+  expect_equal(mypif@p_cft, p_cft)
+  expect_equal(mypif@rr, rr)
+  expect_equal(mypif@rr_link_deriv_vals, rr)
+  expect_equal(mypif@var_p, sigma_p)
+  expect_equal(mypif@var_beta, sigma_b)
+  expect_equal(mypif@mu_obs, mu_obs)
+  expect_equal(mypif@mu_cft, mu_cft)
+  expect_equal(mypif@rr_link, exp)
+  expect_equal(mypif@rr_link_deriv, exp)
+  expect_equal(mypif@link, logit)
+  expect_equal(mypif@link_inv, inv_logit)
+  expect_equal(mypif@link_deriv, deriv_logit)
+  expect_equal(mypif@conf_level, 0.9)
+
 
 
 })
@@ -78,6 +172,13 @@ test_that("covariance of a thing with itself is variance", {
     from_parameters_pif_variance(0.2, 0.1, 1.2, 1.2, 0.2*(1.2-1), 0.1*(1.2-1), 0.01, 0.01),
     from_parameters_pif_covariance(0.2, 0.2, 0.1, 0.1, 1.2, 1.2, 1.2, 1.2,
                                    0.2*(1.2-1), 0.2*(1.2-1), 0.1*(1.2-1),0.1*(1.2-1), 0.01, 0.01)
+  )
+
+  expect_true(
+    #Covariance of a thing with itself should be the variance
+    isSymmetric(
+      covariance(pif1, pif2)
+    )
   )
 
 

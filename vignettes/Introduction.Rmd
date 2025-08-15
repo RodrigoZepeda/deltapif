@@ -135,6 +135,8 @@ The `paf_total` function computes the aggregated `paf` of the whole population:
 paf_total(paf_white, paf_hispanic, paf_black, paf_asian, weights = weights, sigma_weights = 0)
 ```
 
+where we set `sigma_weights = 0` as no covariance matrix was known for the race distribution data (it does exist its just not on Wikipedia). 
+
 ### Why are we using `logrr`?
 
 A common question is why in this case we are using `logrr` with `exponential` link
@@ -165,8 +167,11 @@ log(1.59) - log(1.15)
 ```
 
 
-which implies that the uncertainty was estimated in the log-scale and hence we
+which suggests that the uncertainty was estimated in the log-scale and hence we
 need to use the log relative risk as beta and exponentiate it (`link = "exponential"`). 
+Furthermore we can go to the original paper, check the methodology and conclude
+that it was estimated using the log relative risk and then exponentiated. Hence 
+the uncertainty should be propagated for the log risk and then exponentiated. 
 
 Mathematically the explanation of why this happens is because usually relative risks,
 odds ratios and hazard ratios are transformed to the log-scale to estimate
