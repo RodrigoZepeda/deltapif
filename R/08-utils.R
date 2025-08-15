@@ -78,6 +78,12 @@ pif_fun <- function(p, p_cft, rr) {
 #'
 #' @keywords internal
 pif_fun2 <- function(mu_obs, mu_cft) {
+
+  if (length(mu_obs) != 1 || length(mu_cft) != 1){
+    cli::cli_abort(
+      "Invalid length > 1 for either mu_obs or mu_cft"
+    )
+  }
   # Calculate the potential impact fraction
   if (is.na(mu_obs) || is.na(mu_cft)){
     cli::cli_abort(
@@ -106,9 +112,22 @@ pif_fun2 <- function(mu_obs, mu_cft) {
 #'
 #' @keywords internal
 pif_atomic_ci <- function(link_vals, link_variance, conf_level, link_inv) {
+
+  if (length(link_vals) != 1 || length(link_variance) != 1){
+    cli::cli_abort(
+      "Invalid length != 1 for `link_vals` or `link_variance`"
+    )
+  }
+
   if (is.na(link_vals) || is.na(link_variance)){
     cli::cli_abort(
       "Missing values in confidence interval"
+    )
+  }
+
+  if (conf_level > 1 || conf_level < 0){
+    cli::cli_abort(
+      "Invalid confidence level not in (0,1)"
     )
   }
 
@@ -167,7 +186,12 @@ pif_class_apply_1st <- function(x, fun, property){
 #'
 #' @export
 link_deriv_vals <- function(x){
-  x@link_deriv_vals
+  if (S7::S7_inherits(x, pif_class)){
+    return(x@link_deriv_vals)
+  }
+  cli::cli_abort(
+    "Invalid class for `x` should be a `pif_class`"
+  )
 }
 
 #' Get the type of the fraction
@@ -259,7 +283,7 @@ change_link <- function(x, link = "identity", link_inv = NULL, link_deriv = NULL
   x@link_deriv <- link_deriv
 
   if (is.character(link_name) && link_name == "logit" && coef(x) <= 0){
-    cli::cli_alert_danger(
+    cli::cli_warn(
       paste0(
         "Value for {fraction_type(x)} = {round(coef(x),2)} <= 0. ",
         "Change link to a different value as `logit` is only ",

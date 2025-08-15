@@ -84,6 +84,7 @@ Among hispanic individuals 6.9% (`p = 0.069`) smoke. Hence their paf is:
 ```{r}
 paf_hispanic <- paf(p = 0.069, beta = 0.4637340, var_beta = 0.0273858, 
                     rr_link = exp)
+paf_hispanic
 ```
 
 Note that the model throws a warning for us not specifying the variance of `var_p`. We will 
@@ -118,6 +119,7 @@ Correlations (`correlation`) and covariances (`covariance`) can also be calculat
 ```{r}
 covariance(paf_white, paf_hispanic, paf_asian, paf_black)
 ```
+### Combining subpopulations into a total
 
 We can calculate the total population attributable fraction by combining the fractions of the subpopulations
 weighted by the proportion of the population. According to Wikipedia the distribution in 2020 was as follows:
