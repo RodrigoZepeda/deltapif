@@ -101,7 +101,7 @@ S7::method(coef, pif_class) <- function(object, ...) {
 #' confint(my_pif, level = 0.90)
 #' @name confint
 #' @export
-S7::method(confint, pif_class) <- function(object, ..., level = 0.95) {
+S7::method(confint, pif_class) <- function(object, ..., level = object@conf_level) {
   #Set the level
   object@conf_level <- level
   return(object@ci)
@@ -121,7 +121,7 @@ S7::method(confint, pif_class) <- function(object, ..., level = 0.95) {
 #' summary(my_pif)
 #' @name summary
 #' @export
-S7::method(summary, pif_class) <- function(object, level = 0.95, ...) {
+S7::method(summary, pif_class) <- function(object, level = object@conf_level, ...) {
   conf_interval <- confint(object, level = level)
 
   #Build the return vector
