@@ -4,6 +4,7 @@
 \alias{classes}
 \alias{pif_class}
 \alias{pif_atomic_class}
+\alias{pif_global_ensemble_class}
 \alias{pif_total_class}
 \alias{pif_ensemble_class}
 \title{Potential Impact Fraction related classes}
@@ -35,17 +36,38 @@ pif_atomic_class(
   upper_bound_beta
 )
 
-pif_total_class(
+pif_global_ensemble_class(
   pif_list,
-  weights,
-  sigma_weights,
+  pif_weights,
+  sigma_pif_weights,
   conf_level = 0.95,
+  pif_transform,
+  pif_deriv_transform,
+  pif_inverse_transform,
   link,
   link_inv,
   link_deriv
 )
 
-pif_ensemble_class(pif_list, conf_level = 0.95)
+pif_total_class(
+  pif_list,
+  pif_weights,
+  sigma_pif_weights,
+  link,
+  link_inv,
+  link_deriv,
+  conf_level = 0.95
+)
+
+pif_ensemble_class(
+  pif_list,
+  pif_weights,
+  sigma_pif_weights,
+  link,
+  link_inv,
+  link_deriv,
+  conf_level = 0.95
+)
 }
 \arguments{
 \item{pif}{Potential Impact Fraction estimate}
@@ -100,11 +122,20 @@ of the link_variance should be approximated by an upper bound.}
 \item{pif_list}{A list of potential impact fractions \code{pif_class} so that
 the total can be computed from it.}
 
-\item{weights}{Weights for calculating the total PIF (respectively PAF)
+\item{pif_weights}{pif_weights for calculating the total PIF (respectively PAF)
 in \code{pif_total}.}
 
-\item{sigma_weights}{Colink_variance matrix for the weights when calculating the
+\item{sigma_pif_weights}{Colink_variance matrix for the pif_weights when calculating the
 total PIF (respectively PAF) in \code{pif_total}.}
+
+\item{pif_transform}{Transform applied to the \code{pif} for summation
+in a \code{pif_global_ensemble_class} (see section below).}
+
+\item{pif_deriv_transform}{Derivative of the transform applied to the
+\code{pif} for summation in a \code{pif_global_ensemble_class} (see section below).}
+
+\item{pif_inverse_transform}{Inverse of the transform applied to the
+\code{pif} for summation in a \code{pif_global_ensemble_class} (see section below).}
 }
 \description{
 Objects for handling potential impact fractions for a categorical exposure
@@ -113,6 +144,17 @@ considering an observed prevalence of  \code{p} and a relative risk
 }
 \section{Properties of a  \code{pif_class}}{
 
+Any object that is a \code{pif_class} contains a potential impact fraction
+with intervals estimated as follows:
+\deqn{
+ \text{CI}_{\text{Link}} = \text{link}\big(\text{PIF}\big) \pm Z_{\alpha/2}\cdot\sqrt{\textrm{link\_variance}}
+}
+and then transformed back using the inverse of the link function \code{inv_link}:
+\deqn{
+ \text{CI}_{\text{PIF}} = \text{link}^{-1}\Big(\text{CI}_{\text{Link}}\Big)
+}
+
+The following are the properties of any \code{pif_class}
 \describe{
 \item{\code{ci}}{\code{numeric(2)} — Lower and upper confidence limits at level \code{conf_level}.}
 \item{\code{link_vals}}{\code{numeric} — Entrywise evaluation of the link function at pif: \code{link(pif)}.}
@@ -123,35 +165,10 @@ considering an observed prevalence of  \code{p} and a relative risk
 
 \section{Properties of a  \code{pif_atomic_class}}{
 
-The \code{pif_atomic_class} inherits the properties of a \code{pif_class} as well as:
-\describe{
-\item{\code{mu_obs}}{\code{numeric} — Average relative risk in the observed population.}
-\item{\code{mu_cft}}{\code{numeric} — Average relative risk in the counterfactual population.}
-\item{\code{pif}}{\code{numeric} — Estimate of the potential impact fraction.}
-\item{\code{rr_link_deriv_vals}}{\code{character} — Entrywise evaluation of the derivative of the link function (\code{link_deriv}) at pif: \code{link(pif)}.}
-}
-}
-
-\section{Computation of confidence intervals}{
-
-Wald-type confidence intervals are calculated for \code{link(pif)} as follows:
-\deqn{
- \text{CI}_{\text{Link}} = \text{link}\big(\text{PIF}\big) \pm Z_{\alpha/2}\cdot\sqrt{\textrm{link\_variance}}
-}
-and then transformed back using the inverse of the link function \code{inv_link}:
-\deqn{
- \text{CI}_{\text{PIF}} = \text{link}^{-1}\Big(\text{CI}_{\text{Link}}\Big)
-}
-}
-
-\section{Class structure}{
-
-All potential impact fractions inherit from the \code{pif_class} which
-provides some of the generics.
 
 The \code{pif_atomic_class} is a type of \code{pif_class} that contains enough
-information for it to be computed through the classic formula by
-Walter:
+information to compute a potential impact fraction
+through the classic formula by Walter:
 \deqn{
  \textrm{PIF} = \dfrac{
    \sum\limits_{i=1}^N p_i \text{RR}_i - \sum\limits_{i=1}^N p_i^{\text{cft}} \text{RR}_i
@@ -161,37 +178,78 @@ Walter:
 }
 where the relative risk is a function of a parameter \eqn{\beta_i}
 \deqn{
- \text{RR}_i = g(\beta_i)
+ \text{RR}_i = \text{rr\_link}(\beta_i)
 }
-and the link_variance is calculated for a function of PIF: \eqn{f(\textrm{PIF})}
-The \code{pif_atomic_class} only contains one potential impact fraction
-and the parameters to estimate it.
 
-The \code{pif_additive_class} is a type of \code{pif_class} that can be computed
-as a sum of weighted transformations of potential impact fractions
-where the weights can be random. Elements of a \code{pif_additive_class}
-have a link_variance estimated for the following expression:
+The \code{pif_atomic_class} inherits the properties of a \code{pif_class} as well as:
+\describe{
+\item{\code{mu_obs}}{\code{numeric} — Average relative risk in the observed population.}
+\item{\code{mu_cft}}{\code{numeric} — Average relative risk in the counterfactual population.}
+\item{\code{pif}}{\code{numeric} — Estimate of the potential impact fraction.}
+\item{\code{rr_link_deriv_vals}}{\code{character} — Entrywise evaluation of the derivative of the link function (\code{link_deriv}) at pif: \code{link(pif)}.}
+}
+
+Confidence intervals are estimated as with any \code{pif_class}.
+}
+
+\section{Properties of a  \code{pif_global_ensemble_class}}{
+
+
+The \code{pif_global_ensemble_class} creates a new potential impact
+fraction by summing a weighted combination of potential
+impact fractions. In general it computes the following expression:
 \deqn{
- f\big(\textrm{PIF}_{+}\big) = \sum\limits_{i = 1}^{N} q_i \cdot  f_i\Big(\textrm{PIF}_i\Big)
+\textrm{PIF}_{\text{global}} =
+ g^{-1}\bigg( \sum\limits_{i = 1}^{N} g\big(w_i \cdot \textrm{PIF}_i\big) \bigg)
+}
+where \eqn{g} is refered to as the \code{pif_transform}, its derivative the
+\code{pif_deriv_transform}, and its inverse \code{pif_inverse_transform}.
+
+The \code{pif_global_ensemble_class} inherits the properties of a \code{pif_class} as well as:
+\describe{
+\item{\code{pif_weights}}{\code{numeric} - Vector of weights \eqn{w_i} for weighting the potential impact fraction.}
+\item{\code{sigma_pif_weights}}{\code{numeric} - Covariance matrix for the \code{pif_weights}}
+\item{\code{pif_transform}}{\code{function} - Function \eqn{g} with which to transform the impact fraction before weighting.}
+\item{\code{pif_deriv_transform}}{\code{function} - Derivative of the \code{pif_transform}.}
+\item{\code{pif_inverse_transform}}{\code{function} - Inverse of the \code{pif_transform}.}
+\item{\code{type}}{\code{character} - Whether the quantity represents a \code{PIF} or a \code{PAF}}
+\item{\code{coefs}}{\code{numeric} - Potential impact fractions used for the global ensemble (each of the \eqn{\text{PIF}_i}.}
+\item{\code{sum_transformed_weighted_coefs}}{\code{numeric} - Sum of the potential impact fractions involved \eqn{\sum g(w_i \text{PIF}_i)}.}
+\item{\code{pif}}{\code{numeric} — Estimate of the potential impact fraction.}
+\item{\code{covariance}}{\code{numeric} — Covariance matrix between the potential impact fractions in \code{coefs} (i.e. each entry is\eqn{\text{Cov}(\text{PIF}_i, \text{PIF}_j))}}
+\item{\code{variance}}{\code{numeric} — Estimate for the variance of \code{pif}.}
 }
 
-Examples of calculations that can be added to a \code{pif_additive_class} are:Ç
+Confidence intervals are estimated as with any \code{pif_class}.
+}
 
-The total potential impact fraction (combining different subpopulations)
+\section{Properties of a  \code{pif_total_class}}{
+
+
+A \code{pif_total_class} estimated the potential impact fraction of the
+weighted sum of fractions from different (disjoint) dispopulations:
 \deqn{
- \textrm{PIF}_{Total} = \sum\limits_{i = 1}^{N} q_i \cdot \textrm{PIF}_i
+ \textrm{PIF}_{Total} = \sum\limits_{i = 1}^{N} w_i \cdot \textrm{PIF}_i
 }
-with \eqn{q_i} representing the proportions of individuals in each category.
+with \eqn{w_i} representing the proportions of individuals in each category.
+This is a type of \code{pif_global_ensemble_class} with \code{pif_transform = identity}.
+}
+
+\section{Properties of a  \code{pif_ensemble_class}}{
+
 
 The ensemble potential impact fraction (representing different relative risks)
-for the same outcome
+for the same outcome is given by the weighted product:
 \deqn{
-\textrm{PIF}_{Ensemble} = 1 - \prod\limits_{i = 1}^{N} \Big(1 - \textrm{PIF}_i\Big)
+\textrm{PIF}_{Ensemble} = 1 - \prod\limits_{i = 1}^{N} \Big(1 - w_i \textrm{PIF}_i\Big)
 }
-as it can be transformed into
+
+However it can be transformed into a \code{pif_global_ensemble_class} by
+taking the log-complement:
 \deqn{
-\ln\Big(1 - \textrm{PIF}_{Ensemble}\Big) =  \sum\limits_{i = 1}^{N} \ln\big(1 - \textrm{PIF}_i\big)
+\ln\Big(1 - \textrm{PIF}_{Ensemble}\Big) =  \sum\limits_{i = 1}^{N} \ln\big(1 - w_i \textrm{PIF}_i\big)
 }
+hence it is a  \code{pif_global_ensemble_class} with \code{pif_transform = log_complement}.
 }
 
 \examples{
@@ -236,10 +294,10 @@ pif3 <- pif_atomic_class(
 )
 
 tp1 <- pif_total_class(pif_list = list(pif1, pif2),
-  weights = c(0.5, 0.2), sigma_weights = diag(0.001, ncol = 2, nrow = 2),
+  pif_weights = c(0.5, 0.2), sigma_pif_weights = diag(0.001, ncol = 2, nrow = 2),
   link = identity, link_inv = identity, link_deriv = identity)
 
 pif_total_class(pif_list = list(tp1, pif3),
-  weights = c(0.7, 0.3), sigma_weights = diag(0.001, ncol = 2, nrow = 2),
+  pif_weights = c(0.7, 0.3), sigma_pif_weights = diag(0.001, ncol = 2, nrow = 2),
   link = identity, link_inv = identity, link_deriv = identity)
 }

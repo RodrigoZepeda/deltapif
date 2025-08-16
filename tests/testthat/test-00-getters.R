@@ -24,8 +24,8 @@ create_mock_pif <- function() {
   pif2 <- create_mock_pif_atomic()
   pif_total_class(
     pif_list = list(pif1, pif2),
-    weights = c(0.5, 0.5),
-    sigma_weights = matrix(c(0.01, 0, 0, 0.01), nrow = 2),
+    pif_weights = c(0.5, 0.5),
+    sigma_pif_weights = matrix(c(0.01, 0, 0, 0.01), nrow = 2),
     link = logit,
     link_deriv = deriv_logit,
     link_inv = inv_logit,
@@ -94,7 +94,7 @@ test_that("Composite mock_pif getters work with S7 objects", {
 
   # Test get_total_pif
   expect_equal(get_total_pif(mock_pif),
-               as.numeric(t(mock_pif@weights) %*% mock_pif@coefs))
+               as.numeric(t(mock_pif@pif_weights) %*% mock_pif@coefs))
 
   # Test get_ensemble_pif
   expect_equal(get_ensemble_pif(mock_pif),
@@ -109,7 +109,7 @@ test_that("Covariance getters work with S7 objects", {
     paf(0.1, 1.2, var_p = 0.01, var_beta = 0, link = logit,
         link_deriv = deriv_logit, link_inv = inv_logit,
         rr_link = identity, rr_link_deriv = function(x) {1}),
-    weights = c(0.5, 0.5),
+    pif_weights = c(0.5, 0.5),
     link = logit,
     link_inv = inv_logit,
     link_deriv = deriv_logit
@@ -125,9 +125,6 @@ test_that("Covariance getters work with S7 objects", {
   )
 
   # Test only work with total pif not with mock
-  expect_equal(get_total_coefs(mock_pif),
-               sapply(mock_pif@pif_list, function(x) x@pif))
-
   expect_equal(get_ensemble_coefs(mock_pif),
                sapply(mock_ensemble@pif_list, function(x) x@pif))
 
@@ -157,28 +154,37 @@ test_that("Types for totals", {
 
   tp <- pif_total_class(list(pif1, pif2), link = identity,
                         link_inv = identity, link_deriv = function(x) rep(1, length(x)),
-                        weights = c(0.5, 0.5), sigma_weights = matrix(0, 2, 2))
+                        pif_weights = c(0.5, 0.5), sigma_pif_weights = matrix(0, 2, 2))
 
-  ep <- pif_ensemble_class(list(pif1, pif2))
+  ep <- pif_ensemble_class(list(pif1, pif2), link = identity,
+                           link_inv = identity, link_deriv = function(x) rep(1, length(x)),
+                           pif_weights = rep(1, 2), sigma_pif_weights = matrix(0, 2, 2))
 
-  expect_equal(get_total_type(tp), "PIF")
+  expect_equal(get_ensemble_type(tp), "PIF")
   expect_equal(get_ensemble_type(ep), "PIF")
 
   tp <- pif_total_class(list(paf1, pif2), link = identity,
                         link_inv = identity, link_deriv = function(x) rep(1, length(x)),
-                        weights = c(0.5, 0.5), sigma_weights = matrix(0, 2, 2))
+                        pif_weights = c(0.5, 0.5), sigma_pif_weights = matrix(0, 2, 2))
 
-  ep <- pif_ensemble_class(list(pif1, paf2))
+  ep <- pif_ensemble_class(list(pif1, paf2), link = identity,
+                           link_inv = identity, link_deriv = function(x) rep(1, length(x)),
+                           pif_weights = rep(1, 2), sigma_pif_weights = matrix(0, 2, 2))
 
-  expect_equal(get_total_type(tp), "PIF")
+
+  expect_equal(get_ensemble_type(tp), "PIF")
   expect_equal(get_ensemble_type(ep), "PIF")
 
   tp <- pif_total_class(list(paf1, paf2), link = identity,
                         link_inv = identity, link_deriv = function(x) rep(1, length(x)),
-                        weights = c(0.5, 0.5), sigma_weights = matrix(0, 2, 2))
+                        pif_weights = c(0.5, 0.5), sigma_pif_weights = matrix(0, 2, 2))
 
-  ep <- pif_ensemble_class(list(paf1, paf2))
+  ep <- pif_ensemble_class(list(paf1, paf2), link = identity,
+                           link_inv = identity, link_deriv = function(x) rep(1, length(x)),
+                           pif_weights = rep(1, 2), sigma_pif_weights = matrix(0, 2, 2))
 
-  expect_equal(get_total_type(tp), "PAF")
+
+  expect_equal(get_ensemble_type(tp), "PAF")
   expect_equal(get_ensemble_type(ep), "PAF")
 })
+

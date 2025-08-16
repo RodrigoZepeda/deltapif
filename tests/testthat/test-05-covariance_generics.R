@@ -89,8 +89,8 @@ test_that("cov_total_pif handles different PIF types", {
   # Create a total PIF with two atomic PIFs
   total_pif <- pif_total_class(
     pif_list = list(atomic1, atomic2),
-    weights = c(0.5, 0.5),
-    sigma_weights = matrix(c(0.01, 0, 0, 0.01), nrow = 2),
+    pif_weights = c(0.5, 0.5),
+    sigma_pif_weights = matrix(c(0.01, 0, 0, 0.01), nrow = 2),
     conf_level = 0.95,
     link = identity,
     link_inv = identity,

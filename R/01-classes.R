@@ -54,34 +54,27 @@
 #' @param upper_bound_beta Whether the values for the `beta` component
 #' of the link_variance should be approximated by an upper bound.
 #'
-#' @param weights Weights for calculating the total PIF (respectively PAF)
+#' @param pif_weights pif_weights for calculating the total PIF (respectively PAF)
 #' in `pif_total`.
 #'
-#' @param sigma_weights Colink_variance matrix for the weights when calculating the
+#' @param sigma_pif_weights Colink_variance matrix for the pif_weights when calculating the
 #' total PIF (respectively PAF) in `pif_total`.
 #'
 #' @param pif_list A list of potential impact fractions `pif_class` so that
 #' the total can be computed from it.
 #'
+#' @param pif_transform Transform applied to the `pif` for summation
+#' in a `pif_global_ensemble_class` (see section below).
+#'
+#' @param pif_deriv_transform Derivative of the transform applied to the
+#' `pif` for summation in a `pif_global_ensemble_class` (see section below).
+#'
+#' @param pif_inverse_transform Inverse of the transform applied to the
+#' `pif` for summation in a `pif_global_ensemble_class` (see section below).
+#'
 #' @section Properties of a  `pif_class`:
-#' \describe{
-#'   \item{`ci`}{`numeric(2)` — Lower and upper confidence limits at level `conf_level`.}
-#'   \item{`link_vals`}{`numeric` — Entrywise evaluation of the link function at pif: `link(pif)`.}
-#'   \item{`link_deriv_vals`}{`character` — Entrywise evaluation of the derivative of the link function (`link_deriv`) at pif: `link(pif)`.}
-#'   \item{`link_variance`}{`numeric` - Estimate for the linked potential impact fraction's variance: `variance(link(pif))`.}
-#' }
-#'
-#' @section Properties of a  `pif_atomic_class`:
-#' The `pif_atomic_class` inherits the properties of a `pif_class` as well as:
-#' \describe{
-#'   \item{`mu_obs`}{`numeric` — Average relative risk in the observed population.}
-#'   \item{`mu_cft`}{`numeric` — Average relative risk in the counterfactual population.}
-#'   \item{`pif`}{`numeric` — Estimate of the potential impact fraction.}
-#'   \item{`rr_link_deriv_vals`}{`character` — Entrywise evaluation of the derivative of the link function (`link_deriv`) at pif: `link(pif)`.}
-#' }
-#'
-#' @section Computation of confidence intervals:
-#' Wald-type confidence intervals are calculated for `link(pif)` as follows:
+#' Any object that is a `pif_class` contains a potential impact fraction
+#' with intervals estimated as follows:
 #' \deqn{
 #'  \text{CI}_{\text{Link}} = \text{link}\big(\text{PIF}\big) \pm Z_{\alpha/2}\cdot\sqrt{\textrm{link\_variance}}
 #' }
@@ -90,13 +83,19 @@
 #'  \text{CI}_{\text{PIF}} = \text{link}^{-1}\Big(\text{CI}_{\text{Link}}\Big)
 #' }
 #'
-#' @section Class structure:
-#' All potential impact fractions inherit from the `pif_class` which
-#' provides some of the generics.
+#' The following are the properties of any `pif_class`
+#' \describe{
+#'   \item{`ci`}{`numeric(2)` — Lower and upper confidence limits at level `conf_level`.}
+#'   \item{`link_vals`}{`numeric` — Entrywise evaluation of the link function at pif: `link(pif)`.}
+#'   \item{`link_deriv_vals`}{`character` — Entrywise evaluation of the derivative of the link function (`link_deriv`) at pif: `link(pif)`.}
+#'   \item{`link_variance`}{`numeric` - Estimate for the linked potential impact fraction's variance: `variance(link(pif))`.}
+#' }
+#'
+#' @section Properties of a  `pif_atomic_class`:
 #'
 #' The `pif_atomic_class` is a type of `pif_class` that contains enough
-#' information for it to be computed through the classic formula by
-#' Walter:
+#' information to compute a potential impact fraction
+#' through the classic formula by Walter:
 #' \deqn{
 #'  \textrm{PIF} = \dfrac{
 #'    \sum\limits_{i=1}^N p_i \text{RR}_i - \sum\limits_{i=1}^N p_i^{\text{cft}} \text{RR}_i
@@ -106,37 +105,72 @@
 #' }
 #' where the relative risk is a function of a parameter \eqn{\beta_i}
 #' \deqn{
-#'  \text{RR}_i = g(\beta_i)
+#'  \text{RR}_i = \text{rr\_link}(\beta_i)
 #' }
-#' and the link_variance is calculated for a function of PIF: \eqn{f(\textrm{PIF})}
-#' The `pif_atomic_class` only contains one potential impact fraction
-#' and the parameters to estimate it.
 #'
-#' The `pif_additive_class` is a type of `pif_class` that can be computed
-#' as a sum of weighted transformations of potential impact fractions
-#' where the weights can be random. Elements of a `pif_additive_class`
-#' have a link_variance estimated for the following expression:
+#' The `pif_atomic_class` inherits the properties of a `pif_class` as well as:
+#' \describe{
+#'   \item{`mu_obs`}{`numeric` — Average relative risk in the observed population.}
+#'   \item{`mu_cft`}{`numeric` — Average relative risk in the counterfactual population.}
+#'   \item{`pif`}{`numeric` — Estimate of the potential impact fraction.}
+#'   \item{`rr_link_deriv_vals`}{`character` — Entrywise evaluation of the derivative of the link function (`link_deriv`) at pif: `link(pif)`.}
+#' }
+#'
+#' Confidence intervals are estimated as with any `pif_class`.
+#'
+#' @section Properties of a  `pif_global_ensemble_class`:
+#'
+#' The `pif_global_ensemble_class` creates a new potential impact
+#' fraction by summing a weighted combination of potential
+#' impact fractions. In general it computes the following expression:
 #' \deqn{
-#'  f\big(\textrm{PIF}_{+}\big) = \sum\limits_{i = 1}^{N} q_i \cdot  f_i\Big(\textrm{PIF}_i\Big)
+#' \textrm{PIF}_{\text{global}} =
+#'  g^{-1}\bigg( \sum\limits_{i = 1}^{N} g\big(w_i \cdot \textrm{PIF}_i\big) \bigg)
+#' }
+#' where \eqn{g} is refered to as the `pif_transform`, its derivative the
+#' `pif_deriv_transform`, and its inverse `pif_inverse_transform`.
+#'
+#' The `pif_global_ensemble_class` inherits the properties of a `pif_class` as well as:
+#' \describe{
+#'  \item{`pif_weights`}{`numeric` - Vector of weights \eqn{w_i} for weighting the potential impact fraction.}
+#'  \item{`sigma_pif_weights`}{`numeric` - Covariance matrix for the `pif_weights`}
+#'  \item{`pif_transform`}{`function` - Function \eqn{g} with which to transform the impact fraction before weighting.}
+#'  \item{`pif_deriv_transform`}{`function` - Derivative of the `pif_transform`.}
+#'  \item{`pif_inverse_transform`}{`function` - Inverse of the `pif_transform`.}
+#'  \item{`type`}{`character` - Whether the quantity represents a `PIF` or a `PAF`}
+#'  \item{`coefs`}{`numeric` - Potential impact fractions used for the global ensemble (each of the \eqn{\text{PIF}_i}.}
+#'  \item{`sum_transformed_weighted_coefs`}{`numeric` - Sum of the potential impact fractions involved \eqn{\sum g(w_i \text{PIF}_i)}.}
+#'  \item{`pif`}{`numeric` — Estimate of the potential impact fraction.}
+#'  \item{`covariance`}{`numeric` — Covariance matrix between the potential impact fractions in `coefs` (i.e. each entry is\eqn{\text{Cov}(\text{PIF}_i, \text{PIF}_j))}}
+#'  \item{`variance`}{`numeric` — Estimate for the variance of `pif`.}
 #' }
 #'
-#' Examples of calculations that can be added to a `pif_additive_class` are:Ç
+#' Confidence intervals are estimated as with any `pif_class`.
 #'
-#' The total potential impact fraction (combining different subpopulations)
+#' @section Properties of a  `pif_total_class`:
+#'
+#' A `pif_total_class` estimated the potential impact fraction of the
+#' weighted sum of fractions from different (disjoint) dispopulations:
 #' \deqn{
-#'  \textrm{PIF}_{Total} = \sum\limits_{i = 1}^{N} q_i \cdot \textrm{PIF}_i
+#'  \textrm{PIF}_{Total} = \sum\limits_{i = 1}^{N} w_i \cdot \textrm{PIF}_i
 #' }
-#' with \eqn{q_i} representing the proportions of individuals in each category.
+#' with \eqn{w_i} representing the proportions of individuals in each category.
+#' This is a type of `pif_global_ensemble_class` with `pif_transform = identity`.
+#'
+#' @section Properties of a  `pif_ensemble_class`:
 #'
 #' The ensemble potential impact fraction (representing different relative risks)
-#' for the same outcome
+#' for the same outcome is given by the weighted product:
 #' \deqn{
-#' \textrm{PIF}_{Ensemble} = 1 - \prod\limits_{i = 1}^{N} \Big(1 - \textrm{PIF}_i\Big)
+#' \textrm{PIF}_{Ensemble} = 1 - \prod\limits_{i = 1}^{N} \Big(1 - w_i \textrm{PIF}_i\Big)
 #' }
-#' as it can be transformed into
+#'
+#' However it can be transformed into a `pif_global_ensemble_class` by
+#' taking the log-complement:
 #' \deqn{
-#' \ln\Big(1 - \textrm{PIF}_{Ensemble}\Big) =  \sum\limits_{i = 1}^{N} \ln\big(1 - \textrm{PIF}_i\big)
+#' \ln\Big(1 - \textrm{PIF}_{Ensemble}\Big) =  \sum\limits_{i = 1}^{N} \ln\big(1 - w_i \textrm{PIF}_i\big)
 #' }
+#' hence it is a  `pif_global_ensemble_class` with `pif_transform = log_complement`.
 #'
 #' @examples
 #' #Create a new pif parent class element
@@ -180,11 +214,11 @@
 #' )
 #'
 #' tp1 <- pif_total_class(pif_list = list(pif1, pif2),
-#'   weights = c(0.5, 0.2), sigma_weights = diag(0.001, ncol = 2, nrow = 2),
+#'   pif_weights = c(0.5, 0.2), sigma_pif_weights = diag(0.001, ncol = 2, nrow = 2),
 #'   link = identity, link_inv = identity, link_deriv = identity)
 #'
 #' pif_total_class(pif_list = list(tp1, pif3),
-#'   weights = c(0.7, 0.3), sigma_weights = diag(0.001, ncol = 2, nrow = 2),
+#'   pif_weights = c(0.7, 0.3), sigma_pif_weights = diag(0.001, ncol = 2, nrow = 2),
 #'   link = identity, link_inv = identity, link_deriv = identity)
 #' @name classes
 NULL
@@ -497,7 +531,49 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
      )
   }
 )
-#S7::S4_register(pif_atomic_class)
+
+#' @rdname classes
+#' @export
+#pif_global_ensemble_class-------
+pif_global_ensemble_class <- S7::new_class(
+  name = "pif_global_ensemble_class",
+  package = "pifes",
+  parent = pif_class,
+  properties = list(
+    pif_list              = S7::class_list,
+    pif_weights           = S7::class_numeric,
+    sigma_pif_weights     = S7::class_numeric,
+    pif_transform         = S7::class_function,
+    pif_deriv_transform   = S7::class_function,
+    pif_inverse_transform = S7::class_function,
+    type                  = S7::new_property(S7::class_character, getter = get_ensemble_type),
+    coefs                 = S7::new_property(S7::class_numeric, getter = get_ensemble_coefs),
+    sum_transformed_weighted_coefs = S7::new_property(S7::class_numeric, getter = get_sum_transformed_weighted_coefs),
+    pif                            = S7::new_property(S7::class_numeric, getter = get_global_ensemble_pif),
+    #FIXME: Setup correct variance calculations
+    covariance            = S7::new_property(S7::class_numeric, getter = get_covariance_total), #FIXME: Change for a get generic ensemble
+    variance              = S7::new_property(S7::class_numeric, getter = get_variance_total) #FIXME: Change for a get generic ensemble
+  ),
+  validator = validate_global_ensemble,
+  constructor = function(pif_list, pif_weights, sigma_pif_weights,
+                         conf_level = 0.95, pif_transform,
+                         pif_deriv_transform, pif_inverse_transform,
+                         link, link_inv, link_deriv){
+
+
+    S7::new_object(S7::S7_object(),
+                   conf_level = conf_level,
+                   pif_transform = pif_transform,
+                   pif_inverse_transform = pif_inverse_transform,
+                   pif_deriv_transform = pif_deriv_transform,
+                   link = link,
+                   link_inv = link_inv,
+                   link_deriv = link_deriv,
+                   pif_list = pif_list,
+                   pif_weights = pif_weights,
+                   sigma_pif_weights = sigma_pif_weights
+    )}
+)
 
 #' @rdname classes
 #' @export
@@ -505,38 +581,18 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
 pif_total_class <- S7::new_class(
   name      = "pif_total_class",
   package   = "pifes",
-  parent    = pif_class,
+  parent    = pif_global_ensemble_class,
   properties = list(
-    pif_list      = S7::class_list,
-    weights       = S7::class_numeric,
-    sigma_weights = S7::class_numeric,
-    type          = S7::new_property(S7::class_numeric, getter = get_total_type),
-    coefs         = S7::new_property(S7::class_numeric, getter = get_total_coefs),
-    pif           = S7::new_property(S7::class_numeric, getter = get_total_pif),
-    covariance    = S7::new_property(S7::class_numeric, getter = get_covariance_total),
-    variance      = S7::new_property(S7::class_numeric, getter = get_variance_total)
+    pif_list              = S7::class_list,
+    pif_weights               = S7::class_numeric,
+    sigma_pif_weights         = S7::class_numeric,
+    covariance            = S7::new_property(S7::class_numeric, getter = get_covariance_total),
+    variance              = S7::new_property(S7::class_numeric, getter = get_variance_total)
   ),
-  validator = function(self) {
-
-    for (i in seq_along(self@pif_list)) {
-      if (!S7::S7_inherits(self@pif_list[[i]], pif_class)) {
-        cli::cli_abort(
-          "Element {i} of `pif_list` must be a 'pif_class'."
-        )
-      }
-    }
-
-    if (length(self@weights) != length(self@pif_list)){
-      cli::cli_abort(
-        paste0(
-          "Weights provided have length {length(self@weights)} but ",
-          "{length(self@pif_list)} fractions were provided."
-        )
-      )
-    }
-  },
-  constructor = function(pif_list, weights, sigma_weights,
-                         conf_level = 0.95, link, link_inv, link_deriv){
+  validator = validate_global_ensemble,
+  constructor = function(pif_list, pif_weights, sigma_pif_weights,
+                         link, link_inv, link_deriv,
+                         conf_level = 0.95){
 
     S7::new_object(S7::S7_object(),
                    conf_level = conf_level,
@@ -544,8 +600,11 @@ pif_total_class <- S7::new_class(
                    link_inv = link_inv,
                    link_deriv = link_deriv,
                    pif_list = pif_list,
-                   weights = weights,
-                   sigma_weights = sigma_weights
+                   pif_weights = pif_weights,
+                   sigma_pif_weights = sigma_pif_weights,
+                   pif_transform = identity,
+                   pif_deriv_transform = function(x) rep(1, length(x)),
+                   pif_inverse_transform = identity
                    )
 
 
@@ -558,35 +617,32 @@ pif_total_class <- S7::new_class(
 pif_ensemble_class <- S7::new_class(
   name      = "pif_ensemble_class",
   package   = "pifes",
-  parent    = pif_total_class,
+  parent    = pif_global_ensemble_class,
   properties = list(
     pif_list      = S7::class_list,
-    type          = S7::new_property(S7::class_numeric, getter = get_ensemble_type),
-    coefs         = S7::new_property(S7::class_numeric, getter = get_ensemble_coefs),
-    pif           = S7::new_property(S7::class_numeric, getter = get_ensemble_pif),
     covariance    = S7::new_property(S7::class_numeric, getter = get_ensemble_covariance),
     variance      = S7::new_property(S7::class_numeric, getter = get_ensemble_variance)
   ),
-  validator = function(self) {
-
-    for (i in seq_along(self@pif_list)) {
-      if (!S7::S7_inherits(self@pif_list[[i]], pif_class)) {
-        cli::cli_abort(
-          "Element {i} of `pif_list` must be a 'pif_class'."
-        )
-      }
-    }
-  },
-  constructor = function(pif_list, conf_level = 0.95){
+  validator = validate_global_ensemble,
+  constructor = function(pif_list,
+                         pif_weights,
+                         sigma_pif_weights,
+                         link,
+                         link_inv,
+                         link_deriv,
+                         conf_level = 0.95){
 
     S7::new_object(S7::S7_object(),
                    conf_level = conf_level,
-                   link = log_complement,
-                   link_inv = inv_log_complement,
-                   link_deriv = deriv_log_complement,
+                   link = link,
+                   link_inv = link_inv,
+                   link_deriv = link_deriv,
+                   pif_weights = pif_weights,
+                   sigma_pif_weights = sigma_pif_weights,
                    pif_list = pif_list,
-                   weights = rep(1, length(pif_list)),
-                   sigma_weights = matrix(0, ncol = length(pif_list), nrow = length(pif_list))
+                   pif_transform = log_complement,
+                   pif_inverse_transform = inv_log_complement,
+                   pif_deriv_transform = deriv_log_complement
     )
 
 

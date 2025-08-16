@@ -174,8 +174,8 @@ test_that("pif_total_class construction and validation works", {
   expect_silent(
     pif_total_class(
       pif_list = list(pif1, pif2),
-      weights = c(0.5, 0.5),
-      sigma_weights = matrix(c(0.01, 0, 0, 0.01), nrow = 2),
+      pif_weights = c(0.5, 0.5),
+      sigma_pif_weights = matrix(c(0.01, 0, 0, 0.01), nrow = 2),
       conf_level = 0.95,
       link = identity,
       link_inv = identity,
@@ -187,8 +187,8 @@ test_that("pif_total_class construction and validation works", {
   expect_error(
     pif_total_class(
       pif_list = list(pif1, "not_a_pif"),
-      weights = c(0.5, 0.5),
-      sigma_weights = matrix(c(0.01, 0, 0, 0.01), nrow = 2),
+      pif_weights = c(0.5, 0.5),
+      sigma_pif_weights = matrix(c(0.01, 0, 0, 0.01), nrow = 2),
       conf_level = 0.95,
       link = identity,
       link_inv = identity,
@@ -201,21 +201,21 @@ test_that("pif_total_class construction and validation works", {
   expect_error(
     pif_total_class(
       pif_list = list(pif1, pif2),
-      weights = c(0.5), # Too short
-      sigma_weights = matrix(c(0.01, 0, 0, 0.01), nrow = 2),
+      pif_weights = c(0.5), # Too short
+      sigma_pif_weights = matrix(c(0.01, 0, 0, 0.01), nrow = 2),
       conf_level = 0.95,
       link = identity,
       link_inv = identity,
       link_deriv = function(x) 1
     ),
-    "Weights provided have length 1"
+    "pif_weights provided have length 1"
   )
 
   # Test property access
   pif_total <- pif_total_class(
     pif_list = list(pif1, pif2),
-    weights = c(0.5, 0.5),
-    sigma_weights = matrix(c(0.01, 0, 0, 0.01), nrow = 2),
+    pif_weights = c(0.5, 0.5),
+    sigma_pif_weights = matrix(c(0.01, 0, 0, 0.01), nrow = 2),
     conf_level = 0.95,
     link = identity,
     link_inv = identity,
@@ -236,7 +236,12 @@ test_that("pif_ensemble_class construction and validation works", {
   expect_silent(
     pif_ensemble_class(
       pif_list = list(pif1, pif2),
-      conf_level = 0.95
+      conf_level = 0.95,
+      link = log_complement,
+      link_inv = inv_log_complement,
+      link_deriv = deriv_log_complement,
+      pif_weights = rep(1, 2),
+      sigma_pif_weights = matrix(0, 2, 2)
     )
   )
 
@@ -244,7 +249,12 @@ test_that("pif_ensemble_class construction and validation works", {
   expect_error(
     pif_ensemble_class(
       pif_list = list(pif1, "not_a_pif"),
-      conf_level = 0.95
+      conf_level = 0.95,
+      link = log_complement,
+      link_inv = inv_log_complement,
+      link_deriv = deriv_log_complement,
+      pif_weights = rep(1, 2),
+      sigma_pif_weights = matrix(0, 2, 2)
     ),
     "must be a 'pif_class'"
   )
@@ -252,7 +262,12 @@ test_that("pif_ensemble_class construction and validation works", {
   # Test property access
   pif_ensemble <- pif_ensemble_class(
     pif_list = list(pif1, pif2),
-    conf_level = 0.95
+    conf_level = 0.95,
+    link = log_complement,
+    link_inv = inv_log_complement,
+    link_deriv = deriv_log_complement,
+    pif_weights = rep(1, 2),
+    sigma_pif_weights = matrix(0, 2, 2)
   )
 
   expect_equal(pif_ensemble@coefs, c(pif1@pif, pif2@pif))
@@ -271,8 +286,8 @@ test_that("Class inheritance works correctly", {
   pif2 <- create_valid_pif_atomic()
   pif_total <- pif_total_class(
     pif_list = list(pif1, pif2),
-    weights = c(0.5, 0.5),
-    sigma_weights = matrix(c(0.01, 0, 0, 0.01), nrow = 2),
+    pif_weights = c(0.5, 0.5),
+    sigma_pif_weights = matrix(c(0.01, 0, 0, 0.01), nrow = 2),
     conf_level = 0.95,
     link = identity,
     link_inv = identity,
@@ -280,14 +295,34 @@ test_that("Class inheritance works correctly", {
   )
   pif_ensemble <- pif_ensemble_class(
     pif_list = list(pif1, pif2),
-    conf_level = 0.95
+    conf_level = 0.95,
+    link = log_complement,
+    link_inv = inv_log_complement,
+    link_deriv = deriv_log_complement,
+    pif_weights = rep(1, 2),
+    sigma_pif_weights = matrix(0, 2, 2)
+  )
+
+  pif_global_ensemble <- pif_global_ensemble_class(
+    pif_list = list(pif1, pif2),
+    conf_level = 0.95,
+    link = log_complement,
+    link_inv = inv_log_complement,
+    link_deriv = deriv_log_complement,
+    pif_weights = rep(1, 2),
+    sigma_pif_weights = matrix(0, 2, 2),
+    pif_transform = identity,
+    pif_deriv_transform = function(x) 1,
+    pif_inverse_transform = identity
   )
 
   # Verify inheritance
   expect_true(S7::S7_inherits(pif_atomic, pif_class))
-  expect_true(S7::S7_inherits(pif_total, pif_class))
-  expect_true(S7::S7_inherits(pif_ensemble, pif_total_class))
+  expect_true(S7::S7_inherits(pif_global_ensemble, pif_class))
+  expect_true(S7::S7_inherits(pif_total, pif_global_ensemble_class))
+  expect_true(S7::S7_inherits(pif_ensemble, pif_global_ensemble_class))
   expect_true(S7::S7_inherits(pif_ensemble, pif_class))
+  expect_true(S7::S7_inherits(pif_total, pif_class))
 
   # Verify methods work through inheritance
   expect_length(pif_atomic@ci, 2)

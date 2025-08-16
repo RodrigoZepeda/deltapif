@@ -98,16 +98,22 @@ get_ci <- function(self) {
   )
 }
 
-#' Get the coefficients
+#' Get each of the PIF_i
 #' @rdname getters
-get_total_coefs <- function(self){
+get_ensemble_coefs <- function(self){
   sapply(self@pif_list, coef)
 }
 
-#' Get the coefficients
+#' Get the sum of g(q_i PIF_i)
 #' @rdname getters
-get_ensemble_coefs <- function(self){
-  get_total_coefs(self)
+get_sum_transformed_weighted_coefs <- function(self){
+  sum(sapply(self@coefs*self@pif_weights, self@pif_transform))
+}
+
+#' Get g^{-1} sum(g(q_i PIF_i))
+#' @rdname getters
+get_global_ensemble_pif <- function(self){
+  self@pif_inverse_transform(self@sum_transformed_weighted_coefs)
 }
 
 #' Get the ensemble coefficients
@@ -119,20 +125,14 @@ get_ensemble_pif <- function(self){
 #' Get the coefficients
 #' @rdname getters
 get_total_pif <- function(self){
-  as.numeric(t(self@weights) %*% self@coefs)
-}
-
-#' Get types
-#' @rdname getters
-get_total_type <- function(self){
-  pif_types <- sapply(self@pif_list, fraction_type)
-  ifelse(any(pif_types == "PIF"), "PIF", "PAF")
+  as.numeric(t(self@pif_weights) %*% self@coefs)
 }
 
 #' Get types
 #' @rdname getters
 get_ensemble_type <- function(self){
-  get_total_type(self)
+  pif_types <- sapply(self@pif_list, fraction_type)
+  ifelse(any(pif_types == "PIF"), "PIF", "PAF")
 }
 
 #' Get the covariance of the summands of pif total
@@ -182,9 +182,9 @@ get_ensemble_covariance <- function(self){
 #' @rdname getters
 get_variance_total <- function(self){
   as.numeric(
-    t(self@weights) %*% self@covariance %*% self@weights +
-    t(self@coefs) %*% self@sigma_weights %*% self@coefs +
-    sum(diag(self@covariance*self@sigma_weights))
+    t(self@pif_weights) %*% self@covariance %*% self@pif_weights +
+    t(self@coefs) %*% self@sigma_pif_weights %*% self@coefs +
+    sum(diag(self@covariance*self@sigma_pif_weights))
   )
 }
 

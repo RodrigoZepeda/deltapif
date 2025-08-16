@@ -12,11 +12,11 @@
 \alias{get_link_variance}
 \alias{get_variance_atomic}
 \alias{get_ci}
-\alias{get_total_coefs}
 \alias{get_ensemble_coefs}
+\alias{get_sum_transformed_weighted_coefs}
+\alias{get_global_ensemble_pif}
 \alias{get_ensemble_pif}
 \alias{get_total_pif}
-\alias{get_total_type}
 \alias{get_ensemble_type}
 \alias{get_covariance_total}
 \alias{get_ensemble_covariance}
@@ -44,15 +44,15 @@ get_variance_atomic(self)
 
 get_ci(self)
 
-get_total_coefs(self)
-
 get_ensemble_coefs(self)
+
+get_sum_transformed_weighted_coefs(self)
+
+get_global_ensemble_pif(self)
 
 get_ensemble_pif(self)
 
 get_total_pif(self)
-
-get_total_type(self)
 
 get_ensemble_type(self)
 

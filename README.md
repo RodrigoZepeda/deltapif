@@ -23,6 +23,7 @@ intervals using the delta method.
 You can install the development version of deltapif with:
 
 ``` r
+#install.packages("remotes")
 remotes::install_github("RodrigoZepeda/deltapif")
 ```
 
@@ -72,8 +73,8 @@ $$
 \textrm{PAF} = \frac{p \cdot (\text{RR} - 1)}{1 + p \cdot (\text{RR} - 1)}
 $$
 
-Additional examples show how to calculate the PAF for multiple
-categories.
+[Additional examples](rodrigozepeda.github.io/deltapif/Introduction)
+show how to calculate the PAF for multiple categories.
 
 ### Adding uncertainty
 

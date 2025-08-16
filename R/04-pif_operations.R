@@ -12,11 +12,11 @@
 #' @param ... The remaining potential impact fractions or (respectively)
 #' population attributable fractions.
 #'
-#' @param weights A vector containing the proportion of the population
+#' @param pif_weights A vector containing the proportion of the population
 #' for each of the categories (for each of the pifs given).
 #'
-#' @param sigma_weights Colink_variance structure for the `weights`. Can be `0` (default) if
-#' the weights are not random, a vector if only the link_variances of the weights
+#' @param sigma_pif_weights Colink_variance structure for the `pif_weights`. Can be `0` (default) if
+#' the pif_weights are not random, a vector if only the link_variances of the pif_weights
 #' are available or a colink_variance matrix.
 #'
 #' @inheritParams pifpaf
@@ -36,7 +36,7 @@
 #' where each \eqn{\text{PIF}_i} corresponds to the potential impact
 #' fraction of the i-th subpopulation and \eqn{\pi_i} correspond to
 #' the proportion of the total population occupied by \eqn{\text{PIF}_i}.
-#' The weights are such that \eqn{\sum_{i=1}^{N} \pi_i = 1}.
+#' The pif_weights are such that \eqn{\sum_{i=1}^{N} \pi_i = 1}.
 #'
 #' @section Ensemble potential impact fraction:
 #'
@@ -59,14 +59,14 @@
 #' pif_men <- pif(0.27, 0.1, 1.3, quiet = TRUE, var_p = 0.1)
 #'
 #' #Population potential impact fraction with 49% men and 51% women
-#' pif_total(pif_men, pif_women, weights = c(0.49, 0.51), link = "logit")
+#' pif_total(pif_men, pif_women, pif_weights = c(0.49, 0.51), link = "logit")
 #'
 #' #Population attributable  fraction for women
 #' paf_women <- paf(0.32, 1.3, quiet = TRUE, var_p = 0.1)
 #'
 #' #Population attributable  fraction for men
 #' paf_men <- paf(0.27, 1.3, quiet = TRUE, var_p = 0.1)
-#' paf_total(paf_men, paf_women, weights = c(0.49, 0.51), link = "logit")
+#' paf_total(paf_men, paf_women, pif_weights = c(0.49, 0.51), link = "logit")
 #'
 #' # Calculate the ensemble from lead and radiation exposure
 #' paf_lead <- paf(0.2, 2.2, quiet = TRUE, var_p = 0.001)
@@ -81,13 +81,13 @@
 #' pif_rad_men    <- paf(0.10, 1.2, quiet = TRUE, var_p = 0.001)
 #' pif_men        <- pif_ensemble(pif_lead_men, pif_rad_men)
 #'
-#' pif_total(pif_men, pif_women, weights = c(0.49, 0.51))
+#' pif_total(pif_men, pif_women, pif_weights = c(0.49, 0.51))
 #' @name totalpifpaf
 NULL
 
 #' @rdname totalpifpaf
 #' @export
-paf_total <- function(paf1, ..., weights, sigma_weights = 0, conf_level = 0.95,
+paf_total <- function(paf1, ..., pif_weights, sigma_pif_weights = 0, conf_level = 0.95,
                       link = "log-complement",
                       link_inv = NULL,
                       link_deriv = NULL,
@@ -104,7 +104,7 @@ paf_total <- function(paf1, ..., weights, sigma_weights = 0, conf_level = 0.95,
     }
   }
 
-  pif_total(paf1, ..., weights = weights, sigma_weights = sigma_weights,
+  pif_total(paf1, ..., pif_weights = pif_weights, sigma_pif_weights = sigma_pif_weights,
             conf_level = conf_level, link = link, link_inv = link_inv,
             link_deriv = link_deriv, quiet = quiet)
 
@@ -112,7 +112,7 @@ paf_total <- function(paf1, ..., weights, sigma_weights = 0, conf_level = 0.95,
 
 #' @rdname totalpifpaf
 #' @export
-pif_total <- function(pif1, ..., weights, sigma_weights = 0, conf_level = 0.95,
+pif_total <- function(pif1, ..., pif_weights, sigma_pif_weights = 0, conf_level = 0.95,
                       link = "log-complement",
                       link_inv = NULL,
                       link_deriv = NULL,
@@ -142,55 +142,55 @@ pif_total <- function(pif1, ..., weights, sigma_weights = 0, conf_level = 0.95,
   }
 
 
-  if (abs(sum(weights) - 1) > sqrt(.Machine$double.eps)){
+  if (abs(sum(pif_weights) - 1) > sqrt(.Machine$double.eps)){
     cli::cli_abort(
-      "`weights` should sum to 1 but `sum(weights)` = {sum(weights)}"
+      "`pif_weights` should sum to 1 but `sum(pif_weights)` = {sum(pif_weights)}"
     )
   }
 
-  if (!is.numeric(sigma_weights)){
+  if (!is.numeric(sigma_pif_weights)){
     cli::cli_abort(
-      "`sigma_weights` should be a number, vector or matrix."
+      "`sigma_pif_weights` should be a number, vector or matrix."
     )
   }
 
 
-  #Check sigma weights
-  if (length(sigma_weights) == 1 && is.numeric(sigma_weights)){
-    sigma_weights <- matrix(sigma_weights, nrow = npifs, ncol = npifs)
-  } else if (is.vector(sigma_weights)) {
-    sigma_weights <- sigma_weights %*% t(sigma_weights)
+  #Check sigma pif_weights
+  if (length(sigma_pif_weights) == 1 && is.numeric(sigma_pif_weights)){
+    sigma_pif_weights <- matrix(sigma_pif_weights, nrow = npifs, ncol = npifs)
+  } else if (is.vector(sigma_pif_weights)) {
+    sigma_pif_weights <- sigma_pif_weights %*% t(sigma_pif_weights)
     if (!quiet){
       cli::cli_alert_warning(
         paste0(
-          "Assuming parameters `weights` are correlated but correlation is unknown. ",
-          "If they are uncorrelated redefine `sigma_weights = diag(sigma_weights)` to ",
+          "Assuming parameters `pif_weights` are correlated but correlation is unknown. ",
+          "If they are uncorrelated redefine `sigma_pif_weights = diag(sigma_pif_weights)` to ",
           "transform them into a matrix with no correlations."
         )
       )
     }
   }
 
-  if (is.matrix(sigma_weights)){
+  if (is.matrix(sigma_pif_weights)){
 
-    if (ncol(sigma_weights) != npifs){
+    if (ncol(sigma_pif_weights) != npifs){
       cli::cli_abort(
         paste0(
-          "Matrix `sigma_weights` has incorrect dimensions. Should be an ",
+          "Matrix `sigma_pif_weights` has incorrect dimensions. Should be an ",
           "{npifs} x {npifs} matrix"
         )
       )
     }
 
-    if (!isSymmetric(sigma_weights, trans = "T")){
-      cli::cli_abort("Matrix `sigma_weights` is not symmetric.")
+    if (!isSymmetric(sigma_pif_weights, trans = "T")){
+      cli::cli_abort("Matrix `sigma_pif_weights` is not symmetric.")
     }
   }
 
 
   pif <- pif_total_class(pif_list = pif_list,
-                  weights = weights,
-                  sigma_weights = sigma_weights,
+                  pif_weights = pif_weights,
+                  sigma_pif_weights = sigma_pif_weights,
                   conf_level = conf_level,
                   link = link,
                   link_inv = link_inv,
@@ -210,10 +210,62 @@ pif_total <- function(pif1, ..., weights, sigma_weights = 0, conf_level = 0.95,
 
 #' @rdname totalpifpaf
 #' @export
-pif_ensemble <- function(pif1, ..., conf_level = 0.95, quiet = FALSE){
+pif_ensemble <- function(pif1, ...,
+                         pif_weights = NULL,
+                         sigma_pif_weights = NULL,
+                         link = "identity",
+                         link_inv = NULL,
+                         link_deriv = NULL,
+                         conf_level = 0.95,
+                         quiet = FALSE){
 
   #Get the fractions in list form
   pif_list <- append(list(pif1), list(...))
-  pif_ensemble_class(pif_list = pif_list, conf_level = conf_level)
+
+  # Get the links
+  link_name <- link #Save for later evaluation
+
+
+  if (is.null(pif_weights)){
+    pif_weights <- rep(1, length(pif_list))
+  }
+
+  if (is.null(sigma_pif_weights)){
+    sigma_pif_weights <- matrix(0, ncol = length(pif_weights), nrow = length(pif_weights))
+  }
+
+
+  # Get the inverse function
+  if (is.null(link_inv) & is.character(link)) {
+    link_inv <- parse_inv_link(link)
+  }
+
+  if (is.null(link_deriv) & is.character(link)){
+    link_deriv <- parse_deriv_link(link)
+  }
+
+  # Get the functions
+  link    <- parse_link(link)
+
+  if (!is.function(link_deriv) && is.null(link_deriv)) {
+    link_deriv <- Deriv::Deriv(link)
+  }
+
+  pif <- pif_ensemble_class(pif_list = pif_list, conf_level = conf_level,
+                            link = link, link_inv = link_inv,
+                            link_deriv = link_deriv,
+                            pif_weights = pif_weights,
+                            sigma_pif_weights = sigma_pif_weights)
+
+  if (is.character(link_name) && link_name == "logit" && coef(pif) <= 0){
+    cli::cli_warn(
+      paste0(
+        "Value for {fraction_type(pif)} = {round(coef(pif),2)} <= 0. ",
+        "Change link to a different value as `logit` is only ",
+        "valid for strictly positive {fraction_type(pif)}s."
+      )
+    )
+  }
+  return(pif)
 
 }

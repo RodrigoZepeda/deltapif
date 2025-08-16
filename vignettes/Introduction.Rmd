@@ -125,19 +125,19 @@ We can calculate the total population attributable fraction by combining the fra
 weighted by the proportion of the population. According to Wikipedia the distribution in 2020 was as follows:
 
 ```{r}
-weights <- c("white" = 0.5784, "hispanic" = 0.1873, "black" = 0.1205, "asian" = 0.0592)
+pif_weights <- c("white" = 0.5784, "hispanic" = 0.1873, "black" = 0.1205, "asian" = 0.0592)
 
-#Normalized weights to sum to 1
-weights <- weights / sum(weights)
+#Normalized pif_weights to sum to 1
+pif_weights <- pif_weights / sum(pif_weights)
 ```
 
 The `paf_total` function computes the aggregated `paf` of the whole population:
 
 ```{r}
-paf_total(paf_white, paf_hispanic, paf_black, paf_asian, weights = weights, sigma_weights = 0)
+paf_total(paf_white, paf_hispanic, paf_black, paf_asian, pif_weights = pif_weights, sigma_pif_weights = 0)
 ```
 
-where we set `sigma_weights = 0` as no covariance matrix was known for the race distribution data (it does exist its just not on Wikipedia). 
+where we set `sigma_pif_weights = 0` as no covariance matrix was known for the race distribution data (it does exist its just not on Wikipedia). 
 
 ### Why are we using the log relative risk?
 

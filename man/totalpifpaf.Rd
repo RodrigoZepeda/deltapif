@@ -10,8 +10,8 @@
 paf_total(
   paf1,
   ...,
-  weights,
-  sigma_weights = 0,
+  pif_weights,
+  sigma_pif_weights = 0,
   conf_level = 0.95,
   link = "log-complement",
   link_inv = NULL,
@@ -22,8 +22,8 @@ paf_total(
 pif_total(
   pif1,
   ...,
-  weights,
-  sigma_weights = 0,
+  pif_weights,
+  sigma_pif_weights = 0,
   conf_level = 0.95,
   link = "log-complement",
   link_inv = NULL,
@@ -31,7 +31,17 @@ pif_total(
   quiet = FALSE
 )
 
-pif_ensemble(pif1, ..., conf_level = 0.95, quiet = FALSE)
+pif_ensemble(
+  pif1,
+  ...,
+  pif_weights = NULL,
+  sigma_pif_weights = NULL,
+  link = "identity",
+  link_inv = NULL,
+  link_deriv = NULL,
+  conf_level = 0.95,
+  quiet = FALSE
+)
 }
 \arguments{
 \item{paf1}{A population attributable fraction (class \code{pif_class})}
@@ -39,11 +49,11 @@ pif_ensemble(pif1, ..., conf_level = 0.95, quiet = FALSE)
 \item{...}{The remaining potential impact fractions or (respectively)
 population attributable fractions.}
 
-\item{weights}{A vector containing the proportion of the population
+\item{pif_weights}{A vector containing the proportion of the population
 for each of the categories (for each of the pifs given).}
 
-\item{sigma_weights}{Colink_variance structure for the \code{weights}. Can be \code{0} (default) if
-the weights are not random, a vector if only the link_variances of the weights
+\item{sigma_pif_weights}{Colink_variance structure for the \code{pif_weights}. Can be \code{0} (default) if
+the pif_weights are not random, a vector if only the link_variances of the pif_weights
 are available or a colink_variance matrix.}
 
 \item{conf_level}{Confidence level for the confidence interval (default 0.95).}
@@ -83,7 +93,7 @@ fraction of the whole population as:
 where each \eqn{\text{PIF}_i} corresponds to the potential impact
 fraction of the i-th subpopulation and \eqn{\pi_i} correspond to
 the proportion of the total population occupied by \eqn{\text{PIF}_i}.
-The weights are such that \eqn{\sum_{i=1}^{N} \pi_i = 1}.
+The pif_weights are such that \eqn{\sum_{i=1}^{N} \pi_i = 1}.
 }
 
 \section{Ensemble potential impact fraction}{
@@ -109,14 +119,14 @@ pif_women <- pif(0.32, 0.1, 1.2, quiet = TRUE, var_p = 0.1)
 pif_men <- pif(0.27, 0.1, 1.3, quiet = TRUE, var_p = 0.1)
 
 #Population potential impact fraction with 49\% men and 51\% women
-pif_total(pif_men, pif_women, weights = c(0.49, 0.51), link = "logit")
+pif_total(pif_men, pif_women, pif_weights = c(0.49, 0.51), link = "logit")
 
 #Population attributable  fraction for women
 paf_women <- paf(0.32, 1.3, quiet = TRUE, var_p = 0.1)
 
 #Population attributable  fraction for men
 paf_men <- paf(0.27, 1.3, quiet = TRUE, var_p = 0.1)
-paf_total(paf_men, paf_women, weights = c(0.49, 0.51), link = "logit")
+paf_total(paf_men, paf_women, pif_weights = c(0.49, 0.51), link = "logit")
 
 # Calculate the ensemble from lead and radiation exposure
 paf_lead <- paf(0.2, 2.2, quiet = TRUE, var_p = 0.001)
@@ -131,5 +141,5 @@ pif_lead_men   <- paf(0.30, 2.2, quiet = TRUE, var_p = 0.001)
 pif_rad_men    <- paf(0.10, 1.2, quiet = TRUE, var_p = 0.001)
 pif_men        <- pif_ensemble(pif_lead_men, pif_rad_men)
 
-pif_total(pif_men, pif_women, weights = c(0.49, 0.51))
+pif_total(pif_men, pif_women, pif_weights = c(0.49, 0.51))
 }

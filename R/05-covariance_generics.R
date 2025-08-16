@@ -185,11 +185,11 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
   total <- 0
 
   # If pif1 is a list (regardless of p2's type)
-  if (S7::S7_inherits(pif1, pif_total_class)) {
+  if (S7::S7_inherits(pif1, pif_global_ensemble_class)) {
     for (i in seq_along(pif1@pif_list)) {
       #Compute sum q*covariance(pif1, pif2)
       total <- total +
-        pif1@weights[[i]]*cov_total_pif(pif1 = pif1@pif_list[[i]],
+        pif1@pif_weights[[i]]*cov_total_pif(pif1 = pif1@pif_list[[i]],
                                         pif2 = pif2,
                                         var_p = var_p,
                                         var_beta = var_beta,
@@ -201,10 +201,10 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
   }
 
   # If p2 is a list (and p1 isn't, from above)
-  if (S7::S7_inherits(pif2, pif_total_class)) {
+  if (S7::S7_inherits(pif2, pif_global_ensemble_class)) {
     for (i in seq_along(pif2@pif_list)) {
       total <- total +
-        pif2@weights[[i]]*cov_total_pif(pif1 = pif1,
+        pif2@pif_weights[[i]]*cov_total_pif(pif1 = pif1,
                                         pif2 = pif2@pif_list[[i]],
                                         var_p = var_p,
                                         var_beta = var_beta,
@@ -301,7 +301,7 @@ covariance <- S7::new_generic(
     S7::S7_dispatch()
   }
 )
-S7::method(covariance, S7::new_union(pif_total_class, pif_atomic_class)) <- function(x, ..., var_p = NULL, var_beta = NULL,
+S7::method(covariance, S7::new_union(pif_global_ensemble_class, pif_atomic_class)) <- function(x, ..., var_p = NULL, var_beta = NULL,
                                                                               independent_p = "guess", independent_beta = "guess",
                                                                               quiet = FALSE) {
 
@@ -378,7 +378,7 @@ S7::method(covariance, S7::new_union(pif_total_class, pif_atomic_class)) <- func
 #' @rdname covcor
 #' @export
 variance <- S7::new_generic("variance", "x")
-S7::method(variance, S7::new_union(pif_total_class, pif_atomic_class)) <- function(x, ...) {
+S7::method(variance, S7::new_union(pif_global_ensemble_class, pif_atomic_class)) <- function(x, ...) {
   if (length(list(...)) > 0) {
     cli::cli_warn(
       "Currently this function does not support more than 1 argument. Ignoring the rest."
@@ -390,7 +390,7 @@ S7::method(variance, S7::new_union(pif_total_class, pif_atomic_class)) <- functi
 #' @rdname covcor
 #' @export
 standard_deviation <- S7::new_generic("standard_deviation", "x")
-S7::method(standard_deviation, S7::new_union(pif_total_class, pif_atomic_class)) <- function(x, ...) {
+S7::method(standard_deviation, S7::new_union(pif_global_ensemble_class, pif_atomic_class)) <- function(x, ...) {
   sqrt(variance(x, ...))
 }
 
@@ -404,7 +404,7 @@ correlation <- S7::new_generic(
     S7::S7_dispatch()
   }
 )
-S7::method(correlation, S7::new_union(pif_total_class, pif_atomic_class)) <- function(x, ..., var_p = NULL, var_beta = NULL,
+S7::method(correlation, S7::new_union(pif_global_ensemble_class, pif_atomic_class)) <- function(x, ..., var_p = NULL, var_beta = NULL,
                                                                               independent_p = "guess", independent_beta = "guess",
                                                                               quiet = FALSE) {
   cov2cor(

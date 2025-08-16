@@ -24,7 +24,7 @@ test_that("paf_total validates inputs correctly", {
   paf2 <- create_mock_pif_atomic(type = "PAF")
 
   # Valid case
-  expect_silent(paf_total(paf1, paf2, weights = c(0.5, 0.5)))
+  expect_silent(paf_total(paf1, paf2, pif_weights = c(0.5, 0.5)))
 
 })
 
@@ -33,39 +33,39 @@ test_that("pif_total validates inputs correctly", {
   pif2 <- create_mock_pif_atomic()
 
   # Valid cases
-  expect_silent(pif_total(pif1, pif2, weights = c(0.5, 0.5)))
-  expect_silent(pif_total(pif1, weights = 1)) # Single PIF case
+  expect_silent(pif_total(pif1, pif2, pif_weights = c(0.5, 0.5)))
+  expect_silent(pif_total(pif1, pif_weights = 1)) # Single PIF case
 
-  # Invalid weights
+  # Invalid pif_weights
   expect_error(
-    pif_total(pif1, pif2, weights = c(0.5, 0.6)), # Doesn't sum to 1
+    pif_total(pif1, pif2, pif_weights = c(0.5, 0.6)), # Doesn't sum to 1
     "should sum to 1"
   )
 
   expect_error(
-    pif_total(pif1, pif2, weights = c(1)), # Wrong length
+    pif_total(pif1, pif2, pif_weights = c(1)), # Wrong length
     "provided have length 1"
   )
 
-  # Invalid sigma_weights
+  # Invalid sigma_pif_weights
   expect_error(
-    pif_total(pif1, pif2, weights = c(0.5, 0.5), sigma_weights = matrix(1:4, nrow = 2)),
+    pif_total(pif1, pif2, pif_weights = c(0.5, 0.5), sigma_pif_weights = matrix(1:4, nrow = 2)),
     "is not symmetric"
   )
 
   expect_error(
-    pif_total(pif1, pif2, weights = c(0.5, 0.5), sigma_weights = "a"),
+    pif_total(pif1, pif2, pif_weights = c(0.5, 0.5), sigma_pif_weights = "a"),
     "should be a number"
   )
 
   expect_error(
-    pif_total(pif1, pif2, weights = c(0.5, 0.5), sigma_weights = 1:3),
+    pif_total(pif1, pif2, pif_weights = c(0.5, 0.5), sigma_pif_weights = 1:3),
     "has incorrect dimensions"
   )
 
   # Test link function handling
-  expect_silent(pif_total(pif1, weights = 1, link = "logit"))
-  expect_silent(pif_total(pif1, weights = 1, link = logit, link_inv = inv_logit, link_deriv = deriv_logit))
+  expect_silent(pif_total(pif1, pif_weights = 1, link = "logit"))
+  expect_silent(pif_total(pif1, pif_weights = 1, link = logit, link_inv = inv_logit, link_deriv = deriv_logit))
 
 })
 
@@ -73,16 +73,16 @@ test_that("pif_total calculates correctly", {
   pif1 <- create_mock_pif_atomic()
   pif2 <- create_mock_pif_atomic()
 
-  # Test weights
-  result <- pif_total(pif1, pif2, weights = c(0.7, 0.3))
+  # Test pif_weights
+  result <- pif_total(pif1, pif2, pif_weights = c(0.7, 0.3))
   expect_equal(result@pif, 0.7*pif1@pif + 0.3*pif2@pif)
 
   # Test single PIF
-  result <- pif_total(pif1, weights = 1)
+  result <- pif_total(pif1, pif_weights = 1)
   expect_equal(result@pif, pif1@pif)
 
   # Test variance calculation
-  result <- pif_total(pif1, pif2, weights = c(0.5, 0.5), sigma_weights = diag(0.01, 2))
+  result <- pif_total(pif1, pif2, pif_weights = c(0.5, 0.5), sigma_pif_weights = diag(0.01, 2))
   expect_type(result@variance, "double")
   expect_true(result@variance > 0)
 })
@@ -125,13 +125,13 @@ test_that("paf_total validates inputs correctly", {
   paf2 <- create_mock_pif_atomic("PAF")
 
   # Valid cases
-  expect_silent(paf_total(paf1, paf2, weights = c(0.5, 0.5)))
+  expect_silent(paf_total(paf1, paf2, pif_weights = c(0.5, 0.5)))
   expect_error(
-    paf_total(paf1, pif1, weights = c(0.4, 0.6)),
+    paf_total(paf1, pif1, pif_weights = c(0.4, 0.6)),
     "is not a Population Attributable Fraction"
   )
   expect_error(
-    paf_total(pif1, paf1, weights = c(0.4, 0.6)),
+    paf_total(pif1, paf1, pif_weights = c(0.4, 0.6)),
     "is not a Population Attributable Fraction"
   )
 
@@ -145,7 +145,7 @@ test_that("logit link for negative pif", {
 
   # Valid cases
   expect_warning(
-    pif_total(pif1, pif2, weights = c(0.1, 0.9), link = "logit"),
+    pif_total(pif1, pif2, pif_weights = c(0.1, 0.9), link = "logit"),
     "is only valid for strictly positive PIF"
   )
 
