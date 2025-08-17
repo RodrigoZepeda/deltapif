@@ -2,42 +2,85 @@
 % Please edit documentation in R/05-covariance_generics.R
 \name{cov_atomic_pif}
 \alias{cov_atomic_pif}
-\title{Estimate the colink_variance between two pif_atomic objects}
+\title{Get the covariance between two atomic pifs}
 \usage{
 cov_atomic_pif(
   pif1,
   pif2,
   var_p = NULL,
   var_beta = NULL,
-  independent_p = "guess",
-  independent_beta = "guess",
+  uncorrelated_p = "guess",
+  uncorrelated_beta = "guess",
   quiet = FALSE
 )
 }
 \arguments{
-\item{pif1}{A \code{pif_atomic_class} object}
+\item{pif1}{A \code{pif_atomic_class} object.}
 
-\item{pif2}{A \code{pif_atomic_class} object}
+\item{pif2}{A second \code{pif_atomic_class} object.}
 
-\item{var_p}{Colink_variance matrix for the prevalences in all \code{pif1} and
-the ones included in \code{...}.}
+\item{var_p}{covariance matrix for the prevalences in both \code{pif1} and \code{pif2}.
+Default \code{NULL} (no correlation).}
 
-\item{var_beta}{Colink_variance matrix for the parameter \code{beta} in all \code{pif1}
-and the ones included in \code{...}.}
+\item{var_beta}{covariance matrix for the parameter \code{beta} in both \code{pif1}
+and \code{pif2}. Default \code{NULL} (no correlation).}
 
-\item{independent_p}{If all the pifs share the same prevalence data. Either
-\code{TRUE}, \code{FALSE}, \code{guess} (default) or a matrix. If a matrix is given then
-\code{independent_p[i,j] = 1} if the i-th and j-th pifs share the same prevalence data
-\code{independent_p[i,j] = 0} if the i-th and j-th pifs don't share the same prevalence data.}
+\item{uncorrelated_p}{If \code{pif1} and \code{pif2} were constructed with independent
+(uncorrelated) data for the prevalence \code{p}. Either
+\code{TRUE}, \code{FALSE} or \code{guess} (default).}
 
-\item{independent_beta}{If all the pifs share the same \code{beta} parameter. Either
-\code{TRUE}, \code{FALSE} or \code{guess} (default) or a matrix. If a matrix is given then
-\code{independent_beta[i,j] = 1} if the i-th and j-th pifs share the same relative risk parameters
-\code{independent_beta[i,j] = 0} if the i-th and j-th pifs don't share the same relative risk parameters.}
+\item{uncorrelated_beta}{If \code{pif1} and \code{pif2} were constructed with independent
+(uncorrelated) data for the relative risk parameter \code{beta}. Either
+\code{TRUE}, \code{FALSE} or \code{guess} (default).}
 
-\item{quiet}{Whether to throw warnings and other messages}
+\item{quiet}{Whether to throw warnings or other messages.}
 }
 \description{
-Estimate the colink_variance between two pif_atomic objects
+Calculates the approximate covariance between two atomic
+pif class expressions using the delta method.
+}
+\section{Link covariance matrices}{
+
+
+By default if \code{var_p = NULL} is specified this assumes the parameters \code{p}
+of \code{pif1} and \code{pif2} are uncorrelated. However, if \code{pif1} and \code{pif2} share
+the same prevalence estimates
+(i.e. share the same \code{p}s, then the user should set \code{uncorrelated_p = FALSE}
+to account for that correlation).
+
+The same thing happens with \code{var_beta}. If no \code{var_beta} is specified (set to \code{NULL})
+then the assumption is that the \code{beta} parameters from \code{pif1} and
+from \code{pif2} are uncorrelated (unless \code{uncorrelated_beta} is set to \code{FALSE}).
+
+If the user provides a covariance matrix for \code{var_p} then \code{uncorrelated_p}
+is disregarded. Similarly, if the user provides \code{var_beta} then
+\code{uncorrelated_beta} is ignored.
+}
+
+\section{Computation}{
+
+
+The  \code{pif_class_atomic_variance} computes the approximate covariance between
+two potential impact fractions \eqn{\text{PIF}_1} and \eqn{\text{PIF}_2}
+as follows:
+\deqn{
+\text{Cov}\Big(\text{PIF}_1, \text{PIF}_2 \Big) \approx \Bigg(
+ \dfrac{\partial \text{PIF}_1}{\partial p_1}^{\top}
+ \Sigma_p
+ \dfrac{\partial \text{PIF}_2}{\partial p_2} +
+ \dfrac{\partial \text{PIF}_1}{\partial \beta_1}^{\top}
+ \Sigma_{\beta}
+ \dfrac{\partial \text{PIF}_2}{\partial \beta_2}
+\Bigg)
+}
+where \eqn{\Sigma_p} is \code{var_p} and  \eqn{\Sigma_{\beta}} is \code{var_beta}.
+The parameters \eqn{p_1} and \eqn{\beta_1} refer to the prevalence (\code{p}) and
+relative risk exposure parameter \code{beta} of the first potential
+impact fraction \code{pif1} and  \eqn{p_2} and \eqn{\beta_2} to the respective
+parameters of \code{pif2}.
+}
+
+\seealso{
+\code{\link[=from_parameters_covariance_p_component]{from_parameters_covariance_p_component()}}
 }
 \keyword{internal}

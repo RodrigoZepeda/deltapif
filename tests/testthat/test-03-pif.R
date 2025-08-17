@@ -135,8 +135,13 @@ test_that("pif warns about logit with non-positive PIF", {
 test_that("pif handles quiet parameter correctly", {
   # Should show warnings when quiet = FALSE
   expect_message(
-    pif(p = 0.5, p_cft = 0.2, beta = 1.5, var_p = NULL, quiet = FALSE),
+    pif(p = 0.5, p_cft = 0.2, beta = 1.5, var_p = NULL, var_beta = 1, quiet = FALSE),
     "Assuming parameters `p` have no variance"
+  )
+
+  expect_message(
+    pif(p = 0.5, p_cft = 0.2, beta = 1.5, var_p = 1, var_beta = NULL, quiet = FALSE),
+    "Assuming parameters `beta` have no variance"
   )
 
   # Should suppress warnings when quiet = TRUE

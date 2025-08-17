@@ -59,7 +59,9 @@ test_that("pif_total validates inputs correctly", {
   )
 
   expect_error(
-    pif_total(pif1, pif2, pif_weights = c(0.5, 0.5), sigma_pif_weights = 1:3),
+    suppressWarnings(
+      pif_total(pif1, pif2, pif_weights = c(0.5, 0.5), sigma_pif_weights = 1:3)
+    ),
     "has incorrect dimensions"
   )
 

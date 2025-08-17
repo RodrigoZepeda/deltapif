@@ -58,7 +58,7 @@ log_complement <- function(pif) {
 #' @export
 hawkins <- function(pif) {
   if (pif > 1){
-    cli::cli_alert_warning("Invalid value for pif = {round(pif,2)} > 1.")
+    cli::cli_warn("Invalid value for pif = {round(pif,2)} > 1.")
   }
   log(pif + sqrt(pif^2 + 1))
 }
@@ -181,7 +181,7 @@ deriv_log_complement <- function(pif) {
 #' @export
 deriv_hawkins <- function(pif) {
   if (pif > 1){
-    cli::cli_alert_warning("Invalid value for pif = {round(pif,2)} > 1.")
+    cli::cli_warn("Invalid value for pif = {round(pif,2)} > 1.")
   }
   1 / (sqrt(pif^2 + 1))
 }
@@ -218,7 +218,6 @@ deriv_identity <- function(pif) {
 
 
 #' @rdname link_parsers
-#' @export
 parse_link <- function(link_name) {
   if (is.function(link_name)) {
     return(link_name)
@@ -249,7 +248,6 @@ parse_link <- function(link_name) {
 }
 
 #' @rdname link_parsers
-#' @export
 parse_inv_link <- function(link_name) {
   if (is.function(link_name)) {
     return(link_name)
@@ -280,7 +278,6 @@ parse_inv_link <- function(link_name) {
 }
 
 #' @rdname link_parsers
-#' @export
 parse_deriv_link <- function(link_name) {
   if (is.function(link_name)) {
     return(link_name)

@@ -167,26 +167,26 @@ test_that("covariance of a thing with itself is variance", {
   #Covariance of a thing with itself should be the variance
   expect_equal(
     matrix(rep(variance(pif1), 4), ncol = 2),
-    covariance(pif1, pif1)
+    covariance(pif1, pif1, uncorrelated_beta = FALSE, uncorrelated_p = FALSE)
   )
 
   #Correlation of a thing with itself should be 1
   expect_equal(
     matrix(rep(1, 4), ncol = 2),
-    correlation(pif1, pif1)
+    correlation(pif1, pif1, uncorrelated_beta = FALSE, uncorrelated_p = FALSE)
   )
 
   #Covariance matrix should have the variance of pif1 and pif2 in the entries
   #of the diagonal
   expect_equal(
     c(variance(pif1), variance(pif2)),
-    diag(covariance(pif1, pif2))
+    diag(covariance(pif1, pif2, uncorrelated_beta = FALSE, uncorrelated_p = FALSE))
   )
 
   #Correlation matrix should have entries 1
   expect_equal(
     rep(1, 2),
-    diag(correlation(pif1, pif2))
+    diag(correlation(pif1, pif2, uncorrelated_beta = FALSE, uncorrelated_p = FALSE))
   )
 
   expect_equal(
@@ -198,7 +198,7 @@ test_that("covariance of a thing with itself is variance", {
   expect_true(
     #Covariance of a thing with itself should be the variance
     isSymmetric(
-      covariance(pif1, pif2)
+      covariance(pif1, pif2, uncorrelated_beta = FALSE, uncorrelated_p = FALSE)
     )
   )
 

@@ -6,7 +6,7 @@
 \alias{from_parameters_covariance_beta_component}
 \alias{from_parameters_pif_covariance}
 \alias{from_parameters_pif_variance}
-\title{Covariance component with respect to p}
+\title{Covariance components}
 \usage{
 from_parameters_covariance_p_component(
   p1,
@@ -111,8 +111,8 @@ risk function evaluated at \code{theta} (the relative risk parameter).}
 \item{rr_link_deriv_vals2}{Values for the derivative of the relative
 risk function evaluated at \code{theta} (the relative risk parameter).}
 
-\item{var_beta}{Estimate of the colink_variance matrix of \code{beta} where the entry
-\code{var_beta[i,j]} represents the colink_variance between \code{beta[i]} and \code{beta[j]}.}
+\item{var_beta}{Estimate of the link_covariance matrix of \code{beta} where the entry
+\code{var_beta[i,j]} represents the link_covariance between \code{beta[i]} and \code{beta[j]}.}
 
 \item{upper_bound_p}{Whether the values for the \code{p} component
 of the link_variance should be approximated by an upper bound.}
@@ -140,7 +140,8 @@ The covariance component for either \code{p} or \code{beta}
 }
 \description{
 Calculates the covariance \code{p} or \code{beta} component between two
-potential impact fractions or the complete covariance.
+potential impact fractions as well as the complete variance
+and covariance from parameters.
 }
 \note{
 This estimation does not require a \code{pif_class} object
@@ -161,10 +162,15 @@ For \code{p}:
 and for \code{beta}:
 
 \deqn{
-\text{CC}_{\theta} =  \dfrac{
-\partial \textrm{PIF}_i}{\partial \theta_i}^{\top}
-\textrm{covariance}\big( \hat{\theta}_i, \hat{\theta}_j\big)
-\dfrac{\partial \textrm{PIF}_j}{\partial \theta_j}
+\text{CC}_{\beta} =  \dfrac{
+\partial \textrm{PIF}_i}{\partial \beta_i}^{\top}
+\textrm{covariance}\big( \hat{\beta}_i, \hat{\beta}_j\big)
+\dfrac{\partial \textrm{PIF}_j}{\partial \beta_j}
+}
+
+The total covariance is approximated by the sum:
+\deqn{
+\text{Cov}(\text{PIF}_i, \text{PIF}_j) \approx \text{CC}_{p} + \text{CC}_{\beta}
 }
 }
 
@@ -172,3 +178,4 @@ and for \code{beta}:
 \link{derivatives} for the definition of the derivatives involved
 in the formulas.
 }
+\keyword{internal}

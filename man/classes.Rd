@@ -100,11 +100,11 @@ available (usually its either the relative risk directly or the log
 of the relative risk as most RRs, ORs and HRs come from exponential
 models).}
 
-\item{var_p}{Estimate of the colink_variance matrix of \code{p} where the entry
-\code{var_p[i,j]} represents the colink_variance between \code{p[i]} and \code{p[j]}.}
+\item{var_p}{Estimate of the link_covariance matrix of \code{p} where the entry
+\code{var_p[i,j]} represents the link_covariance between \code{p[i]} and \code{p[j]}.}
 
-\item{var_beta}{Estimate of the colink_variance matrix of \code{beta} where the entry
-\code{var_beta[i,j]} represents the colink_variance between \code{beta[i]} and \code{beta[j]}.}
+\item{var_beta}{Estimate of the link_covariance matrix of \code{beta} where the entry
+\code{var_beta[i,j]} represents the link_covariance between \code{beta[i]} and \code{beta[j]}.}
 
 \item{rr_link}{Link function such that the relative risk is given by
 \code{rr_link(beta)}.}
@@ -125,7 +125,7 @@ the total can be computed from it.}
 \item{pif_weights}{pif_weights for calculating the total PIF (respectively PAF)
 in \code{pif_total}.}
 
-\item{sigma_pif_weights}{Colink_variance matrix for the pif_weights when calculating the
+\item{sigma_pif_weights}{link_covariance matrix for the pif_weights when calculating the
 total PIF (respectively PAF) in \code{pif_total}.}
 
 \item{pif_transform}{Transform applied to the \code{pif} for summation
@@ -252,52 +252,3 @@ taking the log-complement:
 hence it is a  \code{pif_global_ensemble_class} with \code{pif_transform = log_complement}.
 }
 
-\examples{
-#Create a new pif parent class element
-pif_class(pif = 0.3, variance = 0.01, conf_level = 0.95, type = "PIF",
-  link = logit, link_inv = inv_logit, link_deriv = deriv_logit)
-
-#Create a new potential impact fraction from the Walter's formula
-pif_atomic_class(
-  p = 0.499, p_cft = 0, beta = 3.6, var_p = 0.1, var_beta = 3,
-  link = logit, link_inv = inv_logit, link_deriv = deriv_logit,
-  rr_link = identity, rr_link_deriv = function(x) 1,
-  conf_level = 0.95, type = "PAF",
-  upper_bound_p = FALSE,
-  upper_bound_beta = FALSE
-)
-
-#Create a list of pif
-pif1 <- pif_atomic_class(
-  p = 0.499, p_cft = 0, beta = 3.6, var_p = 0.01, var_beta = 0.03,
-  link = logit, link_inv = inv_logit, link_deriv = deriv_logit,
-  rr_link = identity, rr_link_deriv = function(x) 1,
-  conf_level = 0.95, type = "PAF",
-  upper_bound_p = FALSE,
-  upper_bound_beta = FALSE
-)
-pif2 <- pif_atomic_class(
-  p = 0.79, p_cft = 0, beta = 3.6, var_p = 0.01, var_beta = 0.03,
-  link = logit, link_inv = inv_logit, link_deriv = deriv_logit,
-  rr_link = identity, rr_link_deriv = function(x) 1,
-  conf_level = 0.95, type = "PAF",
-  upper_bound_p = FALSE,
-  upper_bound_beta = FALSE
-)
-pif3 <- pif_atomic_class(
-  p = 0.8, p_cft = 0, beta = 3.6, var_p = 0.01, var_beta = 0.03,
-  link = logit, link_inv = inv_logit, link_deriv = deriv_logit,
-  rr_link = identity, rr_link_deriv = function(x) 1,
-  conf_level = 0.95, type = "PAF",
-  upper_bound_p = FALSE,
-  upper_bound_beta = FALSE
-)
-
-tp1 <- pif_total_class(pif_list = list(pif1, pif2),
-  pif_weights = c(0.5, 0.2), sigma_pif_weights = diag(0.001, ncol = 2, nrow = 2),
-  link = identity, link_inv = identity, link_deriv = identity)
-
-pif_total_class(pif_list = list(tp1, pif3),
-  pif_weights = c(0.7, 0.3), sigma_pif_weights = diag(0.001, ncol = 2, nrow = 2),
-  link = identity, link_inv = identity, link_deriv = identity)
-}

@@ -45,11 +45,11 @@ available (usually its either the relative risk directly or the log
 of the relative risk as most RRs, ORs and HRs come from exponential
 models).}
 
-\item{var_p}{Estimate of the colink_variance matrix of \code{p} where the entry
-\code{var_p[i,j]} represents the colink_variance between \code{p[i]} and \code{p[j]}.}
+\item{var_p}{Estimate of the link_covariance matrix of \code{p} where the entry
+\code{var_p[i,j]} represents the link_covariance between \code{p[i]} and \code{p[j]}.}
 
-\item{var_beta}{Estimate of the colink_variance matrix of \code{beta} where the entry
-\code{var_beta[i,j]} represents the colink_variance between \code{beta[i]} and \code{beta[j]}.}
+\item{var_beta}{Estimate of the link_covariance matrix of \code{beta} where the entry
+\code{var_beta[i,j]} represents the link_covariance between \code{beta[i]} and \code{beta[j]}.}
 
 \item{rr_link}{Link function such that the relative risk is given by
 \code{rr_link(beta)}.}

@@ -19,43 +19,50 @@ create_mock_pif <- function(p = 0.5, p_cft = 0.25, beta = 1.5,
   )
 }
 
-test_that("pif_class_atomic_variance validates inputs correctly", {
+test_that("cov_atomic_pif validates inputs correctly", {
   pif1 <- create_mock_pif()
   pif2 <- create_mock_pif(p = 0.4, p_cft = 0.2, beta = 1.8)
 
   # Valid case
-  expect_silent(pif_class_atomic_variance(pif1, pif2))
+  expect_silent(cov_atomic_pif(pif1, pif2))
 
   # Invalid class inputs
   expect_error(
-    pif_class_atomic_variance(list(), pif2),
-    "not a `PIFCI::pif_atomic_class` object"
+    cov_atomic_pif(list(), pif2),
+    "not a `deltapif::pif_atomic_class` object"
   )
 
   # Length mismatches
   pif_wrong_length <- create_mock_pif(p = c(0.3, 0.7), p_cft = c(0, 0), beta = c(1.2, 1.5), var_p = matrix(0, 2, 2),
                                       var_beta = matrix(0, 2, 2))
   expect_error(
-    pif_class_atomic_variance(pif1, pif_wrong_length),
+    cov_atomic_pif(pif1, pif_wrong_length),
     "don't seem to represent the same population"
   )
 
 
 })
 
-test_that("pif_class_atomic_variance handles independence parameters correctly", {
+test_that("cov_atomic_pif handles independence parameters correctly", {
   pif1 <- create_mock_pif()
   pif2 <- create_mock_pif()
 
   # Test guessing when parameters are identical
   expect_message(
-    pif_class_atomic_variance(pif1, pif2, independent_p = "guess", independent_beta = "guess"),
+    cov_atomic_pif(pif1, pif2, uncorrelated_p = "guess", uncorrelated_beta = TRUE),
     "appear to be the same"
+  )
+  expect_message(
+    cov_atomic_pif(pif1, pif2, uncorrelated_p = TRUE, uncorrelated_beta = "guess"),
+    "appear to be the same"
+  )
+  expect_no_warning(
+    cov_atomic_pif(pif1, pif2, uncorrelated_p = TRUE, uncorrelated_beta = TRUE)
   )
 
   # Test explicit independence settings
-  expect_silent(pif_class_atomic_variance(pif1, pif2, independent_p = TRUE, independent_beta = TRUE))
-  expect_silent(pif_class_atomic_variance(pif1, pif2, independent_p = FALSE, independent_beta = FALSE))
+  expect_silent(cov_atomic_pif(pif1, pif2, uncorrelated_p = TRUE, uncorrelated_beta = TRUE))
+  expect_silent(cov_atomic_pif(pif1, pif2, uncorrelated_p = FALSE, uncorrelated_beta = FALSE))
 })
 
 test_that("cov_atomic_pif calculates correctly", {
@@ -65,7 +72,7 @@ test_that("cov_atomic_pif calculates correctly", {
                           var_p = matrix(0, 2, 2), var_beta = diag(c(0.01, 0.02), 2))
 
   # Test basic calculation
-  result <- cov_atomic_pif(pif1, pif2)
+  result <- cov_atomic_pif(pif1, pif2, uncorrelated_p = FALSE, uncorrelated_beta = FALSE)
   expect_type(result, "double")
 
   # Test with custom variance matrices
@@ -77,7 +84,7 @@ test_that("cov_atomic_pif calculates correctly", {
 
   # Test with identical PIFs (should equal variance)
   expect_equal(
-    cov_atomic_pif(pif1, pif1),
+    cov_atomic_pif(pif1, pif1, uncorrelated_p = FALSE, uncorrelated_beta = FALSE),
     variance(pif1)
   )
 })
@@ -98,17 +105,17 @@ test_that("cov_total_pif handles different PIF types", {
   )
 
   # Test atomic vs atomic
-  expect_silent(cov_total_pif(atomic1, atomic2))
+  expect_silent(cov_total_pif(atomic1, atomic2,  uncorrelated_p = FALSE, uncorrelated_beta = FALSE))
 
   # Test atomic vs total
-  expect_silent(cov_total_pif(atomic1, total_pif))
+  expect_silent(cov_total_pif(atomic1, total_pif,  uncorrelated_p = FALSE, uncorrelated_beta = FALSE))
 
   # Test total vs total
-  expect_silent(cov_total_pif(total_pif, total_pif))
+  expect_silent(cov_total_pif(total_pif, total_pif,  uncorrelated_p = FALSE, uncorrelated_beta = FALSE))
 
   # Test unsupported types
   expect_error(
-    cov_total_pif(atomic1, list()),
+    cov_total_pif(atomic1, list(),  uncorrelated_p = FALSE, uncorrelated_beta = FALSE),
     "Unsupported types"
   )
 })
@@ -133,7 +140,7 @@ test_that("covariance generic works correctly", {
   ind_p <- matrix(c(1, 0, 0, 0, 1, 0, 0, 0, 1), nrow = 3)
   ind_beta <- matrix(c(1, 1, 0, 1, 1, 0, 0, 0, 1), nrow = 3)
   expect_silent(
-    covariance(pif1, pif2, pif3, independent_p = ind_p, independent_beta = ind_beta)
+    covariance(pif1, pif2, pif3, uncorrelated_p = ind_p, uncorrelated_beta = ind_beta)
   )
 
   # Test variance matrix input validation
@@ -151,7 +158,7 @@ test_that("variance generic works correctly", {
   expect_true(variance(pif1) > 0)
 
   # Should equal covariance with itself
-  expect_equal(variance(pif1), covariance(pif1, pif1)[1,1])
+  expect_equal(variance(pif1), covariance(pif1, pif1,  uncorrelated_p = FALSE, uncorrelated_beta = FALSE)[1,1])
 
   # Test warning for extra arguments
   expect_warning(
@@ -185,7 +192,7 @@ test_that("correlation generic works correctly", {
 
   # Test with shared parameters
   pif_shared_beta <- create_mock_pif(p = 0.3, p_cft = 0.1, beta = pif1@beta)
-  cor_mat <- correlation(pif1, pif_shared_beta, independent_beta = FALSE)
+  cor_mat <- correlation(pif1, pif_shared_beta, uncorrelated_beta = FALSE)
   expect_true(cor_mat[1,2] != 0) # Should be correlated
 })
 
@@ -195,7 +202,7 @@ test_that("edge cases are handled properly", {
   expect_equal(variance(pif_zero_var), 0)
 
   # Correlation with zero variance
-  expect_warning(correlation(pif_zero_var, pif_zero_var))
+  expect_warning(correlation(pif_zero_var, pif_zero_var,  uncorrelated_p = FALSE, uncorrelated_beta = FALSE))
 
   # Single exposure category
   pif_single <- create_mock_pif(p = 1, p_cft = 1)

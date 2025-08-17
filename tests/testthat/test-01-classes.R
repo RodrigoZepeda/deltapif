@@ -224,7 +224,7 @@ test_that("pif_total_class construction and validation works", {
 
   expect_equal(pif_total@coefs, c(pif1@pif, pif2@pif))
   expect_equal(pif_total@pif, as.numeric(t(c(0.5, 0.5)) %*% c(pif1@pif, pif2@pif)))
-  expect_equal(dim(pif_total@covariance), c(2, 2))
+  expect_equal(suppressWarnings(dim(pif_total@covariance)), c(2, 2))
 })
 
 test_that("pif_ensemble_class construction and validation works", {
@@ -272,7 +272,7 @@ test_that("pif_ensemble_class construction and validation works", {
 
   expect_equal(pif_ensemble@coefs, c(pif1@pif, pif2@pif))
   expect_equal(pif_ensemble@pif, 1 - (1 - pif1@pif) * (1 - pif2@pif))
-  expect_equal(dim(pif_ensemble@covariance), c(2, 2))
+  expect_equal(suppressWarnings(dim(pif_ensemble@covariance)), c(2, 2))
 
   # Verify link functions are set correctly
   expect_equal(pif_ensemble@link, log_complement)
@@ -326,8 +326,8 @@ test_that("Class inheritance works correctly", {
 
   # Verify methods work through inheritance
   expect_length(pif_atomic@ci, 2)
-  expect_length(pif_total@ci, 2)
-  expect_length(pif_ensemble@ci, 2)
+  expect_length(suppressWarnings(pif_total@ci), 2)
+  expect_length(suppressWarnings(pif_ensemble@ci), 2)
 })
 
 test_that("Edge cases are handled properly", {

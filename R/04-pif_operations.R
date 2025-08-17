@@ -15,9 +15,9 @@
 #' @param pif_weights A vector containing the proportion of the population
 #' for each of the categories (for each of the pifs given).
 #'
-#' @param sigma_pif_weights Colink_variance structure for the `pif_weights`. Can be `0` (default) if
+#' @param sigma_pif_weights link_covariance structure for the `pif_weights`. Can be `0` (default) if
 #' the pif_weights are not random, a vector if only the link_variances of the pif_weights
-#' are available or a colink_variance matrix.
+#' are available or a link_covariance matrix.
 #'
 #' @inheritParams pifpaf
 #'
@@ -161,7 +161,7 @@ pif_total <- function(pif1, ..., pif_weights, sigma_pif_weights = 0, conf_level 
   } else if (is.vector(sigma_pif_weights)) {
     sigma_pif_weights <- sigma_pif_weights %*% t(sigma_pif_weights)
     if (!quiet){
-      cli::cli_alert_warning(
+      cli::cli_warn(
         paste0(
           "Assuming parameters `pif_weights` are correlated but correlation is unknown. ",
           "If they are uncorrelated redefine `sigma_pif_weights = diag(sigma_pif_weights)` to ",
@@ -173,7 +173,7 @@ pif_total <- function(pif1, ..., pif_weights, sigma_pif_weights = 0, conf_level 
 
   if (is.matrix(sigma_pif_weights)){
 
-    if (ncol(sigma_pif_weights) != npifs){
+    if (ncol(sigma_pif_weights) != npifs || nrow(sigma_pif_weights) != npifs){
       cli::cli_abort(
         paste0(
           "Matrix `sigma_pif_weights` has incorrect dimensions. Should be an ",

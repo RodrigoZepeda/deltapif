@@ -52,9 +52,9 @@ population attributable fractions.}
 \item{pif_weights}{A vector containing the proportion of the population
 for each of the categories (for each of the pifs given).}
 
-\item{sigma_pif_weights}{Colink_variance structure for the \code{pif_weights}. Can be \code{0} (default) if
+\item{sigma_pif_weights}{link_covariance structure for the \code{pif_weights}. Can be \code{0} (default) if
 the pif_weights are not random, a vector if only the link_variances of the pif_weights
-are available or a colink_variance matrix.}
+are available or a link_covariance matrix.}
 
 \item{conf_level}{Confidence level for the confidence interval (default 0.95).}
 

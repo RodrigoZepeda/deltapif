@@ -168,12 +168,7 @@ pif_class_apply_1st <- function(x, fun, property){
 #'
 #' @return A number indicating the derivative of `link(pif)`
 #'
-#' @examples
-#' #A potential impact fraction
-#' pif1 <- pif(p = 0.2, p_cft = 0.1, beta = 1.2, quiet = TRUE)
-#' link_deriv_vals(pif1)
-#'
-#' @export
+#' @keywords internal
 link_deriv_vals <- function(x){
   if (S7::S7_inherits(x, pif_class)){
     return(x@link_deriv_vals)

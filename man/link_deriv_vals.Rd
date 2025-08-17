@@ -17,9 +17,4 @@ Obtain the values of the derivative of the link function of
 a potential impact fraction (PIF) or a population attributable
 fraction (PAF) at \code{pif}
 }
-\examples{
-#A potential impact fraction
-pif1 <- pif(p = 0.2, p_cft = 0.1, beta = 1.2, quiet = TRUE)
-link_deriv_vals(pif1)
-
-}
+\keyword{internal}

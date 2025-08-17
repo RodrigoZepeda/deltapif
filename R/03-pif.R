@@ -271,7 +271,7 @@ pif <- function(p,
     upper_bound_p <- TRUE
     var_p <- var_p %*% t(var_p)
     if (!quiet){
-      cli::cli_alert_warning(
+      cli::cli_warn(
         paste0(
           "Assuming parameters `p` are correlated but correlation is unknown. ",
           "If they are uncorrelated redefine `var_p = diag(var_p)` to ",
@@ -286,7 +286,7 @@ pif <- function(p,
     upper_bound_beta <- TRUE
     var_beta <- var_beta %*% t(var_beta)
     if (!quiet){
-      cli::cli_alert_warning(
+      cli::cli_warn(
         paste0(
           "Assuming parameters `beta` are correlated but correlation is unknown. ",
           "If they are uncorrelated redefine `var_beta = diag(var_beta)` to ",

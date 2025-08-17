@@ -1,7 +1,8 @@
-#' Covariance component with respect to p
+#' Covariance components
 #'
 #' Calculates the covariance `p` or `beta` component between two
-#' potential impact fractions or the complete covariance.
+#' potential impact fractions as well as the complete variance
+#' and covariance from parameters.
 #'
 #' @param p1 Observed proportion exposed in the first potential impact fraction
 #' @param p2 Observed proportion exposed in the first potential impact fraction
@@ -48,10 +49,15 @@
 #' and for `beta`:
 #'
 #' \deqn{
-#' \text{CC}_{\theta} =  \dfrac{
-#' \partial \textrm{PIF}_i}{\partial \theta_i}^{\top}
-#' \textrm{covariance}\big( \hat{\theta}_i, \hat{\theta}_j\big)
-#' \dfrac{\partial \textrm{PIF}_j}{\partial \theta_j}
+#' \text{CC}_{\beta} =  \dfrac{
+#' \partial \textrm{PIF}_i}{\partial \beta_i}^{\top}
+#' \textrm{covariance}\big( \hat{\beta}_i, \hat{\beta}_j\big)
+#' \dfrac{\partial \textrm{PIF}_j}{\partial \beta_j}
+#' }
+#'
+#' The total covariance is approximated by the sum:
+#' \deqn{
+#' \text{Cov}(\text{PIF}_i, \text{PIF}_j) \approx \text{CC}_{p} + \text{CC}_{\beta}
 #' }
 #'
 #' @name covariance_from_parameters
@@ -61,10 +67,10 @@
 #'
 #' @seealso [derivatives] for the definition of the derivatives involved
 #' in the formulas.
+#' @keywords internal
 NULL
 
 #' @rdname covariance_from_parameters
-#' @export
 from_parameters_covariance_p_component <- function(
     p1, p2, p1_cft, p2_cft, rr1, rr2, mu_obs1, mu_obs2, mu_cft1, mu_cft2,
     var_p, upper_bound) {
@@ -89,7 +95,6 @@ from_parameters_covariance_p_component <- function(
 }
 
 #' @rdname covariance_from_parameters
-#' @export
 from_parameters_covariance_beta_component <- function(
     p1, p2, p1_cft, p2_cft, rr1, rr2, rr_link_deriv_vals1, rr_link_deriv_vals2,
     mu_obs1, mu_obs2, mu_cft1, mu_cft2, var_beta, upper_bound) {
@@ -116,7 +121,6 @@ from_parameters_covariance_beta_component <- function(
 }
 
 #' @rdname covariance_from_parameters
-#' @export
 from_parameters_pif_covariance <- function(
     p1, p2, p1_cft, p2_cft, rr1, rr2, rr_link_deriv_vals1, rr_link_deriv_vals2,
     mu_obs1, mu_obs2, mu_cft1, mu_cft2, var_p, var_beta,
@@ -156,7 +160,6 @@ from_parameters_pif_covariance <- function(
 }
 
 #' @rdname covariance_from_parameters
-#' @export
 from_parameters_pif_variance <- function(
     p, p_cft, rr, rr_link_deriv_vals, mu_obs, mu_cft, var_p,
     var_beta, upper_bound_p = FALSE, upper_bound_beta = FALSE) {
