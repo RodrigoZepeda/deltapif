@@ -79,17 +79,38 @@ considering an observed prevalence of  <code>p</code> and a relative risk
 <span>  <span class="va">upper_bound_beta</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">pif_total_class</span><span class="op">(</span></span>
+<span><span class="fu">pif_global_ensemble_class</span><span class="op">(</span></span>
 <span>  <span class="va">pif_list</span>,</span>
-<span>  <span class="va">weights</span>,</span>
-<span>  <span class="va">sigma_weights</span>,</span>
+<span>  <span class="va">pif_weights</span>,</span>
+<span>  <span class="va">sigma_pif_weights</span>,</span>
 <span>  conf_level <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>  <span class="va">pif_transform</span>,</span>
+<span>  <span class="va">pif_deriv_transform</span>,</span>
+<span>  <span class="va">pif_inverse_transform</span>,</span>
 <span>  <span class="va">link</span>,</span>
 <span>  <span class="va">link_inv</span>,</span>
 <span>  <span class="va">link_deriv</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">pif_ensemble_class</span><span class="op">(</span><span class="va">pif_list</span>, conf_level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">pif_total_class</span><span class="op">(</span></span>
+<span>  <span class="va">pif_list</span>,</span>
+<span>  <span class="va">pif_weights</span>,</span>
+<span>  <span class="va">sigma_pif_weights</span>,</span>
+<span>  <span class="va">link</span>,</span>
+<span>  <span class="va">link_inv</span>,</span>
+<span>  <span class="va">link_deriv</span>,</span>
+<span>  conf_level <span class="op">=</span> <span class="fl">0.95</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">pif_ensemble_class</span><span class="op">(</span></span>
+<span>  <span class="va">pif_list</span>,</span>
+<span>  <span class="va">pif_weights</span>,</span>
+<span>  <span class="va">sigma_pif_weights</span>,</span>
+<span>  <span class="va">link</span>,</span>
+<span>  <span class="va">link_inv</span>,</span>
+<span>  <span class="va">link_deriv</span>,</span>
+<span>  conf_level <span class="op">=</span> <span class="fl">0.95</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -147,13 +168,13 @@ models).</p></dd>
 
 
 <dt id="arg-var-p">var_p<a class="anchor" aria-label="anchor" href="#arg-var-p"></a></dt>
-<dd><p>Estimate of the colink_variance matrix of <code>p</code> where the entry
-<code>var_p[i,j]</code> represents the colink_variance between <code>p[i]</code> and <code>p[j]</code>.</p></dd>
+<dd><p>Estimate of the link_covariance matrix of <code>p</code> where the entry
+<code>var_p[i,j]</code> represents the link_covariance between <code>p[i]</code> and <code>p[j]</code>.</p></dd>
 
 
 <dt id="arg-var-beta">var_beta<a class="anchor" aria-label="anchor" href="#arg-var-beta"></a></dt>
-<dd><p>Estimate of the colink_variance matrix of <code>beta</code> where the entry
-<code>var_beta[i,j]</code> represents the colink_variance between <code>beta[i]</code> and <code>beta[j]</code>.</p></dd>
+<dd><p>Estimate of the link_covariance matrix of <code>beta</code> where the entry
+<code>var_beta[i,j]</code> represents the link_covariance between <code>beta[i]</code> and <code>beta[j]</code>.</p></dd>
 
 
 <dt id="arg-rr-link">rr_link<a class="anchor" aria-label="anchor" href="#arg-rr-link"></a></dt>
@@ -182,21 +203,45 @@ of the link_variance should be approximated by an upper bound.</p></dd>
 the total can be computed from it.</p></dd>
 
 
-<dt id="arg-weights">weights<a class="anchor" aria-label="anchor" href="#arg-weights"></a></dt>
-<dd><p>Weights for calculating the total PIF (respectively PAF)
+<dt id="arg-pif-weights">pif_weights<a class="anchor" aria-label="anchor" href="#arg-pif-weights"></a></dt>
+<dd><p>pif_weights for calculating the total PIF (respectively PAF)
 in <code>pif_total</code>.</p></dd>
 
 
-<dt id="arg-sigma-weights">sigma_weights<a class="anchor" aria-label="anchor" href="#arg-sigma-weights"></a></dt>
-<dd><p>Colink_variance matrix for the weights when calculating the
+<dt id="arg-sigma-pif-weights">sigma_pif_weights<a class="anchor" aria-label="anchor" href="#arg-sigma-pif-weights"></a></dt>
+<dd><p>link_covariance matrix for the pif_weights when calculating the
 total PIF (respectively PAF) in <code>pif_total</code>.</p></dd>
+
+
+<dt id="arg-pif-transform">pif_transform<a class="anchor" aria-label="anchor" href="#arg-pif-transform"></a></dt>
+<dd><p>Transform applied to the <code>pif</code> for summation
+in a <code>pif_global_ensemble_class</code> (see section below).</p></dd>
+
+
+<dt id="arg-pif-deriv-transform">pif_deriv_transform<a class="anchor" aria-label="anchor" href="#arg-pif-deriv-transform"></a></dt>
+<dd><p>Derivative of the transform applied to the
+<code>pif</code> for summation in a <code>pif_global_ensemble_class</code> (see section below).</p></dd>
+
+
+<dt id="arg-pif-inverse-transform">pif_inverse_transform<a class="anchor" aria-label="anchor" href="#arg-pif-inverse-transform"></a></dt>
+<dd><p>Inverse of the transform applied to the
+<code>pif</code> for summation in a <code>pif_global_ensemble_class</code> (see section below).</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="properties-of-a-pif-class">Properties of a  <code>pif_class</code><a class="anchor" aria-label="anchor" href="#properties-of-a-pif-class"></a></h2>
 
 
-<dl><dt><code>ci</code></dt>
+<p>Any object that is a <code>pif_class</code> contains a potential impact fraction
+with intervals estimated as follows:
+$$
+ \text{CI}_{\text{Link}} = \text{link}\big(\text{PIF}\big) \pm Z_{\alpha/2}\cdot\sqrt{\textrm{link\_variance}}
+$$
+and then transformed back using the inverse of the link function <code>inv_link</code>:
+$$
+ \text{CI}_{\text{PIF}} = \text{link}^{-1}\Big(\text{CI}_{\text{Link}}\Big)
+$$</p>
+<p>The following are the properties of any <code>pif_class</code></p><dl><dt><code>ci</code></dt>
 <dd><p><code>numeric(2)</code> — Lower and upper confidence limits at level <code>conf_level</code>.</p></dd>
 
 <dt><code>link_vals</code></dt>
@@ -214,6 +259,21 @@ total PIF (respectively PAF) in <code>pif_total</code>.</p></dd>
     <h2 id="properties-of-a-pif-atomic-class">Properties of a  <code>pif_atomic_class</code><a class="anchor" aria-label="anchor" href="#properties-of-a-pif-atomic-class"></a></h2>
 
 
+
+<p>The <code>pif_atomic_class</code> is a type of <code>pif_class</code> that contains enough
+information to compute a potential impact fraction
+through the classic formula by Walter:
+$$
+ \textrm{PIF} = \dfrac{
+   \sum\limits_{i=1}^N p_i \text{RR}_i - \sum\limits_{i=1}^N p_i^{\text{cft}} \text{RR}_i
+  }{
+   \sum\limits_{i=1}^N p_i \text{RR}_i
+  }
+$$
+where the relative risk is a function of a parameter \(\beta_i\)
+$$
+ \text{RR}_i = \text{rr\_link}(\beta_i)
+$$</p>
 <p>The <code>pif_atomic_class</code> inherits the properties of a <code>pif_class</code> as well as:</p><dl><dt><code>mu_obs</code></dt>
 <dd><p><code>numeric</code> — Average relative risk in the observed population.</p></dd>
 
@@ -227,136 +287,89 @@ total PIF (respectively PAF) in <code>pif_total</code>.</p></dd>
 <dd><p><code>character</code> — Entrywise evaluation of the derivative of the link function (<code>link_deriv</code>) at pif: <code>link(pif)</code>.</p></dd>
 
 
-</dl></div>
-    <div class="section level2">
-    <h2 id="computation-of-confidence-intervals">Computation of confidence intervals<a class="anchor" aria-label="anchor" href="#computation-of-confidence-intervals"></a></h2>
-
-
-<p>Wald-type confidence intervals are calculated for <code>link(pif)</code> as follows:
-$$
- \text{CI}_{\text{Link}} = \text{link}\big(\text{PIF}\big) \pm Z_{\alpha/2}\cdot\sqrt{\textrm{link\_variance}}
-$$
-and then transformed back using the inverse of the link function <code>inv_link</code>:
-$$
- \text{CI}_{\text{PIF}} = \text{link}^{-1}\Big(\text{CI}_{\text{Link}}\Big)
-$$</p>
+</dl><p>Confidence intervals are estimated as with any <code>pif_class</code>.</p>
     </div>
     <div class="section level2">
-    <h2 id="class-structure">Class structure<a class="anchor" aria-label="anchor" href="#class-structure"></a></h2>
+    <h2 id="properties-of-a-pif-global-ensemble-class">Properties of a  <code>pif_global_ensemble_class</code><a class="anchor" aria-label="anchor" href="#properties-of-a-pif-global-ensemble-class"></a></h2>
 
 
-<p>All potential impact fractions inherit from the <code>pif_class</code> which
-provides some of the generics.</p>
-<p>The <code>pif_atomic_class</code> is a type of <code>pif_class</code> that contains enough
-information for it to be computed through the classic formula by
-Walter:
+
+<p>The <code>pif_global_ensemble_class</code> creates a new potential impact
+fraction by summing a weighted combination of potential
+impact fractions. In general it computes the following expression:
 $$
- \textrm{PIF} = \dfrac{
-   \sum\limits_{i=1}^N p_i \text{RR}_i - \sum\limits_{i=1}^N p_i^{\text{cft}} \text{RR}_i
-  }{
-   \sum\limits_{i=1}^N p_i \text{RR}_i
-  }
+\textrm{PIF}_{\text{global}} =
+ g^{-1}\bigg( \sum\limits_{i = 1}^{N} g\big(w_i \cdot \textrm{PIF}_i\big) \bigg)
 $$
-where the relative risk is a function of a parameter \(\beta_i\)
+where \(g\) is refered to as the <code>pif_transform</code>, its derivative the
+<code>pif_deriv_transform</code>, and its inverse <code>pif_inverse_transform</code>.</p>
+<p>The <code>pif_global_ensemble_class</code> inherits the properties of a <code>pif_class</code> as well as:</p><dl><dt><code>pif_weights</code></dt>
+<dd><p><code>numeric</code> - Vector of weights \(w_i\) for weighting the potential impact fraction.</p></dd>
+
+<dt><code>sigma_pif_weights</code></dt>
+<dd><p><code>numeric</code> - Covariance matrix for the <code>pif_weights</code></p></dd>
+
+<dt><code>pif_transform</code></dt>
+<dd><p><code>function</code> - Function \(g\) with which to transform the impact fraction before weighting.</p></dd>
+
+<dt><code>pif_deriv_transform</code></dt>
+<dd><p><code>function</code> - Derivative of the <code>pif_transform</code>.</p></dd>
+
+<dt><code>pif_inverse_transform</code></dt>
+<dd><p><code>function</code> - Inverse of the <code>pif_transform</code>.</p></dd>
+
+<dt><code>type</code></dt>
+<dd><p><code>character</code> - Whether the quantity represents a <code>PIF</code> or a <code>PAF</code></p></dd>
+
+<dt><code>coefs</code></dt>
+<dd><p><code>numeric</code> - Potential impact fractions used for the global ensemble (each of the \(\text{PIF}_i\).</p></dd>
+
+<dt><code>sum_transformed_weighted_coefs</code></dt>
+<dd><p><code>numeric</code> - Sum of the potential impact fractions involved \(\sum g(w_i \text{PIF}_i)\).</p></dd>
+
+<dt><code>pif</code></dt>
+<dd><p><code>numeric</code> — Estimate of the potential impact fraction.</p></dd>
+
+<dt><code>covariance</code></dt>
+<dd><p><code>numeric</code> — Covariance matrix between the potential impact fractions in <code>coefs</code> (i.e. each entry is\(\text{Cov}(\text{PIF}_i, \text{PIF}_j))\)</p></dd>
+
+<dt><code>variance</code></dt>
+<dd><p><code>numeric</code> — Estimate for the variance of <code>pif</code>.</p></dd>
+
+
+</dl><p>Confidence intervals are estimated as with any <code>pif_class</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="properties-of-a-pif-total-class">Properties of a  <code>pif_total_class</code><a class="anchor" aria-label="anchor" href="#properties-of-a-pif-total-class"></a></h2>
+
+
+
+<p>A <code>pif_total_class</code> estimated the potential impact fraction of the
+weighted sum of fractions from different (disjoint) dispopulations:
 $$
- \text{RR}_i = g(\beta_i)
+ \textrm{PIF}_{Total} = \sum\limits_{i = 1}^{N} w_i \cdot \textrm{PIF}_i
 $$
-and the link_variance is calculated for a function of PIF: \(f(\textrm{PIF})\)
-The <code>pif_atomic_class</code> only contains one potential impact fraction
-and the parameters to estimate it.</p>
-<p>The <code>pif_additive_class</code> is a type of <code>pif_class</code> that can be computed
-as a sum of weighted transformations of potential impact fractions
-where the weights can be random. Elements of a <code>pif_additive_class</code>
-have a link_variance estimated for the following expression:
-$$
- f\big(\textrm{PIF}_{+}\big) = \sum\limits_{i = 1}^{N} q_i \cdot  f_i\Big(\textrm{PIF}_i\Big)
-$$</p>
-<p>Examples of calculations that can be added to a <code>pif_additive_class</code> are:Ç</p>
-<p>The total potential impact fraction (combining different subpopulations)
-$$
- \textrm{PIF}_{Total} = \sum\limits_{i = 1}^{N} q_i \cdot \textrm{PIF}_i
-$$
-with \(q_i\) representing the proportions of individuals in each category.</p>
+with \(w_i\) representing the proportions of individuals in each category.
+This is a type of <code>pif_global_ensemble_class</code> with <code>pif_transform = identity</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="properties-of-a-pif-ensemble-class">Properties of a  <code>pif_ensemble_class</code><a class="anchor" aria-label="anchor" href="#properties-of-a-pif-ensemble-class"></a></h2>
+
+
+
 <p>The ensemble potential impact fraction (representing different relative risks)
-for the same outcome
+for the same outcome is given by the weighted product:
 $$
-\textrm{PIF}_{Ensemble} = 1 - \prod\limits_{i = 1}^{N} \Big(1 - \textrm{PIF}_i\Big)
-$$
-as it can be transformed into
-$$
-\ln\Big(1 - \textrm{PIF}_{Ensemble}\Big) =  \sum\limits_{i = 1}^{N} \ln\big(1 - \textrm{PIF}_i\big)
+\textrm{PIF}_{Ensemble} = 1 - \prod\limits_{i = 1}^{N} \Big(1 - w_i \textrm{PIF}_i\Big)
 $$</p>
+<p>However it can be transformed into a <code>pif_global_ensemble_class</code> by
+taking the log-complement:
+$$
+\ln\Big(1 - \textrm{PIF}_{Ensemble}\Big) =  \sum\limits_{i = 1}^{N} \ln\big(1 - w_i \textrm{PIF}_i\big)
+$$
+hence it is a  <code>pif_global_ensemble_class</code> with <code>pif_transform = log_complement</code>.</p>
     </div>
 
-    <div class="section level2">
-    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#Create a new pif parent class element</span></span></span>
-<span class="r-in"><span><span class="fu">pif_class</span><span class="op">(</span>pif <span class="op">=</span> <span class="fl">0.3</span>, variance <span class="op">=</span> <span class="fl">0.01</span>, conf_level <span class="op">=</span> <span class="fl">0.95</span>, type <span class="op">=</span> <span class="st">"PIF"</span>,</span></span>
-<span class="r-in"><span>  link <span class="op">=</span> <span class="va">logit</span>, link_inv <span class="op">=</span> <span class="va">inv_logit</span>, link_deriv <span class="op">=</span> <span class="va">deriv_logit</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Potential Impact Fraction</span> ──</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> PIF = 30.000% [<span style="font-style: italic;">95% CI</span>: 14.423% to 52.149%]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(pif %) = 10.000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(link(pif)) = 0.476</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#Create a new potential impact fraction from the Walter's formula</span></span></span>
-<span class="r-in"><span><span class="fu">pif_atomic_class</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  p <span class="op">=</span> <span class="fl">0.499</span>, p_cft <span class="op">=</span> <span class="fl">0</span>, beta <span class="op">=</span> <span class="fl">3.6</span>, var_p <span class="op">=</span> <span class="fl">0.1</span>, var_beta <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>  link <span class="op">=</span> <span class="va">logit</span>, link_inv <span class="op">=</span> <span class="va">inv_logit</span>, link_deriv <span class="op">=</span> <span class="va">deriv_logit</span>,</span></span>
-<span class="r-in"><span>  rr_link <span class="op">=</span> <span class="va">identity</span>, rr_link_deriv <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>  conf_level <span class="op">=</span> <span class="fl">0.95</span>, type <span class="op">=</span> <span class="st">"PAF"</span>,</span></span>
-<span class="r-in"><span>  upper_bound_p <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>  upper_bound_beta <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction</span> ──</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 56.473% [<span style="font-style: italic;">95% CI</span>: 17.628% to 88.720%]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(paf %) = 22.601</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(link(paf)) = 0.919</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#Create a list of pif</span></span></span>
-<span class="r-in"><span><span class="va">pif1</span> <span class="op">&lt;-</span> <span class="fu">pif_atomic_class</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  p <span class="op">=</span> <span class="fl">0.499</span>, p_cft <span class="op">=</span> <span class="fl">0</span>, beta <span class="op">=</span> <span class="fl">3.6</span>, var_p <span class="op">=</span> <span class="fl">0.01</span>, var_beta <span class="op">=</span> <span class="fl">0.03</span>,</span></span>
-<span class="r-in"><span>  link <span class="op">=</span> <span class="va">logit</span>, link_inv <span class="op">=</span> <span class="va">inv_logit</span>, link_deriv <span class="op">=</span> <span class="va">deriv_logit</span>,</span></span>
-<span class="r-in"><span>  rr_link <span class="op">=</span> <span class="va">identity</span>, rr_link_deriv <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>  conf_level <span class="op">=</span> <span class="fl">0.95</span>, type <span class="op">=</span> <span class="st">"PAF"</span>,</span></span>
-<span class="r-in"><span>  upper_bound_p <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>  upper_bound_beta <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pif2</span> <span class="op">&lt;-</span> <span class="fu">pif_atomic_class</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  p <span class="op">=</span> <span class="fl">0.79</span>, p_cft <span class="op">=</span> <span class="fl">0</span>, beta <span class="op">=</span> <span class="fl">3.6</span>, var_p <span class="op">=</span> <span class="fl">0.01</span>, var_beta <span class="op">=</span> <span class="fl">0.03</span>,</span></span>
-<span class="r-in"><span>  link <span class="op">=</span> <span class="va">logit</span>, link_inv <span class="op">=</span> <span class="va">inv_logit</span>, link_deriv <span class="op">=</span> <span class="va">deriv_logit</span>,</span></span>
-<span class="r-in"><span>  rr_link <span class="op">=</span> <span class="va">identity</span>, rr_link_deriv <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>  conf_level <span class="op">=</span> <span class="fl">0.95</span>, type <span class="op">=</span> <span class="st">"PAF"</span>,</span></span>
-<span class="r-in"><span>  upper_bound_p <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>  upper_bound_beta <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pif3</span> <span class="op">&lt;-</span> <span class="fu">pif_atomic_class</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  p <span class="op">=</span> <span class="fl">0.8</span>, p_cft <span class="op">=</span> <span class="fl">0</span>, beta <span class="op">=</span> <span class="fl">3.6</span>, var_p <span class="op">=</span> <span class="fl">0.01</span>, var_beta <span class="op">=</span> <span class="fl">0.03</span>,</span></span>
-<span class="r-in"><span>  link <span class="op">=</span> <span class="va">logit</span>, link_inv <span class="op">=</span> <span class="va">inv_logit</span>, link_deriv <span class="op">=</span> <span class="va">deriv_logit</span>,</span></span>
-<span class="r-in"><span>  rr_link <span class="op">=</span> <span class="va">identity</span>, rr_link_deriv <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>  conf_level <span class="op">=</span> <span class="fl">0.95</span>, type <span class="op">=</span> <span class="st">"PAF"</span>,</span></span>
-<span class="r-in"><span>  upper_bound_p <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>  upper_bound_beta <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">tp1</span> <span class="op">&lt;-</span> <span class="fu">pif_total_class</span><span class="op">(</span>pif_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">pif1</span>, <span class="va">pif2</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.2</span><span class="op">)</span>, sigma_weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fl">0.001</span>, ncol <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  link <span class="op">=</span> <span class="va">identity</span>, link_inv <span class="op">=</span> <span class="va">identity</span>, link_deriv <span class="op">=</span> <span class="va">identity</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">pif_total_class</span><span class="op">(</span>pif_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">tp1</span>, <span class="va">pif3</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.7</span>, <span class="fl">0.3</span><span class="op">)</span>, sigma_weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fl">0.001</span>, ncol <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  link <span class="op">=</span> <span class="va">identity</span>, link_inv <span class="op">=</span> <span class="va">identity</span>, link_deriv <span class="op">=</span> <span class="va">identity</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction</span> ──</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 49.441% [<span style="font-style: italic;">95% CI</span>: 45.514% to 53.368%]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(paf %) = 4.052</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(link(paf)) = 0.020</span>
-</code></pre></div>
-    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
