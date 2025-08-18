@@ -107,7 +107,7 @@ get_ensemble_coefs <- function(self){
 #' Get the sum of g(q_i PIF_i)
 #' @rdname getters
 get_sum_transformed_weighted_coefs <- function(self){
-  sum(sapply(self@coefs*self@pif_weights, self@pif_transform))
+  sum(sapply(self@coefs*self@weights, self@pif_transform))
 }
 
 #' Get g^{-1} sum(g(q_i PIF_i))
@@ -125,7 +125,7 @@ get_ensemble_pif <- function(self){
 #' Get the coefficients
 #' @rdname getters
 get_total_pif <- function(self){
-  as.numeric(t(self@pif_weights) %*% self@coefs)
+  as.numeric(t(self@weights) %*% self@coefs)
 }
 
 #' Get types
@@ -182,9 +182,9 @@ get_ensemble_covariance <- function(self){
 #' @rdname getters
 get_variance_total <- function(self){
   as.numeric(
-    t(self@pif_weights) %*% self@covariance %*% self@pif_weights +
-    t(self@coefs) %*% self@sigma_pif_weights %*% self@coefs +
-    sum(diag(self@covariance*self@sigma_pif_weights))
+    t(self@weights) %*% self@covariance %*% self@weights +
+    t(self@coefs) %*% self@sigma_weights %*% self@coefs +
+    sum(diag(self@covariance*self@sigma_weights))
   )
 }
 

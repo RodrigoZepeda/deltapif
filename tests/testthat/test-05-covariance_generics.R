@@ -32,14 +32,6 @@ test_that("cov_atomic_pif validates inputs correctly", {
     "not a `deltapif::pif_atomic_class` object"
   )
 
-  # Length mismatches
-  pif_wrong_length <- create_mock_pif(p = c(0.3, 0.7), p_cft = c(0, 0), beta = c(1.2, 1.5), var_p = matrix(0, 2, 2),
-                                      var_beta = matrix(0, 2, 2))
-  expect_error(
-    cov_atomic_pif(pif1, pif_wrong_length),
-    "don't seem to represent the same population"
-  )
-
 
 })
 
@@ -87,6 +79,7 @@ test_that("cov_atomic_pif calculates correctly", {
     cov_atomic_pif(pif1, pif1, uncorrelated_p = FALSE, uncorrelated_beta = FALSE),
     variance(pif1)
   )
+
 })
 
 test_that("cov_total_pif handles different PIF types", {
@@ -96,8 +89,8 @@ test_that("cov_total_pif handles different PIF types", {
   # Create a total PIF with two atomic PIFs
   total_pif <- pif_total_class(
     pif_list = list(atomic1, atomic2),
-    pif_weights = c(0.5, 0.5),
-    sigma_pif_weights = matrix(c(0.01, 0, 0, 0.01), nrow = 2),
+    weights = c(0.5, 0.5),
+    sigma_weights = matrix(c(0.01, 0, 0, 0.01), nrow = 2),
     conf_level = 0.95,
     link = identity,
     link_inv = identity,
@@ -109,6 +102,8 @@ test_that("cov_total_pif handles different PIF types", {
 
   # Test atomic vs total
   expect_silent(cov_total_pif(atomic1, total_pif,  uncorrelated_p = FALSE, uncorrelated_beta = FALSE))
+
+  expect_silent(cov_total_pif(total_pif, atomic1,  uncorrelated_p = FALSE, uncorrelated_beta = FALSE))
 
   # Test total vs total
   expect_silent(cov_total_pif(total_pif, total_pif,  uncorrelated_p = FALSE, uncorrelated_beta = FALSE))

@@ -108,6 +108,24 @@ S7::method(confint, pif_class) <- function(object, ..., level = object@conf_leve
 
 }
 
+#' Extract weights of a pif_global_ensemble
+#'
+#' Gets the weights of a `pif_global_ensemble` object
+#'
+#' @param object A `pif_global_ensemble` object.
+#' @param ... Additional parameters to pass to `weights` (ignored)
+#'
+#' @examples
+#' my_pif1 <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1, var_beta = 0.2)
+#' my_pif2 <- pif(p = 0.3, p_cft = 0.1, beta = 1.5, var_p = 0.1, var_beta = 0.2)
+#' my_pif  <- pif_total(my_pif1, my_pif2, weights = c(0.8, 0.2))
+#' weights(my_pif)
+#'
+#' @name weights
+#' @export
+S7::method(weights, pif_global_ensemble_class) <- function(object, ...) {
+  return(object@weights)
+}
 
 #' Summary of a pif object
 #'

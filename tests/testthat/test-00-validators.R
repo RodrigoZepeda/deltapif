@@ -14,7 +14,7 @@ another_pif <- pif_class(pif = 0.2, variance = 0, conf_level = 0.95,
 some_pifs <- S7::new_class(name = "some_pifs",
                            properties = list(
                              pif_list = S7::class_list,
-                             pif_weights = S7::class_numeric
+                             weights = S7::class_numeric
                            ))
 
 
@@ -25,7 +25,7 @@ test_that("Validators show errors",{
     validate_global_ensemble(
       some_pifs(
         pif_list = list(a_pif, another_pif),
-        pif_weights = c(1,1)
+        weights = c(1,1)
       )
     )
   )
@@ -34,7 +34,7 @@ test_that("Validators show errors",{
     validate_global_ensemble(
       some_pifs(
         pif_list = list(a_pif, not_a_pif),
-        pif_weights = c(1,1)
+        weights = c(1,1)
       )
     ),
     "must be a 'pif_class'"
@@ -44,7 +44,7 @@ test_that("Validators show errors",{
     validate_global_ensemble(
       some_pifs(
         pif_list = list(a_pif, another_pif),
-        pif_weights = c(1, 2, 3)
+        weights = c(1, 2, 3)
       )
     ),
     "have length"

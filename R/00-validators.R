@@ -19,10 +19,10 @@ validate_global_ensemble <- function(self) {
     }
   }
 
-  if (length(self@pif_weights) != length(self@pif_list)){
+  if (length(self@weights) != length(self@pif_list)){
     cli::cli_abort(
       paste0(
-        "pif_weights provided have length {length(self@pif_weights)} but ",
+        "weights provided have length {length(self@weights)} but ",
         "{length(self@pif_list)} fractions were provided."
       )
     )

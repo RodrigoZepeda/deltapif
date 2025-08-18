@@ -38,8 +38,8 @@ pif_atomic_class(
 
 pif_global_ensemble_class(
   pif_list,
-  pif_weights,
-  sigma_pif_weights,
+  weights,
+  sigma_weights,
   conf_level = 0.95,
   pif_transform,
   pif_deriv_transform,
@@ -51,8 +51,8 @@ pif_global_ensemble_class(
 
 pif_total_class(
   pif_list,
-  pif_weights,
-  sigma_pif_weights,
+  weights,
+  sigma_weights,
   link,
   link_inv,
   link_deriv,
@@ -61,8 +61,8 @@ pif_total_class(
 
 pif_ensemble_class(
   pif_list,
-  pif_weights,
-  sigma_pif_weights,
+  weights,
+  sigma_weights,
   link,
   link_inv,
   link_deriv,
@@ -122,10 +122,10 @@ of the link_variance should be approximated by an upper bound.}
 \item{pif_list}{A list of potential impact fractions \code{pif_class} so that
 the total can be computed from it.}
 
-\item{pif_weights}{pif_weights for calculating the total PIF (respectively PAF)
+\item{weights}{weights for calculating the total PIF (respectively PAF)
 in \code{pif_total}.}
 
-\item{sigma_pif_weights}{link_covariance matrix for the pif_weights when calculating the
+\item{sigma_weights}{link_covariance matrix for the weights when calculating the
 total PIF (respectively PAF) in \code{pif_total}.}
 
 \item{pif_transform}{Transform applied to the \code{pif} for summation
@@ -207,8 +207,8 @@ where \eqn{g} is refered to as the \code{pif_transform}, its derivative the
 
 The \code{pif_global_ensemble_class} inherits the properties of a \code{pif_class} as well as:
 \describe{
-\item{\code{pif_weights}}{\code{numeric} - Vector of weights \eqn{w_i} for weighting the potential impact fraction.}
-\item{\code{sigma_pif_weights}}{\code{numeric} - Covariance matrix for the \code{pif_weights}}
+\item{\code{weights}}{\code{numeric} - Vector of weights \eqn{w_i} for weighting the potential impact fraction.}
+\item{\code{sigma_weights}}{\code{numeric} - Covariance matrix for the \code{weights}}
 \item{\code{pif_transform}}{\code{function} - Function \eqn{g} with which to transform the impact fraction before weighting.}
 \item{\code{pif_deriv_transform}}{\code{function} - Derivative of the \code{pif_transform}.}
 \item{\code{pif_inverse_transform}}{\code{function} - Inverse of the \code{pif_transform}.}

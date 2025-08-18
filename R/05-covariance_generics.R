@@ -1,4 +1,4 @@
-#' Get the covariance between two atomic pifs
+#' Covariance between two atomic pifs
 #'
 #' Calculates the approximate covariance between two atomic
 #' pif class expressions using the delta method.
@@ -15,9 +15,10 @@
 #' @param uncorrelated_beta If `pif1` and `pif2` were constructed with independent
 #'  (uncorrelated) data for the relative risk parameter `beta`. Either
 #' `TRUE`, `FALSE` or `guess` (default).
+#'
 #' @param quiet Whether to throw warnings or other messages.
 #'
-#' @section Link covariance matrices:
+#' @section Covariance matrices:
 #'
 #' By default if `var_p = NULL` is specified this assumes the parameters `p`
 #' of `pif1` and `pif2` are uncorrelated. However, if `pif1` and `pif2` share
@@ -35,7 +36,7 @@
 #'
 #' @section Computation:
 #'
-#' The  `pif_class_atomic_variance` computes the approximate covariance between
+#' The  `cov_atomic_pif` computes the approximate covariance between
 #' two potential impact fractions \eqn{\text{PIF}_1} and \eqn{\text{PIF}_2}
 #' as follows:
 #' \deqn{
@@ -54,11 +55,13 @@
 #' impact fraction `pif1` and  \eqn{p_2} and \eqn{\beta_2} to the respective
 #' parameters of `pif2`.
 #'
+#'
 #' @seealso [from_parameters_covariance_p_component()]
 #' @keywords internal
 cov_atomic_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
-                                      uncorrelated_p = "guess", uncorrelated_beta = "guess",
-                                      quiet = FALSE) {
+                           uncorrelated_p = "guess", uncorrelated_beta = "guess",
+                           quiet = FALSE) {
+
   # Check they are pif objects
   if (!S7::S7_inherits(pif1, pif_atomic_class) ||
       !S7::S7_inherits(pif2, pif_atomic_class)) {
@@ -70,39 +73,16 @@ cov_atomic_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
     )
   }
 
-  # Check that both p's have the same length
-  if (length(pif1@p) != length(pif2@p)) {
-    cli::cli_abort(
-      paste0(
-        "pif1 has {.code length(pif1@p) = {length(pif1@p)}} exposure ",
-        "categories and pif2 has {.code length(pif2@p) = {length(pif2@p)}}. ",
-        "They don't seem to represent the same population. They need to ",
-        "be of the same length. Are you missing some categories with 0% ",
-        "prevalence perhaps?"
-      )
-    )
-  }
-
-  # Check that both p's have the same length
-  if (length(pif1@p_cft) != length(pif2@p_cft)) {
-    cli::cli_abort(
-      paste0(
-        "pif1 has {.code length(pif1@p_cft) = {length(pif1@p_cft)}} counterfactual exposure ",
-        "categories and pif2 has {.code length(pif2@p_cft) = {length(pif2@p_cft)}}. ",
-        "They don't seem to represent the same population. They need to ",
-        "be of the same length. Are you missing some categories with 0% ",
-        "prevalence perhaps?"
-      )
-    )
-  }
 
   # Check that the ps don't appear similar
-  if (uncorrelated_p == "guess" && is.null(var_p) && all(pif1@p == pif2@p) && all(pif1@var_p == pif2@var_p)) {
+  if (uncorrelated_p == "guess" && is.null(var_p) &&
+      length(pif1@p) == length(pif2@p) &&
+      all(pif1@p == pif2@p) && all(pif1@var_p == pif2@var_p)) {
     uncorrelated_p <- FALSE
     if (!quiet){
       cli::cli_alert_warning(
         paste0(
-          "The prevalence parameters p for the potential impact fractions appear ",
+          "The prevalence parameters `p` for the potential impact fractions appear ",
           "to be the same. If they are, set `uncorrelated_p = FALSE`. Otherwise ",
           "set `uncorrelated_p = TRUE"
         )
@@ -110,12 +90,15 @@ cov_atomic_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
     }
   }
 
-  if (uncorrelated_beta == "guess" && is.null(var_beta) && all(pif1@beta == pif2@beta) && all(pif1@var_beta == pif2@var_beta)) {
+  if (uncorrelated_beta == "guess" && is.null(var_beta) &&
+      length(pif1@beta) == length(pif2@beta) &&
+      all(pif1@beta == pif2@beta) &&
+      all(pif1@var_beta == pif2@var_beta)) {
     uncorrelated_beta <- FALSE
     if (!quiet){
       cli::cli_alert_warning(
         paste0(
-          "The relative risk beta parameters for the potential impact fractions appear ",
+          "The relative risk `beta` parameters for the potential impact fractions appear ",
           "to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise ",
           "set `uncorrelated_beta = TRUE"
         )
@@ -125,17 +108,41 @@ cov_atomic_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
 
   # If p's are the same set var_p as the link_covariance, otherwise assume independence
   if (is.null(var_p) && (uncorrelated_p == "guess" || uncorrelated_p)) {
-    var_p <- matrix(0, ncol = length(pif1@p), nrow = length(pif1@p))
+    var_p <- matrix(0, nrow = length(pif1@p), ncol = length(pif2@p))
   } else if (is.null(var_p)) {
-    var_p <- pif1@var_p
+    var_p <- as.matrix(pif1@var_p)
+  } else {
+    var_p <- as.matrix(var_p)
   }
 
   # If beta's are the same set var_beta as the link_covariance, otherwise assume independence
   if (is.null(var_beta) && (uncorrelated_beta == "guess" || uncorrelated_beta)) {
-    var_beta <- matrix(0, ncol = length(pif1@beta), nrow = length(pif1@beta))
+    var_beta <- matrix(0, nrow = length(pif1@beta), ncol = length(pif2@beta))
   } else if (is.null(var_beta)) {
-    var_beta <- pif1@var_beta
+    var_beta <- as.matrix(pif1@var_beta)
+  } else {
+    var_beta <- as.matrix(var_beta)
   }
+
+
+  if (nrow(var_p) != length(pif1@p) || ncol(var_p) != length(pif2@p)){
+    cli::cli_abort(
+      paste0(
+        "Invalid dimensions for `var_p`. It should be an ",
+        "{length(pif1@p)} x {length(pif2@p)} matrix."
+      )
+    )
+  }
+
+  if (nrow(var_beta) != length(pif1@beta) || ncol(var_beta) != length(pif2@beta)){
+    cli::cli_abort(
+      paste0(
+        "Invalid dimensions for `var_beta`. It should be an ",
+        "{length(pif1@beta)} x {length(pif2@beta)} matrix."
+      )
+    )
+  }
+
 
   from_parameters_pif_covariance(
     p1       = pif1@p,
@@ -153,18 +160,295 @@ cov_atomic_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
     rr_link_deriv_vals1 = pif1@rr_link_deriv_vals,
     rr_link_deriv_vals2 = pif2@rr_link_deriv_vals,
   )
+
+}
+
+
+#' Covariance between the j-th weight of a `pif_global_ensemble_class` and
+#' another `pif_global_ensemble_class`
+#'
+#' Calculates the covariance of the jth-weight
+#' of a potential impact fraction of `pif_global_ensemble_class`
+#' with a second `pif_global_ensemble_class` or `pif_atomic_class`.
+#'
+#' @param pif1 A `pif_global_ensemble_class` from which the weight is taken.
+#'
+#' @param pif2 A `pif_global_ensemble_class` or `pif_atomic_class` to compute the covariance
+#'
+#' @param j Weight indicator (covariance is for `weights(pif1)[j]`)
+#'
+#' @param sigma_weights Covariance vector between the weights of
+#' `pif1` and the j-th weight of `pif2`.
+#'
+#' @param sigma_pif_weights Covariance vector between the potential
+#' impact fractions in `pif1` and the j-th weight in `pif2`.
+#'
+#' @param uncorrelated_weights Whether the weights from `pif1` and `pif2`
+#' are uncorrelated. By default it tries to `guess` by analyzing whether
+#' they have the same weights.
+#'
+#' @param uncorrelated_pif_weights
+#'
+#' @section Formula:
+#' Given a `pif_global_ensemble`:
+#' \deqn{
+#' \widehat{\textrm{PIF}}_{1} =
+#' g^{-1}\Bigg(\sum\limits_{i=1}^{M_1} g(\hat{q}_i \cdot \widehat{\textrm{PIF}}_{1,i})\Bigg)
+#' }
+#' and a second `pif_global_ensemble`:
+#' \deqn{
+#' \widehat{\textrm{PIF}}_{2} = h^{-1}\Bigg(\sum\limits_{j=1}^{M_2} g(\hat{w}_j \cdot
+#' \widehat{\textrm{PIF}}_{2,j})\Bigg)
+#' }
+#' This function computes the covariance between the first impact fraction and the
+#' jth weight \eqn{w_j} of the second fraction by computing:
+#' \deqn{
+#' \operatorname{Cov}(\widehat{\textrm{PIF}}_A, \hat{w}_j) \approx
+#' \frac{1}{g'\big(\widehat{\textrm{PIF}}_A\big)}\sum\limits_{i=1}^{M_1}g'(\hat{q}_i
+#' \cdot \widehat{\textrm{PIF}}_{A,i}) \Bigg[ \hat{q} \operatorname{Cov}\Big(
+#' \widehat{\textrm{PIF}}_{A,i}, \hat{w}_j\Big) +  \widehat{\textrm{PIF}}_{A,i} \operatorname{Cov}\Big( \hat{q}_j,
+#' \hat{w}_j\Big) \Bigg]
+#' }
+#' where \eqn{\widehat{\textrm{PIF}}_{1,:} = (\widehat{\textrm{PIF}}_{1,1},
+#' \widehat{\textrm{PIF}}_{1,2}, \dots, \widehat{\textrm{PIF}}_{1,M_1})^{\top}}
+#'
+#' @note The model currently works under the assumption that all `pif_atomic_class`
+#' are independent from weights. Hence will return `0` if `pif2` is an atomic pif.
+#'
+#' @seealso [cov_atomic_pif()], [cov_ensemble_atomic()]
+#' @keywords internal
+cov_ensemble_weight <- function(pif1, pif2, j = 1, sigma_weights = NULL, sigma_pif_weights = NULL,
+                                 uncorrelated_weights = "guess", uncorrelated_pif_weights = "guess",
+                                 quiet = FALSE){
+
+  #Otherwise
+  if (!S7::S7_inherits(pif1, pif_global_ensemble_class)){
+    cli::cli_abort(
+      "Variable `pif1` must be a `pif_global_ensemble_class` object."
+    )
+  }
+
+  if (!S7::S7_inherits(pif2, pif_global_ensemble_class) && !S7::S7_inherits(pif2, pif_atomic_class)){
+    cli::cli_abort(
+      "Variable `pif2` must be a `pif_global_ensemble_class` or a `pif_atomic_class` object."
+    )
+  }
+
+  #By assumption weights are uncorrelated with atomic pifs
+  if (S7::S7_inherits(pif2, pif_atomic_class)){
+    return(0)
+  }
+
+  #If they have the same weights they are correlated and the correlation is in sigma_weights
+  if (is.null(sigma_weights) &&
+      uncorrelated_weights == "guess" &&
+      length(pif1@weights) == length(pif2@weights) &&
+      all(pif1@weights == pif2@weights) &&
+      all(pif1@sigma_weights == pif2@sigma_weights)
+      ) {
+
+    uncorrelated_weights <- FALSE
+
+    if (!quiet){
+      cli::cli_alert_warning(
+        paste0(
+          "The weights the potential impact fractions appear ",
+          "to be the same. If they are, set `uncorrelated_weights = FALSE`. Otherwise ",
+          "set `uncorrelated_weights = TRUE"
+        )
+      )
+    }
+
+    sigma_weights <- pif1@sigma_weights[,j]
+
+  }
+
+
+  if (is.null(sigma_weights) && (uncorrelated_weights == "guess" || uncorrelated_beta)) {
+    sigma_weights <- rep(0, length(pif2@weights))
+  }
+
+  #In this case we compute the new weights
+  if (is.null(sigma_pif_weights)){
+    sigma_pif_weights <- rep(NA, length(pif2@coefs))
+    for (k in 1:length(pif2@coefs)){
+      sigma_pif_weights[k] <- cov_ensemble_weight(pif1 = pif1,
+                                                  pif2 = pif2@pif_list[[k]],
+                                                  j = j,
+                                                  sigma_weights = sigma_weights,
+                                                  sigma_pif_weights = NULL) #FIXME: Check this weight inheritance
+    }
+  }
+
+  #Check the dimensions
+  if (length(sigma_weights) != length(pif2@weights)){
+    cli::cli_abort(
+      paste0(
+        "Invalid dimensions for `sigma_weights` should be a vector of ",
+        "length = {length(pif2@weights)}"
+      )
+    )
+  }
+
+  #Check the dimensions
+  if (length(sigma_pif_weights) != length(pif2@coefs)){
+    cli::cli_abort(
+      paste0(
+        "Invalid dimensions for `sigma_pif_weights` should be a vector of ",
+        "length = {length(pif2@coefs)}"
+      )
+    )
+  }
+
+  #Get the factors involved in covariance
+  cov_val <- 0
+  for (k in 1:length(pif2@coefs)){
+    cov_val <- cov_val +
+      pif2@pif_deriv_transform(pif2@weights[k]*pif2@coefs[k])*(
+        pif2@weights[k]*sigma_pif_weights[k] +
+          pif2@coefs[k]*sigma_weights[k]
+    )
+  }
+
+  cov_val <- cov_val / pif2@pif_deriv_transform(pif2@pif)
+
+  return(cov_val)
+
+}
+
+#' Covariance between `pif_global_ensemble_class` and a `pif_atomic`
+#'
+#' Calculates the covariance of a potential impact fraction of a
+#' `pif_global_ensemble_class`  with a `pif_atomic`
+#'
+#' @param pif_ensemble A `pif_global_ensemble_class`
+#'
+#' @param pif_atomic A `pif_atomic_class`
+#'
+#' @param sigma_pifs Covariance vector between the potential
+#' impact fractions in `pif_ensemble` and `pif_atomic`.
+#'
+#' @param sigma_weights_pif Covariance vector between the weights in  `pif_ensemble` and
+#' the `pif_atomic`. For most applications this should be left as `NULL` which assumes
+#' independence between the `pif_atomic` and the weights used in the `pif_ensemble`.
+#'
+#' @param uncorrelated_pifs Whether to "guess" if there is a correlation
+#' between the atomic impact fraction and the impact fraction ensemble.
+#'
+#' @param uncorrelated_pif_weights Whether to "guess" if there is a correlation
+#' between the atomic impact fraction and the weights. Currently ignored.
+#'
+#' @section Formula:
+#' Given a `pif_global_ensemble`:
+#' \deqn{
+#' \widehat{\textrm{PIF}}_{1} =
+#' g^{-1}\Bigg(\sum\limits_{i=1}^{M_1} g(\hat{q}_i \cdot \widehat{\textrm{PIF}}_{1,i})\Bigg)
+#' }
+#' and a second `pif_global_ensemble`:
+#' \deqn{
+#' \widehat{\textrm{PIF}}_{2} = h^{-1}\Bigg(\sum\limits_{j=1}^{M_2} g(\hat{w}_j \cdot
+#' \widehat{\textrm{PIF}}_{2,j})\Bigg)
+#' }
+#' This function computes the covariance between the first impact fraction and the
+#' coefficients of the second fraction by computing:
+#' \deqn{
+#' \operatorname{Cov}(\widehat{\textrm{PIF}}_A, \widehat{\textrm{PIF}}_{B,j})
+#' \approx \frac{1}{g'\big(\widehat{\textrm{PIF}}_A\big)}\sum\limits_{i=1}^{M_1}g'(\hat{q}_i
+#' \cdot \widehat{\textrm{PIF}}_{A,i}) \Bigg[ \mathbb{E}[\hat{q}_i] \operatorname{Cov}\Big( \textrm{PIF}_{A,i},
+#' \widehat{\textrm{PIF}}_{B,j}\Big) +  \mathbb{E}[\textrm{PIF}_{A,i}] \operatorname{Cov}\Big( \hat{q}_i,
+#' \widehat{\textrm{PIF}}_{B,j}\Big) \Bigg]
+#' }
+#' where \eqn{\widehat{\textrm{PIF}}_{1,:} = (\widehat{\textrm{PIF}}_{1,1},
+#' \widehat{\textrm{PIF}}_{1,2}, \dots, \widehat{\textrm{PIF}}_{1,M_1})^{\top}}
+#'
+#' @seealso [cov_ensemble_weight()], [cov_atomic_pif()]
+#' @keywords internal
+cov_ensemble_atomic <- function(pif_ensemble, pif_atomic, sigma_pifs = NULL, sigma_weights_pif = NULL,
+                                uncorrelated_pifs = "guess", uncorrelated_pif_weights = "guess"){
+
+  if (!S7::S7_inherits(pif_ensemble, pif_global_ensemble_class) && !S7::S7_inherits(pif_ensemble, pif_atomic_class)){
+    cli::cli_abort(
+      "Entry `pif_ensemble` should be a `pif_global_ensemble_class` or a `pif_atomic` object."
+    )
+  }
+
+  if (!S7::S7_inherits(pif_atomic, pif_atomic_class)){
+    cli::cli_abort(
+      "Entry `pif_atomic` should be a `pif_atomic_class` object."
+    )
+  }
+
+  if (S7::S7_inherits(pif_ensemble, pif_atomic_class)){
+    return(
+      cov_atomic_pif(pif_ensemble, pif_atomic) #FIXME: Fix inheritance here
+    )
+  }
+
+  #Guess the uncorrelated weights
+  if (uncorrelated_pifs == "guess" && is.null(sigma_pifs)){
+    sigma_pifs <- rep(0, length(pif_ensemble@coefs))
+    for (k in 1:length(pif_ensemble@pif_list)){
+      sigma_pifs[k] <- cov_ensemble_atomic(pif_ensemble = pif_ensemble@pif_list[[k]], pif_atomic = pif_atomic) #FIXME: Fix inheritance here
+    }
+  } else if (is.null(sigma_pifs)){
+    sigma_pifs <- rep(0, ncol = length(pif_ensemble@coefs))
+  }
+
+  if (is.null(sigma_weights_pif)){
+    sigma_weights_pif <- rep(0, length(pif_ensemble@coefs))
+  }
+
+  #Check the dimensions
+  if (length(sigma_pifs) != length(pif_ensemble@coefs)){
+    cli::cli_abort(
+      paste0(
+        "Invalid dimensions for `sigma_pifs` should be a vector of ",
+        "length {length(pif_ensemble@coefs)}"
+      )
+    )
+  }
+
+  #Check the dimensions
+  if (length(sigma_weights_pif) != length(pif_ensemble@coefs)){
+    cli::cli_abort(
+      paste0(
+        "Invalid dimensions for `sigma_weights_pif` should be a vector of ",
+        "length {length(pif_ensemble@weights)}"
+      )
+    )
+  }
+
+  covariance_value <- 0
+  for (k in 1:length(pif_ensemble@coefs)){
+    covariance_value <- covariance_value +
+      pif_ensemble@pif_deriv_transform(pif_ensemble@weights[k]*pif_ensemble@coefs[k])*(
+        pif_ensemble@weights[k]*sigma_pifs[k] +
+          pif_ensemble@coefs[k]*sigma_weights_pif[k]
+      )
+  }
+  covariance_value <- covariance_value / pif_ensemble@pif_deriv_transform(pif_ensemble@pif)
+
+  return(covariance_value)
 }
 
 
 
-#' link_covariance function for a `pif_total_class`
+#' Covariance function for a `pif_global_ensemble_class`
 #'
-#' Recursively obtains the link_covariance matrix of a `pif_total_class`
+#' Recursively obtains the covariance matrix of a `pif_global_ensemble_class`
 #'
-#' @param pif1 Either a `pif_atomic_class` or a `pif_total_class`
-#' @param pif2 Either a `pif_atomic_class` or a `pif_total_class`
+#' @param pif1 Either a `pif_atomic_class` or a `pif_global_ensemble_class`
+#' @param pif2 Either a `pif_atomic_class` or a `pif_global_ensemble_class`
 #'
-#' @rdname covcor
+#' @inheritParams cov_atomic_pif
+#'
+#' @inheritSection cov_atomic_pif Covariance matrices
+#'
+#' @section Computation:
+#'
+#' @seealso [from_parameters_covariance_p_component()], [cov_atomic_pif()],
+#' [cov_ensemble_atomic()], [cov_ensemble_weight()]
+#'
 #' @keywords internal
 cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
                           uncorrelated_p = "guess", uncorrelated_beta = "guess",
@@ -175,40 +459,54 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
     return(
       cov_atomic_pif(pif1 = pif1, pif2 = pif2, var_p = var_p,
                      var_beta = var_beta, uncorrelated_p = uncorrelated_p,
-                     uncorrelated_beta = uncorrelated_beta, quiet = quiet)
+                     uncorrelated_beta = uncorrelated_beta, quiet = quiet) #FIXME
     )
   }
 
-  # Initialize total
-  total <- 0
-
-  # If pif1 is a list (regardless of p2's type)
-  if (S7::S7_inherits(pif1, pif_global_ensemble_class)) {
-    for (i in seq_along(pif1@pif_list)) {
-      #Compute sum q*covariance(pif1, pif2)
-      total <- total + #TODO: Double check the weights here
-        pif1@pif_weights[[i]]*cov_total_pif(pif1 = pif1@pif_list[[i]],
-                                        pif2 = pif2,
-                                        var_p = var_p,
-                                        var_beta = var_beta,
-                                        uncorrelated_p = uncorrelated_p,
-                                        uncorrelated_beta = uncorrelated_beta,
-                                        quiet = quiet)
-    }
-    return(total)
+  # If pif1 is an ensemble and pif2 is atomic
+  if (S7::S7_inherits(pif1, pif_global_ensemble_class) && S7::S7_inherits(pif2, pif_atomic_class)) {
+    return(
+      cov_ensemble_atomic(pif_ensemble = pif1, pif_atomic = pif2,
+                          sigma_pifs = NULL, sigma_weights_pif = NULL) #FIXME
+    )
   }
 
-  # If p2 is a list (and p1 isn't, from above)
-  if (S7::S7_inherits(pif2, pif_global_ensemble_class)) {
-    for (i in seq_along(pif2@pif_list)) {
+  # If pif2 is an ensemble and pif1 is atomic
+  if (S7::S7_inherits(pif1, pif_atomic_class) && S7::S7_inherits(pif2, pif_global_ensemble_class)) {
+    return(
+      cov_ensemble_atomic(pif_ensemble = pif2, pif_atomic = pif1,
+                          sigma_pifs = NULL, sigma_weights_pif = NULL) #FIXME
+    )
+  }
+
+  # If both are ensemble
+  if (S7::S7_inherits(pif1, pif_global_ensemble_class) && S7::S7_inherits(pif2, pif_global_ensemble_class)) {
+    total <- 0
+    for (i in seq_along(pif1@pif_list)) {
+
+      multiplier <- pif1@pif_deriv_transform(pif1@pif)
+
       total <- total +
-        pif2@pif_weights[[i]]*cov_total_pif(pif1 = pif1,
-                                        pif2 = pif2@pif_list[[i]],
-                                        var_p = var_p,
-                                        var_beta = var_beta,
-                                        uncorrelated_p = uncorrelated_p,
-                                        uncorrelated_beta = uncorrelated_beta,
-                                        quiet = quiet)
+        pif1@pif_deriv_transform(pif1@weights[i]*pif1@coefs[i])*(
+          #q*cov(pif_a, pif_b)
+          pif1@weights[i]*cov_total_pif(
+            pif1 = pif1@pif_list[[i]],
+            pif2 = pif2,
+            var_p = var_p,
+            var_beta = var_beta,
+            uncorrelated_p = uncorrelated_p,
+            uncorrelated_beta = uncorrelated_beta, #FIXME:
+            quiet = quiet
+          ) +
+          #pifa*cov(q, pif_b)
+          pif1@coefs[i]*cov_ensemble_weight(
+            pif1 = pif1,
+            pif2 = pif2,
+            j = i #FIXME:
+          )
+        )
+
+      total <- total / multiplier
     }
     return(total)
   }
@@ -220,22 +518,22 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
 }
 
 
-#' link_covariance matrix, correlation matrix, link_variance and standard deviation
+#' Covariance matrix, correlation matrix, variance and standard deviation
 #' for potential impact fractions
 #'
-#' Computes the link_covariance (`covariance`) or correlation (`correlation`) for multiple
-#' potential impact fractions and the link_variance `variance` and standard deviation
-#' `standard_deviation`for a potential impact fraction.
+#' Computes the covariance (`covariance`) or correlation (`correlation`) for multiple
+#' potential impact fractions and the variance `variance` and standard deviation
+#' `standard_deviation`for a potential impact fractions.
 #'
 #' @param x A potential impact fraction
 #'
 #' @param ... Multiple additional potential impact fraction objects
 #' separated by commas.
 #'
-#' @param var_p link_covariance matrix for the prevalences in all `pif1` and
+#' @param var_p covariance matrix for the prevalences in all `pif1` and
 #' the ones included in `...`.
 #'
-#' @param var_beta link_covariance matrix for the parameter `beta` in all `pif1`
+#' @param var_beta covariance matrix for the parameter `beta` in all `pif1`
 #' and the ones included in `...`.
 #'
 #' @param uncorrelated_p If all the pifs share the same prevalence data. Either

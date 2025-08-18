@@ -122,7 +122,7 @@ test_that("mu_obs_fun calculates correctly and validates inputs", {
                                   upper_bound_beta = FALSE)
    pif_total <- pif_total_class(pif_list = list(pif_atomic, pif_atomic), link = logit,
                                 link_inv = inv_logit, link_deriv = deriv_logit,
-                                pif_weights = c(0.5, 0.5), sigma_pif_weights = matrix(0, 2, 2))
+                                weights = c(0.5, 0.5), sigma_weights = matrix(0, 2, 2))
 
    # Test with atomic pif
    expect_equal(
