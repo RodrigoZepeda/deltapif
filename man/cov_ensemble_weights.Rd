@@ -8,8 +8,8 @@ another \code{pif_global_ensemble_class}}
 cov_ensemble_weights(
   pif1,
   pif2,
-  var_weights = NULL,
-  var_pif_weights = NULL,
+  var_weights,
+  var_pif_weights,
   recursive = !is.null(var_pif_weights)
 )
 }

@@ -500,19 +500,19 @@ pif_global_ensemble_class <- S7::new_class(
   package = "deltapif",
   parent = pif_class,
   properties = list(
+    pif_list                = S7::class_any,
     weights                 = S7::class_numeric,
-    var_weights           = S7::class_any,
-    var_pif_weights = S7::class_any,
+    var_weights             = S7::class_any,
+    var_pif_weights         = S7::class_any,
     pif_transform           = S7::class_function,
     pif_deriv_transform     = S7::class_function,
     pif_inverse_transform   = S7::class_function,
     type                    = S7::new_property(S7::class_character, getter = get_ensemble_type),
     coefs                   = S7::new_property(S7::class_numeric, getter = get_ensemble_coefs),
     sum_transformed_weighted_coefs = S7::new_property(S7::class_numeric, getter = get_sum_transformed_weighted_coefs),
-    pif                            = S7::new_property(S7::class_numeric, getter = get_global_ensemble_pif)
-    #FIXME: Setup correct variance calculations
-    #covariance            = S7::new_property(S7::class_numeric, getter = get_covariance_total), #FIXME: Change for a get generic ensemble
-    #variance              = S7::new_property(S7::class_numeric, getter = get_variance_total) #FIXME: Change for a get generic ensemble
+    pif                            = S7::new_property(S7::class_numeric, getter = get_global_ensemble_pif),
+    covariance            = S7::new_property(S7::class_numeric, getter = get_covariance_total)
+    #variance              = S7::new_property(S7::class_numeric, getter = get_variance_total)
   ),
   validator = validate_global_ensemble,
   constructor = function(pif_list, weights, var_weights, var_pif_weights,
@@ -532,7 +532,8 @@ pif_global_ensemble_class <- S7::new_class(
                    pif_list = pif_list,
                    weights = weights,
                    var_weights = var_weights,
-                   var_pif_weights = var_pif_weights
+                   var_pif_weights = var_pif_weights,
+                   variance = 0
     )}
 )
 
@@ -542,12 +543,6 @@ pif_total_class <- S7::new_class(
   name      = "pif_total_class",
   package   = "deltapif",
   parent    = pif_global_ensemble_class,
-  properties = list(
-    pif_list              = S7::class_list,
-    weights               = S7::class_numeric
-    #covariance            = S7::new_property(S7::class_numeric, getter = get_covariance_total),
-    #variance              = S7::new_property(S7::class_numeric, getter = get_variance_total)
-  ),
   validator = validate_global_ensemble,
   constructor = function(pif_list, weights, var_weights, var_pif_weights,
                          link, link_inv, link_deriv,
@@ -565,7 +560,8 @@ pif_total_class <- S7::new_class(
                    var_pif_weights = var_pif_weights,
                    pif_transform = identity,
                    pif_deriv_transform = function(x) rep(1, length(x)),
-                   pif_inverse_transform = identity
+                   pif_inverse_transform = identity,
+                   variance = 0
                    )
 
 
@@ -578,11 +574,6 @@ pif_ensemble_class <- S7::new_class(
   name      = "pif_ensemble_class",
   package   = "deltapif",
   parent    = pif_global_ensemble_class,
-  properties = list(
-    pif_list      = S7::class_list
-    #covariance    = S7::new_property(S7::class_numeric, getter = get_ensemble_covariance),
-    #variance      = S7::new_property(S7::class_numeric, getter = get_ensemble_variance)
-  ),
   validator = validate_global_ensemble,
   constructor = function(pif_list,
                          weights,
@@ -605,7 +596,8 @@ pif_ensemble_class <- S7::new_class(
                    pif_list = pif_list,
                    pif_transform = log_complement,
                    pif_inverse_transform = inv_log_complement,
-                   pif_deriv_transform = deriv_log_complement
+                   pif_deriv_transform = deriv_log_complement,
+                   variance = 0
     )
 
 

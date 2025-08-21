@@ -169,37 +169,11 @@ cov_atomic_pif <- function(pif1, pif2, var_p, var_beta) {
 #'
 #' @seealso [cov_atomic_pif()], [cov_ensemble_atomic()]
 #' @keywords internal
-cov_ensemble_weights <- function(pif1, pif2, var_weights = NULL,
-                                 var_pif_weights = NULL, recursive = !is.null(var_pif_weights)){
+cov_ensemble_weights <- function(pif1, pif2, var_weights, var_pif_weights, recursive = !is.null(var_pif_weights)){
 
   #Return 0 if pif1 or pif2 are atomic as there is no covariance between weights
   if (S7::S7_inherits(pif1, pif_atomic_class) || S7::S7_inherits(pif2, pif_atomic_class)){
     return(0)
-  }
-
-  #If sigma_*_weights are null set defaults
-  if (is.null(var_weights)){
-    var_weights <- default_weight_covariance_structure2(pif1, pif2)
-  } else if (!S7::S7_inherits(var_weights, covariance_structure_class)){
-    cli::cli_abort(
-      paste0(
-        "`var_weights` should be a `covariance_structure_class`. Use ",
-        "`default_weight_covariance_structure2(pif1, pif2)`",
-        "to create a prototype and work from there."
-      )
-    )
-  }
-
-  if (is.null(var_pif_weights)){
-    var_pif_weights <- default_weight_pif_covariance_structure2(pif1, pif2)
-  } else if (!S7::S7_inherits(var_pif_weights, covariance_structure_class)){
-    cli::cli_abort(
-      paste0(
-        "`var_pif_weights` should be a `covariance_structure_class`. Use ",
-        "`default_weight_pif_covariance_structure2(pif1, pif2)`",
-        "to create a prototype and work from there."
-      )
-    )
   }
 
   #Otherwise
@@ -224,7 +198,7 @@ cov_ensemble_weights <- function(pif1, pif2, var_weights = NULL,
                              pif2 = pif2,
                              var_weights = var_weights,
                              var_pif_weights = var_pif_weights,
-                             recursive = recursive)
+                             recursive = TRUE)
     }
   }
 
@@ -263,7 +237,7 @@ cov_ensemble_weights <- function(pif1, pif2, var_weights = NULL,
   }
 
   var_w <- var_weights[[klabel]][[alabel]]
-  if (!is.matrix(var_pif_w)){
+  if (!is.matrix(var_w)){
     var_w <- matrix(var_w, ncol = length(pif2@weights), nrow = length(pif1@weights))
   }
 

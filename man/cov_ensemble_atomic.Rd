@@ -9,9 +9,9 @@ cov_ensemble_atomic(
   pif_atomic,
   var_p,
   var_beta,
-  var_pifs = NULL,
-  var_pif_weights = NULL,
-  recursive = !is.null(var_pifs)
+  var_pifs,
+  var_pif_weights,
+  recursive = TRUE
 )
 }
 \arguments{

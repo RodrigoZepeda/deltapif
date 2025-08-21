@@ -9,3 +9,8 @@
 \description{
 Transforms a \code{covariance_structure} into a \code{matrix}.
 }
+\examples{
+as.matrix(covariance_structure_class(list(b = list(a = 1:3))))
+
+
+}

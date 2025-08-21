@@ -112,6 +112,8 @@ S7::method(print, covariance_structure_class) <- function(x, ..., quote = FALSE)
     for (j in 1:mdim){
       if (is.matrix(x@cov_list[[k]][[j]])){
         mat[k,j] <- paste0(nrow(x@cov_list[[k]][[j]]), "x", ncol(x@cov_list[[k]][[j]]))
+      } else if (is.vector(x@cov_list[[k]][[j]])){
+        mat[k,j] <- paste0(1, "x", length(x@cov_list[[k]][[j]]))
       } else if (is.numeric(x@cov_list[[k]][[j]]) && x@cov_list[[k]][[j]] != 0){
         mat[k,j] <- x@cov_list[[k]][[j]]
       }
@@ -333,7 +335,7 @@ S7::method(length, covariance_structure_class) <- function(x) {
 #'
 #' @name length
 #' @export
-S7::method(length, pif_ensemble_class) <- function(x) {
+S7::method(length, pif_global_ensemble_class) <- function(x) {
   length(x@pif_list)
 }
 
@@ -356,22 +358,78 @@ S7::method(length, pif_atomic_class) <- function(x) {
 #' @param x A `covariance_structure`
 #'
 #' @name as.matrix
+#'
+#' @examples
+#' as.matrix(covariance_structure_class(list(b = list(a = 1:3))))
+#'
+#'
 #' @export
 S7::method(as.matrix, covariance_structure_class) <- function(x) {
+  flag <- TRUE
   nrow <- length(x)
   ncol <- length(x@cov_list[[1]])
-  mat <- matrix(0, nrow = nrow, ncol = ncol)
+  mat  <- matrix(0, nrow = nrow, ncol = ncol)
   for (k in 1:ncol){
     for (j in 1:nrow){
-      if (!is.matrix(x@cov_list[[j]][[k]])){
+      if (!is.matrix(x@cov_list[[j]][[k]]) && !is.vector(x@cov_list[[j]][[k]])){
         mat[j,k] <- x@cov_list[[j]][[k]]
+      } else if (is.matrix(x@cov_list[[j]][[k]]) && ncol(x@cov_list[[j]][[k]]) == 1 && nrow(x@cov_list[[j]][[k]] == 1)){
+        mat[j,k] <- as.numeric(x@cov_list[[j]][[k]])
+      } else if (is.vector(x@cov_list[[j]][[k]]) && length(x@cov_list[[j]][[k]]) == 1){
+        mat[j,k] <- as.numeric(x@cov_list[[j]][[k]])
       } else {
-        cli::cli_abort(
-          "Cannot coerce this covariance structure into a matrix yet"
-        )
+        flag <- TRUE
       }
     }
   }
+
+  if (!flag){
+    return(mat)
+  }
+
+  #Go through each of the columns and get the maximum column
+  max_col <- 0
+  for (k in 1:ncol){
+    for (j in 1:nrow){
+      if (is.matrix(x@cov_list[[j]][[k]])){
+        max_col <- max(ncol(x@cov_list[[j]][[k]]), max_col)
+      } else if (is.vector(x@cov_list[[j]][[k]])){ #Assume vectors are column-vectors
+        max_col <- max(1, max_col)
+      }
+    }
+  }
+  #Go through each of the rows and get the maximum number of rows
+  max_row <- 0
+  for (k in 1:ncol){
+    for (j in 1:nrow){
+      if (is.matrix(x@cov_list[[j]][[k]])){
+        max_row <- max(nrow(x@cov_list[[j]][[k]]), max_row)
+      } else if (is.vector(x@cov_list[[j]][[k]])){ #Assume vectors are column-vectors
+        max_row <- max(length(x@cov_list[[j]][[k]]), max_row)
+      }
+    }
+  }
+
+  #Create a matrix of that size
+  mat <- matrix(0, ncol = max_col*ncol, nrow = max_row*nrow)
+  for (k in 1:ncol){
+    for (j in 1:nrow){
+      init_row <- ((j - 1)*max_row + 1)
+      init_col <- ((k - 1)*max_col + 1)
+      if (is.matrix(x@cov_list[[j]][[k]])){
+        mat[
+          init_row:(init_row + nrow(x@cov_list[[j]][[k]]) - 1),
+          init_col:(init_col + ncol(x@cov_list[[j]][[k]]) - 1)
+        ] <- x@cov_list[[j]][[k]]
+      } else if (is.vector(x@cov_list[[j]][[k]])){
+        mat[
+          init_col:(init_col + length(x@cov_list[[j]][[k]]) - 1),
+          1
+        ] <- x@cov_list[[j]][[k]]
+      }
+    }
+  }
+
   return(mat)
 
 }
@@ -636,7 +694,7 @@ S7::method(as.list, covariance_structure_class) <- function(x) {
 #'
 #' Gets the labels of the elemebts in the `pif_list` of an ensemble class.
 #'
-#' @param x A `pif_ensemble_class`
+#' @param x A `pif_global_ensemble_class`
 #'
 #' @name children
 NULL
@@ -649,7 +707,7 @@ children <- S7::new_generic(
     S7::S7_dispatch()
   }
 )
-S7::method(children, pif_ensemble_class) <- function(x) {
+S7::method(children, pif_global_ensemble_class) <- function(x) {
   sapply(x@pif_list, function(x) x@label)
 }
 S7::method(children, pif_atomic_class) <- function(x) {
