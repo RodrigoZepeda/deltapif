@@ -4,15 +4,7 @@
 \alias{cov_atomic_pif}
 \title{Covariance between two atomic pifs}
 \usage{
-cov_atomic_pif(
-  pif1,
-  pif2,
-  var_p = NULL,
-  var_beta = NULL,
-  uncorrelated_p = "guess",
-  uncorrelated_beta = "guess",
-  quiet = FALSE
-)
+cov_atomic_pif(pif1, pif2, var_p, var_beta)
 }
 \arguments{
 \item{pif1}{A \code{pif_atomic_class} object.}

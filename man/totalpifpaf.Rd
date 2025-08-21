@@ -4,6 +4,7 @@
 \alias{totalpifpaf}
 \alias{paf_total}
 \alias{pif_total}
+\alias{paf_ensemble}
 \alias{pif_ensemble}
 \title{Combine Potential Impact Fractions and Population Attributable Fractions}
 \usage{
@@ -12,11 +13,13 @@ paf_total(
   ...,
   weights,
   sigma_weights = 0,
+  sigma_intra_pif_weights = NULL,
   conf_level = 0.95,
   link = "log-complement",
   link_inv = NULL,
   link_deriv = NULL,
-  quiet = FALSE
+  quiet = FALSE,
+  label = NULL
 )
 
 pif_total(
@@ -24,10 +27,27 @@ pif_total(
   ...,
   weights,
   sigma_weights = 0,
+  sigma_intra_pif_weights = NULL,
   conf_level = 0.95,
   link = "log-complement",
   link_inv = NULL,
   link_deriv = NULL,
+  quiet = FALSE,
+  label = NULL,
+  is_paf = FALSE
+)
+
+paf_ensemble(
+  paf1,
+  ...,
+  weights = NULL,
+  sigma_weights = 0,
+  sigma_intra_pif_weights = NULL,
+  link = "identity",
+  link_inv = NULL,
+  link_deriv = NULL,
+  conf_level = 0.95,
+  label = NULL,
   quiet = FALSE
 )
 
@@ -35,12 +55,15 @@ pif_ensemble(
   pif1,
   ...,
   weights = NULL,
-  sigma_weights = NULL,
+  sigma_weights = 0,
+  sigma_intra_pif_weights = NULL,
   link = "identity",
   link_inv = NULL,
   link_deriv = NULL,
   conf_level = 0.95,
-  quiet = FALSE
+  quiet = FALSE,
+  label = NULL,
+  is_paf = FALSE
 )
 }
 \arguments{
@@ -68,6 +91,8 @@ is \code{logit} this should be \code{inv_logit}.}
 to build it automatically from \code{link} using \code{\link[Deriv:Deriv]{Deriv::Deriv()}}.}
 
 \item{quiet}{Whether to show messages.}
+
+\item{label}{Character identifier for the impact fraction. This is for}
 
 \item{pif1}{A potential impact fraction (class \code{pif_class})}
 }

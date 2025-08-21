@@ -161,13 +161,14 @@ paf <- function(p, beta,
                 link_inv = NULL,
                 link_deriv = NULL,
                 conf_level = 0.95,
-                quiet = FALSE) {
+                quiet = FALSE,
+                label = NULL) {
   pif(
     p = p, p_cft = rep(0, length(p)), beta = beta, var_p = var_p,
     var_beta = var_beta, rr_link = rr_link,
     rr_link_deriv = rr_link_deriv, link = link, link_inv = link_inv,
     link_deriv = link_deriv, conf_level = conf_level, quiet = quiet,
-    type = "PAF"
+    type = "PAF", label = label
   )
 }
 
@@ -186,7 +187,8 @@ pif <- function(p,
                 link_deriv    = NULL,
                 conf_level    = 0.95,
                 type          = "PIF",
-                quiet         = FALSE) {
+                quiet         = FALSE,
+                label         = NULL) {
 
   #Check that type is not PAF if p_cft has values
   if (type == "PAF" & any(p_cft > 0)){
@@ -296,6 +298,10 @@ pif <- function(p,
     }
   }
 
+  if (is.null(label)){
+    label <- paste0("deltapif-", sub("\\.", "", as.character(abs(rnorm(1)))))
+  }
+
   pif <- pif_atomic_class(
      p          = p,
      p_cft      = p_cft,
@@ -306,6 +312,7 @@ pif <- function(p,
      link_inv   = link_inv,
      link_deriv = link_deriv,
      rr_link    = rr_link,
+     label      = label,
      rr_link_deriv = rr_link_deriv,
      conf_level = conf_level,
      type       = type,

@@ -9,15 +9,7 @@
 \title{Covariance matrix, correlation matrix, variance and standard deviation
 for potential impact fractions}
 \usage{
-covariance(
-  x,
-  ...,
-  var_p = NULL,
-  var_beta = NULL,
-  uncorrelated_p = "guess",
-  uncorrelated_beta = "guess",
-  quiet = FALSE
-)
+covariance(x, ..., var_p = NULL, var_beta = NULL, quiet = FALSE)
 
 variance(x, ...)
 
@@ -45,6 +37,8 @@ the ones included in \code{...}.}
 \item{var_beta}{covariance matrix for the parameter \code{beta} in all \code{pif1}
 and the ones included in \code{...}.}
 
+\item{quiet}{Whether to throw warnings and other messages}
+
 \item{uncorrelated_p}{If all the pifs share the same prevalence data. Either
 \code{TRUE}, \code{FALSE}, \code{guess} (default) or a matrix. If a matrix is given then
 \code{uncorrelated_p[i,j] = 1} if the i-th and j-th pifs share the same prevalence data
@@ -54,8 +48,6 @@ and the ones included in \code{...}.}
 \code{TRUE}, \code{FALSE} or \code{guess} (default) or a matrix. If a matrix is given then
 \code{uncorrelated_beta[i,j] = 1} if the i-th and j-th pifs share the same relative risk parameters
 \code{uncorrelated_beta[i,j] = 0} if the i-th and j-th pifs don't share the same relative risk parameters.}
-
-\item{quiet}{Whether to throw warnings and other messages}
 }
 \description{
 Computes the covariance (\code{covariance}) or correlation (\code{correlation}) for multiple

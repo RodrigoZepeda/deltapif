@@ -9,8 +9,7 @@ cov_total_pif(
   pif2,
   var_p = NULL,
   var_beta = NULL,
-  uncorrelated_p = "guess",
-  uncorrelated_beta = "guess",
+  var_weights = NULL,
   quiet = FALSE
 )
 }
@@ -25,13 +24,8 @@ Default \code{NULL} (no correlation).}
 \item{var_beta}{covariance matrix for the parameter \code{beta} in both \code{pif1}
 and \code{pif2}. Default \code{NULL} (no correlation).}
 
-\item{uncorrelated_p}{If \code{pif1} and \code{pif2} were constructed with independent
-(uncorrelated) data for the prevalence \code{p}. Either
-\code{TRUE}, \code{FALSE} or \code{guess} (default).}
-
-\item{uncorrelated_beta}{If \code{pif1} and \code{pif2} were constructed with independent
-(uncorrelated) data for the relative risk parameter \code{beta}. Either
-\code{TRUE}, \code{FALSE} or \code{guess} (default).}
+\item{var_weights}{Covariance between the weights of all the fractions
+contained in \code{pif1} and all the fractions contained in \code{pif2}.}
 
 \item{quiet}{Whether to throw warnings or other messages.}
 }
@@ -40,6 +34,20 @@ Recursively obtains the covariance matrix of a \code{pif_global_ensemble_class}
 }
 \section{Computation}{
 
+This computes:
+\deqn{
+\operatorname{Cov}(\widehat{\textrm{PIF}}_{A}, \widehat{\textrm{PIF}}_{B})  \approx
+\frac{1}{g'\big(\widehat{\textrm{PIF}}_A\big)}\sum\limits_{i=1}^{M_1}g'(\hat{q}_i \cdot
+\widehat{\textrm{PIF}}_{A,i}) \Bigg[ \mathbb{E}[\hat{q}_i] \operatorname{Cov}\Big( \textrm{PIF}_{A,i},
+\widehat{\textrm{PIF}}_{B}\Big) +  \mathbb{E}[\textrm{PIF}_{A,i}] \operatorname{Cov}\Big( \hat{q}_i,
+\widehat{\textrm{PIF}}_{B}\Big) \Bigg]
+}
+where \eqn{\operatorname{Cov}\Big( \textrm{PIF}_{A,i},
+\widehat{\textrm{PIF}}_{B}\Big)} is computed as in \code{\link[=cov_ensemble_atomic]{cov_ensemble_atomic()}}
+in the case \eqn{\widehat{\textrm{PIF}}_{A,i}} is atomic or with the same formula
+in the case it is an ensemble. The expression \eqn{\operatorname{Cov}\Big( \hat{q}_i,
+\widehat{\textrm{PIF}}_{B}\Big) } is computed as in  \code{\link[=cov_ensemble_weight]{cov_ensemble_weight()}}
+for each weight \eqn{q_j}.
 }
 
 \section{Covariance matrices}{

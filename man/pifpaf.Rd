@@ -17,7 +17,8 @@ paf(
   link_inv = NULL,
   link_deriv = NULL,
   conf_level = 0.95,
-  quiet = FALSE
+  quiet = FALSE,
+  label = NULL
 )
 
 pif(
@@ -33,7 +34,8 @@ pif(
   link_deriv = NULL,
   conf_level = 0.95,
   type = "PIF",
-  quiet = FALSE
+  quiet = FALSE,
+  label = NULL
 )
 }
 \arguments{
@@ -70,6 +72,8 @@ to build it automatically from \code{link} using \code{\link[Deriv:Deriv]{Deriv:
 \item{conf_level}{Confidence level for the confidence interval (default 0.95).}
 
 \item{quiet}{Whether to show messages.}
+
+\item{label}{Character identifier for the impact fraction. This is for}
 
 \item{p_cft}{Counterfactual prevalence (proportion) of the exposed
 individuals for each of the \code{N} exposure levels.}

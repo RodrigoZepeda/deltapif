@@ -166,10 +166,10 @@ get_ensemble_covariance <- function(self){
         #In ensemble the covariance is given by ln(1 - pif[i])'*ln(1 - pif[j])'*covariance(pif[i],pif[j])
         g_i_prime <- link_deriv_vals(self@pif_list[[i]])
         g_j_prime <- link_deriv_vals(self@pif_list[[j]])
-        cov_mat[i,j] <- g_i_prime*g_j_prime*cov_total_pif(self@pif_list[[i]], self@pif_list[[j]])
+        cov_mat[i,j] <- 0#g_i_prime*g_j_prime*cov_total_pif(self@pif_list[[i]], self@pif_list[[j]]) #FIXME:
       }
-    }
-    cov_mat <- cov_mat + t(cov_mat) + diag(sapply(self@pif_list, variance)*(sapply(self@pif_list, link_deriv_vals)^2))
+    }#FIXME
+    cov_mat <- cov_mat + t(cov_mat) #+ diag(sapply(self@pif_list, variance)*(sapply(self@pif_list, link_deriv_vals)^2))
     return(cov_mat)
   } else {
     return(

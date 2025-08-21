@@ -181,7 +181,7 @@ test_that("covariance calculations", {
 
   pif_ensemble2 <- pif_ensemble(pif3, pif4, pif5, weights = c(0.4, 0.2, 0.4))
   sigma_weights <- matrix(c(0.1, 0.02, 0.02, 0.3, 0.1, 0.2), nrow = 2)
-  sigma_pif_weights <- matrix(c(-0.18, 0.5, 0.25, -0.1, 0.1, 0.21), nrow = 2)
+  sigma_intra_pif_weights <- matrix(c(-0.18, 0.5, 0.25, -0.1, 0.1, 0.21), nrow = 2)
 
   multiplier <- deriv_log_complement(pif_ensemble2@pif)
   val_cov    <- matrix(0, ncol = 3, nrow = 1)
@@ -189,7 +189,7 @@ test_that("covariance calculations", {
     for (k in 1:length(pif_ensemble2@pif_list)){
       val_cov[1,j] <- val_cov[1,j] +
         deriv_log_complement(pif_ensemble2@weights[k]*pif_ensemble2@coefs[k])*(
-          pif_ensemble2@weights[k]*sigma_pif_weights[j,k] +
+          pif_ensemble2@weights[k]*sigma_intra_pif_weights[j,k] +
             pif_ensemble2@coefs[k]*sigma_weights[j,k]
         )
     }
@@ -200,13 +200,13 @@ test_that("covariance calculations", {
     expect_equal(
       cov_ensemble_weight(pif_ensemble, pif_ensemble2, j = k,
                            sigma_weights = sigma_weights[k,],
-                           sigma_pif_weights = sigma_pif_weights[k,]),
+                           sigma_intra_pif_weights = sigma_intra_pif_weights[k,]),
       val_cov[k]
     )
   }
 
   expect_equal(
-    cov_ensemble_weight(pif_ensemble, pif_1, j = 1),
+    cov_ensemble_weight(pif_ensemble, pif1, j = 1),
     0)
 
 

@@ -184,7 +184,7 @@ NULL
 #' @rdname classes
 #pif_class-----
 pif_class <- S7::new_class("pif_class",
-   package = "deltapif",
+   package = "pifes",
    properties = list(
      # > Data inputs-----
 
@@ -273,7 +273,7 @@ pif_class <- S7::new_class("pif_class",
 #' @rdname classes
 #pif_atomic_class-------
 pif_atomic_class <- S7::new_class("pif_atomic_class",
-   package = "deltapif",
+   package = "pifes",
    parent = pif_class,
    properties = list(
      # > Data inputs-----
@@ -497,7 +497,7 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
 #pif_global_ensemble_class-------
 pif_global_ensemble_class <- S7::new_class(
   name = "pif_global_ensemble_class",
-  package = "deltapif",
+  package = "pifes",
   parent = pif_class,
   properties = list(
     weights                 = S7::class_numeric,
@@ -509,10 +509,10 @@ pif_global_ensemble_class <- S7::new_class(
     type                    = S7::new_property(S7::class_character, getter = get_ensemble_type),
     coefs                   = S7::new_property(S7::class_numeric, getter = get_ensemble_coefs),
     sum_transformed_weighted_coefs = S7::new_property(S7::class_numeric, getter = get_sum_transformed_weighted_coefs),
-    pif                            = S7::new_property(S7::class_numeric, getter = get_global_ensemble_pif)
+    pif                            = S7::new_property(S7::class_numeric, getter = get_global_ensemble_pif),
     #FIXME: Setup correct variance calculations
-    #covariance            = S7::new_property(S7::class_numeric, getter = get_covariance_total), #FIXME: Change for a get generic ensemble
-    #variance              = S7::new_property(S7::class_numeric, getter = get_variance_total) #FIXME: Change for a get generic ensemble
+    covariance            = S7::new_property(S7::class_numeric, getter = get_covariance_total), #FIXME: Change for a get generic ensemble
+    variance              = S7::new_property(S7::class_numeric, getter = get_variance_total) #FIXME: Change for a get generic ensemble
   ),
   validator = validate_global_ensemble,
   constructor = function(pif_list, weights, sigma_weights, sigma_intra_pif_weights,
@@ -520,7 +520,8 @@ pif_global_ensemble_class <- S7::new_class(
                          pif_deriv_transform, pif_inverse_transform,
                          link, link_inv, link_deriv, conf_level = 0.95, label){
 
-    S7::new_object(pif_global_ensemble_class,
+
+    S7::new_object(S7::S7_object(),
                    conf_level = conf_level,
                    pif_transform = pif_transform,
                    label      = label,
@@ -540,20 +541,20 @@ pif_global_ensemble_class <- S7::new_class(
 #pif_total_class------------------
 pif_total_class <- S7::new_class(
   name      = "pif_total_class",
-  package   = "deltapif",
+  package   = "pifes",
   parent    = pif_global_ensemble_class,
   properties = list(
     pif_list              = S7::class_list,
-    weights               = S7::class_numeric
-    #covariance            = S7::new_property(S7::class_numeric, getter = get_covariance_total),
-    #variance              = S7::new_property(S7::class_numeric, getter = get_variance_total)
+    weights               = S7::class_numeric,
+    covariance            = S7::new_property(S7::class_numeric, getter = get_covariance_total),
+    variance              = S7::new_property(S7::class_numeric, getter = get_variance_total)
   ),
   validator = validate_global_ensemble,
   constructor = function(pif_list, weights, sigma_weights, sigma_intra_pif_weights,
                          link, link_inv, link_deriv,
                          conf_level = 0.95, label){
 
-    S7::new_object(pif_total_class,
+    S7::new_object(S7::S7_object(),
                    conf_level = conf_level,
                    label      = label,
                    link = link,
@@ -576,12 +577,12 @@ pif_total_class <- S7::new_class(
 #pif_ensemble_class------------------
 pif_ensemble_class <- S7::new_class(
   name      = "pif_ensemble_class",
-  package   = "deltapif",
+  package   = "pifes",
   parent    = pif_global_ensemble_class,
   properties = list(
-    pif_list      = S7::class_list
-    #covariance    = S7::new_property(S7::class_numeric, getter = get_ensemble_covariance),
-    #variance      = S7::new_property(S7::class_numeric, getter = get_ensemble_variance)
+    pif_list      = S7::class_list,
+    covariance    = S7::new_property(S7::class_numeric, getter = get_ensemble_covariance),
+    variance      = S7::new_property(S7::class_numeric, getter = get_ensemble_variance)
   ),
   validator = validate_global_ensemble,
   constructor = function(pif_list,
@@ -593,7 +594,7 @@ pif_ensemble_class <- S7::new_class(
                          conf_level = 0.95,
                          label){
 
-    S7::new_object(pif_ensemble_class,
+    S7::new_object(S7::S7_object(),
                    conf_level = conf_level,
                    label = label,
                    link = link,

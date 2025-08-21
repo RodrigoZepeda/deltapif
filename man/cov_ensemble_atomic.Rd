@@ -7,10 +7,11 @@
 cov_ensemble_atomic(
   pif_ensemble,
   pif_atomic,
+  var_p,
+  var_beta,
   sigma_pifs = NULL,
   sigma_weights_pif = NULL,
-  uncorrelated_pifs = "guess",
-  uncorrelated_pif_weights = "guess"
+  recursive = !is.null(sigma_pifs)
 )
 }
 \arguments{

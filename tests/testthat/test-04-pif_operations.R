@@ -18,6 +18,37 @@ create_mock_pif_atomic <- function(type = "PIF") {
   )
 }
 
+create_sigma_intra_pif_weights_example <- function(n, include_null_case = TRUE) {
+  # Create a non-NULL example
+  if (n <= 0) {
+    return(NULL)
+  }
+
+  sigma_list <- vector("list", n)
+
+  for (i in 1:n) {
+    sigma_list[[i]] <- vector("list", n)
+    for (j in 1:n) {
+      # Create a positive semi-definite covariance matrix
+      # Using a simple approach: A %*% t(A) + small diagonal for stability
+      A <- matrix(rnorm(n * n), nrow = n)
+      cov_matrix <- A %*% t(A) + diag(0.1, n)
+
+      # Ensure symmetry (numerical precision might cause tiny asymmetries)
+      cov_matrix <- (cov_matrix + t(cov_matrix)) / 2
+
+      sigma_list[[i]][[j]] <- cov_matrix
+    }
+  }
+
+  # If requested, randomly return NULL sometimes
+  if (include_null_case && runif(1) < 0.3) {
+    return(NULL)
+  }
+
+  return(sigma_list)
+}
+
 test_that("paf_total validates inputs correctly", {
   # Create mock PAFs
   paf1 <- create_mock_pif_atomic(type = "PAF")

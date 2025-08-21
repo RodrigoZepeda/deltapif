@@ -98,15 +98,23 @@ test_that("cov_total_pif handles different PIF types", {
   )
 
   # Test atomic vs atomic
-  expect_silent(cov_total_pif(atomic1, atomic2,  uncorrelated_p = FALSE, uncorrelated_beta = FALSE))
+  expect_silent(suppressMessages(
+    cov_total_pif(atomic1, atomic2,  uncorrelated_p = FALSE, uncorrelated_beta = FALSE))
+  )
 
   # Test atomic vs total
-  expect_silent(cov_total_pif(atomic1, total_pif,  uncorrelated_p = FALSE, uncorrelated_beta = FALSE))
+  expect_silent(suppressMessages(
+    cov_total_pif(atomic1, total_pif,  uncorrelated_p = FALSE, uncorrelated_beta = FALSE))
+  )
 
-  expect_silent(cov_total_pif(total_pif, atomic1,  uncorrelated_p = FALSE, uncorrelated_beta = FALSE))
+  expect_silent(suppressMessages(
+    cov_total_pif(total_pif, atomic1,  uncorrelated_p = FALSE, uncorrelated_beta = FALSE))
+  )
 
   # Test total vs total
-  expect_silent(cov_total_pif(total_pif, total_pif,  uncorrelated_p = FALSE, uncorrelated_beta = FALSE))
+  expect_silent(suppressMessages(
+    cov_total_pif(total_pif, total_pif,  uncorrelated_p = FALSE, uncorrelated_beta = FALSE))
+  )
 
   # Test unsupported types
   expect_error(
