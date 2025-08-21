@@ -10,6 +10,8 @@ cov_total_pif(
   var_p = NULL,
   var_beta = NULL,
   var_weights = NULL,
+  var_pif_weights = NULL,
+  var_pifs = NULL,
   quiet = FALSE
 )
 }

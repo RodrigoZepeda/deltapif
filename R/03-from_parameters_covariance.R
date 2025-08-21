@@ -72,17 +72,15 @@ NULL
 
 #' @rdname covariance_from_parameters
 from_parameters_covariance_p_component <- function(
-    p1, p2, p1_cft, p2_cft, rr1, rr2, mu_obs1, mu_obs2, mu_cft1, mu_cft2,
+    p1, p2, p1_cft, p2_cft, rr1, rr2,
     var_p, upper_bound) {
 
   # Get the derivatives
   vcp_deriv1 <- deriv_pif_p(
-    p = p1, p_cft = p1_cft, rr = rr1, mu_obs = mu_obs1,
-    mu_cft = mu_cft1
+    p = p1, p_cft = p1_cft, rr = rr1
   )
   vcp_deriv2 <- deriv_pif_p(
-    p = p2, p_cft = p2_cft, rr = rr2, mu_obs = mu_obs2,
-    mu_cft = mu_cft2
+    p = p2, p_cft = p2_cft, rr = rr2,
   )
 
   # Whether we are working with an upper bound for the link_variance
@@ -97,18 +95,16 @@ from_parameters_covariance_p_component <- function(
 #' @rdname covariance_from_parameters
 from_parameters_covariance_beta_component <- function(
     p1, p2, p1_cft, p2_cft, rr1, rr2, rr_link_deriv_vals1, rr_link_deriv_vals2,
-    mu_obs1, mu_obs2, mu_cft1, mu_cft2, var_beta, upper_bound) {
+    var_beta, upper_bound) {
   # Get the derivatives
   vcbeta_deriv1 <- deriv_pif_beta(
     p = p1, p_cft = p1_cft, rr = rr1,
-    rr_link_deriv_vals = rr_link_deriv_vals1, mu_obs = mu_obs1,
-    mu_cft = mu_cft1
+    rr_link_deriv_vals = rr_link_deriv_vals1
   )
 
   vcbeta_deriv2 <- deriv_pif_beta(
     p = p2, p_cft = p2_cft, rr = rr2,
-    rr_link_deriv_vals = rr_link_deriv_vals2, mu_obs = mu_obs2,
-    mu_cft = mu_cft2
+    rr_link_deriv_vals = rr_link_deriv_vals2
   )
 
   # Whether we are working with an upper bound for the link_variance
@@ -123,7 +119,7 @@ from_parameters_covariance_beta_component <- function(
 #' @rdname covariance_from_parameters
 from_parameters_pif_covariance <- function(
     p1, p2, p1_cft, p2_cft, rr1, rr2, rr_link_deriv_vals1, rr_link_deriv_vals2,
-    mu_obs1, mu_obs2, mu_cft1, mu_cft2, var_p, var_beta,
+    var_p, var_beta,
     upper_bound_p = FALSE, upper_bound_beta = FALSE) {
 
   p_component <- from_parameters_covariance_p_component(
@@ -132,10 +128,6 @@ from_parameters_pif_covariance <- function(
     p1_cft = p1_cft,
     p2_cft = p2_cft,
     rr1 = rr1, rr2 = rr2,
-    mu_obs1 = mu_obs1,
-    mu_obs2 = mu_obs2,
-    mu_cft1 = mu_cft1,
-    mu_cft2 = mu_cft2,
     var_p = var_p,
     upper_bound = upper_bound_p
   )
@@ -148,10 +140,6 @@ from_parameters_pif_covariance <- function(
     rr1 = rr1, rr2 = rr2,
     rr_link_deriv_vals1 = rr_link_deriv_vals1,
     rr_link_deriv_vals2 = rr_link_deriv_vals2,
-    mu_obs1 = mu_obs1,
-    mu_obs2 = mu_obs2,
-    mu_cft1 = mu_cft1,
-    mu_cft2 = mu_cft2,
     var_beta = var_beta,
     upper_bound = upper_bound_beta
   )
@@ -161,7 +149,7 @@ from_parameters_pif_covariance <- function(
 
 #' @rdname covariance_from_parameters
 from_parameters_pif_variance <- function(
-    p, p_cft, rr, rr_link_deriv_vals, mu_obs, mu_cft, var_p,
+    p, p_cft, rr, rr_link_deriv_vals, var_p,
     var_beta, upper_bound_p = FALSE, upper_bound_beta = FALSE) {
 
   from_parameters_pif_covariance(
@@ -173,10 +161,6 @@ from_parameters_pif_variance <- function(
     rr2 = rr,
     rr_link_deriv_vals1 = rr_link_deriv_vals,
     rr_link_deriv_vals2 = rr_link_deriv_vals,
-    mu_obs1 = mu_obs,
-    mu_obs2 = mu_obs,
-    mu_cft1 = mu_cft,
-    mu_cft2 = mu_cft,
     var_p = var_p,
     var_beta = var_beta,
     upper_bound_p = upper_bound_p,

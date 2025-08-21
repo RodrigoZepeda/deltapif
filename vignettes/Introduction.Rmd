@@ -134,10 +134,10 @@ weights <- weights / sum(weights)
 The `paf_total` function computes the aggregated `paf` of the whole population:
 
 ```{r}
-paf_total(paf_white, paf_hispanic, paf_black, paf_asian, weights = weights, sigma_weights = 0)
+paf_total(paf_white, paf_hispanic, paf_black, paf_asian, weights = weights, var_weights = 0)
 ```
 
-where we set `sigma_weights = 0` as no covariance matrix was known for the race distribution data (it does exist its just not on Wikipedia). 
+where we set `var_weights = 0` as no covariance matrix was known for the race distribution data (it does exist its just not on Wikipedia). 
 
 ### Why are we using the log relative risk?
 

@@ -22,7 +22,7 @@
 #' \deqn{
 #' \dfrac{\partial \textrm{PIF}}{\partial \beta} =
 #' \Bigg(\dfrac{
-#'  \mu^{\text{obs}} \cdot p_{*} - \mu^{\text{cft}} \cdot p
+#'  \mu^{\text{cft}} \cdot p - \mu^{\text{obs}} \cdot p_{*}
 #' }{
 #'  \Big( \mu^{\text{obs}}\Big)^2
 #' }\Bigg)\odot \text{RR}'(\beta)

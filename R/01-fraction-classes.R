@@ -59,10 +59,10 @@
 #' @param weights weights for calculating the total PIF (respectively PAF)
 #' in `pif_total`.
 #'
-#' @param sigma_weights covariance matrix for the weights when calculating the
+#' @param var_weights covariance matrix for the weights when calculating the
 #' total PIF (respectively PAF) in `pif_total`.
 #'
-#' @param sigma_intra_pif_weights covariance matrix with row `i` and column `j`
+#' @param var_pif_weights covariance matrix with row `i` and column `j`
 #' representing the covariance between the `i`-th potential impact
 #' fraction of the list and the `j`-th weight
 #'
@@ -139,7 +139,7 @@
 #' The `pif_global_ensemble_class` inherits the properties of a `pif_class` as well as:
 #' \describe{
 #'  \item{`weights`}{`numeric` - Vector of weights \eqn{w_i} for weighting the potential impact fraction.}
-#'  \item{`sigma_weights`}{`numeric` - Covariance matrix for the `weights`}
+#'  \item{`var_weights`}{`numeric` - Covariance matrix for the `weights`}
 #'  \item{`pif_transform`}{`function` - Function \eqn{g} with which to transform the impact fraction before weighting.}
 #'  \item{`pif_deriv_transform`}{`function` - Derivative of the `pif_transform`.}
 #'  \item{`pif_inverse_transform`}{`function` - Inverse of the `pif_transform`.}
@@ -501,8 +501,8 @@ pif_global_ensemble_class <- S7::new_class(
   parent = pif_class,
   properties = list(
     weights                 = S7::class_numeric,
-    sigma_weights           = S7::class_any,
-    sigma_intra_pif_weights = S7::class_any,
+    var_weights           = S7::class_any,
+    var_pif_weights = S7::class_any,
     pif_transform           = S7::class_function,
     pif_deriv_transform     = S7::class_function,
     pif_inverse_transform   = S7::class_function,
@@ -515,7 +515,7 @@ pif_global_ensemble_class <- S7::new_class(
     variance              = S7::new_property(S7::class_numeric, getter = get_variance_total) #FIXME: Change for a get generic ensemble
   ),
   validator = validate_global_ensemble,
-  constructor = function(pif_list, weights, sigma_weights, sigma_intra_pif_weights,
+  constructor = function(pif_list, weights, var_weights, var_pif_weights,
                          pif_transform,
                          pif_deriv_transform, pif_inverse_transform,
                          link, link_inv, link_deriv, conf_level = 0.95, label){
@@ -532,8 +532,8 @@ pif_global_ensemble_class <- S7::new_class(
                    link_deriv = link_deriv,
                    pif_list = pif_list,
                    weights = weights,
-                   sigma_weights = sigma_weights,
-                   sigma_intra_pif_weights = sigma_intra_pif_weights
+                   var_weights = var_weights,
+                   var_pif_weights = var_pif_weights
     )}
 )
 
@@ -550,7 +550,7 @@ pif_total_class <- S7::new_class(
     variance              = S7::new_property(S7::class_numeric, getter = get_variance_total)
   ),
   validator = validate_global_ensemble,
-  constructor = function(pif_list, weights, sigma_weights, sigma_intra_pif_weights,
+  constructor = function(pif_list, weights, var_weights, var_pif_weights,
                          link, link_inv, link_deriv,
                          conf_level = 0.95, label){
 
@@ -562,8 +562,8 @@ pif_total_class <- S7::new_class(
                    link_deriv = link_deriv,
                    pif_list = pif_list,
                    weights = weights,
-                   sigma_weights = sigma_weights,
-                   sigma_intra_pif_weights = sigma_intra_pif_weights,
+                   var_weights = var_weights,
+                   var_pif_weights = var_pif_weights,
                    pif_transform = identity,
                    pif_deriv_transform = function(x) rep(1, length(x)),
                    pif_inverse_transform = identity
@@ -587,7 +587,7 @@ pif_ensemble_class <- S7::new_class(
   validator = validate_global_ensemble,
   constructor = function(pif_list,
                          weights,
-                         sigma_weights, sigma_intra_pif_weights,
+                         var_weights, var_pif_weights,
                          link,
                          link_inv,
                          link_deriv,
@@ -601,8 +601,8 @@ pif_ensemble_class <- S7::new_class(
                    link_inv = link_inv,
                    link_deriv = link_deriv,
                    weights = weights,
-                   sigma_weights = sigma_weights,
-                   sigma_intra_pif_weights = sigma_intra_pif_weights,
+                   var_weights = var_weights,
+                   var_pif_weights = var_pif_weights,
                    pif_list = pif_list,
                    pif_transform = log_complement,
                    pif_inverse_transform = inv_log_complement,

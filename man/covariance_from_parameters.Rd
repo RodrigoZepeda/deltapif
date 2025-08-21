@@ -15,10 +15,6 @@ from_parameters_covariance_p_component(
   p2_cft,
   rr1,
   rr2,
-  mu_obs1,
-  mu_obs2,
-  mu_cft1,
-  mu_cft2,
   var_p,
   upper_bound
 )
@@ -32,10 +28,6 @@ from_parameters_covariance_beta_component(
   rr2,
   rr_link_deriv_vals1,
   rr_link_deriv_vals2,
-  mu_obs1,
-  mu_obs2,
-  mu_cft1,
-  mu_cft2,
   var_beta,
   upper_bound
 )
@@ -49,10 +41,6 @@ from_parameters_pif_covariance(
   rr2,
   rr_link_deriv_vals1,
   rr_link_deriv_vals2,
-  mu_obs1,
-  mu_obs2,
-  mu_cft1,
-  mu_cft2,
   var_p,
   var_beta,
   upper_bound_p = FALSE,
@@ -64,8 +52,6 @@ from_parameters_pif_variance(
   p_cft,
   rr,
   rr_link_deriv_vals,
-  mu_obs,
-  mu_cft,
   var_p,
   var_beta,
   upper_bound_p = FALSE,
@@ -86,18 +72,6 @@ impact fraction}
 \item{rr1}{Relative risk in the first potential impact fraction}
 
 \item{rr2}{Relative risk in the second potential impact fraction}
-
-\item{mu_obs1}{Average relative risk in the population of the first
-potential impact fraction.}
-
-\item{mu_obs2}{Average relative risk in the population of the second
-potential impact fraction.}
-
-\item{mu_cft1}{Average relative risk in the counterfactual population of the
-first potential impact fraction.}
-
-\item{mu_cft2}{Average relative risk in the counterfactual of the second
-potential impact fraction.}
 
 \item{var_p}{Covariance matrix with the entry \code{var_p[i,j]} corresponding
 to the covariance between \code{p1[i]} and \code{p2[j]}.}
@@ -131,9 +105,17 @@ individuals for each of the \code{N} exposure levels.}
 \item{rr_link_deriv_vals}{The derivative of the relative risk function \code{g}
 with respect to the parameter \code{beta} evaluated at \code{beta}.}
 
-\item{mu_obs}{The average value of the relative risk in the observed population.}
+\item{mu_obs1}{Average relative risk in the population of the first
+potential impact fraction.}
 
-\item{mu_cft}{The average value of the counterfactual relative risk in the population.}
+\item{mu_obs2}{Average relative risk in the population of the second
+potential impact fraction.}
+
+\item{mu_cft1}{Average relative risk in the counterfactual population of the
+first potential impact fraction.}
+
+\item{mu_cft2}{Average relative risk in the counterfactual of the second
+potential impact fraction.}
 }
 \value{
 The covariance component for either \code{p} or \code{beta}

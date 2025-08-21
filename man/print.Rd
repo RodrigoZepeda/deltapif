@@ -27,7 +27,7 @@ pif_rad_women  <- paf(0.12, 1.2, quiet = TRUE, var_p = 0.001, var_beta = 0.022,
                       label = "Women radiation")
 pif_women      <- pif_ensemble(pif_lead_women, pif_rad_women, label = "Women",
                                weights = c(0.8, 0.72),
-                               sigma_weights = matrix(c(0.3, 0.1, 0.1, 0.4), ncol = 2))
+                               var_weights = matrix(c(0.3, 0.1, 0.1, 0.4), ncol = 2))
 
 pif_lead_men   <- paf(0.30, 2.2, quiet = TRUE, var_p = 0.001, var_beta = 0.015,
                        label = "Men lead")
@@ -35,10 +35,10 @@ pif_rad_men    <- paf(0.10, 1.2, quiet = TRUE, var_p = 0.001, var_beta = 0.022,
                         label = "Men radiation")
 pif_men        <- pif_ensemble(pif_lead_men, pif_rad_men, label = "Men",
                         weights = c(0.65, 0.68),
-                        sigma_weights = matrix(c(0.1, -0.2, -0.2, 0.5), ncol = 2))
+                        var_weights = matrix(c(0.1, -0.2, -0.2, 0.5), ncol = 2))
 pif_tot        <- pif_total(pif_men, pif_women,
                         weights = c(0.49, 0.51), label = "Population",
-                        sigma_weights = matrix(c(0.22, 0.4, 0.4, 0.8), ncol = 2))
+                        var_weights = matrix(c(0.22, 0.4, 0.4, 0.8), ncol = 2))
 
 print(covariance_structure(pif_lead_women))
 print(covariance_structure2(pif_lead_women, pif_lead_men))

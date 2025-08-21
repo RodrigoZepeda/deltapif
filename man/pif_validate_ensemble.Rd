@@ -8,8 +8,8 @@ pif_validate_ensemble(
   pif1,
   ...,
   weights,
-  sigma_weights,
-  sigma_intra_pif_weights,
+  var_weights,
+  var_pif_weights,
   conf_level,
   link,
   link_inv,
@@ -29,7 +29,7 @@ population attributable fractions.}
 \item{weights}{A vector containing the proportion of the population
 for each of the categories (for each of the pifs given).}
 
-\item{sigma_weights}{link_covariance structure for the \code{weights}. Can be \code{0} (default) if
+\item{var_weights}{link_covariance structure for the \code{weights}. Can be \code{0} (default) if
 the weights are not random, a vector if only the link_variances of the weights
 are available or a link_covariance matrix.}
 

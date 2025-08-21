@@ -12,8 +12,8 @@ paf_total(
   paf1,
   ...,
   weights,
-  sigma_weights = 0,
-  sigma_intra_pif_weights = NULL,
+  var_weights = 0,
+  var_pif_weights = NULL,
   conf_level = 0.95,
   link = "log-complement",
   link_inv = NULL,
@@ -26,8 +26,8 @@ pif_total(
   pif1,
   ...,
   weights,
-  sigma_weights = 0,
-  sigma_intra_pif_weights = NULL,
+  var_weights = 0,
+  var_pif_weights = NULL,
   conf_level = 0.95,
   link = "log-complement",
   link_inv = NULL,
@@ -41,8 +41,8 @@ paf_ensemble(
   paf1,
   ...,
   weights = NULL,
-  sigma_weights = 0,
-  sigma_intra_pif_weights = NULL,
+  var_weights = 0,
+  var_pif_weights = NULL,
   link = "identity",
   link_inv = NULL,
   link_deriv = NULL,
@@ -55,8 +55,8 @@ pif_ensemble(
   pif1,
   ...,
   weights = NULL,
-  sigma_weights = 0,
-  sigma_intra_pif_weights = NULL,
+  var_weights = 0,
+  var_pif_weights = NULL,
   link = "identity",
   link_inv = NULL,
   link_deriv = NULL,
@@ -75,7 +75,7 @@ population attributable fractions.}
 \item{weights}{A vector containing the proportion of the population
 for each of the categories (for each of the pifs given).}
 
-\item{sigma_weights}{link_covariance structure for the \code{weights}. Can be \code{0} (default) if
+\item{var_weights}{link_covariance structure for the \code{weights}. Can be \code{0} (default) if
 the weights are not random, a vector if only the link_variances of the weights
 are available or a link_covariance matrix.}
 

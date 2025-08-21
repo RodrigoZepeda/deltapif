@@ -2,7 +2,14 @@
 % Please edit documentation in R/02-generics.R
 \name{subset}
 \alias{subset}
+\alias{subset_col}
+\alias{subset_row}
 \title{Subset a \code{covariance_structure}}
+\usage{
+subset_col(x, ...)
+
+subset_row(x, ...)
+}
 \arguments{
 \item{x}{A \code{covariance_structure}}
 

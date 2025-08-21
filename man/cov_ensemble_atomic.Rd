@@ -9,9 +9,9 @@ cov_ensemble_atomic(
   pif_atomic,
   var_p,
   var_beta,
-  sigma_pifs = NULL,
-  sigma_weights_pif = NULL,
-  recursive = !is.null(sigma_pifs)
+  var_pifs = NULL,
+  var_pif_weights = NULL,
+  recursive = !is.null(var_pifs)
 )
 }
 \arguments{
@@ -19,18 +19,11 @@ cov_ensemble_atomic(
 
 \item{pif_atomic}{A \code{pif_atomic_class}}
 
-\item{sigma_pifs}{Covariance vector between the potential
+\item{var_pifs}{Covariance vector between the potential
 impact fractions in \code{pif_ensemble} and \code{pif_atomic}.}
 
-\item{sigma_weights_pif}{Covariance vector between the weights in  \code{pif_ensemble} and
-the \code{pif_atomic}. For most applications this should be left as \code{NULL} which assumes
-independence between the \code{pif_atomic} and the weights used in the \code{pif_ensemble}.}
-
-\item{uncorrelated_pifs}{Whether to "guess" if there is a correlation
-between the atomic impact fraction and the impact fraction ensemble.}
-
-\item{uncorrelated_pif_weights}{Whether to "guess" if there is a correlation
-between the atomic impact fraction and the weights. Currently ignored.}
+\item{var_pif_weights}{Covariance vector between the weights in  \code{pif_ensemble} and
+the \code{pif_atomic}.}
 }
 \description{
 Calculates the covariance of a potential impact fraction of a

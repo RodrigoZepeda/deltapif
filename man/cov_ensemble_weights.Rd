@@ -8,10 +8,9 @@ another \code{pif_global_ensemble_class}}
 cov_ensemble_weights(
   pif1,
   pif2,
-  j = 1,
-  sigma_weights = NULL,
-  sigma_pif_weights = NULL,
-  recursive = !is.null(sigma_pif_weights)
+  var_weights = NULL,
+  var_pif_weights = NULL,
+  recursive = !is.null(var_pif_weights)
 )
 }
 \arguments{
@@ -19,19 +18,13 @@ cov_ensemble_weights(
 
 \item{pif2}{A \code{pif_global_ensemble_class} or \code{pif_atomic_class} to compute the covariance}
 
-\item{j}{Weight indicator (covariance is for \code{weights(pif1)[j]})}
-
-\item{sigma_weights}{Covariance vector between the weights of
+\item{var_weights}{Covariance vector between the weights of
 \code{pif1} and the j-th weight of \code{pif2}.}
 
-\item{sigma_intra_pif_weights}{Covariance vector between the potential
-impact fractions in \code{pif1} and the j-th weight in \code{pif2}.}
+\item{j}{Weight indicator (covariance is for \code{weights(pif1)[j]})}
 
-\item{uncorrelated_weights}{Whether the weights from \code{pif1} and \code{pif2}
-are uncorrelated. By default it tries to \code{guess} by analyzing whether
-they have the same weights.}
-
-\item{uncorrelated_pif_weights}{}
+\item{sigma_pif_weights}{Covariance vector between the potential
+impact fractions in \code{pif1} and the weights in \code{pif2}.}
 }
 \description{
 Calculates the covariance of the jth-weight

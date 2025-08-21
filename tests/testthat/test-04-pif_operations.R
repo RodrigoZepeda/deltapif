@@ -18,7 +18,7 @@ create_mock_pif_atomic <- function(type = "PIF") {
   )
 }
 
-create_sigma_intra_pif_weights_example <- function(n, include_null_case = TRUE) {
+create_var_pif_weights_example <- function(n, include_null_case = TRUE) {
   # Create a non-NULL example
   if (n <= 0) {
     return(NULL)
@@ -78,20 +78,20 @@ test_that("pif_total validates inputs correctly", {
     "provided have length 1"
   )
 
-  # Invalid sigma_weights
+  # Invalid var_weights
   expect_error(
-    pif_total(pif1, pif2, weights = c(0.5, 0.5), sigma_weights = matrix(1:4, nrow = 2)),
+    pif_total(pif1, pif2, weights = c(0.5, 0.5), var_weights = matrix(1:4, nrow = 2)),
     "is not symmetric"
   )
 
   expect_error(
-    pif_total(pif1, pif2, weights = c(0.5, 0.5), sigma_weights = "a"),
+    pif_total(pif1, pif2, weights = c(0.5, 0.5), var_weights = "a"),
     "should be a number"
   )
 
   expect_error(
     suppressWarnings(
-      pif_total(pif1, pif2, weights = c(0.5, 0.5), sigma_weights = 1:3)
+      pif_total(pif1, pif2, weights = c(0.5, 0.5), var_weights = 1:3)
     ),
     "has incorrect dimensions"
   )
@@ -115,7 +115,7 @@ test_that("pif_total calculates correctly", {
   expect_equal(result@pif, pif1@pif)
 
   # Test variance calculation
-  result <- pif_total(pif1, pif2, weights = c(0.5, 0.5), sigma_weights = diag(0.01, 2))
+  result <- pif_total(pif1, pif2, weights = c(0.5, 0.5), var_weights = diag(0.01, 2))
   expect_type(result@variance, "double")
   expect_true(result@variance > 0)
 })

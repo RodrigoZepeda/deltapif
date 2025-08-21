@@ -82,7 +82,7 @@ S7::method(print, pif_class) <- function(x, ..., accuracy = 0.001) {
 #'                       label = "Women radiation")
 #' pif_women      <- pif_ensemble(pif_lead_women, pif_rad_women, label = "Women",
 #'                                weights = c(0.8, 0.72),
-#'                                sigma_weights = matrix(c(0.3, 0.1, 0.1, 0.4), ncol = 2))
+#'                                var_weights = matrix(c(0.3, 0.1, 0.1, 0.4), ncol = 2))
 #'
 #' pif_lead_men   <- paf(0.30, 2.2, quiet = TRUE, var_p = 0.001, var_beta = 0.015,
 #'                        label = "Men lead")
@@ -90,10 +90,10 @@ S7::method(print, pif_class) <- function(x, ..., accuracy = 0.001) {
 #'                         label = "Men radiation")
 #' pif_men        <- pif_ensemble(pif_lead_men, pif_rad_men, label = "Men",
 #'                         weights = c(0.65, 0.68),
-#'                         sigma_weights = matrix(c(0.1, -0.2, -0.2, 0.5), ncol = 2))
+#'                         var_weights = matrix(c(0.1, -0.2, -0.2, 0.5), ncol = 2))
 #' pif_tot        <- pif_total(pif_men, pif_women,
 #'                         weights = c(0.49, 0.51), label = "Population",
-#'                         sigma_weights = matrix(c(0.22, 0.4, 0.4, 0.8), ncol = 2))
+#'                         var_weights = matrix(c(0.22, 0.4, 0.4, 0.8), ncol = 2))
 #'
 #' print(covariance_structure(pif_lead_women))
 #' print(covariance_structure2(pif_lead_women, pif_lead_men))
@@ -103,10 +103,13 @@ S7::method(print, pif_class) <- function(x, ..., accuracy = 0.001) {
 #' @export
 S7::method(print, covariance_structure_class) <- function(x, ..., quote = FALSE) {
   ndim <- length(x@cov_list)
+  mdim <- length(x@cov_list[[1]])
 
-  mat <- matrix(".", ncol = ndim, nrow = ndim, dimnames = list(names(x@cov_list), names(x@cov_list)))
+  mat <- matrix(".", nrow = ndim, ncol = mdim)
+  rownames(mat) <- names(x@cov_list)
+  colnames(mat) <- names(x@cov_list[[1]])
   for (k in 1:ndim){
-    for (j in 1:ndim){
+    for (j in 1:mdim){
       if (is.matrix(x@cov_list[[k]][[j]])){
         mat[k,j] <- paste0(nrow(x@cov_list[[k]][[j]]), "x", ncol(x@cov_list[[k]][[j]]))
       } else if (is.numeric(x@cov_list[[k]][[j]]) && x@cov_list[[k]][[j]] != 0){
@@ -355,10 +358,11 @@ S7::method(length, pif_atomic_class) <- function(x) {
 #' @name as.matrix
 #' @export
 S7::method(as.matrix, covariance_structure_class) <- function(x) {
-
-  mat <- matrix(0, ncol = length(x), nrow = length(x))
-  for (k in 1:length(x)){
-    for (j in 1:length(x)){
+  nrow <- length(x)
+  ncol <- length(x@cov_list[[1]])
+  mat <- matrix(0, nrow = nrow, ncol = ncol)
+  for (k in 1:ncol){
+    for (j in 1:nrow){
       if (!is.matrix(x@cov_list[[j]][[k]])){
         mat[j,k] <- x@cov_list[[j]][[k]]
       } else {
@@ -393,12 +397,174 @@ S7::method(as.matrix, covariance_structure_class) <- function(x) {
 #'
 #' @name subset
 #' @export
-S7::method(subset, covariance_structure_class) <- function(x, select, ...) {
+S7::method(subset, covariance_structure_class) <- function(x, select = NULL, cols = NULL, rows = NULL, ...) {
 
-  if (!is.vector(select) || length(select) < 1){
+  if (is.null(select) && is.null(cols) && is.null(rows)){
+    return(x)
+  }
+
+  if (!is.null(select) && is.null(cols) && is.null(rows)){
+
+    if (is.numeric(select) && max(select) > length(x) || min(select) < 0){
+      cli::cli_abort(
+        "Cannot `select` values outside the range `1:{length(x)}`"
+      )
+    }
+
+    if (is.numeric(select) && any(round(select) != select)){
+      cli::cli_abort(
+        "Cannot select non integer numeric values"
+      )
+    }
+
+    #Get the names
+    names_cov_str <- c()
+    if (is.character(select)){
+      names_cov_str <- names(x@cov_list)[which(names(x@cov_list) %in% select)]
+    } else if (is.numeric(select)){
+      names_cov_str <- names(x@cov_list)[select]
+    } else {
+      cli::cli_abort(
+        "Parameter `select` of `subset` should be either numeric or character."
+      )
+    }
+
+    if (length(names_cov_str) < 1){
+      cli::cli_abort(
+        "Subset to `select` not found."
+      )
+    }
+
+    #Create a covariance structure
+    cov_str <- vector("list", length = length(names_cov_str))
+    names(cov_str) <- names_cov_str
+    for (k in 1:length(cov_str)){
+      cov_str[[k]] <- vector("list", length = length(names_cov_str))
+      names(cov_str[[k]]) <- names_cov_str
+    }
+
+    #Loop using numbers
+    for (var in names_cov_str){
+      for (var2 in names_cov_str){
+        cov_str[[var]][[var2]] <- x@cov_list[[var]][[var2]]
+      }
+    }
+
+    #Add to class
+    return(covariance_structure_class(cov_str))
+
+  } else if (!is.null(select) && (!is.null(cols) || !is.null(rows))){
+    cli::cli_abort(
+      "Don't specify `select` at the same time as `cols` or `rows` as I don't know how to proceed."
+    )
+  } else if (is.null(select)){
+
+    cov_str <- x
+
+    if (!is.null(rows)){
+      cov_str <- subset_row(cov_str, select = rows)
+    }
+
+    if (!is.null(cols)){
+      cov_str <- subset_col(cov_str, select = cols)
+    }
+
+    return(cov_str)
+
+  }
+}
+
+
+#' @rdname subset
+#' @export
+subset_col <- S7::new_generic(
+  "children", "x",
+  function(x, ...) {
+    S7::S7_dispatch()
+  }
+)
+S7::method(subset_col, covariance_structure_class) <- function(x, select, ...) {
+
+  if (!is.vector(select)){
     cli::cli_abort(
       "`select` must be a vector of length > 0"
     )
+  }
+
+  if (length(select) < 1){
+    return(x)
+  }
+
+  if (is.numeric(select) && max(select) > length(x) || min(select) < 0){
+    cli::cli_abort(
+      "Cannot `select` values outside the range `1:{length(x)}`"
+    )
+  }
+
+  if (is.numeric(select) && any(round(select) != select)){
+    cli::cli_abort(
+      "Cannot select non integer numeric values"
+    )
+  }
+
+  #Get the names
+  names_cov_str <- c()
+  if (is.character(select)){
+    names_cov_str <- names(x@cov_list[[1]])[which(names(x@cov_list[[1]]) %in% select)]
+  } else if (is.numeric(select)){
+    names_cov_str <- names(x@cov_list[[1]])[select]
+  } else {
+    cli::cli_abort(
+      "Parameter `select` of `subset` should be either numeric or character."
+    )
+  }
+  names_unselected <- names(x@cov_list)
+
+
+  if (length(names_cov_str) < 1){
+    cli::cli_abort(
+      "Subset to `select` not found."
+    )
+  }
+
+  #Create a covariance structure
+  cov_str <- vector("list", length = length(names_unselected))
+  names(cov_str) <- names_unselected
+  for (k in 1:length(cov_str)){
+    cov_str[[k]] <- vector("list", length = length(names_cov_str))
+    names(cov_str[[k]]) <- names_cov_str
+  }
+
+  #Loop using numbers
+  for (var in names_unselected){
+    for (var2 in names_cov_str){
+      cov_str[[var]][[var2]] <- x@cov_list[[var]][[var2]]
+    }
+  }
+
+  #Add to class
+  covariance_structure_class(cov_str)
+
+}
+
+#' @rdname subset
+#' @export
+subset_row <- S7::new_generic(
+  "children", "x",
+  function(x, ...) {
+    S7::S7_dispatch()
+  }
+)
+S7::method(subset_row, covariance_structure_class) <- function(x, select, ...) {
+
+  if (!is.vector(select)){
+    cli::cli_abort(
+      "`select` must be a vector of length > 0"
+    )
+  }
+
+  if (length(select) < 1){
+    return(x)
   }
 
   if (is.numeric(select) && max(select) > length(x) || min(select) < 0){
@@ -424,6 +590,8 @@ S7::method(subset, covariance_structure_class) <- function(x, select, ...) {
       "Parameter `select` of `subset` should be either numeric or character."
     )
   }
+  names_unselected <- names(x@cov_list[[1]])
+
 
   if (length(names_cov_str) < 1){
     cli::cli_abort(
@@ -435,13 +603,13 @@ S7::method(subset, covariance_structure_class) <- function(x, select, ...) {
   cov_str <- vector("list", length = length(names_cov_str))
   names(cov_str) <- names_cov_str
   for (k in 1:length(cov_str)){
-    cov_str[[k]] <- vector("list", length = length(names_cov_str))
-    names(cov_str[[k]]) <- names_cov_str
+    cov_str[[k]] <- vector("list", length = length(names_unselected))
+    names(cov_str[[k]]) <- names_unselected
   }
 
   #Loop using numbers
   for (var in names_cov_str){
-    for (var2 in names_cov_str){
+    for (var2 in names_unselected){
       cov_str[[var]][[var2]] <- x@cov_list[[var]][[var2]]
     }
   }
@@ -462,6 +630,30 @@ S7::method(subset, covariance_structure_class) <- function(x, select, ...) {
 #' @export
 S7::method(as.list, covariance_structure_class) <- function(x) {
   x@cov_list
+}
+
+#' Get the children labels from a `pif_class`
+#'
+#' Gets the labels of the elemebts in the `pif_list` of an ensemble class.
+#'
+#' @param x A `pif_ensemble_class`
+#'
+#' @name children
+NULL
+
+#' @rdname children
+#' @export
+children <- S7::new_generic(
+  "children", "x",
+  function(x, ...) {
+    S7::S7_dispatch()
+  }
+)
+S7::method(children, pif_ensemble_class) <- function(x) {
+  sapply(x@pif_list, function(x) x@label)
+}
+S7::method(children, pif_atomic_class) <- function(x) {
+  NULL
 }
 
 #' Extract elements of covariance structure

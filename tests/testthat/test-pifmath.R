@@ -180,8 +180,8 @@ test_that("covariance calculations", {
   pif5 <- pif(p = 0.88, p_cft = 0.5, beta = 1.1, var_p = 0, var_beta = 0.25)
 
   pif_ensemble2 <- pif_ensemble(pif3, pif4, pif5, weights = c(0.4, 0.2, 0.4))
-  sigma_weights <- matrix(c(0.1, 0.02, 0.02, 0.3, 0.1, 0.2), nrow = 2)
-  sigma_intra_pif_weights <- matrix(c(-0.18, 0.5, 0.25, -0.1, 0.1, 0.21), nrow = 2)
+  var_weights <- matrix(c(0.1, 0.02, 0.02, 0.3, 0.1, 0.2), nrow = 2)
+  var_pif_weights <- matrix(c(-0.18, 0.5, 0.25, -0.1, 0.1, 0.21), nrow = 2)
 
   multiplier <- deriv_log_complement(pif_ensemble2@pif)
   val_cov    <- matrix(0, ncol = 3, nrow = 1)
@@ -189,8 +189,8 @@ test_that("covariance calculations", {
     for (k in 1:length(pif_ensemble2@pif_list)){
       val_cov[1,j] <- val_cov[1,j] +
         deriv_log_complement(pif_ensemble2@weights[k]*pif_ensemble2@coefs[k])*(
-          pif_ensemble2@weights[k]*sigma_intra_pif_weights[j,k] +
-            pif_ensemble2@coefs[k]*sigma_weights[j,k]
+          pif_ensemble2@weights[k]*var_pif_weights[j,k] +
+            pif_ensemble2@coefs[k]*var_weights[j,k]
         )
     }
     val_cov[1,j] <- val_cov[1,j] / multiplier
@@ -199,8 +199,8 @@ test_that("covariance calculations", {
   for (k in 1:2){
     expect_equal(
       cov_ensemble_weight(pif_ensemble, pif_ensemble2, j = k,
-                           sigma_weights = sigma_weights[k,],
-                           sigma_intra_pif_weights = sigma_intra_pif_weights[k,]),
+                           var_weights = var_weights[k,],
+                           var_pif_weights = var_pif_weights[k,]),
       val_cov[k]
     )
   }
@@ -212,24 +212,24 @@ test_that("covariance calculations", {
 
   #For the covariance with another atomic pif
 
-  sigma_pifs <- matrix(c(-0.3, 0.1, 0.2), nrow = 3)
-  sigma_weights_pif <- matrix(c(0.4, 0.1, 0.22), nrow = 3)
+  var_pifs <- matrix(c(-0.3, 0.1, 0.2), nrow = 3)
+  var_pif_weights <- matrix(c(0.4, 0.1, 0.22), nrow = 3)
 
   multiplier <- deriv_log_complement(pif_ensemble2@pif)
   val_cov    <- 0
   for (k in 1:length(pif_ensemble2@pif_list)){
     val_cov <- val_cov +
       deriv_log_complement(pif_ensemble2@weights[k]*pif_ensemble2@coefs[k])*(
-        pif_ensemble2@weights[k]*sigma_pifs[k] +
-          pif_ensemble2@coefs[k]*sigma_weights_pif[k]
+        pif_ensemble2@weights[k]*var_pifs[k] +
+          pif_ensemble2@coefs[k]*var_pif_weights[k]
       )
   }
   val_cov <- val_cov / multiplier
 
   expect_equal(
     cov_ensemble_atomic(pif_ensemble2, pif5,
-                        sigma_pifs = sigma_pifs,
-                        sigma_weights_pif = sigma_weights_pif),
+                        var_pifs = var_pifs,
+                        var_pif_weights = var_pif_weights),
     val_cov
   )
 

@@ -81,8 +81,7 @@ get_variance_atomic <- function(self) {
   from_parameters_pif_variance(
     p = self@p, p_cft = self@p_cft, rr = self@rr,
     rr_link_deriv_vals = self@rr_link_deriv_vals,
-    mu_obs = self@mu_obs,
-    mu_cft = self@mu_cft, var_p = self@var_p,
+    var_p = self@var_p,
     var_beta = self@var_beta,
     upper_bound_p = self@upper_bound_p,
     upper_bound_beta = self@upper_bound_beta
@@ -183,8 +182,8 @@ get_ensemble_covariance <- function(self){
 get_variance_total <- function(self){
   as.numeric(
     t(self@weights) %*% self@covariance %*% self@weights +
-    t(self@coefs) %*% self@sigma_weights %*% self@coefs +
-    sum(diag(self@covariance*self@sigma_weights))
+    t(self@coefs) %*% self@var_weights %*% self@coefs +
+    sum(diag(self@covariance*self@var_weights))
   )
 }
 

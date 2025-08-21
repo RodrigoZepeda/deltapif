@@ -15,7 +15,7 @@
 #' @param weights A vector containing the proportion of the population
 #' for each of the categories (for each of the pifs given).
 #'
-#' @param sigma_weights link_covariance structure for the `weights`. Can be `0` (default) if
+#' @param var_weights link_covariance structure for the `weights`. Can be `0` (default) if
 #' the weights are not random, a vector if only the link_variances of the weights
 #' are available or a link_covariance matrix.
 #'
@@ -88,7 +88,7 @@ NULL
 
 #' Verify the variance between pif weights
 #'
-verify_sigma_intra_pif_weights <- function(sigma_list, pif_list) {
+verify_var_pif_weights <- function(sigma_list, pif_list) {
 
   n <- length(pif_list)
 
@@ -100,14 +100,14 @@ verify_sigma_intra_pif_weights <- function(sigma_list, pif_list) {
   # Case 2: Check if it's a list
   if (!is.list(sigma_list)) {
     cli::cli_abort(
-      "`sigma_intra_pif_weights` must be a list or NULL"
+      "`var_pif_weights` must be a list or NULL"
     )
   }
 
   # Case 3: Check length
   if (length(sigma_list) != n) {
     cli::cli_abort(
-      "`sigma_intra_pif_weights` must have length {n} but has length {length(sigma_list)}"
+      "`var_pif_weights` must have length {n} but has length {length(sigma_list)}"
     )
   }
 
@@ -116,7 +116,7 @@ verify_sigma_intra_pif_weights <- function(sigma_list, pif_list) {
     # Check if each row element is a list
     if (!is.list(sigma_list[[i]])) {
       cli::cli_abort(
-        "Element {i} sigma_intra_pif_weights must be a list"
+        "Element {i} var_pif_weights must be a list"
       )
     }
 
@@ -170,8 +170,8 @@ verify_sigma_intra_pif_weights <- function(sigma_list, pif_list) {
 #' @inheritParams totalpifpaf
 #'
 #' @return A list of validated values for use in `pif_total` or `pif_ensemble`.
-pif_validate_ensemble <- function(pif1, ..., weights, sigma_weights,
-                                  sigma_intra_pif_weights, conf_level,
+pif_validate_ensemble <- function(pif1, ..., weights, var_weights,
+                                  var_pif_weights, conf_level,
                                   link, link_inv, link_deriv, quiet,
                                   is_paf = FALSE, weights_sum_to_1 = FALSE,
                                   label){
@@ -217,14 +217,14 @@ pif_validate_ensemble <- function(pif1, ..., weights, sigma_weights,
     )
   }
 
-  if (!is.numeric(sigma_weights)){
+  if (!is.numeric(var_weights)){
     cli::cli_abort(
-      "`sigma_weights` should be a number, vector or matrix."
+      "`var_weights` should be a number, vector or matrix."
     )
   }
 
   #Validate the matrix
-  verify_sigma_intra_pif_weights(sigma_intra_pif_weights, pif_list)
+  verify_var_pif_weights(var_pif_weights, pif_list)
 
   #Check in case is paf that each element is a paf
   if (is_paf){
@@ -240,15 +240,15 @@ pif_validate_ensemble <- function(pif1, ..., weights, sigma_weights,
   }
 
   #Check sigma weights
-  if (length(sigma_weights) == 1 && is.numeric(sigma_weights)){
-    sigma_weights <- matrix(sigma_weights, nrow = npifs, ncol = npifs)
-  } else if (is.vector(sigma_weights)) {
-    sigma_weights <- sigma_weights %*% t(sigma_weights)
+  if (length(var_weights) == 1 && is.numeric(var_weights)){
+    var_weights <- matrix(var_weights, nrow = npifs, ncol = npifs)
+  } else if (is.vector(var_weights)) {
+    var_weights <- var_weights %*% t(var_weights)
     if (!quiet){
       cli::cli_warn(
         paste0(
           "Assuming parameters `weights` are correlated but correlation is unknown. ",
-          "If they are uncorrelated redefine `sigma_weights = diag(sigma_weights)` to ",
+          "If they are uncorrelated redefine `var_weights = diag(var_weights)` to ",
           "transform them into a matrix with no correlations."
         )
       )
@@ -256,27 +256,27 @@ pif_validate_ensemble <- function(pif1, ..., weights, sigma_weights,
   }
 
   #Check sigma weights
-  if (length(sigma_intra_pif_weights) == 1 && is.numeric(sigma_intra_pif_weights)){
-    sigma_intra_pif_weights <- matrix(sigma_intra_pif_weights, nrow = npifs, ncol = npifs)
+  if (length(var_pif_weights) == 1 && is.numeric(var_pif_weights)){
+    var_pif_weights <- matrix(var_pif_weights, nrow = npifs, ncol = npifs)
   }
 
-  if (is.matrix(sigma_intra_pif_weights)){
+  if (is.matrix(var_pif_weights)){
 
-    if (ncol(sigma_intra_pif_weights) != npifs || nrow(sigma_intra_pif_weights) != npifs){
+    if (ncol(var_pif_weights) != npifs || nrow(var_pif_weights) != npifs){
       cli::cli_abort(
         paste0(
-          "Matrix `sigma_intra_pif_weights` has incorrect dimensions. Should be an ",
+          "Matrix `var_pif_weights` has incorrect dimensions. Should be an ",
           "{npifs} x {npifs} matrix"
         )
       )
     }
 
-    if (!isSymmetric(sigma_intra_pif_weights, trans = "T")){
-      cli::cli_abort("Matrix `sigma_intra_pif_weights` is not symmetric.")
+    if (!isSymmetric(var_pif_weights, trans = "T")){
+      cli::cli_abort("Matrix `var_pif_weights` is not symmetric.")
     }
-  } else if (is.vector(sigma_intra_pif_weights)) {
+  } else if (is.vector(var_pif_weights)) {
     cli::cli_abort(
-      "Matrix `sigma_intra_pif_weights` should be a matrix or `0`."
+      "Matrix `var_pif_weights` should be a matrix or `0`."
     )
   }
 
@@ -293,8 +293,8 @@ pif_validate_ensemble <- function(pif1, ..., weights, sigma_weights,
     list(
       pif_list = pif_list,
       weights = weights,
-      sigma_weights = sigma_weights,
-      sigma_intra_pif_weights = sigma_intra_pif_weights,
+      var_weights = var_weights,
+      var_pif_weights = var_pif_weights,
       conf_level = conf_level,
       link = link,
       link_inv = link_inv,
@@ -307,8 +307,8 @@ pif_validate_ensemble <- function(pif1, ..., weights, sigma_weights,
 
 #' @rdname totalpifpaf
 #' @export
-paf_total <- function(paf1, ..., weights, sigma_weights = 0,
-                      sigma_intra_pif_weights = NULL,
+paf_total <- function(paf1, ..., weights, var_weights = 0,
+                      var_pif_weights = NULL,
                       conf_level = 0.95,
                       link = "log-complement",
                       link_inv = NULL,
@@ -317,8 +317,8 @@ paf_total <- function(paf1, ..., weights, sigma_weights = 0,
                       label = NULL){
 
 
-  pif_total(paf1, ..., weights = weights, sigma_weights = sigma_weights,
-            sigma_intra_pif_weights = sigma_intra_pif_weights,
+  pif_total(paf1, ..., weights = weights, var_weights = var_weights,
+            var_pif_weights = var_pif_weights,
             conf_level = conf_level, link = link, link_inv = link_inv,
             link_deriv = link_deriv, quiet = quiet, is_paf = TRUE, label = label)
 
@@ -327,8 +327,8 @@ paf_total <- function(paf1, ..., weights, sigma_weights = 0,
 #' @rdname totalpifpaf
 #' @export
 pif_total <- function(pif1, ..., weights,
-                      sigma_weights = 0,
-                      sigma_intra_pif_weights = NULL,
+                      var_weights = 0,
+                      var_pif_weights = NULL,
                       conf_level = 0.95,
                       link = "log-complement",
                       link_inv = NULL,
@@ -340,8 +340,8 @@ pif_total <- function(pif1, ..., weights,
 
 
   pif_params <- pif_validate_ensemble(pif1 = pif1, ..., weights = weights,
-                                      sigma_weights = sigma_weights,
-                                      sigma_intra_pif_weights = sigma_intra_pif_weights,
+                                      var_weights = var_weights,
+                                      var_pif_weights = var_pif_weights,
                                       conf_level = conf_level,
                                       link = link, link_inv = link_inv,
                                       link_deriv = link_deriv,
@@ -366,8 +366,8 @@ pif_total <- function(pif1, ..., weights,
 
 #' @rdname totalpifpaf
 #' @export
-paf_ensemble <- function(paf1, ..., weights = NULL, sigma_weights = 0,
-                         sigma_intra_pif_weights = NULL,
+paf_ensemble <- function(paf1, ..., weights = NULL, var_weights = 0,
+                         var_pif_weights = NULL,
                       link = "identity",
                       link_inv = NULL,
                       link_deriv = NULL,
@@ -376,8 +376,8 @@ paf_ensemble <- function(paf1, ..., weights = NULL, sigma_weights = 0,
                       quiet = FALSE){
 
 
-  pif_ensemble(paf1, ..., weights = weights, sigma_weights = sigma_weights,
-            sigma_intra_pif_weights = sigma_intra_pif_weights,
+  pif_ensemble(paf1, ..., weights = weights, var_weights = var_weights,
+            var_pif_weights = var_pif_weights,
             conf_level = conf_level, link = link, link_inv = link_inv,
             link_deriv = link_deriv, quiet = quiet, is_paf = TRUE,
             label = label)
@@ -388,8 +388,8 @@ paf_ensemble <- function(paf1, ..., weights = NULL, sigma_weights = 0,
 #' @export
 pif_ensemble <- function(pif1, ...,
                          weights = NULL,
-                         sigma_weights = 0,
-                         sigma_intra_pif_weights = NULL,
+                         var_weights = 0,
+                         var_pif_weights = NULL,
                          link = "identity",
                          link_inv = NULL,
                          link_deriv = NULL,
@@ -399,8 +399,8 @@ pif_ensemble <- function(pif1, ...,
                          is_paf = FALSE){
 
   pif_params <- pif_validate_ensemble(pif1 = pif1, ..., weights = weights,
-                                      sigma_weights = sigma_weights,
-                                      sigma_intra_pif_weights = sigma_intra_pif_weights,
+                                      var_weights = var_weights,
+                                      var_pif_weights = var_pif_weights,
                                       conf_level = conf_level,
                                       link = link, link_inv = link_inv,
                                       link_deriv = link_deriv,

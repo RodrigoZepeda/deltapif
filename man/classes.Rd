@@ -41,8 +41,8 @@ pif_atomic_class(
 pif_global_ensemble_class(
   pif_list,
   weights,
-  sigma_weights,
-  sigma_intra_pif_weights,
+  var_weights,
+  var_pif_weights,
   pif_transform,
   pif_deriv_transform,
   pif_inverse_transform,
@@ -56,8 +56,8 @@ pif_global_ensemble_class(
 pif_total_class(
   pif_list,
   weights,
-  sigma_weights,
-  sigma_intra_pif_weights,
+  var_weights,
+  var_pif_weights,
   link,
   link_inv,
   link_deriv,
@@ -68,8 +68,8 @@ pif_total_class(
 pif_ensemble_class(
   pif_list,
   weights,
-  sigma_weights,
-  sigma_intra_pif_weights,
+  var_weights,
+  var_pif_weights,
   link,
   link_inv,
   link_deriv,
@@ -109,8 +109,8 @@ pif_atomic_class(
 pif_global_ensemble_class(
   pif_list,
   weights,
-  sigma_weights,
-  sigma_intra_pif_weights,
+  var_weights,
+  var_pif_weights,
   pif_transform,
   pif_deriv_transform,
   pif_inverse_transform,
@@ -124,8 +124,8 @@ pif_global_ensemble_class(
 pif_total_class(
   pif_list,
   weights,
-  sigma_weights,
-  sigma_intra_pif_weights,
+  var_weights,
+  var_pif_weights,
   link,
   link_inv,
   link_deriv,
@@ -136,8 +136,8 @@ pif_total_class(
 pif_ensemble_class(
   pif_list,
   weights,
-  sigma_weights,
-  sigma_intra_pif_weights,
+  var_weights,
+  var_pif_weights,
   link,
   link_inv,
   link_deriv,
@@ -203,10 +203,10 @@ the total can be computed from it.}
 \item{weights}{weights for calculating the total PIF (respectively PAF)
 in \code{pif_total}.}
 
-\item{sigma_weights}{covariance matrix for the weights when calculating the
+\item{var_weights}{covariance matrix for the weights when calculating the
 total PIF (respectively PAF) in \code{pif_total}.}
 
-\item{sigma_intra_pif_weights}{covariance matrix with row \code{i} and column \code{j}
+\item{var_pif_weights}{covariance matrix with row \code{i} and column \code{j}
 representing the covariance between the \code{i}-th potential impact
 fraction of the list and the \code{j}-th weight}
 
@@ -340,7 +340,7 @@ where \eqn{g} is refered to as the \code{pif_transform}, its derivative the
 The \code{pif_global_ensemble_class} inherits the properties of a \code{pif_class} as well as:
 \describe{
 \item{\code{weights}}{\code{numeric} - Vector of weights \eqn{w_i} for weighting the potential impact fraction.}
-\item{\code{sigma_weights}}{\code{numeric} - Covariance matrix for the \code{weights}}
+\item{\code{var_weights}}{\code{numeric} - Covariance matrix for the \code{weights}}
 \item{\code{pif_transform}}{\code{function} - Function \eqn{g} with which to transform the impact fraction before weighting.}
 \item{\code{pif_deriv_transform}}{\code{function} - Derivative of the \code{pif_transform}.}
 \item{\code{pif_inverse_transform}}{\code{function} - Inverse of the \code{pif_transform}.}
@@ -369,7 +369,7 @@ where \eqn{g} is refered to as the \code{pif_transform}, its derivative the
 The \code{pif_global_ensemble_class} inherits the properties of a \code{pif_class} as well as:
 \describe{
 \item{\code{weights}}{\code{numeric} - Vector of weights \eqn{w_i} for weighting the potential impact fraction.}
-\item{\code{sigma_weights}}{\code{numeric} - Covariance matrix for the \code{weights}}
+\item{\code{var_weights}}{\code{numeric} - Covariance matrix for the \code{weights}}
 \item{\code{pif_transform}}{\code{function} - Function \eqn{g} with which to transform the impact fraction before weighting.}
 \item{\code{pif_deriv_transform}}{\code{function} - Derivative of the \code{pif_transform}.}
 \item{\code{pif_inverse_transform}}{\code{function} - Inverse of the \code{pif_transform}.}
