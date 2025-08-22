@@ -511,8 +511,8 @@ pif_global_ensemble_class <- S7::new_class(
     coefs                   = S7::new_property(S7::class_numeric, getter = get_ensemble_coefs),
     sum_transformed_weighted_coefs = S7::new_property(S7::class_numeric, getter = get_sum_transformed_weighted_coefs),
     pif                            = S7::new_property(S7::class_numeric, getter = get_global_ensemble_pif),
-    covariance            = S7::new_property(S7::class_numeric, getter = get_covariance_total)
-    #variance              = S7::new_property(S7::class_numeric, getter = get_variance_total)
+    covariance            = S7::new_property(S7::class_numeric, getter = get_covariance),
+    variance              = S7::new_property(S7::class_numeric, getter = get_variance)
   ),
   validator = validate_global_ensemble,
   constructor = function(pif_list, weights, var_weights, var_pif_weights,

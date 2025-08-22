@@ -326,7 +326,6 @@ default_parameter_covariance_structure2 <- function(pif1, pif2, sep = "_>_", add
 #' @export
 default_pif_covariance_structure <- function(pif, sep = "_>_", add_parents = FALSE, is_variance = FALSE) {
 
-
   #Get the default covariance structure
   cov_str  <- covariance_structure(pif, sep = sep, add_parents = add_parents,  is_variance = is_variance)
   npifs    <- length(cov_str)
@@ -340,7 +339,7 @@ default_pif_covariance_structure <- function(pif, sep = "_>_", add_parents = FAL
   }
 
 
-  for (k in 1:npifs){
+  for (k in 2:npifs){
     name_k <- flat_pif[[k]]@label
     cov_str[[name_k]][[name_k]] <- flat_pif[[k]]@variance
   }
@@ -352,6 +351,7 @@ default_pif_covariance_structure <- function(pif, sep = "_>_", add_parents = FAL
 #' @export
 default_pif_covariance_structure2 <- function(pif1, pif2, sep = "_>_", add_parents = FALSE, parent_name = "Global"){
 
+  #FIXME: Loops eternally
   #This is just a hack to apply the same function as before
   together_pif <- pif_ensemble(pif1, pif2, weights = c(0, 0),
                                var_weights = 0, label = parent_name)

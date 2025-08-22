@@ -59,7 +59,6 @@
 #' @seealso [from_parameters_covariance_p_component()]
 #' @keywords internal
 cov_atomic_pif <- function(pif1, pif2, var_p, var_beta) {
-
   # Check they are pif objects
   if (!S7::S7_inherits(pif1, pif_atomic_class) ||
       !S7::S7_inherits(pif2, pif_atomic_class)) {
@@ -170,7 +169,6 @@ cov_atomic_pif <- function(pif1, pif2, var_p, var_beta) {
 #' @seealso [cov_atomic_pif()], [cov_ensemble_atomic()]
 #' @keywords internal
 cov_ensemble_weights <- function(pif1, pif2, var_weights, var_pif_weights, recursive = !is.null(var_pif_weights)){
-
   #Return 0 if pif1 or pif2 are atomic as there is no covariance between weights
   if (S7::S7_inherits(pif1, pif_atomic_class) || S7::S7_inherits(pif2, pif_atomic_class)){
     return(0)
@@ -294,7 +292,6 @@ cov_ensemble_weights <- function(pif1, pif2, var_weights, var_pif_weights, recur
 cov_ensemble_atomic <- function(pif_ensemble, pif_atomic, var_p, var_beta,
                                 var_pifs, var_pif_weights,
                                 recursive = TRUE){
-
 
   if (!S7::S7_inherits(pif_ensemble, pif_global_ensemble_class) && !S7::S7_inherits(pif_ensemble, pif_atomic_class)){
     cli::cli_abort(
@@ -682,7 +679,6 @@ S7::method(variance, S7::new_union(pif_global_ensemble_class, pif_atomic_class))
       "Currently this function does not support more than 1 argument. Ignoring the rest."
     )
   }
-  #Get the covariance with uncorrelated = FALSE as they are correlated being the same pif
   cov_total_pif(x, x)
 }
 

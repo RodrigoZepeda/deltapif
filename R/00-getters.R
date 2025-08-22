@@ -136,7 +136,7 @@ get_ensemble_type <- function(self){
 
 #' Get the covariance of the summands of pif total
 #' @rdname getters
-get_covariance_total <- function(self){
+get_covariance <- function(self){
   npifs <- length(self@pif_list)
   if (npifs > 1){
     cov_mat <- matrix(0, ncol = npifs, nrow = npifs)
@@ -145,7 +145,7 @@ get_covariance_total <- function(self){
         cov_mat[i,j] <- cov_total_pif(self@pif_list[[i]], self@pif_list[[j]])
       }
     }
-    cov_mat <- cov_mat + t(cov_mat) + diag(sapply(self@pif_list, variance))
+    cov_mat <- cov_mat + t(cov_mat) + diag(sapply(self@pif_list, variance)) #FIXME: Double check this part
     return(cov_mat)
   } else {
     return(
@@ -154,43 +154,8 @@ get_covariance_total <- function(self){
   }
 }
 
-#' Get the covariance of the summands of pif total
-#' @rdname getters
-get_ensemble_covariance <- function(self){
-  npifs <- length(self@pif_list)
-  if (npifs > 1){
-    cov_mat <- matrix(0, ncol = npifs, nrow = npifs)
-    for (i in 1:(npifs - 1)){
-      for (j in (i + 1):npifs){
-        #In ensemble the covariance is given by ln(1 - pif[i])'*ln(1 - pif[j])'*covariance(pif[i],pif[j])
-        g_i_prime <- link_deriv_vals(self@pif_list[[i]])
-        g_j_prime <- link_deriv_vals(self@pif_list[[j]])
-        cov_mat[i,j] <- 0#g_i_prime*g_j_prime*cov_total_pif(self@pif_list[[i]], self@pif_list[[j]]) #FIXME:
-      }
-    }#FIXME
-    cov_mat <- cov_mat + t(cov_mat) #+ diag(sapply(self@pif_list, variance)*(sapply(self@pif_list, link_deriv_vals)^2))
-    return(cov_mat)
-  } else {
-    return(
-      variance(self@pif_list[[1]])*(link_deriv_vals(self@pif_list[[1]])^2)
-    )
-  }
-}
-
 #' Get the variance of pif total
 #' @rdname getters
-get_variance_total <- function(self){
-  as.numeric(
-    t(self@weights) %*% self@covariance %*% self@weights +
-    t(self@coefs) %*% self@var_weights %*% self@coefs +
-    sum(diag(self@covariance*self@var_weights))
-  )
-}
-
-#' Get the variance of pif total
-#' @rdname getters
-get_ensemble_variance <- function(self){
-  as.numeric(
-    sum(self@covariance)
-  )
+get_variance <- function(self){
+  variance(self)
 }
