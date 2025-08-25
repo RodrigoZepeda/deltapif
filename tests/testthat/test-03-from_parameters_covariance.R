@@ -20,7 +20,7 @@ test_that("from_parameters_covariance_p_component works correctly", {
   # Test function
   result <- from_parameters_covariance_p_component(
     p1, p2, p1_cft, p2_cft, rr1, rr2,
-    mu_obs1, mu_obs2, mu_cft1, mu_cft2, var_p, FALSE
+    var_p, FALSE
   )
 
   expect_equal(as.numeric(result), as.numeric(expected), tolerance = 1e-6)
@@ -28,7 +28,7 @@ test_that("from_parameters_covariance_p_component works correctly", {
   # Test upper bound case
   result_upper <- from_parameters_covariance_p_component(
     p1, p2, p1_cft, p2_cft, rr1, rr2,
-    mu_obs1, mu_obs2, mu_cft1, mu_cft2, var_p, TRUE
+    var_p, TRUE
   )
   expect_true(as.numeric(result_upper) >= abs(as.numeric(result)))
 })
@@ -50,14 +50,14 @@ test_that("from_parameters_covariance_beta_component works correctly", {
   var_beta <- matrix(c(0.02, 0.01, 0.01, 0.02), nrow = 2)
 
   # Calculate expected value manually
-  deriv1 <- deriv_pif_beta(p1, p1_cft, rr1, rr_deriv1, mu_obs1, mu_cft1)
-  deriv2 <- deriv_pif_beta(p2, p2_cft, rr2, rr_deriv2, mu_obs2, mu_cft2)
+  deriv1 <- deriv_pif_beta(p1, p1_cft, rr1, rr_deriv1)
+  deriv2 <- deriv_pif_beta(p2, p2_cft, rr2, rr_deriv2)
   expected <- t(deriv1) %*% var_beta %*% deriv2
 
   # Test function
   result <- from_parameters_covariance_beta_component(
     p1, p2, p1_cft, p2_cft, rr1, rr2, rr_deriv1, rr_deriv2,
-    mu_obs1, mu_obs2, mu_cft1, mu_cft2, var_beta, FALSE
+    var_beta, FALSE
   )
 
   expect_equal(as.numeric(result), as.numeric(expected), tolerance = 1e-6)
@@ -65,7 +65,7 @@ test_that("from_parameters_covariance_beta_component works correctly", {
   # Test upper bound case
   result_upper <- from_parameters_covariance_beta_component(
     p1, p2, p1_cft, p2_cft, rr1, rr2, rr_deriv1, rr_deriv2,
-    mu_obs1, mu_obs2, mu_cft1, mu_cft2, var_beta, TRUE
+    var_beta, TRUE
   )
   expect_true(as.numeric(result_upper) >= abs(as.numeric(result)))
 })
@@ -90,12 +90,12 @@ test_that("from_parameters_pif_covariance combines components correctly", {
   # Calculate expected values
   p_comp <- from_parameters_covariance_p_component(
     p1, p2, p1_cft, p2_cft, rr1, rr2,
-    mu_obs1, mu_obs2, mu_cft1, mu_cft2, var_p, FALSE
+    var_p, FALSE
   )
 
   beta_comp <- from_parameters_covariance_beta_component(
     p1, p2, p1_cft, p2_cft, rr1, rr2, rr_deriv1, rr_deriv2,
-    mu_obs1, mu_obs2, mu_cft1, mu_cft2, var_beta, FALSE
+    var_beta, FALSE
   )
 
   expected <- as.numeric(p_comp + beta_comp)
@@ -103,7 +103,7 @@ test_that("from_parameters_pif_covariance combines components correctly", {
   # Test function
   result <- from_parameters_pif_covariance(
     p1, p2, p1_cft, p2_cft, rr1, rr2, rr_deriv1, rr_deriv2,
-    mu_obs1, mu_obs2, mu_cft1, mu_cft2, var_p, var_beta,
+    var_p, var_beta,
     FALSE, FALSE
   )
 
@@ -112,7 +112,7 @@ test_that("from_parameters_pif_covariance combines components correctly", {
   # Test with upper bounds
   result_upper <- from_parameters_pif_covariance(
     p1, p2, p1_cft, p2_cft, rr1, rr2, rr_deriv1, rr_deriv2,
-    mu_obs1, mu_obs2, mu_cft1, mu_cft2, var_p, var_beta,
+    var_p, var_beta,
     TRUE, TRUE
   )
   expect_true(result_upper >= abs(result))
@@ -132,12 +132,12 @@ test_that("from_parameters_pif_variance works correctly", {
   # Should be equivalent to covariance with itself
   expected <- from_parameters_pif_covariance(
     p, p, p_cft, p_cft, rr, rr, rr_deriv, rr_deriv,
-    mu_obs, mu_obs, mu_cft, mu_cft, var_p, var_beta,
+    var_p, var_beta,
     FALSE, FALSE
   )
 
   result <- from_parameters_pif_variance(
-    p, p_cft, rr, rr_deriv, mu_obs, mu_cft, var_p, var_beta,
+    p, p_cft, rr, rr_deriv, var_p, var_beta,
     FALSE, FALSE
   )
 
@@ -157,7 +157,7 @@ test_that("Edge cases are handled properly", {
 
   expect_silent(
     from_parameters_pif_variance(
-      p, p_cft, rr, rr_deriv, mu_obs, mu_cft, var_p, var_beta
+      p, p_cft, rr, rr_deriv, var_p, var_beta
     )
   )
 
@@ -170,7 +170,6 @@ test_that("Edge cases are handled properly", {
 
   result <- from_parameters_pif_variance(
     p, p_cft, rr, c(0.5, 0.5),
-    sum(p * rr), sum(p_cft * rr),
     zero_var_p, zero_var_beta
   )
   expect_equal(result, 0)

@@ -14,7 +14,8 @@ create_mock_pif_atomic <- function(type = "PIF") {
     upper_bound_p = FALSE,
     upper_bound_beta = FALSE,
     conf_level = 0.95,
-    type = type
+    type = type,
+    label = paste0("atomic_pif", stats::rnorm(1))
   )
 }
 
@@ -29,6 +30,8 @@ create_mock_pif <- function() {
     link = logit,
     link_deriv = deriv_logit,
     link_inv = inv_logit,
+    var_pif_weights = matrix(c(0.01, -0.2, -0.2, 0.01), nrow = 2),
+    label = paste0("total", stats::rnorm(1))
   )
 }
 
@@ -105,22 +108,27 @@ test_that("Covariance getters work with S7 objects", {
   mock_pif <- pif_total(
     paf(0.1, 1.2, var_p = 0.01, var_beta = 0, link = logit,
         link_deriv = deriv_logit, link_inv = inv_logit,
+        label = "1",
         rr_link = identity, rr_link_deriv = function(x) {1}), #Github actions crashes if not specifying compeltely this
     paf(0.1, 1.2, var_p = 0.01, var_beta = 0, link = logit,
         link_deriv = deriv_logit, link_inv = inv_logit,
+        label = "2",
         rr_link = identity, rr_link_deriv = function(x) {1}),
     weights = c(0.5, 0.5),
     link = logit,
     link_inv = inv_logit,
-    link_deriv = deriv_logit
+    link_deriv = deriv_logit,
+    label = "total"
   )
 
   mock_ensemble <- pif_ensemble(
     paf(0.1, 1.2, var_p = 0.01, var_beta = 0, link = logit,
         link_deriv = deriv_logit, link_inv = inv_logit,
+        label = "1",
         rr_link = identity, rr_link_deriv = function(x) {1}), #Github actions crashes if not specifying compeltely this
     paf(0.1, 1.2, var_p = 0.01, var_beta = 0, link = logit,
         link_deriv = deriv_logit, link_inv = inv_logit,
+        label = "2",
         rr_link = identity, rr_link_deriv = function(x) {1})
   )
 
@@ -130,12 +138,12 @@ test_that("Covariance getters work with S7 objects", {
 
 
   # Test get_covariance_total
-  cov_mat <- get_covariance_total(mock_pif)
+  cov_mat <- get_covariance(mock_pif)
   expect_equal(dim(cov_mat), c(2, 2))
   expect_true(isSymmetric(cov_mat))
 
   # Test get_ensemble_covariance
-  ens_cov <- get_ensemble_covariance(mock_pif)
+  ens_cov <- get_covariance(mock_ensemble)
   expect_equal(dim(ens_cov), c(2, 2))
 })
 
@@ -152,11 +160,13 @@ test_that("Types for totals", {
   paf1 <- create_mock_pif_atomic("PAF")
   paf2 <- create_mock_pif_atomic("PAF")
 
-  tp <- pif_total_class(list(pif1, pif2), link = identity,
+  tp <- pif_total_class(list(pif1, pif2), link = identity, label = "total_class",
+                        var_pif_weights = matrix(0, 2, 2),
                         link_inv = identity, link_deriv = function(x) rep(1, length(x)),
                         weights = c(0.5, 0.5), var_weights = matrix(0, 2, 2))
 
-  ep <- pif_ensemble_class(list(pif1, pif2), link = identity,
+  ep <- pif_ensemble_class(list(pif1, pif2), link = identity, label = "ensemble_class",
+                           var_pif_weights = matrix(0, 2, 2),
                            link_inv = identity, link_deriv = function(x) rep(1, length(x)),
                            weights = rep(1, 2), var_weights = matrix(0, 2, 2))
 
@@ -164,10 +174,14 @@ test_that("Types for totals", {
   expect_equal(get_ensemble_type(ep), "PIF")
 
   tp <- pif_total_class(list(paf1, pif2), link = identity,
+                        label = "total_class",
+                        var_pif_weights = matrix(0, 2, 2),
                         link_inv = identity, link_deriv = function(x) rep(1, length(x)),
                         weights = c(0.5, 0.5), var_weights = matrix(0, 2, 2))
 
   ep <- pif_ensemble_class(list(pif1, paf2), link = identity,
+                           label = "ensemble_class",
+                           var_pif_weights = matrix(0, 2, 2),
                            link_inv = identity, link_deriv = function(x) rep(1, length(x)),
                            weights = rep(1, 2), var_weights = matrix(0, 2, 2))
 
@@ -176,10 +190,14 @@ test_that("Types for totals", {
   expect_equal(get_ensemble_type(ep), "PIF")
 
   tp <- pif_total_class(list(paf1, paf2), link = identity,
+                        label = "total_class",
+                        var_pif_weights = matrix(0, 2, 2),
                         link_inv = identity, link_deriv = function(x) rep(1, length(x)),
                         weights = c(0.5, 0.5), var_weights = matrix(0, 2, 2))
 
   ep <- pif_ensemble_class(list(paf1, paf2), link = identity,
+                           label = "ensemble_class",
+                           var_pif_weights = matrix(0, 2, 2),
                            link_inv = identity, link_deriv = function(x) rep(1, length(x)),
                            weights = rep(1, 2), var_weights = matrix(0, 2, 2))
 

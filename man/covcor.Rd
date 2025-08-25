@@ -9,7 +9,15 @@
 \title{Covariance matrix, correlation matrix, variance and standard deviation
 for potential impact fractions}
 \usage{
-covariance(x, ..., var_p = NULL, var_beta = NULL)
+covariance(
+  x,
+  ...,
+  var_p = NULL,
+  var_beta = NULL,
+  var_weights = NULL,
+  var_pif_weights = NULL,
+  var_pifs = NULL
+)
 
 variance(x, ...)
 
@@ -23,11 +31,20 @@ correlation(x, ..., var_p = NULL, var_beta = NULL)
 \item{...}{Multiple additional potential impact fraction objects
 separated by commas.}
 
-\item{var_p}{covariance matrix for the prevalences in all \code{pif1} and
-the ones included in \code{...}.}
+\item{var_p}{covariance matrix for the prevalences in both \code{pif1} and \code{pif2}.
+Default \code{NULL} (no correlation).}
 
-\item{var_beta}{covariance matrix for the parameter \code{beta} in all \code{pif1}
-and the ones included in \code{...}.}
+\item{var_beta}{covariance matrix for the parameter \code{beta} in both \code{pif1}
+and \code{pif2}. Default \code{NULL} (no correlation).}
+
+\item{var_weights}{Covariance between the weights of all the fractions
+contained in \code{pif1} and all the fractions contained in \code{pif2}.}
+
+\item{var_pif_weights}{Covariance structure between the potential
+impact fractions in \code{pif1} and the weights in \code{pif2}.}
+
+\item{var_pifs}{Covariance vector between the potential
+impact fractions in \code{pif_ensemble} and \code{pif_atomic}.}
 }
 \description{
 Computes the covariance (\code{covariance}) or correlation (\code{correlation}) for multiple

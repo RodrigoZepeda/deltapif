@@ -510,14 +510,13 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
 #'
 #' @param x A potential impact fraction
 #'
+#' @inheritParams cov_total_pif
+#' @inheritParams cov_ensemble_weights
+#' @inheritParams cov_ensemble_atomic
+#'
 #' @param ... Multiple additional potential impact fraction objects
 #' separated by commas.
 #'
-#' @param var_p covariance matrix for the prevalences in all `pif1` and
-#' the ones included in `...`.
-#'
-#' @param var_beta covariance matrix for the parameter `beta` in all `pif1`
-#' and the ones included in `...`.
 #'
 #' @examples
 #' # Get the approximate link_variance of a pif object
@@ -563,11 +562,21 @@ NULL
 #' @export
 covariance <- S7::new_generic(
   "covariance", "x",
-  function(x, ..., var_p = NULL, var_beta = NULL) {
+  function(x, ..., var_p = NULL, var_beta = NULL, var_weights = NULL,
+           var_pif_weights = NULL, var_pifs = NULL) {
     S7::S7_dispatch()
   }
 )
-S7::method(covariance, S7::new_union(pif_global_ensemble_class, pif_atomic_class)) <- function(x, ..., var_p = NULL, var_beta = NULL) {
+S7::method(covariance,
+           S7::new_union(pif_global_ensemble_class,
+                         pif_atomic_class)) <- function(x, ...,
+                                                        var_p = NULL,
+                                                        var_beta = NULL,
+                                                        var_weights = NULL,
+                                                        var_pif_weights = NULL,
+                                                        var_pifs = NULL) {
+
+
 
   # Get the list of fractions
   pif_list <- append(list(x), list(...))
