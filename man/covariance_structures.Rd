@@ -14,40 +14,16 @@
 \alias{default_weight_pif_covariance_structure2}
 \title{Default covariance structures}
 \usage{
-covariance_structure(
-  pif,
-  sep = "_>_",
-  add_parents = FALSE,
-  is_variance = FALSE
-)
+covariance_structure(pif, is_variance = FALSE)
 
-covariance_structure2(
-  pif1,
-  pif2,
-  sep = "_>_",
-  add_parents = FALSE,
-  parent_name = "Global"
-)
+covariance_structure2(pif1, pif2, parent_name = "Global")
 
-default_weight_covariance_structure(
-  pif,
-  sep = "_>_",
-  add_parents = FALSE,
-  is_variance = FALSE
-)
+default_weight_covariance_structure(pif, is_variance = FALSE)
 
-default_weight_covariance_structure2(
-  pif1,
-  pif2,
-  sep = "_>_",
-  add_parents = FALSE,
-  parent_name = "Global"
-)
+default_weight_covariance_structure2(pif1, pif2, parent_name = "Global")
 
 default_parameter_covariance_structure(
   pif,
-  sep = "_>_",
-  add_parents = FALSE,
   parameter = "p",
   is_variance = FALSE
 )
@@ -55,49 +31,23 @@ default_parameter_covariance_structure(
 default_parameter_covariance_structure2(
   pif1,
   pif2,
-  sep = "_>_",
-  add_parents = FALSE,
   parameter = "p",
   parent_name = "Global"
 )
 
-default_pif_covariance_structure(
-  pif,
-  sep = "_>_",
-  add_parents = FALSE,
-  is_variance = FALSE
-)
+default_pif_covariance_structure(pif, is_variance = FALSE)
 
-default_pif_covariance_structure2(
-  pif1,
-  pif2,
-  sep = "_>_",
-  add_parents = FALSE,
-  parent_name = "Global"
-)
+default_pif_covariance_structure2(pif1, pif2, parent_name = "Global")
 
-default_weight_pif_covariance_structure(
-  pif,
-  sep = "_>_",
-  add_parents = FALSE,
-  is_variance = FALSE
-)
+default_weight_pif_covariance_structure(pif, is_variance = FALSE)
 
-default_weight_pif_covariance_structure2(
-  pif1,
-  pif2,
-  sep = "_>_",
-  add_parents = FALSE,
-  parent_name = "Global"
-)
+default_weight_pif_covariance_structure2(pif1, pif2, parent_name = "Global")
 }
 \arguments{
 \item{pif}{A potential impact fraction}
 
-\item{sep}{Separation for the names in case \code{add_parents = TRUE}}
-
-\item{add_parents}{add_parents Whether to add the parent impact fractions
-to the name of the fraction.}
+\item{is_variance}{Whether the covariance structure corresponds to a \code{variance}
+(i.e. when \code{pif1} and \code{pif2} are identical)}
 
 \item{pif1}{A potential impact fraction to obtain a covariance structure with \code{pif2}.}
 

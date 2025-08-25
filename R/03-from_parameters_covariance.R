@@ -12,14 +12,6 @@
 #' impact fraction
 #' @param rr1 Relative risk in the first potential impact fraction
 #' @param rr2 Relative risk in the second potential impact fraction
-#' @param mu_obs1 Average relative risk in the population of the first
-#' potential impact fraction.
-#' @param mu_obs2 Average relative risk in the population of the second
-#' potential impact fraction.
-#' @param mu_cft1 Average relative risk in the counterfactual population of the
-#' first potential impact fraction.
-#' @param mu_cft2 Average relative risk in the counterfactual of the second
-#' potential impact fraction.
 #' @param var_p Covariance matrix with the entry `var_p[i,j]` corresponding
 #' to the covariance between `p1[i]` and `p2[j]`.
 #' @param upper_bound Whether the variance should be calculated or an upper

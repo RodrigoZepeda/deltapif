@@ -299,7 +299,7 @@ pif <- function(p,
   }
 
   if (is.null(label)){
-    label <- paste0("deltapif-", sub("\\.", "", as.character(abs(rnorm(1)))))
+    label <- paste0("deltapif-", sub("\\.", "", as.character(abs(stats::rnorm(1)))))
   }
 
   pif <- pif_atomic_class(

@@ -8,6 +8,8 @@ children(x, ...)
 }
 \arguments{
 \item{x}{A \code{pif_global_ensemble_class}}
+
+\item{...}{Additional arguments (currently ignored)}
 }
 \description{
 Gets the labels of the elemebts in the \code{pif_list} of an ensemble class.

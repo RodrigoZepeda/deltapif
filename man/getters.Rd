@@ -18,10 +18,8 @@
 \alias{get_ensemble_pif}
 \alias{get_total_pif}
 \alias{get_ensemble_type}
-\alias{get_covariance_total}
-\alias{get_ensemble_covariance}
-\alias{get_variance_total}
-\alias{get_ensemble_variance}
+\alias{get_covariance}
+\alias{get_variance}
 \title{Getters}
 \usage{
 get_rr(self)
@@ -56,13 +54,9 @@ get_total_pif(self)
 
 get_ensemble_type(self)
 
-get_covariance_total(self)
+get_covariance(self)
 
-get_ensemble_covariance(self)
-
-get_variance_total(self)
-
-get_ensemble_variance(self)
+get_variance(self)
 }
 \arguments{
 \item{self}{A \code{pif_class} or \code{pif_atomic_class} object created with S7.}

@@ -10,10 +10,6 @@ covariance_structure_class(cov_list = list())
 \item{cov_list}{List such that \code{list[[i]][[j]]} represents the covariance
 between elements of the i-th potential impact fraction
 and the j-th potential impact fraction.}
-
-\item{dim_list}{List of dimensions required such that \code{dim_list[[i]][[j]]}
-has a vector of 2 entries indicating the number of rows and columns
-that can be inputed in cov_list (used for validation).}
 }
 \description{
 The covariance structure class represents a collection of

@@ -21,9 +21,7 @@ cov_ensemble_weights(
 \item{var_weights}{Covariance vector between the weights of
 \code{pif1} and the j-th weight of \code{pif2}.}
 
-\item{j}{Weight indicator (covariance is for \code{weights(pif1)[j]})}
-
-\item{sigma_pif_weights}{Covariance vector between the potential
+\item{var_pif_weights}{Covariance structure between the potential
 impact fractions in \code{pif1} and the weights in \code{pif2}.}
 }
 \description{

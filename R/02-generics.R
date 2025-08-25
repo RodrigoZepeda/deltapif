@@ -110,12 +110,12 @@ S7::method(print, covariance_structure_class) <- function(x, ..., quote = FALSE)
   colnames(mat) <- names(x@cov_list[[1]])
   for (k in 1:ndim){
     for (j in 1:mdim){
-      if (is.matrix(x@cov_list[[k]][[j]])){
+      if (is.matrix(x@cov_list[[k]][[j]]) && (ncol(x@cov_list[[k]][[j]]) > 1 || nrow(x@cov_list[[k]][[j]]) > 1)){
         mat[k,j] <- paste0(nrow(x@cov_list[[k]][[j]]), "x", ncol(x@cov_list[[k]][[j]]))
-      } else if (is.vector(x@cov_list[[k]][[j]])){
+      } else if (is.vector(x@cov_list[[k]][[j]]) && length(x@cov_list[[k]][[j]]) > 1){
         mat[k,j] <- paste0(1, "x", length(x@cov_list[[k]][[j]]))
-      } else if (is.numeric(x@cov_list[[k]][[j]]) && x@cov_list[[k]][[j]] != 0){
-        mat[k,j] <- x@cov_list[[k]][[j]]
+      } else if (is.numeric(x@cov_list[[k]][[j]]) && as.double(x@cov_list[[k]][[j]]) != 0){
+        mat[k,j] <- as.double(x@cov_list[[k]][[j]])
       }
     }
   }
@@ -238,37 +238,18 @@ S7::method(as.data.frame, pif_class) <- function(x, ..., level = 0.95) {
 #'
 #' @examples
 #' #A simple example
-#' my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1, var_beta = 0.2, label = "Test")
-#' names(my_pif)
-#' names(my_pif) <- "New name"
+#' my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1,
+#'                 var_beta = 0.2, label = "Test")
 #' names(my_pif)
 #'
 #' #A pif composed of others
-#' my_pif1 <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1, var_beta = 0.2, label = "Test 1")
-#' my_pif2 <- pif(p = 0.4, p_cft = 0.1, beta = 1.3, var_p = 0.1, var_beta = 0.2, label = "Test 2")
-#' pif_tot <- pif_total(my_pif1, my_pif2, weights = c(0.2, 0.8), label = "Parent")
+#' my_pif1 <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1,
+#'                 var_beta = 0.2, label = "Test 1")
+#' my_pif2 <- pif(p = 0.4, p_cft = 0.1, beta = 1.3, var_p = 0.1,
+#'                 var_beta = 0.2, label = "Test 2")
+#' pif_tot <- pif_total(my_pif1, my_pif2, weights = c(0.2, 0.8),
+#'                 label = "Parent")
 #' names(pif_tot)
-#'
-#' #Change the name of the parent
-#' names(pif_tot) <- "Total"
-#'
-#' #Change the name of all the fractions (3 names)
-#' names(pif_tot) <- c("Total", "pif 1", "pif 2")
-#'
-#' #More hierarchy
-#' pif_lead_women <- paf(0.27, 2.2, quiet = TRUE, var_p = 0.001, label = "Women lead")
-#' pif_rad_women  <- paf(0.12, 1.2, quiet = TRUE, var_p = 0.001, label = "Women radiation")
-#' pif_women      <- pif_ensemble(pif_lead_women, pif_rad_women, label = "Women")
-#' pif_lead_men   <- paf(0.30, 2.2, quiet = TRUE, var_p = 0.001, label = "Men lead")
-#' pif_rad_men    <- paf(0.10, 1.2, quiet = TRUE, var_p = 0.001, label = "Men radiation")
-#' pif_men        <- pif_ensemble(pif_lead_men, pif_rad_men, label = "Men")
-#' pif_tot <- pif_total(pif_men, pif_women, weights = c(0.49, 0.51), label = "Population")
-#' names(pif_tot)
-#'
-#' #Change the name of all. The order is the same you get when you do `flatten_names`
-#' names(pif_tot)
-#' #flatten_names(pif_tot) #To see in which order to give
-#' names(pif_tot) <- c("All", "Males", "Males Lead", "Males Radiation", "Females", "Females Lead", "Females Radiation")
 #'
 #' @name names
 NULL
@@ -279,39 +260,11 @@ S7::method(names, pif_class) <- function(x, ...) {
   x@label
 }
 
-#' @name names
-#' @export
-S7::method(`names<-`, pif_class) <- function(x, value) {
-  x@label <- value
-  x
-}
 
 #' @name names
 #' @export
 S7::method(names, pif_global_ensemble_class) <- function(x, ...) {
-  return(sapply(x@pif_list, names))
-}
-
-#' @name names
-#' @export
-S7::method(`names<-`, pif_global_ensemble_class) <- function(x, value) {
-  names_x <- flatten_names(x, add_parents = TRUE)
-  if (length(value) == 1){
-    x@label <- value
-  } else if (length(value) == length(names_x)){
-    x@label <- value[1]
-    value   <- value[-1]
-    for (k in 1:length(x@pif_list)){
-      length_names_k <- length(flatten_names(x@pif_list[[k]], add_parents = TRUE))
-      names(x@pif_list[[k]]) <- value[((k - 1)*length_names_k + 1):(k*length_names_k)]
-    }
-  } else {
-    cli::cli_abort(
-      "You need to specify just 1 name for the main fraction or {length(names_x)} names for all fractions involved"
-    )
-  }
-
-  return(x)
+  return(children(x))
 }
 
 
@@ -356,6 +309,7 @@ S7::method(length, pif_atomic_class) <- function(x) {
 #' Transforms a `covariance_structure` into a `matrix`.
 #'
 #' @param x A `covariance_structure`
+#' @param ... Additional parameters (ignored)
 #'
 #' @name as.matrix
 #'
@@ -364,7 +318,7 @@ S7::method(length, pif_atomic_class) <- function(x) {
 #'
 #'
 #' @export
-S7::method(as.matrix, covariance_structure_class) <- function(x) {
+S7::method(as.matrix, covariance_structure_class) <- function(x, ...) {
   flag <- TRUE
   nrow <- length(x)
   ncol <- length(x@cov_list[[1]])
@@ -441,6 +395,9 @@ S7::method(as.matrix, covariance_structure_class) <- function(x) {
 #'
 #' @param x A `covariance_structure`
 #' @param select A vector of covariates to keep
+#' @param cols A vector of column names to keep
+#' @param rows A vector of row names to keep
+#' @param ... Additional parameters (ignored)
 #'
 #' @examples
 #' pif_lead_women <- paf(0.27, 2.2, quiet = TRUE, var_p = 0.001, var_beta = 0.015,
@@ -533,15 +490,15 @@ S7::method(subset, covariance_structure_class) <- function(x, select = NULL, col
 }
 
 
-#' @rdname subset
-#' @export
-subset_col <- S7::new_generic(
-  "children", "x",
-  function(x, ...) {
-    S7::S7_dispatch()
+#' Function to get the rows out of a `covariance_structure`
+#' @keywords internal
+subset_col <- function(x, select, ...) {
+
+  if (!S7::S7_inherits(x, covariance_structure_class)){
+    cli::cli_abort(
+      "Currently `subset_col` only supports `covariance_structures`"
+    )
   }
-)
-S7::method(subset_col, covariance_structure_class) <- function(x, select, ...) {
 
   if (!is.vector(select)){
     cli::cli_abort(
@@ -605,15 +562,15 @@ S7::method(subset_col, covariance_structure_class) <- function(x, select, ...) {
 
 }
 
-#' @rdname subset
-#' @export
-subset_row <- S7::new_generic(
-  "children", "x",
-  function(x, ...) {
-    S7::S7_dispatch()
+#' Function to get the rows out of a `covariance_structure`
+#' @keywords internal
+subset_row <- function(x, select, ...) {
+
+  if (!S7::S7_inherits(x, covariance_structure_class)){
+    cli::cli_abort(
+      "Currently `subset_col` only supports `covariance_structures`"
+    )
   }
-)
-S7::method(subset_row, covariance_structure_class) <- function(x, select, ...) {
 
   if (!is.vector(select)){
     cli::cli_abort(
@@ -683,10 +640,11 @@ S7::method(subset_row, covariance_structure_class) <- function(x, select, ...) {
 #' Transforms a `covariance_structure` into a `list`.
 #'
 #' @param x A `covariance_structure`
+#' @param ... Additional parameters (ignored)
 #'
 #' @name as.list
 #' @export
-S7::method(as.list, covariance_structure_class) <- function(x) {
+S7::method(as.list, covariance_structure_class) <- function(x, ...) {
   x@cov_list
 }
 
@@ -695,7 +653,7 @@ S7::method(as.list, covariance_structure_class) <- function(x) {
 #' Gets the labels of the elemebts in the `pif_list` of an ensemble class.
 #'
 #' @param x A `pif_global_ensemble_class`
-#'
+#' @param ... Additional arguments (currently ignored)
 #' @name children
 NULL
 
@@ -707,36 +665,91 @@ children <- S7::new_generic(
     S7::S7_dispatch()
   }
 )
-S7::method(children, pif_global_ensemble_class) <- function(x) {
+S7::method(children, pif_global_ensemble_class) <- function(x, ...) {
   sapply(x@pif_list, function(x) x@label)
 }
-S7::method(children, pif_atomic_class) <- function(x) {
+S7::method(children, pif_atomic_class) <- function(x, ...) {
   NULL
 }
 
-#' Extract elements of covariance structure
-#' @name `[[`
-#' @export
-S7::method(`[[`, covariance_structure_class) <- function(x, i, ...) {
-  x@cov_list[[i]]
-}
 
-#' Extract elements of covariance structure
-#' @name `[[<-`
+#' Transform into a covariance structure
+#'
+#' Transforms either a matrix or a vector into a covariance structure.
+#'
+#' @param x A matrix or a vector
+#' @param col_names Names to assign to the columns
+#' @param row_names Names to assign to the rows
+#' @param ... Additional arguments (currently ignored)
+#' @name as_covstr
+#'
+#' @examples
+#' mat <- matrix(c(1,3,2,4), ncol = 2,
+#'           dimnames = list(list("pif1", "pif2"), list("pif1", "pif2")))
+#' as_covariance_structure(mat)
 #' @export
-S7::method(`[[<-`, covariance_structure_class) <- function(x, i, value) {
-  if (!is.list(value)){
+
+#' @rdname as_covstr
+#' @export
+as_covariance_structure <- function(x, col_names = NULL, row_names = NULL, ...) {
+
+  #Already a covariance structure
+  if (S7::S7_inherits(x, covariance_structure_class)){
+    return(x)
+  }
+
+  if (!is.matrix(x) && !S7::S7_inherits(x, covariance_structure_class)){
     cli::cli_abort(
-      "Value to be assigned should be a list"
+      "Method is only available for objects of class matrix"
     )
   }
 
-  if (length(value) != length(x)){
-    cli::cli_abort(
-      "Value to be assigned should be a list of length {length(x)}. But a value of length={length(value)} was given."
-    )
+  if (is.null(col_names)){
+    if (is.null(colnames(x))){
+      col_names <- paste0(1:ncol(x))
+    } else {
+      col_names <- colnames(x)
+    }
+  } else {
+    if (length(col_names) != ncol(x)){
+      cli::cli_abort(
+        "{length(col_names)} col_names were given for a matrix of {ncol(x)} columns."
+      )
+    }
   }
-  x@cov_list[[i]] <- value
-  x
+
+  if (is.null(row_names)){
+    if (is.null(rownames(x))){
+      row_names <- paste0(1:nrow(x))
+    } else {
+      row_names <- rownames(x)
+    }
+  } else {
+    if (length(row_names) != nrow(x)){
+      cli::cli_abort(
+        "{length(row_names)} row_names were given for a matrix of {nrow(x)} rows"
+      )
+    }
+  }
+
+  #Create the empty structure
+  row_list <- vector("list", nrow(x))
+  names(row_list) <- row_names
+  for (i in 1:nrow(x)){
+    col_list <- vector("list", ncol(x))
+    names(col_list) <- col_names
+
+    #Loop assigning the value
+    for (j in 1:ncol(x)){
+      col_list[[j]] <- x[i,j]
+    }
+
+    row_list[[i]] <- col_list
+  }
+
+  covariance_structure_class(cov_list = row_list)
 }
+
+
+
 

@@ -123,3 +123,31 @@ test_that("as.data.frame.pif_class works correctly", {
   df <- as.data.frame(paf_obj)
   expect_equal(names(df)[1], "PAF")
 })
+
+test_that("names work", {
+
+  #Play with assigning and changing name
+  my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1,
+                  var_beta = 0.2, label = "Old name")
+  expect_equal(names(my_pif), "Old name")
+  names(my_pif) <- "New name"
+  expect_equal(names(my_pif), "New name")
+
+  #A pif composed of others
+  my_pif1 <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1,
+                  var_beta = 0.2, label = "Test 1")
+  my_pif2 <- pif(p = 0.4, p_cft = 0.1, beta = 1.3, var_p = 0.1,
+                  var_beta = 0.2, label = "Test 2")
+  pif_tot <- pif_total(my_pif1, my_pif2, weights = c(0.2, 0.8),
+                  label = "Parent")
+
+  #Check names
+  expect_equal(as.vector(names(pif_tot)), c("Test 1", "Test 2"))
+  expect_equal(names(pif_tot), children(pif_tot))
+
+  #Check new names
+  names(pif_tot) <- c("First", "Second")
+  expect_equal(as.vector(names(pif_tot)), c("First", "Second"))
+
+
+})

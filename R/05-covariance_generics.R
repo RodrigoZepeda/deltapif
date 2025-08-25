@@ -9,30 +9,7 @@
 #' Default `NULL` (no correlation).
 #' @param var_beta covariance matrix for the parameter `beta` in both `pif1`
 #' and `pif2`. Default `NULL` (no correlation).
-#' @param uncorrelated_p If `pif1` and `pif2` were constructed with independent
-#' (uncorrelated) data for the prevalence `p`. Either
-#' `TRUE`, `FALSE` or `guess` (default).
-#' @param uncorrelated_beta If `pif1` and `pif2` were constructed with independent
-#'  (uncorrelated) data for the relative risk parameter `beta`. Either
-#' `TRUE`, `FALSE` or `guess` (default).
 #'
-#' @param quiet Whether to throw warnings or other messages.
-#'
-#' @section Covariance matrices:
-#'
-#' By default if `var_p = NULL` is specified this assumes the parameters `p`
-#' of `pif1` and `pif2` are uncorrelated. However, if `pif1` and `pif2` share
-#' the same prevalence estimates
-#' (i.e. share the same `p`s, then the user should set `uncorrelated_p = FALSE`
-#' to account for that correlation).
-#'
-#' The same thing happens with `var_beta`. If no `var_beta` is specified (set to `NULL`)
-#' then the assumption is that the `beta` parameters from `pif1` and
-#' from `pif2` are uncorrelated (unless `uncorrelated_beta` is set to `FALSE`).
-#'
-#' If the user provides a covariance matrix for `var_p` then `uncorrelated_p`
-#' is disregarded. Similarly, if the user provides `var_beta` then
-#' `uncorrelated_beta` is ignored.
 #'
 #' @section Computation:
 #'
@@ -131,12 +108,10 @@ cov_atomic_pif <- function(pif1, pif2, var_p, var_beta) {
 #'
 #' @param pif2 A `pif_global_ensemble_class` or `pif_atomic_class` to compute the covariance
 #'
-#' @param j Weight indicator (covariance is for `weights(pif1)[j]`)
-#'
 #' @param var_weights Covariance vector between the weights of
 #' `pif1` and the j-th weight of `pif2`.
 #'
-#' @param sigma_pif_weights Covariance vector between the potential
+#' @param var_pif_weights Covariance structure between the potential
 #' impact fractions in `pif1` and the weights in `pif2`.
 #'
 #'
@@ -287,7 +262,7 @@ cov_ensemble_weights <- function(pif1, pif2, var_weights, var_pif_weights, recur
 #' where \eqn{\widehat{\textrm{PIF}}_{1,:} = (\widehat{\textrm{PIF}}_{1,1},
 #' \widehat{\textrm{PIF}}_{1,2}, \dots, \widehat{\textrm{PIF}}_{1,M_1})^{\top}}
 #'
-#' @seealso [cov_ensemble_weight()], [cov_atomic_pif()]
+#' @seealso [cov_ensemble_weights()], [cov_atomic_pif()]
 #' @keywords internal
 cov_ensemble_atomic <- function(pif_ensemble, pif_atomic, var_p, var_beta,
                                 var_pifs, var_pif_weights,
@@ -365,8 +340,6 @@ cov_ensemble_atomic <- function(pif_ensemble, pif_atomic, var_p, var_beta,
 #'
 #' @inheritParams cov_atomic_pif
 #'
-#' @inheritSection cov_atomic_pif Covariance matrices
-#'
 #' @section Computation:
 #' This computes:
 #' \deqn{
@@ -380,17 +353,16 @@ cov_ensemble_atomic <- function(pif_ensemble, pif_atomic, var_p, var_beta,
 #' \widehat{\textrm{PIF}}_{B}\Big)} is computed as in [cov_ensemble_atomic()]
 #' in the case \eqn{\widehat{\textrm{PIF}}_{A,i}} is atomic or with the same formula
 #' in the case it is an ensemble. The expression \eqn{\operatorname{Cov}\Big( \hat{q}_i,
-#' \widehat{\textrm{PIF}}_{B}\Big) } is computed as in  [cov_ensemble_weight()]
+#' \widehat{\textrm{PIF}}_{B}\Big) } is computed as in  [cov_ensemble_weights()]
 #' for each weight \eqn{q_j}.
 #'
 #' @seealso [from_parameters_covariance_p_component()], [cov_atomic_pif()],
-#' [cov_ensemble_atomic()], [cov_ensemble_weight()]
+#' [cov_ensemble_atomic()], [cov_ensemble_weights()]
 #'
 #' @keywords internal
 cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
                           var_weights = NULL, var_pif_weights = NULL,
-                          var_pifs = NULL,
-                          quiet = FALSE) {
+                          var_pifs = NULL) {
 
   #If varp and varbeta are null set defaults
   if (is.null(var_p)){
@@ -547,21 +519,10 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
 #' @param var_beta covariance matrix for the parameter `beta` in all `pif1`
 #' and the ones included in `...`.
 #'
-#' @param uncorrelated_p If all the pifs share the same prevalence data. Either
-#' `TRUE`, `FALSE`, `guess` (default) or a matrix. If a matrix is given then
-#' `uncorrelated_p[i,j] = 1` if the i-th and j-th pifs share the same prevalence data
-#' `uncorrelated_p[i,j] = 0` if the i-th and j-th pifs don't share the same prevalence data.
-#'
-#' @param uncorrelated_beta If all the pifs share the same `beta` parameter. Either
-#' `TRUE`, `FALSE` or `guess` (default) or a matrix. If a matrix is given then
-#' `uncorrelated_beta[i,j] = 1` if the i-th and j-th pifs share the same relative risk parameters
-#' `uncorrelated_beta[i,j] = 0` if the i-th and j-th pifs don't share the same relative risk parameters.
-#'
-#' @param quiet Whether to throw warnings and other messages
-#'
 #' @examples
 #' # Get the approximate link_variance of a pif object
-#' my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1, var_beta = 0.2)
+#' my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3,
+#'               var_p = 0.1, var_beta = 0.2)
 #' variance(my_pif)
 #'
 #' # This is the same as link_covariance with just 1 pIF
@@ -573,10 +534,10 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
 #' pif1 <- pif(0.5, 0.2, beta, var_p = 0.5 * (1 - 0.5) / 100, var_beta = var_beta)
 #' pif2 <- pif(0.3, 0.1, beta, var_p = 0.3 * (1 - 0.3) / 100, var_beta = var_beta)
 #' pif3 <- pif(0.7, 0.3, beta, var_p = 0.7 * (1 - 0.7) / 100, var_beta = var_beta)
-#' covariance(pif1, pif2, pif3, uncorrelated_beta = FALSE)
+#' covariance(pif1, pif2, pif3)
 #'
 #' # The link_covariance between a pif and itself only has the link_variance as entries
-#' covariance(pif1, pif1, uncorrelated_beta = FALSE, uncorrelated_p = FALSE)
+#' covariance(pif1, pif1)
 #'
 #' # Or if there is a link_covariance structure between different betas you can specify with
 #' # var_beta in the link_covariance
@@ -594,7 +555,7 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
 #' covariance(pif1, pif2, pif3, var_beta = var_beta)
 #'
 #' # Compute the correlation
-#' correlation(pif1, pif2, pif3, var_beta = var_beta, quiet = TRUE)
+#' correlation(pif1, pif2, pif3, var_beta = var_beta)
 #' @name covcor
 NULL
 
@@ -602,19 +563,102 @@ NULL
 #' @export
 covariance <- S7::new_generic(
   "covariance", "x",
-  function(x, ..., var_p = NULL, var_beta = NULL,
-           quiet = FALSE) {
+  function(x, ..., var_p = NULL, var_beta = NULL) {
     S7::S7_dispatch()
   }
 )
-S7::method(covariance, S7::new_union(pif_global_ensemble_class, pif_atomic_class)) <- function(x, ..., var_p = NULL, var_beta = NULL,
-                                                                              quiet = FALSE) {
+S7::method(covariance, S7::new_union(pif_global_ensemble_class, pif_atomic_class)) <- function(x, ..., var_p = NULL, var_beta = NULL) {
 
   # Get the list of fractions
   pif_list <- append(list(x), list(...))
   npifs    <- length(pif_list)
 
+  #Get the names of the pif_list
+  pif_names <- sapply(pif_list, names)
 
+  #FIXME: Make covariance pass the other structures too
+  #FIXME: Check that the names of the pifs given are in var_beta and var_p
+  if (!is.null(var_p)){
+
+    if (!is.null(colnames(var_p)) && !all(pif_names %in% colnames(var_p))){
+      cli::cli_abort(
+        paste0(
+          "Covariance for ",
+          "{pif_names[which(!(pif_names %in% colnames(var_p)))][1]} ",
+          "was not found in `var_p`."
+        )
+      )
+    } else if (is.null(colnames(var_p))){
+      if (ncol(var_p) == length(pif_names)){
+        colnames(var_p) <- pif_names
+      } else {
+        cli::cli_abort(
+          "No column names were given to `var_p` and they cannot be automatically assigned"
+        )
+      }
+    }
+
+    if (!is.null(rownames(var_p)) && !all(pif_names %in% rownames(var_p))){
+        cli::cli_abort(
+          paste0(
+            "Covariance for ",
+            "{pif_names[which(!(pif_names %in% colnames(var_p)))][1]} ",
+            "was not found in `var_p`."
+          )
+        )
+    } else if (is.null(rownames(var_p))){
+      if (nrow(var_p) == length(pif_names)){
+        rownames(var_p) <- pif_names
+      } else {
+        cli::cli_abort(
+          "No row names were given to `var_p` and they cannot be automatically assigned"
+        )
+      }
+    }
+
+    var_p    <- as_covariance_structure(var_p)
+  }
+
+  if (!is.null(var_beta)){
+
+    if (!is.null(colnames(var_beta)) && !all(pif_names %in% colnames(var_beta))){
+      cli::cli_abort(
+        paste0(
+          "Covariance for ",
+          "{pif_names[which(!(pif_names %in% colnames(var_beta)))][1]} ",
+          "was not found in `var_beta`."
+        )
+      )
+    } else if (is.null(colnames(var_beta))){
+      if (ncol(var_beta) == length(pif_names)){
+        colnames(var_beta) <- pif_names
+      } else {
+        cli::cli_abort(
+          "No column names were given to `var_beta` and they cannot be automatically assigned"
+        )
+      }
+    }
+
+    if (!is.null(rownames(var_beta)) && !all(pif_names %in% rownames(var_beta))){
+      cli::cli_abort(
+        paste0(
+          "Covariance for ",
+          "{pif_names[which(!(pif_names %in% colnames(var_beta)))][1]} ",
+          "was not found in `var_beta`."
+        )
+      )
+    } else if (is.null(rownames(var_beta))){
+      if (nrow(var_beta) == length(pif_names)){
+        rownames(var_beta) <- pif_names
+      } else {
+        cli::cli_abort(
+          "No row names were given to `var_beta` and they cannot be automatically assigned"
+        )
+      }
+    }
+
+    var_beta <- as_covariance_structure(var_beta)
+  }
 
   if (is.matrix(var_beta) && (ncol(var_beta) != npifs || nrow(var_beta) != npifs)){
     cli::cli_abort(
@@ -640,23 +684,24 @@ S7::method(covariance, S7::new_union(pif_global_ensemble_class, pif_atomic_class
     for (i in 1:(npifs - 1)) {
       for (j in (i + 1):npifs) {
 
-        if (!is.null(var_p)) {
-          nps <-  pif_class_apply_1st(x, length, "p")
-          sub_var_p <- var_p[(nps * (i - 1) + 1):(nps * i), (nps * (j - 1) + 1):(nps * j)] #FIXME: This should be a list
-        } else {
-          sub_var_p <- NULL
-        }
-
-        if (!is.null(var_beta)) {
-          nbetas <- nps <-  pif_class_apply_1st(x, length, "beta")
-          sub_var_beta <- var_beta[(nbetas * (i - 1) + 1):(nbetas * i), (nbetas * (j - 1) + 1):(nbetas * j)] #FIXME: This should be a list
-        } else {
-          sub_var_beta <- NULL
-        }
+        # Subsetting is not needed with the new structures
+        # if (!is.null(var_p)) {
+        #   nps <-  pif_class_apply_1st(x, length, "p")
+        #   sub_var_p <- var_p[(nps * (i - 1) + 1):(nps * i), (nps * (j - 1) + 1):(nps * j)] #FIXME: This should be a list
+        # } else {
+        #   sub_var_p <- NULL
+        # }
+        #
+        # if (!is.null(var_beta)) {
+        #   nbetas <- nps <-  pif_class_apply_1st(x, length, "beta")
+        #   sub_var_beta <- var_beta[(nbetas * (i - 1) + 1):(nbetas * i), (nbetas * (j - 1) + 1):(nbetas * j)] #FIXME: This should be a list
+        # } else {
+        #   sub_var_beta <- NULL
+        # }
 
 
         cov_mat[i, j] <- cov_total_pif(pif_list[[i]], pif_list[[j]],
-                                       var_p = sub_var_p, var_beta = sub_var_beta)
+                                       var_p = var_p, var_beta = var_beta)
       }
     }
 
@@ -693,20 +738,14 @@ S7::method(standard_deviation, S7::new_union(pif_global_ensemble_class, pif_atom
 #' @export
 correlation <- S7::new_generic(
   "correlation", "x",
-  function(x, ..., var_p = NULL, var_beta = NULL,
-           uncorrelated_p = "guess", uncorrelated_beta = "guess",
-           quiet = FALSE) {
+  function(x, ..., var_p = NULL, var_beta = NULL) {
     S7::S7_dispatch()
   }
 )
-S7::method(correlation, S7::new_union(pif_global_ensemble_class, pif_atomic_class)) <- function(x, ..., var_p = NULL, var_beta = NULL,
-                                                                              uncorrelated_p = "guess", uncorrelated_beta = "guess",
-                                                                              quiet = FALSE) {
+S7::method(correlation, S7::new_union(pif_global_ensemble_class, pif_atomic_class)) <- function(x, ..., var_p = NULL, var_beta = NULL) {
   cov2cor(
     covariance(x, ...,
-        var_p = var_p, var_beta = var_beta,
-        uncorrelated_p = uncorrelated_p, uncorrelated_beta = uncorrelated_beta,
-        quiet = quiet
+        var_p = var_p, var_beta = var_beta
     )
   )
 }

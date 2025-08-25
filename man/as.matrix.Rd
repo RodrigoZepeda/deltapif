@@ -5,6 +5,8 @@
 \title{Convert a \code{covariance_structure} to \code{matrix}}
 \arguments{
 \item{x}{A \code{covariance_structure}}
+
+\item{...}{Additional parameters (ignored)}
 }
 \description{
 Transforms a \code{covariance_structure} into a \code{matrix}.

@@ -9,3 +9,4 @@ verify_var_pif_weights(sigma_list, pif_list)
 \description{
 Verify the variance between pif weights
 }
+\keyword{internal}

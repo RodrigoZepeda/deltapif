@@ -79,6 +79,10 @@ for each of the categories (for each of the pifs given).}
 the weights are not random, a vector if only the link_variances of the weights
 are available or a link_covariance matrix.}
 
+\item{var_pif_weights}{covariance matrix with row \code{i} and column \code{j}
+representing the covariance between the \code{i}-th potential impact
+fraction of the list and the \code{j}-th weight}
+
 \item{conf_level}{Confidence level for the confidence interval (default 0.95).}
 
 \item{link}{Link function such that the \code{pif} confidence intervals
@@ -95,6 +99,8 @@ to build it automatically from \code{link} using \code{\link[Deriv:Deriv]{Deriv:
 \item{label}{Character identifier for the impact fraction. This is for}
 
 \item{pif1}{A potential impact fraction (class \code{pif_class})}
+
+\item{is_paf}{Whether the computed quantity is a population attributable fraction or not}
 }
 \description{
 Combine potential impact fractions or the population attributable fractions

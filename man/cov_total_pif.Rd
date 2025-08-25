@@ -11,8 +11,7 @@ cov_total_pif(
   var_beta = NULL,
   var_weights = NULL,
   var_pif_weights = NULL,
-  var_pifs = NULL,
-  quiet = FALSE
+  var_pifs = NULL
 )
 }
 \arguments{
@@ -28,8 +27,6 @@ and \code{pif2}. Default \code{NULL} (no correlation).}
 
 \item{var_weights}{Covariance between the weights of all the fractions
 contained in \code{pif1} and all the fractions contained in \code{pif2}.}
-
-\item{quiet}{Whether to throw warnings or other messages.}
 }
 \description{
 Recursively obtains the covariance matrix of a \code{pif_global_ensemble_class}
@@ -48,30 +45,12 @@ where \eqn{\operatorname{Cov}\Big( \textrm{PIF}_{A,i},
 \widehat{\textrm{PIF}}_{B}\Big)} is computed as in \code{\link[=cov_ensemble_atomic]{cov_ensemble_atomic()}}
 in the case \eqn{\widehat{\textrm{PIF}}_{A,i}} is atomic or with the same formula
 in the case it is an ensemble. The expression \eqn{\operatorname{Cov}\Big( \hat{q}_i,
-\widehat{\textrm{PIF}}_{B}\Big) } is computed as in  \code{\link[=cov_ensemble_weight]{cov_ensemble_weight()}}
+\widehat{\textrm{PIF}}_{B}\Big) } is computed as in  \code{\link[=cov_ensemble_weights]{cov_ensemble_weights()}}
 for each weight \eqn{q_j}.
-}
-
-\section{Covariance matrices}{
-
-
-By default if \code{var_p = NULL} is specified this assumes the parameters \code{p}
-of \code{pif1} and \code{pif2} are uncorrelated. However, if \code{pif1} and \code{pif2} share
-the same prevalence estimates
-(i.e. share the same \code{p}s, then the user should set \code{uncorrelated_p = FALSE}
-to account for that correlation).
-
-The same thing happens with \code{var_beta}. If no \code{var_beta} is specified (set to \code{NULL})
-then the assumption is that the \code{beta} parameters from \code{pif1} and
-from \code{pif2} are uncorrelated (unless \code{uncorrelated_beta} is set to \code{FALSE}).
-
-If the user provides a covariance matrix for \code{var_p} then \code{uncorrelated_p}
-is disregarded. Similarly, if the user provides \code{var_beta} then
-\code{uncorrelated_beta} is ignored.
 }
 
 \seealso{
 \code{\link[=from_parameters_covariance_p_component]{from_parameters_covariance_p_component()}}, \code{\link[=cov_atomic_pif]{cov_atomic_pif()}},
-\code{\link[=cov_ensemble_atomic]{cov_ensemble_atomic()}}, \code{\link[=cov_ensemble_weight]{cov_ensemble_weight()}}
+\code{\link[=cov_ensemble_atomic]{cov_ensemble_atomic()}}, \code{\link[=cov_ensemble_weights]{cov_ensemble_weights()}}
 }
 \keyword{internal}

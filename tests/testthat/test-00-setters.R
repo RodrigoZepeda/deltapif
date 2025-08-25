@@ -1,6 +1,6 @@
 # Helper function to create valid pif_atomic_class instance
 create_valid_pif_atomic <- function() {
-  pif_atomic_class(
+  pif(
     p = c(0.3, 0.7),
     p_cft = c(0.2, 0.8),
     beta = c(0.5, 1.0),
@@ -12,9 +12,7 @@ create_valid_pif_atomic <- function() {
     link_deriv = function(x) 1,
     link_inv = identity,
     conf_level = 0.95,
-    type = "PIF",
-    upper_bound_p = FALSE,
-    upper_bound_beta = FALSE
+    type = "PIF"
   )
 }
 

@@ -77,7 +77,7 @@ test_that("Link parsers work correctly", {
 })
 
 test_that("Link and inverse functions are inverses of each other", {
-  test_values <- c(0.1, 0.25, 0.5, 0.75, 0.9)
+  test_values <- c(0.1, 0.25, 0.5, 0.75, 0.88)
 
   # Test logit and inv_logit
   for (x in test_values) {

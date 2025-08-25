@@ -1,3 +1,16 @@
+# Create mock S7 objects
+pif_atomic <- pif_atomic_class(p = c(0.1, 0.2), p_cft = rep(0, 2), beta = c(1.1, 1.2),
+                               conf_level = 0.95, type = "PIF", link = logit,
+                               link_inv = inv_logit, link_deriv = deriv_logit,
+                               var_p = matrix(0, 2, 2), var_beta = matrix(0, 2, 2),
+                               rr_link = exp, rr_link_deriv = exp, upper_bound_p = FALSE,
+                               upper_bound_beta = FALSE, label = "hello")
+pif_total <- pif_total_class(pif_list = list(pif_atomic, pif_atomic), link = logit,
+                             link_inv = inv_logit, link_deriv = deriv_logit,
+                             weights = c(0.5, 0.5), var_weights = matrix(0, 2, 2),
+                             var_pif_weights = 0,
+                             label = "goodbye")
+
 test_that("mu_obs_fun calculates correctly and validates inputs", {
   # Correct calculation
   expect_equal(
@@ -113,16 +126,7 @@ test_that("mu_obs_fun calculates correctly and validates inputs", {
  })
 
  test_that("pif_class_apply_1st works correctly", {
-   # Create mock S7 objects
-   pif_atomic <- pif_atomic_class(p = c(0.1, 0.2), p_cft = rep(0, 2), beta = c(1.1, 1.2),
-                                  conf_level = 0.95, type = "PIF", link = logit,
-                                  link_inv = inv_logit, link_deriv = deriv_logit,
-                                  var_p = matrix(0, 2, 2), var_beta = matrix(0, 2, 2),
-                                  rr_link = exp, rr_link_deriv = exp, upper_bound_p = FALSE,
-                                  upper_bound_beta = FALSE)
-   pif_total <- pif_total_class(pif_list = list(pif_atomic, pif_atomic), link = logit,
-                                link_inv = inv_logit, link_deriv = deriv_logit,
-                                weights = c(0.5, 0.5), var_weights = matrix(0, 2, 2))
+
 
    # Test with atomic pif
    expect_equal(
@@ -151,7 +155,7 @@ test_that("mu_obs_fun calculates correctly and validates inputs", {
                                   link_inv = exp, link_deriv = exp,
                                   var_p = matrix(0, 2, 2), var_beta = matrix(0, 2, 2),
                                   rr_link = exp, rr_link_deriv = exp, upper_bound_p = FALSE,
-                                  upper_bound_beta = FALSE)
+                                  upper_bound_beta = FALSE, label = "exp")
 
    expect_equal(link_deriv_vals(pif_obj), exp(pif_obj@pif))
 
@@ -165,14 +169,14 @@ test_that("mu_obs_fun calculates correctly and validates inputs", {
                                   link_inv = inv_logit, link_deriv = deriv_logit,
                                   var_p = matrix(0, 2, 2), var_beta = matrix(0, 2, 2),
                                   rr_link = exp, rr_link_deriv = exp, upper_bound_p = FALSE,
-                                  upper_bound_beta = FALSE)
+                                  upper_bound_beta = FALSE, label = "logit")
 
    paf_obj <- pif_atomic_class(p = c(0.1, 0.2), p_cft = rep(0, 2), beta = c(1.1, 1.2),
                                   conf_level = 0.95, type = "PAF", link = logit,
                                   link_inv = inv_logit, link_deriv = deriv_logit,
                                   var_p = matrix(0, 2, 2), var_beta = matrix(0, 2, 2),
                                   rr_link = exp, rr_link_deriv = exp, upper_bound_p = FALSE,
-                                  upper_bound_beta = FALSE)
+                                  upper_bound_beta = FALSE, label = "logit2")
 
 
    expect_equal(fraction_type(pif_obj), "PIF")
@@ -188,7 +192,7 @@ test_that("mu_obs_fun calculates correctly and validates inputs", {
                                link_inv = identity, link_deriv = function(x) rep(1, length(x)),
                                var_p = matrix(0, 2, 2), var_beta = matrix(0, 2, 2),
                                rr_link = exp, rr_link_deriv = exp, upper_bound_p = FALSE,
-                               upper_bound_beta = FALSE)
+                               upper_bound_beta = FALSE, label = "exp")
 
    # Change to logit
    new_pif <- change_link(pif_obj, "logit")
@@ -215,7 +219,7 @@ test_that("mu_obs_fun calculates correctly and validates inputs", {
                     link_inv = identity, link_deriv = function(x) rep(1, length(x)),
                     var_p = matrix(0, 2, 2), var_beta = matrix(0, 2, 2),
                     rr_link = identity, rr_link_deriv = function(x) rep(1, length(x)), upper_bound_p = FALSE,
-                    upper_bound_beta = FALSE)
+                    upper_bound_beta = FALSE, label = "<0")
    expect_warning(change_link(neg_pif, "logit"), "<= 0")
  })
 

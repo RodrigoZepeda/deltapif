@@ -16,39 +16,11 @@ Default \code{NULL} (no correlation).}
 
 \item{var_beta}{covariance matrix for the parameter \code{beta} in both \code{pif1}
 and \code{pif2}. Default \code{NULL} (no correlation).}
-
-\item{uncorrelated_p}{If \code{pif1} and \code{pif2} were constructed with independent
-(uncorrelated) data for the prevalence \code{p}. Either
-\code{TRUE}, \code{FALSE} or \code{guess} (default).}
-
-\item{uncorrelated_beta}{If \code{pif1} and \code{pif2} were constructed with independent
-(uncorrelated) data for the relative risk parameter \code{beta}. Either
-\code{TRUE}, \code{FALSE} or \code{guess} (default).}
-
-\item{quiet}{Whether to throw warnings or other messages.}
 }
 \description{
 Calculates the approximate covariance between two atomic
 pif class expressions using the delta method.
 }
-\section{Covariance matrices}{
-
-
-By default if \code{var_p = NULL} is specified this assumes the parameters \code{p}
-of \code{pif1} and \code{pif2} are uncorrelated. However, if \code{pif1} and \code{pif2} share
-the same prevalence estimates
-(i.e. share the same \code{p}s, then the user should set \code{uncorrelated_p = FALSE}
-to account for that correlation).
-
-The same thing happens with \code{var_beta}. If no \code{var_beta} is specified (set to \code{NULL})
-then the assumption is that the \code{beta} parameters from \code{pif1} and
-from \code{pif2} are uncorrelated (unless \code{uncorrelated_beta} is set to \code{FALSE}).
-
-If the user provides a covariance matrix for \code{var_p} then \code{uncorrelated_p}
-is disregarded. Similarly, if the user provides \code{var_beta} then
-\code{uncorrelated_beta} is ignored.
-}
-
 \section{Computation}{
 
 

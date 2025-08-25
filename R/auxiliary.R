@@ -43,8 +43,8 @@ flatten <- function(pif){
   pif_flattened_list <- list(pif)
   names(pif_flattened_list) <- pif@label
   for (k in 1:length(pif@pif_list)){
-    pif_flattened_list <- pif_flattened_list |>
-      append(flatten(pif@pif_list[[k]]))
+    pif_flattened_list <-
+      append(pif_flattened_list, flatten(pif@pif_list[[k]]))
   }
 
   return(pif_flattened_list)
@@ -75,7 +75,7 @@ flatten <- function(pif){
 #' flatten_names(pif_tot)
 #'
 #' @export
-flatten_names <- function(pif, sep = "_>_", add_parents = TRUE){
+flatten_names <- function(pif){
 
   if (S7::S7_inherits(pif, pif_atomic_class)){
     return(pif@label)

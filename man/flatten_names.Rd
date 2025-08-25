@@ -4,7 +4,7 @@
 \alias{flatten_names}
 \title{Function to flatten a pif's names}
 \usage{
-flatten_names(pif, sep = "_>_", add_parents = TRUE)
+flatten_names(pif)
 }
 \arguments{
 \item{pif}{A potential impact fraction of either \code{pif_atomic_class}

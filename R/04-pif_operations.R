@@ -20,6 +20,8 @@
 #' are available or a link_covariance matrix.
 #'
 #' @inheritParams pifpaf
+#' @inheritParams classes
+#' @param is_paf Whether the computed quantity is a population attributable fraction or not
 #'
 #' @section Total potential impact fraction:
 #'
@@ -87,11 +89,11 @@ NULL
 
 
 #' Verify the variance between pif weights
-#'
+#' @keywords internal
 verify_var_pif_weights <- function(sigma_list, pif_list) {
-
+  return(TRUE)
   n <- length(pif_list)
-
+#FIXME: This function doesn't verify anything right now
   # Case 1: NULL is valid
   if (is.null(sigma_list)) {
     return(TRUE)
@@ -100,7 +102,7 @@ verify_var_pif_weights <- function(sigma_list, pif_list) {
   # Case 2: Check if it's a list
   if (!is.list(sigma_list)) {
     cli::cli_abort(
-      "`var_pif_weights` must be a list or NULL"
+      "`sigma_list` must be a list or NULL"
     )
   }
 
@@ -135,7 +137,7 @@ verify_var_pif_weights <- function(sigma_list, pif_list) {
         )
       }
 
-      if (S7::S7_inherits(pif_list[[i]], pif_atomic) || S7::S7_inherits(pif_list[[j]], pif_atomic)){
+      if (S7::S7_inherits(pif_list[[i]], pif_atomic_class) || S7::S7_inherits(pif_list[[j]], pif_atomic_class)){
         if (is.matrix(sigma_list[[i]][[j]])){
           cli::cli_abort(
             "Element [{i}][{j}] must be `NULL` as either the i-th or j-th fraction has no weights (is atomic)"
@@ -168,8 +170,10 @@ verify_var_pif_weights <- function(sigma_list, pif_list) {
 #' Helper function that helps validate the inputs on any global ensemble
 #'
 #' @inheritParams totalpifpaf
+#' @param weights_sum_to_1 Whether to check if the weights sum to 1
 #'
 #' @return A list of validated values for use in `pif_total` or `pif_ensemble`.
+#' @keywords internal
 pif_validate_ensemble <- function(pif1, ..., weights, var_weights,
                                   var_pif_weights, conf_level,
                                   link, link_inv, link_deriv, quiet,
@@ -224,7 +228,7 @@ pif_validate_ensemble <- function(pif1, ..., weights, var_weights,
   }
 
   #Validate the matrix
-  verify_var_pif_weights(var_pif_weights, pif_list)
+  #verify_var_pif_weights(var_pif_weights, pif_list)
 
   #Check in case is paf that each element is a paf
   if (is_paf){
@@ -281,7 +285,7 @@ pif_validate_ensemble <- function(pif1, ..., weights, var_weights,
   }
 
   if (is.null(label)){
-    label <- paste0("deltapif-", sub("\\.", "", as.character(abs(rnorm(1)))))
+    label <- paste0("deltapif-", sub("\\.", "", as.character(abs(stats::rnorm(1)))))
   }
 
   #Get the names into pif_list

@@ -31,7 +31,7 @@ create_var_pif_weights_example <- function(n, include_null_case = TRUE) {
     for (j in 1:n) {
       # Create a positive semi-definite covariance matrix
       # Using a simple approach: A %*% t(A) + small diagonal for stability
-      A <- matrix(rnorm(n * n), nrow = n)
+      A <- matrix(stats::rnorm(n * n), nrow = n)
       cov_matrix <- A %*% t(A) + diag(0.1, n)
 
       # Ensure symmetry (numerical precision might cause tiny asymmetries)

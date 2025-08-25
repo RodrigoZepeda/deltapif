@@ -104,18 +104,6 @@ individuals for each of the \code{N} exposure levels.}
 
 \item{rr_link_deriv_vals}{The derivative of the relative risk function \code{g}
 with respect to the parameter \code{beta} evaluated at \code{beta}.}
-
-\item{mu_obs1}{Average relative risk in the population of the first
-potential impact fraction.}
-
-\item{mu_obs2}{Average relative risk in the population of the second
-potential impact fraction.}
-
-\item{mu_cft1}{Average relative risk in the counterfactual population of the
-first potential impact fraction.}
-
-\item{mu_cft2}{Average relative risk in the counterfactual of the second
-potential impact fraction.}
 }
 \value{
 The covariance component for either \code{p} or \code{beta}

@@ -12,22 +12,22 @@ test_that("deriv_pif_p works correctly", {
 
   # Test with pre-calculated mu values
   expect_equal(
-    deriv_pif_p(p, p_cft, rr, mu_obs, mu_cft),
+    deriv_pif_p(p, p_cft, rr),
     expected
   )
 
   expect_equal(
-    deriv_pif_p(p, p_cft, rr, mu_cft = mu_cft),
+    deriv_pif_p(p, p_cft, rr),
     expected
   )
 
   expect_equal(
-    deriv_pif_p(p, p_cft, rr, mu_obs = mu_obs),
+    deriv_pif_p(p, p_cft, rr),
     expected
   )
 
   expect_equal(
-    deriv_pif_p(p, p_cft, rr = rr, mu_obs = mu_obs, mu_cft = mu_cft),
+    deriv_pif_p(p, p_cft, rr = rr),
     expected
   )
 
@@ -65,7 +65,7 @@ test_that("deriv_pif_beta works correctly", {
 
   # Test with pre-calculated mu values
   expect_equal(
-    deriv_pif_beta(p, p_cft, rr, rr_deriv, mu_obs, mu_cft),
+    deriv_pif_beta(p, p_cft, rr, rr_deriv),
     expected
   )
 
@@ -94,25 +94,21 @@ test_that("Input validation works", {
     rr_deriv <- c(0.5, 0.2)
 
     # Test for length mismatches
-    expect_error(deriv_pif_p(p, p_cft, c(1, 2, 3))) # rr too long
-    expect_error(deriv_pif_beta(p, p_cft, rr, c(1))) # rr_deriv too short
+    expect_error(deriv_pif_p(p, p_cft, c(1, 2, 3)), "different lengths") # rr too long
+    expect_error(deriv_pif_beta(p, p_cft, rr, c(1)), "different lengths") # rr_deriv too short
 
     # Test for invalid probabilities
-    expect_error(deriv_pif_p(c(-0.1, 0.2), p_cft, rr))
-    expect_error(deriv_pif_p(c(0.1, 1.2), p_cft, rr))
-    expect_error(deriv_pif_p(p, c(-0.1, 0.2), rr))
-    expect_error(deriv_pif_beta(c(-0.1, 0.2), p_cft, rr, rr_deriv))
-    expect_error(deriv_pif_beta(p, c(-0.1, 0.2), rr, rr_deriv))
-    expect_error(deriv_pif_beta(p, c(0.5, 0.6), rr, rr_deriv)) # sums > 1
+    expect_error(deriv_pif_p(c(-0.1, 0.2), p_cft, rr),"Probabilities|probability")
+    expect_error(deriv_pif_p(c(0.1, 1.2), p_cft, rr),"Probabilities|probability")
+    expect_error(deriv_pif_p(p, c(-0.1, 0.2), rr),"Probabilities|probability")
+    expect_error(deriv_pif_beta(c(-0.1, 0.2), p_cft, rr, rr_deriv), "Probabilities|probability")
+    expect_error(deriv_pif_beta(p, c(-0.1, 0.2), rr, rr_deriv), "Probabilities|probability")
+    expect_error(deriv_pif_beta(p, c(0.5, 0.6), rr, rr_deriv),"Probabilities|probability") # sums > 1
 
     # Test for invalid relative risks
-    expect_error(deriv_pif_p(p, p_cft, c(0, 1))) # rr <= 0
-    expect_error(deriv_pif_beta(p, p_cft, c(-1, 2), rr_deriv))
+    expect_error(deriv_pif_p(p, p_cft, c(0, 1)),"<= 0") # rr <= 0
+    expect_error(deriv_pif_beta(p, p_cft, c(-1, 2), rr_deriv),"<= 0")
 
-    #Gen giving mu_obs should be positive
-    expect_error(deriv_pif_p(p, p_cft, c(1, 1), mu_obs = 0))
-    expect_error(deriv_pif_p(p, p_cft, c(1, 1), mu_obs = NA))
-    expect_error(deriv_pif_p(p, p_cft, c(1, 1), mu_cft = NA))
   })
 
   test_that("NA handling works as expected", {

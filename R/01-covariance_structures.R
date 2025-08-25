@@ -9,17 +9,12 @@
 #' between elements of the i-th potential impact fraction
 #' and the j-th potential impact fraction.
 #'
-#' @param dim_list List of dimensions required such that `dim_list[[i]][[j]]`
-#' has a vector of 2 entries indicating the number of rows and columns
-#' that can be inputed in cov_list (used for validation).
-#'
 #' @export
 covariance_structure_class <- S7::new_class(
   name = "covariance_structure_class",
   package = "deltapif",
   properties = list(
     cov_list = S7::class_list
-    #dim_list = S7::class_list
   ),
   validator = function(self){
 
@@ -57,13 +52,12 @@ covariance_structure_class <- S7::new_class(
 #' @param pif A potential impact fraction
 #' @param pif1 A potential impact fraction to obtain a covariance structure with `pif2`.
 #' @param pif2 A potential impact fraction to obtain a covariance structure with `pif1`,
-#' @param sep Separation for the names in case `add_parents = TRUE`
-#' @param add_parents add_parents Whether to add the parent impact fractions
-#' to the name of the fraction.
 #' @param parameter Either `beta` or `p`. Indicating which parameter
 #' we are calculating covariance for.
 #' @param parent_name For the ones ending in `2`. The name of the covariance
 #' associated to `pif1` against `pif2`.
+#' @param is_variance Whether the covariance structure corresponds to a `variance`
+#' (i.e. when `pif1` and `pif2` are identical)
 #'
 #' @note The `covariance_structure`s ending in `2` are meant to
 #' obtain the default covariance structure between two fractions `pif1` and `pif2`
@@ -106,13 +100,13 @@ NULL
 
 #' @rdname covariance_structures
 #' @export
-covariance_structure <- function(pif, sep = "_>_", add_parents = FALSE, is_variance = FALSE) {
+covariance_structure <- function(pif, is_variance = FALSE) {
 
   if (S7::S7_inherits(pif, pif_atomic_class)){
     is_variance <- TRUE
   }
 
-  names_of_list <- flatten_names(pif, sep = sep, add_parents = add_parents)
+  names_of_list <- flatten_names(pif)
 
   #Check the names are unique
   if (!is_variance && length(names_of_list) != length(unique(names_of_list))){
@@ -146,13 +140,13 @@ covariance_structure <- function(pif, sep = "_>_", add_parents = FALSE, is_varia
 
 #' @rdname covariance_structures
 #' @export
-covariance_structure2 <- function(pif1, pif2, sep = "_>_", add_parents = FALSE, parent_name = "Global"){
+covariance_structure2 <- function(pif1, pif2, parent_name = "Global"){
 
   #This is just a hack to apply the same function as before
   together_pif <- pif_ensemble(pif1, pif2, weights = c(0, 0), var_weights = 0, label = parent_name)
 
   is_variance <- identical(pif1, pif2)
-  cov_str     <- covariance_structure(together_pif, sep = sep, add_parents = add_parents, is_variance = is_variance)
+  cov_str     <- covariance_structure(together_pif, is_variance = is_variance)
 
   #Eliminate the one that says global
   remove_name_from_covariance(cov_str, parent_name)
@@ -161,10 +155,10 @@ covariance_structure2 <- function(pif1, pif2, sep = "_>_", add_parents = FALSE, 
 
 #' @rdname covariance_structures
 #' @export
-default_weight_covariance_structure <- function(pif, sep = "_>_", add_parents = FALSE,  is_variance = FALSE) {
+default_weight_covariance_structure <- function(pif, is_variance = FALSE) {
 
   #Get the default covariance structure
-  cov_str  <- covariance_structure(pif, sep = sep, add_parents = add_parents,  is_variance = is_variance)
+  cov_str  <- covariance_structure(pif, is_variance = is_variance)
   npifs    <- length(cov_str)
   cov_str  <- as.list(cov_str)
 
@@ -219,13 +213,13 @@ default_weight_covariance_structure <- function(pif, sep = "_>_", add_parents = 
 
 #' @rdname covariance_structures
 #' @export
-default_weight_covariance_structure2 <- function(pif1, pif2, sep = "_>_", add_parents = FALSE, parent_name = "Global"){
+default_weight_covariance_structure2 <- function(pif1, pif2, parent_name = "Global"){
 
   #This is just a hack to apply the same function as before
   together_pif <- pif_ensemble(pif1, pif2, weights = c(0, 0), var_weights = 0, label = parent_name)
 
   is_variance <- identical(pif1, pif2)
-  cov_str <- default_weight_covariance_structure(together_pif, sep = sep, add_parents = add_parents,  is_variance = is_variance)
+  cov_str <- default_weight_covariance_structure(together_pif, is_variance = is_variance)
 
   #Eliminate the one that says global
   remove_name_from_covariance(cov_str, parent_name)
@@ -234,7 +228,7 @@ default_weight_covariance_structure2 <- function(pif1, pif2, sep = "_>_", add_pa
 
 #' @rdname covariance_structures
 #' @export
-default_parameter_covariance_structure <- function(pif, sep = "_>_", add_parents = FALSE, parameter = "p", is_variance = FALSE) {
+default_parameter_covariance_structure <- function(pif, parameter = "p", is_variance = FALSE) {
 
   if (parameter != "p" && parameter != "beta"){
     cli::cli_abort(
@@ -243,7 +237,7 @@ default_parameter_covariance_structure <- function(pif, sep = "_>_", add_parents
   }
 
   #Get the default covariance structure
-  cov_str  <- covariance_structure(pif, sep = sep, add_parents = add_parents,  is_variance = is_variance)
+  cov_str  <- covariance_structure(pif,  is_variance = is_variance)
   npifs    <- length(cov_str)
 
   #Get the flattened impact fractions
@@ -307,14 +301,14 @@ default_parameter_covariance_structure <- function(pif, sep = "_>_", add_parents
 
 #' @rdname covariance_structures
 #' @export
-default_parameter_covariance_structure2 <- function(pif1, pif2, sep = "_>_", add_parents = FALSE, parameter = "p", parent_name = "Global"){
+default_parameter_covariance_structure2 <- function(pif1, pif2, parameter = "p", parent_name = "Global"){
 
   #This is just a hack to apply the same function as before
   together_pif <- pif_ensemble(pif1, pif2, weights = c(0, 0),
                                var_weights = 0, label = parent_name)
 
   is_variance <- identical(pif1, pif2)
-  cov_str <- default_parameter_covariance_structure(together_pif, sep = sep, add_parents = add_parents, parameter = parameter,
+  cov_str <- default_parameter_covariance_structure(together_pif, parameter = parameter,
                                                     is_variance = is_variance)
 
   #Eliminate the one that says global
@@ -324,10 +318,10 @@ default_parameter_covariance_structure2 <- function(pif1, pif2, sep = "_>_", add
 
 #' @rdname covariance_structures
 #' @export
-default_pif_covariance_structure <- function(pif, sep = "_>_", add_parents = FALSE, is_variance = FALSE) {
+default_pif_covariance_structure <- function(pif,  is_variance = FALSE) {
 
   #Get the default covariance structure
-  cov_str  <- covariance_structure(pif, sep = sep, add_parents = add_parents,  is_variance = is_variance)
+  cov_str  <- covariance_structure(pif, is_variance = is_variance)
   npifs    <- length(cov_str)
 
   #Get the flattened impact fractions
@@ -349,16 +343,14 @@ default_pif_covariance_structure <- function(pif, sep = "_>_", add_parents = FAL
 
 #' @rdname covariance_structures
 #' @export
-default_pif_covariance_structure2 <- function(pif1, pif2, sep = "_>_", add_parents = FALSE, parent_name = "Global"){
+default_pif_covariance_structure2 <- function(pif1, pif2, parent_name = "Global"){
 
-  #FIXME: Loops eternally
   #This is just a hack to apply the same function as before
   together_pif <- pif_ensemble(pif1, pif2, weights = c(0, 0),
                                var_weights = 0, label = parent_name)
 
   is_variance <- identical(pif1, pif2)
-  cov_str <- default_pif_covariance_structure(together_pif, sep = sep, add_parents = add_parents,
-                                                    is_variance = is_variance)
+  cov_str <- default_pif_covariance_structure(together_pif, is_variance = is_variance)
 
   #Eliminate the one that says global
   remove_name_from_covariance(cov_str, parent_name)
@@ -367,11 +359,11 @@ default_pif_covariance_structure2 <- function(pif1, pif2, sep = "_>_", add_paren
 
 #' @rdname covariance_structures
 #' @export
-default_weight_pif_covariance_structure <- function(pif, sep = "_>_", add_parents = FALSE, is_variance = FALSE) {
+default_weight_pif_covariance_structure <- function(pif, is_variance = FALSE) {
 
 
   #Get the default covariance structure
-  cov_str  <- covariance_structure(pif, sep = sep, add_parents = add_parents,  is_variance = is_variance)
+  cov_str  <- covariance_structure(pif,  is_variance = is_variance)
   npifs    <- length(cov_str)
 
   #Get the flattened impact fractions
@@ -395,14 +387,14 @@ default_weight_pif_covariance_structure <- function(pif, sep = "_>_", add_parent
 
 #' @rdname covariance_structures
 #' @export
-default_weight_pif_covariance_structure2 <- function(pif1, pif2, sep = "_>_", add_parents = FALSE, parent_name = "Global"){
+default_weight_pif_covariance_structure2 <- function(pif1, pif2, parent_name = "Global"){
 
   #This is just a hack to apply the same function as before
   together_pif <- pif_ensemble(pif1, pif2, weights = c(0, 0),
                                var_weights = 0, label = parent_name)
 
   is_variance <- identical(pif1, pif2)
-  cov_str <- default_weight_pif_covariance_structure(together_pif, sep = sep, add_parents = add_parents,
+  cov_str <- default_weight_pif_covariance_structure(together_pif,
                                               is_variance = is_variance)
 
   #Eliminate the one that says global

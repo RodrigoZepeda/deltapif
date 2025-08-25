@@ -55,6 +55,6 @@ where \eqn{\widehat{\textrm{PIF}}_{1,:} = (\widehat{\textrm{PIF}}_{1,1},
 }
 
 \seealso{
-\code{\link[=cov_ensemble_weight]{cov_ensemble_weight()}}, \code{\link[=cov_atomic_pif]{cov_atomic_pif()}}
+\code{\link[=cov_ensemble_weights]{cov_ensemble_weights()}}, \code{\link[=cov_atomic_pif]{cov_atomic_pif()}}
 }
 \keyword{internal}

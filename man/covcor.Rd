@@ -9,21 +9,13 @@
 \title{Covariance matrix, correlation matrix, variance and standard deviation
 for potential impact fractions}
 \usage{
-covariance(x, ..., var_p = NULL, var_beta = NULL, quiet = FALSE)
+covariance(x, ..., var_p = NULL, var_beta = NULL)
 
 variance(x, ...)
 
 standard_deviation(x, ...)
 
-correlation(
-  x,
-  ...,
-  var_p = NULL,
-  var_beta = NULL,
-  uncorrelated_p = "guess",
-  uncorrelated_beta = "guess",
-  quiet = FALSE
-)
+correlation(x, ..., var_p = NULL, var_beta = NULL)
 }
 \arguments{
 \item{x}{A potential impact fraction}
@@ -36,18 +28,6 @@ the ones included in \code{...}.}
 
 \item{var_beta}{covariance matrix for the parameter \code{beta} in all \code{pif1}
 and the ones included in \code{...}.}
-
-\item{quiet}{Whether to throw warnings and other messages}
-
-\item{uncorrelated_p}{If all the pifs share the same prevalence data. Either
-\code{TRUE}, \code{FALSE}, \code{guess} (default) or a matrix. If a matrix is given then
-\code{uncorrelated_p[i,j] = 1} if the i-th and j-th pifs share the same prevalence data
-\code{uncorrelated_p[i,j] = 0} if the i-th and j-th pifs don't share the same prevalence data.}
-
-\item{uncorrelated_beta}{If all the pifs share the same \code{beta} parameter. Either
-\code{TRUE}, \code{FALSE} or \code{guess} (default) or a matrix. If a matrix is given then
-\code{uncorrelated_beta[i,j] = 1} if the i-th and j-th pifs share the same relative risk parameters
-\code{uncorrelated_beta[i,j] = 0} if the i-th and j-th pifs don't share the same relative risk parameters.}
 }
 \description{
 Computes the covariance (\code{covariance}) or correlation (\code{correlation}) for multiple
@@ -56,7 +36,8 @@ potential impact fractions and the variance \code{variance} and standard deviati
 }
 \examples{
 # Get the approximate link_variance of a pif object
-my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1, var_beta = 0.2)
+my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3,
+              var_p = 0.1, var_beta = 0.2)
 variance(my_pif)
 
 # This is the same as link_covariance with just 1 pIF
@@ -68,10 +49,10 @@ var_beta <- 0.1
 pif1 <- pif(0.5, 0.2, beta, var_p = 0.5 * (1 - 0.5) / 100, var_beta = var_beta)
 pif2 <- pif(0.3, 0.1, beta, var_p = 0.3 * (1 - 0.3) / 100, var_beta = var_beta)
 pif3 <- pif(0.7, 0.3, beta, var_p = 0.7 * (1 - 0.7) / 100, var_beta = var_beta)
-covariance(pif1, pif2, pif3, uncorrelated_beta = FALSE)
+covariance(pif1, pif2, pif3)
 
 # The link_covariance between a pif and itself only has the link_variance as entries
-covariance(pif1, pif1, uncorrelated_beta = FALSE, uncorrelated_p = FALSE)
+covariance(pif1, pif1)
 
 # Or if there is a link_covariance structure between different betas you can specify with
 # var_beta in the link_covariance
@@ -89,5 +70,5 @@ pif3 <- pif(0.3, 0.1, betas[3], var_p = 0.3 * (1 - 0.3) / 100, var_beta = var_be
 covariance(pif1, pif2, pif3, var_beta = var_beta)
 
 # Compute the correlation
-correlation(pif1, pif2, pif3, var_beta = var_beta, quiet = TRUE)
+correlation(pif1, pif2, pif3, var_beta = var_beta)
 }
