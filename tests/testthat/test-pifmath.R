@@ -7,7 +7,7 @@ test_that("pif and paf compute to known values", {
   p      <- c(0.4, 0.2)
   rr     <- c(1.2, 1.5)
   expect_equal(
-    coef(paf(p = p, beta = rr, quiet = TRUE)),
+    coef(paf(p = p, beta = rr, quiet = TRUE, rr_link = "identity")),
     1 - 1/(p[1]*rr[1] + p[2]*rr[2] + (1 - sum(p))) # 1 - 1 / E[RR] where E[RR] = p_0*1 + p_1+rr_1 + ... + p_n rr_n
   )
 
@@ -16,14 +16,14 @@ test_that("pif and paf compute to known values", {
   rr     <- c(1.2, 1.5)
   p_cft  <- c(0.5, 0.1)
   expect_equal(
-    coef(pif(p = p, p_cft = p_cft, beta = rr, quiet = TRUE)),
+    coef(pif(p = p, p_cft = p_cft, beta = rr, quiet = TRUE, rr_link = "identity")),
     1 - (p_cft[1]*rr[1] + p_cft[2]*rr[2] + (1 - sum(p_cft)))/(p[1]*rr[1] + p[2]*rr[2] + (1 - sum(p))) # 1 - 1 / E[RR] where E[RR] = p_0*1 + p_1+rr_1 + ... + p_n rr_n
   )
 
   #Expect the pif to be equal to the paf when p_cft = 0
   expect_equal(
-    paf(p = p, beta = rr, quiet = TRUE, label = "0"),
-    pif(p = p, p_cft = c(0.0, 0.0), beta = rr, quiet = TRUE, type = "PAF", label = "0")
+    paf(p = p, beta = rr, quiet = TRUE, label = "0", rr_link = "identity"),
+    pif(p = p, p_cft = c(0.0, 0.0), beta = rr, quiet = TRUE, type = "PAF", label = "0", rr_link = "identity")
   )
 
   #Expect that adding specification for rr = 1 does not change values
@@ -31,8 +31,8 @@ test_that("pif and paf compute to known values", {
   rr2     <- c(1.0, 1.2, 1.5)
   p_cft2  <- c(0.4, 0.5, 0.1)
   expect_equal(
-    coef(pif(p = p, p_cft = p_cft, beta = rr, quiet = TRUE)),
-    coef(pif(p = p2, p_cft = p_cft2, beta = rr2, quiet = TRUE))
+    coef(pif(p = p, p_cft = p_cft, beta = rr, quiet = TRUE, rr_link = "identity")),
+    coef(pif(p = p2, p_cft = p_cft2, beta = rr2, quiet = TRUE, rr_link = "identity"))
   )
 
   #Removing the reference category should not change anything
@@ -40,7 +40,7 @@ test_that("pif and paf compute to known values", {
   rr     <- c(1, 0.3)
   p_cft  <- c(0.0, 1.0)
   expect_equal(
-    coef(pif(p = p, p_cft = p_cft, beta = rr, quiet = TRUE)),
+    coef(pif(p = p, p_cft = p_cft, beta = rr, quiet = TRUE, rr_link = "identity")),
     1 - (0.3 / (0.8*1 + 0.2*0.3))
   )
 
@@ -52,8 +52,8 @@ test_that("pif and paf compute to known values", {
   p_cft2 <- c(1 - sum(p_cft), p_cft[1])
   p2     <- c(1 - sum(p), p[1])
   expect_equal(
-    coef(pif(p = p, p_cft = p_cft, beta = rr, quiet = TRUE)),
-    coef(pif(p = p2, p_cft = p_cft2, beta = rr2, quiet = TRUE))
+    coef(pif(p = p, p_cft = p_cft, beta = rr, quiet = TRUE, rr_link = "identity")),
+    coef(pif(p = p2, p_cft = p_cft2, beta = rr2, quiet = TRUE, rr_link = "identity"))
   )
 
   #Variance computation
@@ -158,8 +158,8 @@ test_that("nothing changes when constructing a pif object", {
 
 test_that("covariance calculations", {
 
-  pif1 <- pif(p = 0.52, p_cft = 0.1, beta = 1.4, var_p = 0, var_beta = 0.1)
-  pif2 <- pif(p = 0.55, p_cft = 0.12, beta = 1.3, var_p = 0, var_beta = 0.2)
+  pif1 <- pif(p = 0.52, p_cft = 0.1, beta = 1.4, var_p = 0, var_beta = 0.1, rr_link = "identity")
+  pif2 <- pif(p = 0.55, p_cft = 0.12, beta = 1.3, var_p = 0, var_beta = 0.2, rr_link = "identity")
 
   #For the covariance by hand
   beta_1 <- deriv_pif_beta(0.52, 0.1, 1.4, 1)

@@ -29,7 +29,8 @@
 #' \deqn{
 #' \textrm{PIF} =
 #'  \dfrac{
-#'    \sum\limits_{i=1}^N p_i \text{RR}_i - \sum\limits_{i=1}^N p_i^{\text{cft}} \text{RR}_i
+#'    \sum\limits_{i=1}^N p_i \text{RR}_i -
+#'    \sum\limits_{i=1}^N p_i^{\text{cft}} \text{RR}_i
 #'   }{
 #'    \sum\limits_{i=1}^N p_i \text{RR}_i
 #'   }, \quad \text{ and } \quad
@@ -41,8 +42,8 @@
 #'   }
 #' }
 #'
-#' in the case of `N` exposure categories which is equivalent to Levine's formula
-#' when there is only `1` exposure category:
+#' in the case of `N` exposure categories which is equivalent to Levine's
+#' formula when there is only `1` exposure category:
 #'
 #' \deqn{
 #' \textrm{PIF} =
@@ -60,55 +61,102 @@
 #'   }
 #' }
 #'
-#' @section Link functions for the PIF:
-#'
-#' By default the `pif` and `paf` calculations use the `log-complement` link
-#' which guarantees the impact fractions' intervals have valid values (between -oo and 1).
-#' Depending on the application the following link functions are also implemented:
-#'
-#' \describe{
-#'   \item{log-complement}{To achieve fractions between (-Inf, 1). This is the function `f(x) = ln(1 - x)` with inverse `finv(x) = 1 - exp(x)`}
-#'   \item{logit}{To achieve strictly positive fractions in (0,1). This is the function `f(x) = ln(x / (1 - x))` with inverse `finv(x) = 1 / (1 + exp(-x))`}
-#'   \item{identity}{An approximation for not-so-extreme fractions. This is the function `f(x) = x`.with inverse `finv(x) = x`}
-#'   \item{hawkins}{Hawkins' fraction for controlling variance. This is the function `f(x) = ln(x + sqrt(x^2 + 1))` with inverse `finv(x) = 0.5 * exp(-x) * (exp(2 * x) - 1)`}
-#' }
-#'
-#' In general, `logit` should be preferred if it is known and certain that the fractions
-#' can only be positive (i.e. when all relative risks (including CIs) are > 1 and
-#' prevalence > 0 and there is an epidemiological / biological explanation).
-#'
-#' Mathematically the variance that is calculated is
+#' The construction of confidence intervals is done via a link function. Its
+#' variance is given by:
 #'
 #' \deqn{
-#' \sigma_f^2 = \text{Var}\Big[ f(\textrm{PIF}) \Big]
+#' \sigma_f^2 = \text{Var}\Big[ f(\textrm{PIF}) \Big] \approx
+#' \Big(f'(\textrm{PIF})\Big)^2 \text{Var}\Big[ \textrm{PIF} \Big]
 #' }
 #' and the intervals are constructed as:
-#'
 #' \deqn{
 #' \text{CI} = f^{-1}\Big(  f(\textrm{PIF})  \pm Z_{\alpha/2} \cdot \sigma_f \Big)
 #' }
 #'
-#' Custom link functions can be implemented as long as they are invertible
-#' in the range of interest by providing the function `link`,
-#' its inverse `link_inv` and its derivative `link_deriv`. If no derivative
-#' is provided the package does an attempt to estimate it symbolically
-#' using [Deriv::Deriv()] however there is no guarantee that this
-#' will work non-standard functions (i.e. not logarithm / trigonometric /
+#' the function \eqn{f} is called the link function for the PIF, \eqn{f^{-1}}
+#' represents its inverse, and \eqn{f'} its derivative.
+#'
+#' @section Link functions for the PIF:
+#'
+#' By default the `pif` and `paf` calculations use the `log-complement` link
+#' which guarantees the impact fractions' intervals have valid values
+#' (between \code{-Inf} and `1`).
+#'
+#' Depending on the application the following link functions are also
+#' implemented:
+#'
+#' \describe{
+#'   \item{log-complement}{To achieve fractions between `-Inf` and `1`. This is
+#'      the function `f(x) = ln(1 - x)` with inverse `finv(x) = 1 - exp(x)`}
+#'   \item{logit}{To achieve strictly positive fractions between `0` and `1`.
+#'      This is the function `f(x) = ln(x / (1 - x))` with inverse
+#'      `finv(x) = 1 / (1 + exp(-x))`}
+#'   \item{identity}{An approximation for fractions that does not guarantee
+#'      confidence intervals in valid regions. This is the function
+#'      `f(x) = x`.with inverse `finv(x) = x`}
+#'   \item{hawkins}{Hawkins' fraction for controlling the variance. This is the
+#'      function `f(x) = ln(x + sqrt(x^2 + 1))` with inverse
+#'      `finv(x) = 0.5 * exp(-x) * (exp(2 * x) - 1)`}
+#'   \item{custom}{User specified (see below).}
+#' }
+#'
+#' In general, `logit` should be preferred if it is known and certain that the
+#' fractions can only be positive (i.e. when all relative risks (including CIs)
+#' are > 1 and prevalence > 0 and there is an epidemiological / biological
+#' justification).
+#'
+#' **Custom link** functions can be implemented as long as they are invertible
+#' in the range of interest by providing:
+#' \describe{
+#'   \item{link}{The function}
+#'   \item{link_inv}{The inverse function of `link`}
+#'   \item{link_deriv}{The derivative of `link`}
+#' }
+#' If no derivative is provided the package attempts to estimate it
+#' symbolically using [Deriv::Deriv()] however there is no guarantee that this
+#' will work for non-standard functions (i.e. not logarithm / trigonometric /
 #' exponential)
+#'
+#' As an example considering implementing a square root custom link:
+#'
+#' ```{r custom_link, eval = FALSE}
+#' # The link is square root
+#' link      <- sqrt
+#'
+#' # Inverse of sqrt(x) is x^2
+#' link_inv  <- function(x) x^2
+#'
+#' # The derivative of sqrt(x) is 1/(2 * sqrt(x))
+#' link_deriv <- function(pif) 1 / (2 * sqrt(pif))
+#'
+#' # Then the pif can be calculated as:
+#' pif(p = 0.499, beta = 1.6, p_cft = 0.499/2, var_p = 0.1, var_beta = 0.2,
+#'      link = link, link_inv = link_inv, link_deriv = link_deriv)
+#' ```
 #'
 #' @section Link functions for beta:
 #'
-#' By default the `pif` and `paf` use the `identity` link which means that
-#' the values for `beta` are the relative risks directly and the
-#' variance `var_beta` corresponds to the relative risk's variance. Depending
-#' on the relative risk's source the following options are available:
+#' By default the `pif` and `paf` use the `exponential` link which means that
+#' the values for `beta` are the log-relative risks and the
+#' variance `var_beta` corresponds to the log-relative risk's variance.
+#' Depending on the relative risk's source the following options are available:
 #'
 #' \describe{
-#'   \item{identity}{An approximation for not-so-extreme fractions. This is the function `f(beta) = beta`.with inverse `finv(rr) = rr = beta`}
-#'   \item{exponential}{The exponential function `f(beta) = exp(beta)` with inverse `finv(rr) = log(rr) = beta`}
+#'   \item{exponential}{For when the relative risks correspond to the
+#'          exponential of another parameter, usually called `beta`. This is
+#'          the exponential function `f(beta) = exp(beta)` with inverse
+#'          `finv(rr) = log(rr) = beta`}
+#'   \item{identity}{For when the relative risk and their variance are
+#'          reported directly. This is the function `f(beta) = beta`
+#'          with inverse `finv(rr) = rr = beta`}
+#'   \item{custom}{User specified (see below).}
 #' }
 #'
-#' As in the previous section, custom link functions can be implemented
+#' **Note** that in most cases including contingency tables, Poisson and
+#' Logistic regressions, and Cox Proportional Hazards, the relative risks are
+#' estimated by exponentiating a parameter.
+#'
+#' As in the previous section, custom link functions for beta can be implemented
 #' as long as they are invertible in the range of interest by providing the
 #' function `rr_link` and its derivative `rr_link_deriv`. If no derivative
 #' is provided the package does an attempt to estimate it symbolically
@@ -125,6 +173,8 @@
 #' the population attributable fraction.
 #'
 #' @examples
+#' #EXAMPLE 1: ONE EXPOSURE CATEGORY (CLASSIC LEVIN)
+#' #---------------------------------------------------------------------------
 #' # This example comes from Levin 1953
 #' # Relative risk of lung cancer given smoking was 3.6
 #' # Proportion of individuals smoking where 49.9%
@@ -146,16 +196,49 @@
 #' pif(p = 0.499, beta = 1.6, p_cft = 0.499/2, var_p = 0.001,
 #'     var_beta = 1, link = "logit", quiet = TRUE)
 #'
+#' #EXAMPLE 2: MULTIPLE EXPOSURE CATEGORIES
+#' #---------------------------------------------------------------------------
+#' #In "Excess Deaths Associated With Underweight, Overweight, and Obesity"
+#' #the PAF of mortality associated to different BMI levels is calculated
+#'
+#' #These are the relative risks for age-group 25-59 for each BMI level:
+#' rr <- c("<18.5" = 1.38, "25 to <30" = 0.83 ,
+#'         "30 to <35" = 1.20, ">=35" = 1.83)
+#'
+#' #While the prevalences are:
+#' p <- c("<18.5" = 1.9, "25 to <30" = 34.8,
+#'         "30 to <35" = 17.3, ">=35" = 13.3) / 100
+#'
+#' #The variance of the relative risk is obtained from the CIs:
+#' var_log_rr <- c("<18.5" = 0.2653156, "25 to <30" =  0.1247604,
+#'                 "30 to <35" = 0.1828293, ">=35" = 0.1847374)^2
+#'
+#' #Note that we are omitting the group "18.5 to < 25" as it is the
+#' #reference (RR = 1)
+#' paf(p = p, beta = rr, var_beta = var_log_rr, var_p = 0, quiet = TRUE,
+#'     link = "logit")
+#'
+#' #We can compute a potential impact fraction of, for example, reducing the
+#' #amount of people over 35 to 0 and having them in the "30 to <35":
+#' p_cft <- c("<18.5" = 1.9, "25 to <30" = 34.8,
+#'             "30 to <35" = 17.3 + 13.3, ">=35" = 0) / 100
+#'
+#' #The potential impact fraction is as follows:
+#' pif(p = p, p_cft = p_cft, beta = rr, link = "logit",
+#'   var_beta = var_log_rr, var_p = 0, quiet = TRUE)
+#'
 #' @name pifpaf
+#' @seealso [pif_total()], [pif_ensemble()], [paf_total()], [paf_ensemble()],
+#' @md
 NULL
 
-#' Population attributable fraction
+#' Population Attributable Fraction
 #' @rdname pifpaf
 #' @export
 paf <- function(p, beta,
                 var_p = NULL,
                 var_beta = NULL,
-                rr_link = "identity",
+                rr_link = "exponential",
                 rr_link_deriv = NULL,
                 link = "log-complement",
                 link_inv = NULL,
@@ -180,7 +263,7 @@ pif <- function(p,
                 beta,
                 var_p       = NULL,
                 var_beta    = NULL,
-                rr_link       = "identity",
+                rr_link       = "exponential",
                 rr_link_deriv = NULL,
                 link          = "log-complement",
                 link_inv      = NULL,
@@ -201,6 +284,15 @@ pif <- function(p,
         )
       )
     }
+  }
+
+  #Check that I am not taking a covariance matrix for var_p and var_beta
+  if (S7::S7_inherits(var_p, covariance_structure_class)){
+    var_p <- as.matrix(var_p)
+  }
+
+  if (S7::S7_inherits(var_beta, covariance_structure_class)){
+    var_beta <- as.matrix(var_beta)
   }
 
   # Check that is link is given as character then link inv and link_deriv are not specified
@@ -270,8 +362,15 @@ pif <- function(p,
   # If vectors provided then transform to approximate matrices
   upper_bound_p <- FALSE
   if (is.vector(var_p) && length(var_p) > 1) {
-    upper_bound_p <- TRUE
-    var_p <- var_p %*% t(var_p)
+    #upper_bound_p <- TRUE
+    var_p_mat <- matrix(0, ncol = length(var_p), nrow = length(var_p))
+    for (i in 1:(nrow(var_p_mat) - 1)){
+      for (j in (i + 1):ncol(var_p_mat)){
+        var_p_mat[i,j] <- sqrt(var_p[i]*var_p[j])
+        var_p_mat[j,i] <- var_p_mat[i,j]
+      }
+    }
+    var_p <- var_p_mat + diag(var_p)
     if (!quiet){
       cli::cli_warn(
         paste0(
@@ -285,8 +384,15 @@ pif <- function(p,
 
   upper_bound_beta <- FALSE
   if (is.vector(var_beta) && length(var_beta) > 1) {
-    upper_bound_beta <- TRUE
-    var_beta <- var_beta %*% t(var_beta)
+    #upper_bound_beta <- TRUE
+    var_beta_mat <- matrix(0, ncol = length(var_beta), nrow = length(var_beta))
+    for (i in 1:(nrow(var_beta_mat) - 1)){
+      for (j in (i+1):ncol(var_beta_mat)){
+        var_beta_mat[i,j] <- sqrt(var_beta[i]*var_beta[j])
+        var_beta_mat[j,i] <- var_beta_mat[i,j]
+      }
+    }
+    var_beta <- var_beta_mat + diag(var_beta)
     if (!quiet){
       cli::cli_warn(
         paste0(

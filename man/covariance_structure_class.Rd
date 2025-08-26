@@ -7,8 +7,8 @@
 covariance_structure_class(cov_list = list())
 }
 \arguments{
-\item{cov_list}{List such that \code{list[[i]][[j]]} represents the covariance
-between elements of the i-th potential impact fraction
+\item{cov_list}{Named list such that \code{list[[i]][[j]]} represents the
+covariance between elements of the i-th potential impact fraction
 and the j-th potential impact fraction.}
 }
 \description{
@@ -16,4 +16,47 @@ The covariance structure class represents a collection of
 matrices and 0's such that \code{cov[[i]][[j]]} contains the
 covariance of elements of the i-th potential impact fraction
 and the j-th potential impact fraction.
+}
+\examples{
+#A simple covariance structure
+cov <- covariance_structure_class(
+  list(
+    "pif1" = list("pif1" = 0.21, "pif2" = 0.12, "pif3" = 0.31),
+    "pif2" = list("pif1" = 0.12, "pif2" = 0.33, "pif3" = -0.01),
+    "pif3" = list("pif1" = 0.31, "pif2" = -0.01, "pif3" = 0.80)
+  )
+)
+cov
+
+#Values can be extracted as in matrices
+cov[[1]][[3]]
+cov[["pif1"]][["pif1"]]
+
+#And assignment also works
+cov[[1]][[3]] <- 100
+cov[["pif1"]][["pif1"]] <- 500
+cov
+
+#Covariance structures are designed to contain the covariance between
+#numbers or vectors (or between numbers and vectors). Hence they can
+#contain matrices or vectors too:
+mat <- matrix(c(0.1, 0.21, 0.47, -0.3), ncol = 2)
+vec <- c(0.22, -0.9, 0.01)
+
+cov2 <- covariance_structure_class(
+  list(
+    "pif1" = list("pif1" = 0.21, "pif2" = mat, "pif3" = 0.31),
+    "pif2" = list("pif1" = mat, "pif2" = 0.33, "pif3" = vec),
+    "pif3" = list("pif1" = 0.31, "pif2" = vec, "pif3" = 0.80)
+  )
+)
+cov2
+cov2[["pif1"]][["pif2"]]
+
+
+}
+\seealso{
+\code{\link[=as_covariance_structure]{as_covariance_structure()}} to transform matrices to covariance
+structures and \code{\link[=covariance_structures]{covariance_structures()}} for default covariance
+structures
 }

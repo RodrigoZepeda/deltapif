@@ -54,6 +54,8 @@ test_that("pif handles variance inputs correctly", {
   expect_silent(pif(p = 0.5, p_cft = 0.2, beta = 1.5, quiet = TRUE))
   expect_message(pif(p = 0.5, p_cft = 0.2, beta = 1.5, var_p = 0), "have no variance")
   expect_message(pif(p = 0.5, p_cft = 0.2, beta = 1.5, var_beta = 0), "have no variance")
+
+  #This has a suppressmessages as the expect message doens't capture both messages for some reason
   suppressMessages(
     expect_message(pif(p = 0.5, p_cft = 0.2, beta = 1.5), "have no variance")
   )
@@ -75,12 +77,12 @@ test_that("pif handles variance inputs correctly", {
   )
 
   # Invalid variance matrices
-  expect_error(
+  expect_message(
     pif(p = c(0.3, 0.7), p_cft = c(0.2, 0.8), beta = c(1.5, 2.0),
         var_p = matrix(1:4, nrow = 2), quiet = TRUE),
     "is not symmetric"
   )
-  expect_error(
+  expect_message(
     pif(p = c(0.3, 0.7), p_cft = c(0.2, 0.8), beta = c(1.5, 2.0),
         var_beta = matrix(1:4, nrow = 2), quiet = TRUE),
     "is not symmetric"
@@ -114,8 +116,11 @@ test_that("pif handles link functions correctly", {
 
 test_that("pif handles rr_link functions correctly", {
   # Default identity link
-  result <- pif(p = 0.5, p_cft = 0.2, beta = 1.5, quiet = TRUE)
+  result <- pif(p = 0.5, p_cft = 0.2, beta = 1.5, quiet = TRUE, rr_link = "identity")
   expect_equal(result@rr_link, identity)
+
+  result <- pif(p = 0.5, p_cft = 0.2, beta = 1.5, quiet = TRUE, rr_link = "exp")
+  expect_equal(result@rr_link, exp)
 
   # Custom function links
   custom_rr_link <- function(x) exp(x)
@@ -152,3 +157,65 @@ test_that("pif handles quiet parameter correctly", {
     pif(p = 0.5, p_cft = 0.2, beta = 1.5, var_p = NULL, quiet = TRUE)
   )
 })
+
+test_that("pif works for var_p options",{
+  expect_equal(
+    pif(p = 0.5, p_cft = 0.2, beta = 1.5,
+        var_p = as_covariance_structure(matrix(0.21)), var_beta = NULL, quiet = TRUE,
+        label = "pif"),
+    pif(p = 0.5, p_cft = 0.2, beta = 1.5,
+        var_p = matrix(0.21), var_beta = NULL, quiet = TRUE, label = "pif")
+  )
+
+  expect_equal(
+    pif(p = 0.5, p_cft = 0.2, beta = 1.5,
+        var_p = NULL, var_beta = as_covariance_structure(matrix(0.21)), quiet = TRUE,
+        label = "pif"),
+    pif(p = 0.5, p_cft = 0.2, beta = 1.5,
+        var_p = NULL, var_beta = as_covariance_structure(matrix(0.21)), quiet = TRUE, label = "pif")
+  )
+
+  expect_equal(
+    pif(p = c(0.5, 0.3), p_cft = c(0.2, 0.2), beta = c(1.5, 1.8),
+        var_p = NULL, var_beta = matrix(0, ncol = 2, nrow = 2), quiet = TRUE,
+        label = "pif"),
+    pif(p = c(0.5, 0.3), p_cft = c(0.2, 0.2), beta = c(1.5, 1.8),
+        var_p = NULL, var_beta = 0, quiet = TRUE, label = "pif")
+  )
+
+  expect_equal(
+    pif(p = c(0.5, 0.3), p_cft = c(0.2, 0.2), beta = c(1.5, 1.8),
+        var_beta = NULL, var_p = matrix(0, ncol = 2, nrow = 2), quiet = TRUE,
+        label = "pif"),
+    pif(p = c(0.5, 0.3), p_cft = c(0.2, 0.2), beta = c(1.5, 1.8),
+        var_beta = NULL, var_p = 0, quiet = TRUE, label = "pif")
+  )
+
+  expect_equal(
+    pif(p = c(0.5, 0.3), p_cft = c(0.2, 0.2), beta = c(1.5, 1.8),
+        var_p = NULL, var_beta = matrix(0, ncol = 2, nrow = 2), quiet = TRUE,
+        label = "pif"),
+    pif(p = c(0.5, 0.3), p_cft = c(0.2, 0.2), beta = c(1.5, 1.8),
+        var_p = NULL, var_beta = c(0, 0), quiet = TRUE, label = "pif")
+  )
+
+  expect_equal(
+    pif(p = c(0.5, 0.3), p_cft = c(0.2, 0.2), beta = c(1.5, 1.8),
+        var_beta = NULL, var_p = matrix(0, ncol = 2, nrow = 2), quiet = TRUE,
+        label = "pif"),
+    pif(p = c(0.5, 0.3), p_cft = c(0.2, 0.2), beta = c(1.5, 1.8),
+        var_beta = NULL, var_p = c(0, 0), quiet = TRUE, label = "pif")
+  )
+
+  var_p <- c(0.1, 0.3)
+  expect_equal(
+    pif(p = c(0.5, 0.3), p_cft = c(0.2, 0.2), beta = c(1.5, 1.8),
+        var_beta = NULL, var_p = var_p, quiet = TRUE,
+        label = "pif"),
+    pif(p = c(0.5, 0.3), p_cft = c(0.2, 0.2), beta = c(1.5, 1.8),
+        var_beta = NULL, var_p = sqrt(var_p %*% t(var_p)),
+        quiet = TRUE, label = "pif")
+  )
+
+})
+

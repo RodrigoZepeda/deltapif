@@ -12,3 +12,4 @@ logo
 ^pkgdown$
 ^data-raw$
 ^codecov\.yml$
+^dev$

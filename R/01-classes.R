@@ -390,7 +390,7 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
 
      # Check the matrices are positive definite
      if (is.matrix(self@var_beta) && !isSymmetric(self@var_beta, trans = "T")) {
-       cli::cli_abort(
+       cli::cli_alert_warning(
          paste0(
             "Matrix {.code var_beta} is not symmetric. ",
             "Entry in row i and column j must be equal ",
@@ -401,7 +401,7 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
 
      # Check the matrices are positive definite
      if (is.matrix(self@var_p) && !isSymmetric(self@var_p, trans = "T")) {
-       cli::cli_abort(
+       cli::cli_alert_warning(
          paste0(
            "Matrix {.code var_p} is not symmetric. ",
            "Entry in row i and column j must be equal ",

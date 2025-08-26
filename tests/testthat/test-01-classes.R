@@ -146,25 +146,27 @@ test_that("pif_atomic_class construction and validation works", {
   )
 
   # Invalid variance matrices
-  expect_error(
-    pif_atomic_class(
-      p = c(0.3, 0.7),
-      p_cft = c(0.2, 0.8),
-      beta = c(0.5, 1.0),
-      var_p = matrix(c(0.01, 0.005, 0.005), nrow = 1), # Wrong dim
-      var_beta = matrix(c(0.02, 0.01, 0.01, 0.02), nrow = 2),
-      rr_link = function(x) exp(x),
-      rr_link_deriv = function(x) exp(x),
-      link = identity,
-      link_deriv = function(x) 1,
-      link_inv = identity,
-      conf_level = 0.95,
-      type = "PIF",
-      upper_bound_p = FALSE,
-      upper_bound_beta = FALSE,
-      label = "symmetry"
-    ),
-    "is not symmetric"
+  suppressMessages(
+    expect_error(
+      pif_atomic_class(
+        p = c(0.3, 0.7),
+        p_cft = c(0.2, 0.8),
+        beta = c(0.5, 1.0),
+        var_p = matrix(c(0.01, 0.005, 0.005), nrow = 1), # Wrong dim
+        var_beta = matrix(c(0.02, 0.01, 0.01, 0.02), nrow = 2),
+        rr_link = function(x) exp(x),
+        rr_link_deriv = function(x) exp(x),
+        link = identity,
+        link_deriv = function(x) 1,
+        link_inv = identity,
+        conf_level = 0.95,
+        type = "PIF",
+        upper_bound_p = FALSE,
+        upper_bound_beta = FALSE,
+        label = "symmetry"
+      ),
+      "length"
+    )
   )
 
   # Test property access

@@ -21,7 +21,8 @@ print_pif_class <- function(x, accuracy){
   pif_val <- scales::percent(x@pif, accuracy = accuracy)
   cilow   <- scales::percent(x@ci[1], accuracy = accuracy)
   cihigh  <- scales::percent(x@ci[2], accuracy = accuracy)
-  title   <- ifelse(x@type == "PIF", "Potential Impact Fraction", "Population Attributable Fraction")
+  title   <- ifelse(x@type == "PIF", "Potential Impact Fraction",
+                    "Population Attributable Fraction")
 
   cli::cli_h3("{title}: {.val {x@label}}")
   cli::cli_text(
@@ -749,7 +750,3 @@ as_covariance_structure <- function(x, col_names = NULL, row_names = NULL, ...) 
 
   covariance_structure_class(cov_list = row_list)
 }
-
-
-
-
