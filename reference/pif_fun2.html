@@ -13,7 +13,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">deltapif</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,7 +65,44 @@
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A potential impact fraction (numeric)</p>
     </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="mu_cft_fun.html">mu_cft_fun()</a></code>, <code><a href="mu_obs_fun.html">mu_obs_fun()</a></code>, and <code><a href="pif_fun.html">pif_fun()</a></code> to calculate from
+the prevalence and relative risks. For the main function in the package
+see <code><a href="pifpaf.html">pif()</a></code></p></div>
+    </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co">#This example comes from Levin 1953</span></span></span>
+<span class="r-in"><span><span class="co">#Relative risk of lung cancer given smoking was 3.6</span></span></span>
+<span class="r-in"><span><span class="co">#Proportion of individuals smoking where 49.9%</span></span></span>
+<span class="r-in"><span><span class="co">#Counterfactual is 0% smoking</span></span></span>
+<span class="r-in"><span><span class="va">mu_obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="mu_obs_fun.html">mu_obs_fun</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.499</span>, rr <span class="op">=</span> <span class="fl">3.6</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mu_cft</span> <span class="op">&lt;-</span> <span class="fu"><a href="mu_cft_fun.html">mu_cft_fun</a></span><span class="op">(</span>p_cft <span class="op">=</span> <span class="fl">0.0</span>, rr <span class="op">=</span> <span class="fl">3.6</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">pif_fun2</span><span class="op">(</span><span class="va">mu_obs</span>, <span class="va">mu_cft</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#You can also use multiple exposure categories. As an example</span></span></span>
+<span class="r-in"><span><span class="co">#These are the relative risks for age-group 25-59 for each BMI level:</span></span></span>
+<span class="r-in"><span><span class="va">rr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&lt;18.5"</span> <span class="op">=</span> <span class="fl">1.38</span>, <span class="st">"25 to &lt;30"</span> <span class="op">=</span> <span class="fl">0.83</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"30 to &lt;35"</span> <span class="op">=</span> <span class="fl">1.20</span>, <span class="st">"&gt;=35"</span> <span class="op">=</span> <span class="fl">1.83</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#While the prevalences are:</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&lt;18.5"</span> <span class="op">=</span> <span class="fl">1.9</span>, <span class="st">"25 to &lt;30"</span> <span class="op">=</span> <span class="fl">34.8</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"30 to &lt;35"</span> <span class="op">=</span> <span class="fl">17.3</span>, <span class="st">"&gt;=35"</span> <span class="op">=</span> <span class="fl">13.3</span><span class="op">)</span> <span class="op">/</span> <span class="fl">100</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#A counterfactual of reducing the prevalence of &gt;=35 by half and</span></span></span>
+<span class="r-in"><span><span class="co">#having them be on the "30 to &lt;35" category instead</span></span></span>
+<span class="r-in"><span><span class="va">p_cft</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&lt;18.5"</span> <span class="op">=</span> <span class="fl">1.9</span>, <span class="st">"25 to &lt;30"</span> <span class="op">=</span> <span class="fl">34.8</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"30 to &lt;35"</span> <span class="op">=</span> <span class="fl">17.3</span> <span class="op">+</span> <span class="fl">13.3</span><span class="op">/</span><span class="fl">2</span>, <span class="st">"&gt;=35"</span> <span class="op">=</span> <span class="fl">13.3</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span> <span class="op">/</span> <span class="fl">100</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">mu_obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="mu_obs_fun.html">mu_obs_fun</a></span><span class="op">(</span>p <span class="op">=</span> <span class="va">p</span>, rr <span class="op">=</span> <span class="va">rr</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mu_cft</span> <span class="op">&lt;-</span> <span class="fu"><a href="mu_cft_fun.html">mu_cft_fun</a></span><span class="op">(</span>p_cft <span class="op">=</span> <span class="va">p_cft</span>, rr <span class="op">=</span> <span class="va">rr</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">pif_fun2</span><span class="op">(</span><span class="va">mu_obs</span>, <span class="va">mu_cft</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

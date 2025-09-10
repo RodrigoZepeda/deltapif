@@ -13,7 +13,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">deltapif</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,6 +63,24 @@
         <dd>Transform a pif object into a data.frame</dd>
       </dl><dl><dt>
 
+          <code><a href="as.list.html">as.list</a></code>
+
+        </dt>
+        <dd>Convert to list</dd>
+      </dl><dl><dt>
+
+          <code><a href="as.matrix.html">as.matrix</a></code>
+
+        </dt>
+        <dd>Convert a <code>covariance_structure</code> to <code>matrix</code></dd>
+      </dl><dl><dt>
+
+          <code><a href="as_covstr.html">as_covariance_structure()</a></code>
+
+        </dt>
+        <dd>Transform into a covariance structure</dd>
+      </dl><dl><dt>
+
           <code><a href="cancer_rr.html">cancer_rr</a></code>
 
         </dt>
@@ -72,7 +90,13 @@
           <code><a href="change_link.html">change_link()</a></code>
 
         </dt>
-        <dd>Change the link for the fraction's variance calculation</dd>
+        <dd>Change the link</dd>
+      </dl><dl><dt>
+
+          <code><a href="children.html">children()</a></code>
+
+        </dt>
+        <dd>Get the children labels from a <code>pif_class</code></dd>
       </dl><dl><dt>
 
           <code><a href="classes.html">pif_class()</a></code> <code><a href="classes.html">pif_atomic_class()</a></code> <code><a href="classes.html">pif_global_ensemble_class()</a></code> <code><a href="classes.html">pif_total_class()</a></code> <code><a href="classes.html">pif_ensemble_class()</a></code>
@@ -91,6 +115,24 @@
 
         </dt>
         <dd>Extract confidence intervals of a pif object</dd>
+      </dl><dl><dt>
+
+          <code><a href="covariance_structure_class.html">covariance_structure_class()</a></code>
+
+        </dt>
+        <dd>Covariance structure class</dd>
+      </dl><dl><dt>
+
+          <code><a href="covariance_structures.html">covariance_structure()</a></code> <code><a href="covariance_structures.html">covariance_structure2()</a></code> <code><a href="covariance_structures.html">default_weight_covariance_structure()</a></code> <code><a href="covariance_structures.html">default_weight_covariance_structure2()</a></code> <code><a href="covariance_structures.html">default_parameter_covariance_structure()</a></code> <code><a href="covariance_structures.html">default_parameter_covariance_structure2()</a></code> <code><a href="covariance_structures.html">default_pif_covariance_structure()</a></code> <code><a href="covariance_structures.html">default_pif_covariance_structure2()</a></code> <code><a href="covariance_structures.html">default_weight_pif_covariance_structure()</a></code> <code><a href="covariance_structures.html">default_weight_pif_covariance_structure2()</a></code>
+
+        </dt>
+        <dd>Default covariance structures</dd>
+      </dl><dl><dt>
+
+          <code><a href="covcor.html">covariance()</a></code> <code><a href="covcor.html">variance()</a></code> <code><a href="covcor.html">standard_deviation()</a></code> <code><a href="covcor.html">correlation()</a></code>
+
+        </dt>
+        <dd>Covariance matrix, correlation matrix, variance and standard deviation for potential impact fractions</dd>
       </dl><dl><dt>
 
           <code><a href="dementiacov.html">dementiacov</a></code>
@@ -117,6 +159,12 @@
         <dd>Partial derivatives of PIF</dd>
       </dl><dl><dt>
 
+          <code><a href="flatten_names.html">flatten_names()</a></code>
+
+        </dt>
+        <dd>Names of a PIF's components</dd>
+      </dl><dl><dt>
+
           <code><a href="fraction_type.html">fraction_type()</a></code>
 
         </dt>
@@ -127,6 +175,12 @@
 
         </dt>
         <dd>Inverses of link functions</dd>
+      </dl><dl><dt>
+
+          <code><a href="length.html">length</a></code>
+
+        </dt>
+        <dd>Length of a <code>covariance_structure</code></dd>
       </dl><dl><dt>
 
           <code><a href="link_parsers.html">parse_link()</a></code> <code><a href="link_parsers.html">parse_inv_link()</a></code> <code><a href="link_parsers.html">parse_deriv_link()</a></code>
@@ -141,6 +195,12 @@
         <dd>Link functions</dd>
       </dl><dl><dt>
 
+          <code><a href="names.html">names</a></code>
+
+        </dt>
+        <dd>Get the label of a PIF or PAF</dd>
+      </dl><dl><dt>
+
           <code><a href="pifpaf.html">paf()</a></code> <code><a href="pifpaf.html">pif()</a></code>
 
         </dt>
@@ -153,16 +213,34 @@
         <dd>Print or show a potential impact fraction</dd>
       </dl><dl><dt>
 
+          <code><a href="rowcol.html">row_names()</a></code> <code><a href="rowcol.html">col_names()</a></code>
+
+        </dt>
+        <dd>Row and Column names</dd>
+      </dl><dl><dt>
+
+          <code><a href="subset.html">subset</a></code>
+
+        </dt>
+        <dd>Subset a <code>covariance_structure</code></dd>
+      </dl><dl><dt>
+
           <code><a href="summary.html">summary</a></code>
 
         </dt>
         <dd>Summary of a pif object</dd>
       </dl><dl><dt>
 
-          <code><a href="totalpifpaf.html">paf_total()</a></code> <code><a href="totalpifpaf.html">pif_total()</a></code> <code><a href="totalpifpaf.html">pif_ensemble()</a></code>
+          <code><a href="totalpifpaf.html">paf_total()</a></code> <code><a href="totalpifpaf.html">pif_total()</a></code> <code><a href="totalpifpaf.html">paf_ensemble()</a></code> <code><a href="totalpifpaf.html">pif_ensemble()</a></code>
 
         </dt>
         <dd>Combine Potential Impact Fractions and Population Attributable Fractions</dd>
+      </dl><dl><dt>
+
+          <code><a href="weights.html">weights</a></code>
+
+        </dt>
+        <dd>Extract weights of a pif_global_ensemble</dd>
       </dl></div>
   </main></div>
 

@@ -17,7 +17,7 @@ and covariance from parameters."><meta property="og:image" content="https://rodr
 
     <a class="navbar-brand me-2" href="../index.html">deltapif</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,10 +59,6 @@ and covariance from parameters.</p>
 <span>  <span class="va">p2_cft</span>,</span>
 <span>  <span class="va">rr1</span>,</span>
 <span>  <span class="va">rr2</span>,</span>
-<span>  <span class="va">mu_obs1</span>,</span>
-<span>  <span class="va">mu_obs2</span>,</span>
-<span>  <span class="va">mu_cft1</span>,</span>
-<span>  <span class="va">mu_cft2</span>,</span>
 <span>  <span class="va">var_p</span>,</span>
 <span>  <span class="va">upper_bound</span></span>
 <span><span class="op">)</span></span>
@@ -76,10 +72,6 @@ and covariance from parameters.</p>
 <span>  <span class="va">rr2</span>,</span>
 <span>  <span class="va">rr_link_deriv_vals1</span>,</span>
 <span>  <span class="va">rr_link_deriv_vals2</span>,</span>
-<span>  <span class="va">mu_obs1</span>,</span>
-<span>  <span class="va">mu_obs2</span>,</span>
-<span>  <span class="va">mu_cft1</span>,</span>
-<span>  <span class="va">mu_cft2</span>,</span>
 <span>  <span class="va">var_beta</span>,</span>
 <span>  <span class="va">upper_bound</span></span>
 <span><span class="op">)</span></span>
@@ -93,10 +85,6 @@ and covariance from parameters.</p>
 <span>  <span class="va">rr2</span>,</span>
 <span>  <span class="va">rr_link_deriv_vals1</span>,</span>
 <span>  <span class="va">rr_link_deriv_vals2</span>,</span>
-<span>  <span class="va">mu_obs1</span>,</span>
-<span>  <span class="va">mu_obs2</span>,</span>
-<span>  <span class="va">mu_cft1</span>,</span>
-<span>  <span class="va">mu_cft2</span>,</span>
 <span>  <span class="va">var_p</span>,</span>
 <span>  <span class="va">var_beta</span>,</span>
 <span>  upper_bound_p <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -108,8 +96,6 @@ and covariance from parameters.</p>
 <span>  <span class="va">p_cft</span>,</span>
 <span>  <span class="va">rr</span>,</span>
 <span>  <span class="va">rr_link_deriv_vals</span>,</span>
-<span>  <span class="va">mu_obs</span>,</span>
-<span>  <span class="va">mu_cft</span>,</span>
 <span>  <span class="va">var_p</span>,</span>
 <span>  <span class="va">var_beta</span>,</span>
 <span>  upper_bound_p <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -145,26 +131,6 @@ impact fraction</p></dd>
 
 <dt id="arg-rr-">rr2<a class="anchor" aria-label="anchor" href="#arg-rr-"></a></dt>
 <dd><p>Relative risk in the second potential impact fraction</p></dd>
-
-
-<dt id="arg-mu-obs-">mu_obs1<a class="anchor" aria-label="anchor" href="#arg-mu-obs-"></a></dt>
-<dd><p>Average relative risk in the population of the first
-potential impact fraction.</p></dd>
-
-
-<dt id="arg-mu-obs-">mu_obs2<a class="anchor" aria-label="anchor" href="#arg-mu-obs-"></a></dt>
-<dd><p>Average relative risk in the population of the second
-potential impact fraction.</p></dd>
-
-
-<dt id="arg-mu-cft-">mu_cft1<a class="anchor" aria-label="anchor" href="#arg-mu-cft-"></a></dt>
-<dd><p>Average relative risk in the counterfactual population of the
-first potential impact fraction.</p></dd>
-
-
-<dt id="arg-mu-cft-">mu_cft2<a class="anchor" aria-label="anchor" href="#arg-mu-cft-"></a></dt>
-<dd><p>Average relative risk in the counterfactual of the second
-potential impact fraction.</p></dd>
 
 
 <dt id="arg-var-p">var_p<a class="anchor" aria-label="anchor" href="#arg-var-p"></a></dt>
@@ -219,14 +185,6 @@ individuals for each of the <code>N</code> exposure levels.</p></dd>
 <dt id="arg-rr-link-deriv-vals">rr_link_deriv_vals<a class="anchor" aria-label="anchor" href="#arg-rr-link-deriv-vals"></a></dt>
 <dd><p>The derivative of the relative risk function <code>g</code>
 with respect to the parameter <code>beta</code> evaluated at <code>beta</code>.</p></dd>
-
-
-<dt id="arg-mu-obs">mu_obs<a class="anchor" aria-label="anchor" href="#arg-mu-obs"></a></dt>
-<dd><p>The average value of the relative risk in the observed population.</p></dd>
-
-
-<dt id="arg-mu-cft">mu_cft<a class="anchor" aria-label="anchor" href="#arg-mu-cft"></a></dt>
-<dd><p>The average value of the counterfactual relative risk in the population.</p></dd>
 
 </dl></div>
     <div class="section level2">

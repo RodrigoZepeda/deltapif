@@ -5,7 +5,21 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Compute the potential impact fraction — pif_fun"><meta name="description" content="Compute the potential impact fraction"><meta property="og:description" content="Compute the potential impact fraction"><meta property="og:image" content="https://rodrigozepeda.github.io/deltapif/logo.png"></head><body>
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Compute the potential impact fraction — pif_fun"><meta name="description" content="Calculates the potential impact fraction following the formula:
+$$
+\text{PIF} = \dfrac{
+\sum\limits_{i=1}^n p_i \cdot \text{RR}_i - \sum\limits_{i=1}^n p_i^{\text{cft}} \cdot \text{RR}_i
+}{
+\sum\limits_{i=1}^n p_i \cdot \text{RR}_i
+}
+$$"><meta property="og:description" content="Calculates the potential impact fraction following the formula:
+$$
+\text{PIF} = \dfrac{
+\sum\limits_{i=1}^n p_i \cdot \text{RR}_i - \sum\limits_{i=1}^n p_i^{\text{cft}} \cdot \text{RR}_i
+}{
+\sum\limits_{i=1}^n p_i \cdot \text{RR}_i
+}
+$$"><meta property="og:image" content="https://rodrigozepeda.github.io/deltapif/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -13,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">deltapif</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,7 +55,14 @@
     </div>
 
     <div class="ref-description section level2">
-    <p>Compute the potential impact fraction</p>
+    <p>Calculates the potential impact fraction following the formula:
+$$
+\text{PIF} = \dfrac{
+\sum\limits_{i=1}^n p_i \cdot \text{RR}_i - \sum\limits_{i=1}^n p_i^{\text{cft}} \cdot \text{RR}_i
+}{
+\sum\limits_{i=1}^n p_i \cdot \text{RR}_i
+}
+$$</p>
     </div>
 
     <div class="section level2">
@@ -71,7 +92,39 @@ individuals for each of the <code>N</code> exposure levels.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A potential impact fraction (numeric)</p>
     </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="mu_cft_fun.html">mu_cft_fun()</a></code>, <code><a href="mu_obs_fun.html">mu_obs_fun()</a></code>, and <code><a href="pif_fun2.html">pif_fun2()</a></code> to calculate from
+the average relative risks. For the main function in the package see <code><a href="pifpaf.html">pif()</a></code></p></div>
+    </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co">#This example comes from Levin 1953</span></span></span>
+<span class="r-in"><span><span class="co">#Relative risk of lung cancer given smoking was 3.6</span></span></span>
+<span class="r-in"><span><span class="co">#Proportion of individuals smoking where 49.9%</span></span></span>
+<span class="r-in"><span><span class="co">#Counterfactual is 0% smoking</span></span></span>
+<span class="r-in"><span><span class="fu">pif_fun</span><span class="op">(</span><span class="fl">0.499</span>, <span class="fl">0.0</span>, <span class="fl">3.6</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#You can also use multiple exposure categories. As an example</span></span></span>
+<span class="r-in"><span><span class="co">#These are the relative risks for age-group 25-59 for each BMI level:</span></span></span>
+<span class="r-in"><span><span class="va">rr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&lt;18.5"</span> <span class="op">=</span> <span class="fl">1.38</span>, <span class="st">"25 to &lt;30"</span> <span class="op">=</span> <span class="fl">0.83</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"30 to &lt;35"</span> <span class="op">=</span> <span class="fl">1.20</span>, <span class="st">"&gt;=35"</span> <span class="op">=</span> <span class="fl">1.83</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#While the prevalences are:</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&lt;18.5"</span> <span class="op">=</span> <span class="fl">1.9</span>, <span class="st">"25 to &lt;30"</span> <span class="op">=</span> <span class="fl">34.8</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"30 to &lt;35"</span> <span class="op">=</span> <span class="fl">17.3</span>, <span class="st">"&gt;=35"</span> <span class="op">=</span> <span class="fl">13.3</span><span class="op">)</span> <span class="op">/</span> <span class="fl">100</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#A counterfactual of reducing the prevalence of &gt;=35 by half and</span></span></span>
+<span class="r-in"><span><span class="co">#having them be on the "30 to &lt;35" category instead</span></span></span>
+<span class="r-in"><span><span class="va">p_cft</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&lt;18.5"</span> <span class="op">=</span> <span class="fl">1.9</span>, <span class="st">"25 to &lt;30"</span> <span class="op">=</span> <span class="fl">34.8</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"30 to &lt;35"</span> <span class="op">=</span> <span class="fl">17.3</span> <span class="op">+</span> <span class="fl">13.3</span><span class="op">/</span><span class="fl">2</span>, <span class="st">"&gt;=35"</span> <span class="op">=</span> <span class="fl">13.3</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span> <span class="op">/</span> <span class="fl">100</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">pif_fun</span><span class="op">(</span>p <span class="op">=</span> <span class="va">p</span>, p_cft <span class="op">=</span> <span class="va">p_cft</span>, rr <span class="op">=</span> <span class="va">rr</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

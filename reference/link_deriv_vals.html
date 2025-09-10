@@ -17,7 +17,7 @@ fraction (PAF) at pif"><meta property="og:image" content="https://rodrigozepeda.
 
     <a class="navbar-brand me-2" href="../index.html">deltapif</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,9 +65,26 @@ fraction (PAF) at <code>pif</code></p>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A number indicating the derivative of <code>link(pif)</code></p>
+    <p>A number indicating the derivative of <code>link()</code> evaluated at <code>pif</code>.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co">#Create a pif object</span></span></span>
+<span class="r-in"><span><span class="va">pif_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="pifpaf.html">pif</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.499</span>, beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">3.6</span><span class="op">)</span>, p_cft <span class="op">=</span> <span class="fl">0.499</span><span class="op">/</span><span class="fl">2</span>, var_p <span class="op">=</span> <span class="fl">0.001</span>,</span></span>
+<span class="r-in"><span>  var_beta <span class="op">=</span> <span class="fl">0.1</span>, link <span class="op">=</span> <span class="st">"logit"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#Obtain the value of the link at the derivative</span></span></span>
+<span class="r-in"><span><span class="fu">link_deriv_vals</span><span class="op">(</span><span class="va">pif_obj</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#This is the same as the derivative of logit evaluated at 0.2823</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="deriv_linkfuns.html">deriv_logit</a></span><span class="op">(</span><span class="fu"><a href="coef.html">coef</a></span><span class="op">(</span><span class="va">pif_obj</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

@@ -19,7 +19,7 @@ an observed prevalence of  p and a relative risk
 
     <a class="navbar-brand me-2" href="../index.html">deltapif</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,29 +60,31 @@ an observed prevalence of  <code>p</code> and a relative risk
 <span>  <span class="va">beta</span>,</span>
 <span>  var_p <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  var_beta <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  rr_link <span class="op">=</span> <span class="st">"identity"</span>,</span>
+<span>  rr_link <span class="op">=</span> <span class="st">"exponential"</span>,</span>
 <span>  rr_link_deriv <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  link <span class="op">=</span> <span class="st">"log-complement"</span>,</span>
 <span>  link_inv <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  link_deriv <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  conf_level <span class="op">=</span> <span class="fl">0.95</span>,</span>
-<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  label <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">pif</span><span class="op">(</span></span>
 <span>  <span class="va">p</span>,</span>
-<span>  p_cft <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  p_cft <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="length.html">length</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  <span class="va">beta</span>,</span>
 <span>  var_p <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  var_beta <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  rr_link <span class="op">=</span> <span class="st">"identity"</span>,</span>
+<span>  rr_link <span class="op">=</span> <span class="st">"exponential"</span>,</span>
 <span>  rr_link_deriv <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  link <span class="op">=</span> <span class="st">"log-complement"</span>,</span>
 <span>  link_inv <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  link_deriv <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  conf_level <span class="op">=</span> <span class="fl">0.95</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"PIF"</span>,</span>
-<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  label <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -146,6 +148,10 @@ to build it automatically from <code>link</code> using <code><a href="https://rd
 <dd><p>Whether to show messages.</p></dd>
 
 
+<dt id="arg-label">label<a class="anchor" aria-label="anchor" href="#arg-label"></a></dt>
+<dd><p>Character identifier for the impact fraction. This is for</p></dd>
+
+
 <dt id="arg-p-cft">p_cft<a class="anchor" aria-label="anchor" href="#arg-p-cft"></a></dt>
 <dd><p>Counterfactual prevalence (proportion) of the exposed
 individuals for each of the <code>N</code> exposure levels.</p></dd>
@@ -174,7 +180,8 @@ intervals using Walter's formula:</p>
 <p>$$
 \textrm{PIF} =
  \dfrac{
-   \sum\limits_{i=1}^N p_i \text{RR}_i - \sum\limits_{i=1}^N p_i^{\text{cft}} \text{RR}_i
+   \sum\limits_{i=1}^N p_i \text{RR}_i -
+   \sum\limits_{i=1}^N p_i^{\text{cft}} \text{RR}_i
   }{
    \sum\limits_{i=1}^N p_i \text{RR}_i
   }, \quad \text{ and } \quad
@@ -185,8 +192,8 @@ intervals using Walter's formula:</p>
    \sum\limits_{i=1}^N p_i \text{RR}_i
   }
 $$</p>
-<p>in the case of <code>N</code> exposure categories which is equivalent to Levine's formula
-when there is only <code>1</code> exposure category:</p>
+<p>in the case of <code>N</code> exposure categories which is equivalent to Levine's
+formula when there is only <code>1</code> exposure category:</p>
 <p>$$
 \textrm{PIF} =
  \dfrac{
@@ -202,6 +209,18 @@ when there is only <code>1</code> exposure category:</p>
    1 + p (\text{RR} - 1)
   }
 $$</p>
+<p>The construction of confidence intervals is done via a link function. Its
+variance is given by:</p>
+<p>$$
+\sigma_f^2 = \text{Var}\Big[ f(\textrm{PIF}) \Big] \approx
+\Big(f'(\textrm{PIF})\Big)^2 \text{Var}\Big[ \textrm{PIF} \Big]
+$$
+and the intervals are constructed as:
+$$
+\text{CI} = f^{-1}\Big(  f(\textrm{PIF})  \pm Z_{\alpha/2} \cdot \sigma_f \Big)
+$$</p>
+<p>the function \(f\) is called the link function for the PIF, \(f^{-1}\)
+represents its inverse, and \(f'\) its derivative.</p>
     </div>
     <div class="section level2">
     <h2 id="link-functions-for-the-pif">Link functions for the PIF<a class="anchor" aria-label="anchor" href="#link-functions-for-the-pif"></a></h2>
@@ -209,57 +228,94 @@ $$</p>
 
 
 <p>By default the <code>pif</code> and <code>paf</code> calculations use the <code>log-complement</code> link
-which guarantees the impact fractions' intervals have valid values (between -oo and 1).
-Depending on the application the following link functions are also implemented:</p>
+which guarantees the impact fractions' intervals have valid values
+(between <code>-Inf</code> and <code>1</code>).</p>
+<p>Depending on the application the following link functions are also
+implemented:</p>
 <dl><dt>log-complement</dt>
-<dd><p>To achieve fractions between (-Inf, 1). This is the function <code>f(x) = ln(1 - x)</code> with inverse <code>finv(x) = 1 - exp(x)</code></p></dd>
+<dd><p>To achieve fractions between <code>-Inf</code> and <code>1</code>. This is
+the function <code>f(x) = ln(1 - x)</code> with inverse <code>finv(x) = 1 - exp(x)</code></p></dd>
 
 <dt>logit</dt>
-<dd><p>To achieve strictly positive fractions in (0,1). This is the function <code>f(x) = ln(x / (1 - x))</code> with inverse <code>finv(x) = 1 / (1 + exp(-x))</code></p></dd>
+<dd><p>To achieve strictly positive fractions between <code>0</code> and <code>1</code>.
+This is the function <code>f(x) = ln(x / (1 - x))</code> with inverse
+<code>finv(x) = 1 / (1 + exp(-x))</code></p></dd>
 
 <dt>identity</dt>
-<dd><p>An approximation for not-so-extreme fractions. This is the function <code>f(x) = x</code>.with inverse <code>finv(x) = x</code></p></dd>
+<dd><p>An approximation for fractions that does not guarantee
+confidence intervals in valid regions. This is the function
+<code>f(x) = x</code>.with inverse <code>finv(x) = x</code></p></dd>
 
 <dt>hawkins</dt>
-<dd><p>Hawkins' fraction for controlling variance. This is the function <code>f(x) = ln(x + sqrt(x^2 + 1))</code> with inverse <code>finv(x) = 0.5 * exp(-x) * (exp(2 * x) - 1)</code></p></dd>
+<dd><p>Hawkins' fraction for controlling the variance. This is the
+function <code>f(x) = ln(x + sqrt(x^2 + 1))</code> with inverse
+<code>finv(x) = 0.5 * exp(-x) * (exp(2 * x) - 1)</code></p></dd>
+
+<dt>custom</dt>
+<dd><p>User specified (see below).</p></dd>
 
 
-</dl><p>In general, <code>logit</code> should be preferred if it is known and certain that the fractions
-can only be positive (i.e. when all relative risks (including CIs) are &gt; 1 and
-prevalence &gt; 0 and there is an epidemiological / biological explanation).</p>
-<p>Mathematically the variance that is calculated is</p>
-<p>$$
-\sigma_f^2 = \text{Var}\Big[ f(\textrm{PIF}) \Big]
-$$
-and the intervals are constructed as:</p>
-<p>$$
-\text{CI} = f^{-1}\Big(  f(\textrm{PIF})  \pm Z_{\alpha/2} \cdot \sigma_f \Big)
-$$</p>
-<p>Custom link functions can be implemented as long as they are invertible
-in the range of interest by providing the function <code>link</code>,
-its inverse <code>link_inv</code> and its derivative <code>link_deriv</code>. If no derivative
-is provided the package does an attempt to estimate it symbolically
-using <code><a href="https://rdrr.io/pkg/Deriv/man/Deriv.html" class="external-link">Deriv::Deriv()</a></code> however there is no guarantee that this
-will work non-standard functions (i.e. not logarithm / trigonometric /
+</dl><p>In general, <code>logit</code> should be preferred if it is known and certain that the
+fractions can only be positive (i.e. when all relative risks (including CIs)
+are &gt; 1 and prevalence &gt; 0 and there is an epidemiological / biological
+justification).</p>
+<p><strong>Custom link</strong> functions can be implemented as long as they are invertible
+in the range of interest by providing:</p><dl><dt>link</dt>
+<dd><p>The function</p></dd>
+
+<dt>link_inv</dt>
+<dd><p>The inverse function of <code>link</code></p></dd>
+
+<dt>link_deriv</dt>
+<dd><p>The derivative of <code>link</code></p></dd>
+
+
+</dl><p>If no derivative is provided the package attempts to estimate it
+symbolically using <code><a href="https://rdrr.io/pkg/Deriv/man/Deriv.html" class="external-link">Deriv::Deriv()</a></code> however there is no guarantee that this
+will work for non-standard functions (i.e. not logarithm / trigonometric /
 exponential)</p>
+<p>As an example considering implementing a square root custom link:</p>
+<p></p><div class="sourceCode r"><pre><code><span><span class="co"># The link is square root</span></span>
+<span><span class="va">link</span>      <span class="op">&lt;-</span> <span class="va">sqrt</span></span>
+<span></span>
+<span><span class="co"># Inverse of sqrt(x) is x^2</span></span>
+<span><span class="va">link_inv</span>  <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span><span class="op">^</span><span class="fl">2</span></span>
+<span></span>
+<span><span class="co"># The derivative of sqrt(x) is 1/(2 * sqrt(x))</span></span>
+<span><span class="va">link_deriv</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">pif</span><span class="op">)</span> <span class="fl">1</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">pif</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Then the pif can be calculated as:</span></span>
+<span><span class="fu"><a href="../reference/pifpaf.html">pif</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.499</span>, beta <span class="op">=</span> <span class="fl">1.6</span>, p_cft <span class="op">=</span> <span class="fl">0.499</span><span class="op">/</span><span class="fl">2</span>, var_p <span class="op">=</span> <span class="fl">0.1</span>, var_beta <span class="op">=</span> <span class="fl">0.2</span>,</span>
+<span>     link <span class="op">=</span> <span class="va">link</span>, link_inv <span class="op">=</span> <span class="va">link_inv</span>, link_deriv <span class="op">=</span> <span class="va">link_deriv</span><span class="op">)</span></span></code></pre><p></p></div>
     </div>
     <div class="section level2">
     <h2 id="link-functions-for-beta">Link functions for beta<a class="anchor" aria-label="anchor" href="#link-functions-for-beta"></a></h2>
 
 
 
-<p>By default the <code>pif</code> and <code>paf</code> use the <code>identity</code> link which means that
-the values for <code>beta</code> are the relative risks directly and the
-variance <code>var_beta</code> corresponds to the relative risk's variance. Depending
-on the relative risk's source the following options are available:</p>
-<dl><dt>identity</dt>
-<dd><p>An approximation for not-so-extreme fractions. This is the function <code>f(beta) = beta</code>.with inverse <code>finv(rr) = rr = beta</code></p></dd>
+<p>By default the <code>pif</code> and <code>paf</code> use the <code>exponential</code> link which means that
+the values for <code>beta</code> are the log-relative risks and the
+variance <code>var_beta</code> corresponds to the log-relative risk's variance.
+Depending on the relative risk's source the following options are available:</p>
+<dl><dt>exponential</dt>
+<dd><p>For when the relative risks correspond to the
+exponential of another parameter, usually called <code>beta</code>. This is
+the exponential function <code>f(beta) = exp(beta)</code> with inverse
+<code>finv(rr) = log(rr) = beta</code></p></dd>
 
-<dt>exponential</dt>
-<dd><p>The exponential function <code>f(beta) = exp(beta)</code> with inverse <code>finv(rr) = log(rr) = beta</code></p></dd>
+<dt>identity</dt>
+<dd><p>For when the relative risk and their variance are
+reported directly. This is the function <code>f(beta) = beta</code>
+with inverse <code>finv(rr) = rr = beta</code></p></dd>
+
+<dt>custom</dt>
+<dd><p>User specified (see below).</p></dd>
 
 
-</dl><p>As in the previous section, custom link functions can be implemented
+</dl><p><strong>Note</strong> that in most cases including contingency tables, Poisson and
+Logistic regressions, and Cox Proportional Hazards, the relative risks are
+estimated by exponentiating a parameter.</p>
+<p>As in the previous section, custom link functions for beta can be implemented
 as long as they are invertible in the range of interest by providing the
 function <code>rr_link</code> and its derivative <code>rr_link_deriv</code>. If no derivative
 is provided the package does an attempt to estimate it symbolically
@@ -278,61 +334,103 @@ theoretical minimum risk level is a relative risk of 1. If no
 counterfactual prevalence <code>p_cft</code> is specified, the model computes
 the population attributable fraction.</p>
     </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="totalpifpaf.html">pif_total()</a></code>, <code><a href="totalpifpaf.html">pif_ensemble()</a></code>, <code><a href="totalpifpaf.html">paf_total()</a></code>, <code><a href="totalpifpaf.html">paf_ensemble()</a></code>,</p></div>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># This example comes from Levin 1953</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#EXAMPLE 1: ONE EXPOSURE CATEGORY (CLASSIC LEVIN)</span></span></span>
+<span class="r-in"><span><span class="co">#---------------------------------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co"># This example comes from Levin 1953</span></span></span>
 <span class="r-in"><span><span class="co"># Relative risk of lung cancer given smoking was 3.6</span></span></span>
 <span class="r-in"><span><span class="co"># Proportion of individuals smoking where 49.9%</span></span></span>
 <span class="r-in"><span><span class="co"># Calculates PAF (i.e. counterfactual is no smoking)</span></span></span>
-<span class="r-in"><span><span class="fu">paf</span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.499</span>, beta <span class="op">=</span> <span class="fl">3.6</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">paf</span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.499</span>, beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">3.6</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Assuming parameters `p` have no variance Use `var_p` to input their link_variances and/or covariance</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Assuming parameters `beta` have no variance Use `var_beta` to input their link_variances and/or covariance</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-103593077108096]</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 56.473% [<span style="font-style: italic;">95% CI</span>: 56.473% to 56.473%]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(paf %) = 0.000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(link(paf)) = 0.000</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Assuming that beta and p had a link_variance</span></span></span>
-<span class="r-in"><span><span class="fu">paf</span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.499</span>, beta <span class="op">=</span> <span class="fl">3.6</span>, var_p <span class="op">=</span> <span class="fl">0.001</span>, var_beta <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">paf</span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.499</span>, beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">3.6</span><span class="op">)</span>, var_p <span class="op">=</span> <span class="fl">0.001</span>, var_beta <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0473887074273069]</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 56.473% [<span style="font-style: italic;">95% CI</span>: 32.990% to 71.726%]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(paf %) = 9.582</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(link(paf)) = 0.220</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 56.473% [<span style="font-style: italic;">95% CI</span>: 28.972% to 73.326%]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(paf %) = 10.875</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># If the link_variance was to high a logistic transform would be required</span></span></span>
 <span class="r-in"><span><span class="co"># Generates incorrect values for the interval:</span></span></span>
-<span class="r-in"><span><span class="fu">paf</span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.499</span>, beta <span class="op">=</span> <span class="fl">3.6</span>, var_p <span class="op">=</span> <span class="fl">0.1</span>, var_beta <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">paf</span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.499</span>, beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">3.6</span><span class="op">)</span>, var_p <span class="op">=</span> <span class="fl">0.1</span>, var_beta <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-127533487463628]</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 56.473% [<span style="font-style: italic;">95% CI</span>: -20.431% to 84.268%]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(paf %) = 22.601</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(link(paf)) = 0.519</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 56.473% [<span style="font-style: italic;">95% CI</span>: -29.969% to 85.422%]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(paf %) = 24.294</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Logit fixes it</span></span></span>
-<span class="r-in"><span><span class="fu">paf</span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.499</span>, beta <span class="op">=</span> <span class="fl">3.6</span>, var_p <span class="op">=</span> <span class="fl">0.1</span>, var_beta <span class="op">=</span> <span class="fl">3</span>,</span></span>
+<span class="r-in"><span><span class="fu">paf</span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.499</span>, beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">3.6</span><span class="op">)</span>, var_p <span class="op">=</span> <span class="fl">0.1</span>, var_beta <span class="op">=</span> <span class="fl">0.3</span>,</span></span>
 <span class="r-in"><span>    link <span class="op">=</span> <span class="st">"logit"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0305620673829671]</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 56.473% [<span style="font-style: italic;">95% CI</span>: 17.628% to 88.720%]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(paf %) = 22.601</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(link(paf)) = 0.919</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 56.473% [<span style="font-style: italic;">95% CI</span>: 15.753% to 90.002%]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(paf %) = 24.294</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># If the counterfactual was reducing the smoking population by 1/2</span></span></span>
-<span class="r-in"><span><span class="fu">pif</span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.499</span>, beta <span class="op">=</span> <span class="fl">1.6</span>, p_cft <span class="op">=</span> <span class="fl">0.499</span><span class="op">/</span><span class="fl">2</span>, var_p <span class="op">=</span> <span class="fl">0.001</span>,</span></span>
-<span class="r-in"><span>    var_beta <span class="op">=</span> <span class="fl">1</span>, link <span class="op">=</span> <span class="st">"logit"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">pif</span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.499</span>, beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">3.6</span><span class="op">)</span>, p_cft <span class="op">=</span> <span class="fl">0.499</span><span class="op">/</span><span class="fl">2</span>, var_p <span class="op">=</span> <span class="fl">0.001</span>,</span></span>
+<span class="r-in"><span>    var_beta <span class="op">=</span> <span class="fl">0.1</span>, link <span class="op">=</span> <span class="st">"logit"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Potential Impact Fraction</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Potential Impact Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-221176948683873]</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> PIF = 11.521% [<span style="font-style: italic;">95% CI</span>: 0.746% to 69.285%]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(pif %) = 14.833</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(link(pif)) = 1.455</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> PIF = 28.236% [<span style="font-style: italic;">95% CI</span>: 18.101% to 41.192%]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(pif %) = 5.963</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#EXAMPLE 2: MULTIPLE EXPOSURE CATEGORIES</span></span></span>
+<span class="r-in"><span><span class="co">#---------------------------------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co">#In "Excess Deaths Associated With Underweight, Overweight, and Obesity"</span></span></span>
+<span class="r-in"><span><span class="co">#the PAF of mortality associated to different BMI levels is calculated</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#These are the relative risks for age-group 25-59 for each BMI level:</span></span></span>
+<span class="r-in"><span><span class="va">rr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&lt;18.5"</span> <span class="op">=</span> <span class="fl">1.38</span>, <span class="st">"25 to &lt;30"</span> <span class="op">=</span> <span class="fl">0.83</span> ,</span></span>
+<span class="r-in"><span>        <span class="st">"30 to &lt;35"</span> <span class="op">=</span> <span class="fl">1.20</span>, <span class="st">"&gt;=35"</span> <span class="op">=</span> <span class="fl">1.83</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#While the prevalences are:</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&lt;18.5"</span> <span class="op">=</span> <span class="fl">1.9</span>, <span class="st">"25 to &lt;30"</span> <span class="op">=</span> <span class="fl">34.8</span>,</span></span>
+<span class="r-in"><span>        <span class="st">"30 to &lt;35"</span> <span class="op">=</span> <span class="fl">17.3</span>, <span class="st">"&gt;=35"</span> <span class="op">=</span> <span class="fl">13.3</span><span class="op">)</span> <span class="op">/</span> <span class="fl">100</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#The variance of the relative risk is obtained from the CIs:</span></span></span>
+<span class="r-in"><span><span class="va">var_log_rr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&lt;18.5"</span> <span class="op">=</span> <span class="fl">0.2653156</span>, <span class="st">"25 to &lt;30"</span> <span class="op">=</span>  <span class="fl">0.1247604</span>,</span></span>
+<span class="r-in"><span>                <span class="st">"30 to &lt;35"</span> <span class="op">=</span> <span class="fl">0.1828293</span>, <span class="st">"&gt;=35"</span> <span class="op">=</span> <span class="fl">0.1847374</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#Note that we are omitting the group "18.5 to &lt; 25" as it is the</span></span></span>
+<span class="r-in"><span><span class="co">#reference (RR = 1)</span></span></span>
+<span class="r-in"><span><span class="fu">paf</span><span class="op">(</span>p <span class="op">=</span> <span class="va">p</span>, beta <span class="op">=</span> <span class="va">rr</span>, var_beta <span class="op">=</span> <span class="va">var_log_rr</span>, var_p <span class="op">=</span> <span class="fl">0</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>    link <span class="op">=</span> <span class="st">"logit"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-10416683808784]</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 61.599% [<span style="font-style: italic;">95% CI</span>: 50.274% to 71.792%]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(paf %) = 5.571</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#We can compute a potential impact fraction of, for example, reducing the</span></span></span>
+<span class="r-in"><span><span class="co">#amount of people over 35 to 0 and having them in the "30 to &lt;35":</span></span></span>
+<span class="r-in"><span><span class="va">p_cft</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&lt;18.5"</span> <span class="op">=</span> <span class="fl">1.9</span>, <span class="st">"25 to &lt;30"</span> <span class="op">=</span> <span class="fl">34.8</span>,</span></span>
+<span class="r-in"><span>            <span class="st">"30 to &lt;35"</span> <span class="op">=</span> <span class="fl">17.3</span> <span class="op">+</span> <span class="fl">13.3</span>, <span class="st">"&gt;=35"</span> <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">/</span> <span class="fl">100</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#The potential impact fraction is as follows:</span></span></span>
+<span class="r-in"><span><span class="fu">pif</span><span class="op">(</span>p <span class="op">=</span> <span class="va">p</span>, p_cft <span class="op">=</span> <span class="va">p_cft</span>, beta <span class="op">=</span> <span class="va">rr</span>, link <span class="op">=</span> <span class="st">"logit"</span>,</span></span>
+<span class="r-in"><span>  var_beta <span class="op">=</span> <span class="va">var_log_rr</span>, var_p <span class="op">=</span> <span class="fl">0</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Potential Impact Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-114652385021424]</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> PIF = 14.882% [<span style="font-style: italic;">95% CI</span>: 13.702% to 16.144%]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(pif %) = 0.623</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

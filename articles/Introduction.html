@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">deltapif</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -100,21 +100,19 @@ variance of <code>0.02</code>.</li>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.12</span>, beta <span class="op">=</span> <span class="fl">1.90</span>, var_p <span class="op">=</span> <span class="fl">0.0009</span>, var_beta <span class="op">=</span> <span class="fl">0.02</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction</span> ──</span></span>
+<span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-140004351672175]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PAF = 9.747% [<span style="font-style: italic;">95% CI</span>: 4.510% to 14.698%]</span></span>
-<span><span class="co">#&gt; standard_deviation(paf %) = 2.598</span></span>
-<span><span class="co">#&gt; standard_deviation(link(paf)) = 0.029</span></span></code></pre></div>
+<span><span class="co">#&gt; PAF = 40.558% [<span style="font-style: italic;">95% CI</span>: 24.534% to 53.179%]</span></span>
+<span><span class="co">#&gt; standard_deviation(paf %) = 7.239</span></span></code></pre></div>
 <p>A potential impact fraction of reducing the prevalence of depression
 to 6% can be calculated as follows:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pifpaf.html">pif</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.12</span>, p_cft <span class="op">=</span> <span class="fl">0.06</span>, beta <span class="op">=</span> <span class="fl">1.90</span>, var_p <span class="op">=</span> <span class="fl">0.0009</span>, var_beta <span class="op">=</span> <span class="fl">0.02</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── <span style="font-weight: bold;">Potential Impact Fraction</span> ──</span></span>
+<span><span class="co">#&gt; ── <span style="font-weight: bold;">Potential Impact Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-025531705484526]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PIF = 4.874% [<span style="font-style: italic;">95% CI</span>: 0.013% to 9.498%]</span></span>
-<span><span class="co">#&gt; standard_deviation(pif %) = 2.419</span></span>
-<span><span class="co">#&gt; standard_deviation(link(pif)) = 0.025</span></span></code></pre></div>
+<span><span class="co">#&gt; PIF = 20.279% [<span style="font-style: italic;">95% CI</span>: 2.165% to 35.039%]</span></span>
+<span><span class="co">#&gt; standard_deviation(pif %) = 8.328</span></span></code></pre></div>
 <p>The following examples show how to calculate the PIF and PAF under
 different scenarios as well as how to combine the fractions of
 subpopulations and of different risk estimates.</p>
@@ -158,11 +156,10 @@ their paf is:</p>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Assuming parameters `p` have no variance Use `var_p` to input their link_variances and/or covariance</span></span>
 <span><span class="va">paf_hispanic</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction</span> ──</span></span>
+<span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-243726361121953]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; PAF = 3.912% [<span style="font-style: italic;">95% CI</span>: 0.569% to 7.142%]</span></span>
-<span><span class="co">#&gt; standard_deviation(paf %) = 1.676</span></span>
-<span><span class="co">#&gt; standard_deviation(link(paf)) = 0.017</span></span></code></pre></div>
+<span><span class="co">#&gt; standard_deviation(paf %) = 1.676</span></span></code></pre></div>
 <p>Note that the model throws a warning for us not specifying the
 variance of <code>var_p</code>. We will assume that the value was
 perfectly estimated and it has no associated variance thus setting
@@ -172,11 +169,10 @@ perfectly estimated and it has no associated variance thus setting
 <span>                    var_p <span class="op">=</span> <span class="fl">0</span>, rr_link <span class="op">=</span> <span class="va">exp</span><span class="op">)</span></span>
 <span><span class="va">paf_hispanic</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction</span> ──</span></span>
+<span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-000557128674616073]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; PAF = 3.912% [<span style="font-style: italic;">95% CI</span>: 0.569% to 7.142%]</span></span>
-<span><span class="co">#&gt; standard_deviation(paf %) = 1.676</span></span>
-<span><span class="co">#&gt; standard_deviation(link(paf)) = 0.017</span></span></code></pre></div>
+<span><span class="co">#&gt; standard_deviation(paf %) = 1.676</span></span></code></pre></div>
 <p>The <code>coef</code>, <code>confint</code>, <code>summary</code>,
 and <code>as.data.frame</code> functions have been extended to allow the
 user to extract information from a <code>paf</code> (or
@@ -200,12 +196,6 @@ non-hispanic whites smoke:</p>
 <code>paf</code> objects:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/covcor.html">covariance</a></span><span class="op">(</span><span class="va">paf_white</span>, <span class="va">paf_hispanic</span>, <span class="va">paf_asian</span>, <span class="va">paf_black</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
 <span><span class="co">#&gt;              [,1]         [,2]         [,3]         [,4]</span></span>
 <span><span class="co">#&gt; [1,] 0.0004025772 0.0003363365 0.0002443575 0.0005404935</span></span>
 <span><span class="co">#&gt; [2,] 0.0003363365 0.0002809952 0.0002041506 0.0004515599</span></span>
@@ -219,71 +209,28 @@ combining the fractions of the subpopulations weighted by the proportion
 of the population. According to Wikipedia the distribution in 2020 was
 as follows:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pif_weights</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span> <span class="op">=</span> <span class="fl">0.5784</span>, <span class="st">"hispanic"</span> <span class="op">=</span> <span class="fl">0.1873</span>, <span class="st">"black"</span> <span class="op">=</span> <span class="fl">0.1205</span>, <span class="st">"asian"</span> <span class="op">=</span> <span class="fl">0.0592</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">weights</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span> <span class="op">=</span> <span class="fl">0.5784</span>, <span class="st">"hispanic"</span> <span class="op">=</span> <span class="fl">0.1873</span>, <span class="st">"black"</span> <span class="op">=</span> <span class="fl">0.1205</span>, <span class="st">"asian"</span> <span class="op">=</span> <span class="fl">0.0592</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#Normalized pif_weights to sum to 1</span></span>
-<span><span class="va">pif_weights</span> <span class="op">&lt;-</span> <span class="va">pif_weights</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">pif_weights</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">#Normalized weights to sum to 1</span></span>
+<span><span class="va">weights</span> <span class="op">&lt;-</span> <span class="va">weights</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">weights</span><span class="op">)</span></span></code></pre></div>
 <p>The <code>paf_total</code> function computes the aggregated
 <code>paf</code> of the whole population:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/totalpifpaf.html">paf_total</a></span><span class="op">(</span><span class="va">paf_white</span>, <span class="va">paf_hispanic</span>, <span class="va">paf_black</span>, <span class="va">paf_asian</span>, pif_weights <span class="op">=</span> <span class="va">pif_weights</span>, sigma_pif_weights <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/totalpifpaf.html">paf_total</a></span><span class="op">(</span><span class="va">paf_white</span>, <span class="va">paf_hispanic</span>, <span class="va">paf_black</span>, <span class="va">paf_asian</span>, weights <span class="op">=</span> <span class="va">weights</span>, var_weights <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction</span> ──</span></span>
+<span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-111395241896922]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PAF = 4.663% [<span style="font-style: italic;">95% CI</span>: 0.704% to 8.464%]</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; standard_deviation(paf %) = 1.979</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The relative risk beta parameters for the potential impact fractions appear to be the same. If they are, set `uncorrelated_beta = FALSE`. Otherwise set `uncorrelated_beta = TRUE</span></span>
-<span><span class="co">#&gt; standard_deviation(link(paf)) = 0.021</span></span></code></pre></div>
-<p>where we set <code>sigma_pif_weights = 0</code> as no covariance
-matrix was known for the race distribution data (it does exist its just
-not on Wikipedia).</p>
+<span><span class="co">#&gt; PAF = 4.663% [<span style="font-style: italic;">95% CI</span>: 4.555% to 4.771%]</span></span>
+<span><span class="co">#&gt; standard_deviation(paf %) = 1.214</span></span>
+<span><span class="co">#&gt; ────────────────────────────────── Components: ─────────────────────────────────</span></span>
+<span><span class="co">#&gt; • 4.722% (sd %: 2.006) --- <span style="font-style: italic;">[deltapif-0628982042036008]</span></span></span>
+<span><span class="co">#&gt; • 3.912% (sd %: 1.676) --- <span style="font-style: italic;">[deltapif-000557128674616073]</span></span></span>
+<span><span class="co">#&gt; • 6.457% (sd %: 2.694) --- <span style="font-style: italic;">[deltapif-0553699383688721]</span></span></span>
+<span><span class="co">#&gt; • 2.810% (sd %: 1.218) --- <span style="font-style: italic;">[deltapif-0282705448814465]</span></span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span></code></pre></div>
+<p>where we set <code>var_weights = 0</code> as no covariance matrix was
+known for the race distribution data (it does exist its just not on
+Wikipedia).</p>
 </div>
 <div class="section level3">
 <h3 id="why-are-we-using-the-log-relative-risk">Why are we using the log relative risk?<a class="anchor" aria-label="anchor" href="#why-are-we-using-the-log-relative-risk"></a>
@@ -380,19 +327,18 @@ their median intake as follows:</p>
 <span><span class="co">#Calculate the paf</span></span>
 <span><span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span><span class="va">prevalence</span>, beta <span class="op">=</span> <span class="va">relative_risk</span>, var_p <span class="op">=</span> <span class="fl">0</span>, var_b <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction</span> ──</span></span>
+<span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-131682635604417]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PAF = 13.184% [<span style="font-style: italic;">95% CI</span>: 13.184% to 13.184%]</span></span>
-<span><span class="co">#&gt; standard_deviation(paf %) = 0.000</span></span>
-<span><span class="co">#&gt; standard_deviation(link(paf)) = 0.000</span></span></code></pre></div>
+<span><span class="co">#&gt; PAF = 70.114% [<span style="font-style: italic;">95% CI</span>: 70.114% to 70.114%]</span></span>
+<span><span class="co">#&gt; standard_deviation(paf %) = 0.000</span></span></code></pre></div>
 <p>If we want to add uncertainty we can approximate the covariance of
 the relative risk as follows:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Calculate an approximate covariance of the betas this is given by var*intake*intake </span></span>
 <span><span class="va">beta_sd</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fl">1.12</span> <span class="op">-</span> <span class="fl">1.07</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fl">0.975</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">beta_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="cn">NA</span>, ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">prevalence</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">prevalence</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="kw">for</span> <span class="op">(</span><span class="va">k</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">prevalence</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
-<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">prevalence</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
+<span><span class="va">beta_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="cn">NA</span>, ncol <span class="op">=</span> <span class="fu"><a href="../reference/length.html">length</a></span><span class="op">(</span><span class="va">prevalence</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fu"><a href="../reference/length.html">length</a></span><span class="op">(</span><span class="va">prevalence</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">k</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="../reference/length.html">length</a></span><span class="op">(</span><span class="va">prevalence</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="../reference/length.html">length</a></span><span class="op">(</span><span class="va">prevalence</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
 <span>    <span class="va">beta_var</span><span class="op">[</span><span class="va">k</span>,<span class="va">j</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">beta_sd</span><span class="op">^</span><span class="fl">2</span><span class="op">*</span><span class="op">(</span><span class="va">alcohol_men_intake</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">/</span><span class="fl">10</span><span class="op">)</span><span class="op">*</span><span class="op">(</span><span class="va">alcohol_men_intake</span><span class="op">[</span><span class="va">k</span><span class="op">]</span><span class="op">/</span><span class="fl">10</span><span class="op">)</span></span>
 <span>  <span class="op">}</span></span>
 <span><span class="op">}</span></span>
@@ -401,11 +347,10 @@ the relative risk as follows:</p>
 <span><span class="co">#Calculate the paf</span></span>
 <span><span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span><span class="va">prevalence</span>, beta <span class="op">=</span> <span class="va">relative_risk</span>, var_p <span class="op">=</span> <span class="fl">0</span>, var_b <span class="op">=</span> <span class="va">beta_var</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction</span> ──</span></span>
+<span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0296640024591827]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PAF = 13.184% [<span style="font-style: italic;">95% CI</span>: 12.951% to 13.417%]</span></span>
-<span><span class="co">#&gt; standard_deviation(paf %) = 0.119</span></span>
-<span><span class="co">#&gt; standard_deviation(link(paf)) = 0.001</span></span></code></pre></div>
+<span><span class="co">#&gt; PAF = 70.114% [<span style="font-style: italic;">95% CI</span>: 69.954% to 70.272%]</span></span>
+<span><span class="co">#&gt; standard_deviation(paf %) = 0.081</span></span></code></pre></div>
 <!--
 ## Example 3: Negative fractions
 
