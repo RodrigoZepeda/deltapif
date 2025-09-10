@@ -16,6 +16,24 @@ each of the \code{N} exposure levels.}
 The mean relative risk under the observed prevalence
 }
 \description{
-Compute the mean under the observed prevalence
+Calculates the mean average relative risk of a population
+under the observed prevalence:
+\deqn{
+E[\text{RR}] = \sum\limits_{i=1}^{n} p_i \cdot \text{RR}_i
+}
+}
+\examples{
+\dontrun{
+#Consider a popualtion with 3 exposure categories with
+#relative risks 1.0, 1.1, 1.3 and prevalences 0.6, 0.3, 0.1
+#Notice that the reference relative risk (1) is not added
+pval  <- c(0.3, 0.1) #Prevalences
+rrval <- c(1.1, 1.3) #Risks
+mu_obs_fun(p = pval, rr = rrval) #Average relative risk
+}
+
+}
+\seealso{
+\code{\link[=mu_cft_fun]{mu_cft_fun()}}
 }
 \keyword{internal}

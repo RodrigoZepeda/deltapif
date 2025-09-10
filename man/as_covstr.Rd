@@ -23,4 +23,18 @@ Transforms either a matrix or a vector into a covariance structure.
 mat <- matrix(c(1,3,2,4), ncol = 2,
           dimnames = list(list("pif1", "pif2"), list("pif1", "pif2")))
 as_covariance_structure(mat)
+
+#Different colnames than dimnames
+as_covariance_structure(mat, col_names = c("first", "second"))
+
+#Also with a number
+as_covariance_structure(2, col_names = "col", row_names = "row")
+
+#Or with a vector
+as_covariance_structure(seq(0.1, 0.2, length.out = 4),
+    row_names = c("r1","r2","r3","r4"), col_names = "col")
+
+#As well as a data.frame
+data_mat <- as.data.frame(mat)
+as_covariance_structure(data_mat, row_names = c("r1","r2"))
 }

@@ -23,8 +23,10 @@ create_mock_pif_atomic <- function(type = "PIF") {
 create_mock_pif <- function() {
   pif1 <- create_mock_pif_atomic()
   pif2 <- create_mock_pif_atomic()
+  piflist <- list(pif1, pif2)
+  names(piflist) <- c(pif1@label, pif2@label)
   pif_total_class(
-    pif_list = list(pif1, pif2),
+    pif_list = piflist,
     weights = c(0.5, 0.5),
     var_weights = matrix(c(0.01, 0, 0, 0.01), nrow = 2),
     link = logit,
@@ -160,12 +162,15 @@ test_that("Types for totals", {
   paf1 <- create_mock_pif_atomic("PAF")
   paf2 <- create_mock_pif_atomic("PAF")
 
-  tp <- pif_total_class(list(pif1, pif2), link = identity, label = "total_class",
+  piflist <- list(pif1, pif2)
+  names(piflist) <- c(pif1@label, pif2@label)
+
+  tp <- pif_total_class(piflist, link = identity, label = "total_class",
                         var_pif_weights = matrix(0, 2, 2),
                         link_inv = identity, link_deriv = function(x) rep(1, length(x)),
                         weights = c(0.5, 0.5), var_weights = matrix(0, 2, 2))
 
-  ep <- pif_ensemble_class(list(pif1, pif2), link = identity, label = "ensemble_class",
+  ep <- pif_ensemble_class(piflist, link = identity, label = "ensemble_class",
                            var_pif_weights = matrix(0, 2, 2),
                            link_inv = identity, link_deriv = function(x) rep(1, length(x)),
                            weights = rep(1, 2), var_weights = matrix(0, 2, 2))
@@ -173,13 +178,17 @@ test_that("Types for totals", {
   expect_equal(get_ensemble_type(tp), "PIF")
   expect_equal(get_ensemble_type(ep), "PIF")
 
-  tp <- pif_total_class(list(paf1, pif2), link = identity,
+  paflist <- list(paf1, pif2)
+  names(paflist) <- c(paf1@label, pif2@label)
+
+
+  tp <- pif_total_class(paflist, link = identity,
                         label = "total_class",
                         var_pif_weights = matrix(0, 2, 2),
                         link_inv = identity, link_deriv = function(x) rep(1, length(x)),
                         weights = c(0.5, 0.5), var_weights = matrix(0, 2, 2))
 
-  ep <- pif_ensemble_class(list(pif1, paf2), link = identity,
+  ep <- pif_ensemble_class(paflist, link = identity,
                            label = "ensemble_class",
                            var_pif_weights = matrix(0, 2, 2),
                            link_inv = identity, link_deriv = function(x) rep(1, length(x)),
@@ -189,13 +198,17 @@ test_that("Types for totals", {
   expect_equal(get_ensemble_type(tp), "PIF")
   expect_equal(get_ensemble_type(ep), "PIF")
 
-  tp <- pif_total_class(list(paf1, paf2), link = identity,
+  papaflist <- list(paf1, paf2)
+  names(papaflist) <- c(paf1@label, paf2@label)
+
+
+  tp <- pif_total_class(papaflist, link = identity,
                         label = "total_class",
                         var_pif_weights = matrix(0, 2, 2),
                         link_inv = identity, link_deriv = function(x) rep(1, length(x)),
                         weights = c(0.5, 0.5), var_weights = matrix(0, 2, 2))
 
-  ep <- pif_ensemble_class(list(paf1, paf2), link = identity,
+  ep <- pif_ensemble_class(papaflist, link = identity,
                            label = "ensemble_class",
                            var_pif_weights = matrix(0, 2, 2),
                            link_inv = identity, link_deriv = function(x) rep(1, length(x)),

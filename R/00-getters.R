@@ -145,7 +145,7 @@ get_covariance <- function(self){
         cov_mat[i,j] <- cov_total_pif(self@pif_list[[i]], self@pif_list[[j]])
       }
     }
-    cov_mat <- cov_mat + t(cov_mat) + diag(sapply(self@pif_list, variance)) #FIXME: Double check this part
+    cov_mat <- cov_mat + t(cov_mat) + diag(sapply(self@pif_list, variance)) #TODO: Double check this part
     return(cov_mat)
   } else {
     return(

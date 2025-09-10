@@ -2,7 +2,7 @@
 % Please edit documentation in R/08-utils.R
 \name{change_link}
 \alias{change_link}
-\title{Change the link for the fraction's variance calculation}
+\title{Change the link}
 \usage{
 change_link(x, link = "identity", link_inv = NULL, link_deriv = NULL)
 }

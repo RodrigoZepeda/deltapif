@@ -2,12 +2,35 @@
 % Please edit documentation in R/02-generics.R
 \name{as.list}
 \alias{as.list}
-\title{Convert a \code{covariance_structure} to \code{list}}
+\title{Convert to list}
 \arguments{
-\item{x}{A \code{covariance_structure}}
+\item{x}{Either a \code{covariance_structure}, a \code{pif_atomic_class}
+or \code{pif_global_ensemble_class}}
 
 \item{...}{Additional parameters (ignored)}
 }
+\value{
+The object as a list
+}
 \description{
-Transforms a \code{covariance_structure} into a \code{list}.
+Converts the object into a list.
+}
+\examples{
+
+#FOR POTENTIAL IMPACT FRACTIONS
+#------------------------------------------------------------------------
+#Potential impact fraction for women
+paf_lead_women <- paf(0.27, 2.2, quiet = TRUE, var_p = 0.001,
+    label = "Lead women")
+paf_rad_women  <- paf(0.12, 1.2, quiet = TRUE, var_p = 0.001,
+    label = "Radiation women")
+paf_women      <- paf_ensemble(paf_lead_women, paf_rad_women,
+    label = "Women")
+
+as.list(paf_women)
+
+#FOR COVARIANCE STRUCTURES
+#------------------------------------------------------------------------
+cov_str <- default_parameter_covariance_structure(paf_women)
+as.list(cov_str)
 }

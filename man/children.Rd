@@ -11,6 +11,12 @@ children(x, ...)
 
 \item{...}{Additional arguments (currently ignored)}
 }
+\value{
+A character vector with the names of the fractions that make up \code{x}
+}
 \description{
-Gets the labels of the elemebts in the \code{pif_list} of an ensemble class.
+Gets the labels of the pif elements that make up a \code{pif_global_ensemble_class}.
+}
+\note{
+The result is \code{NULL} if \code{x} is a \code{pif_atomic_class}
 }

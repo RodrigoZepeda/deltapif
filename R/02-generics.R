@@ -21,21 +21,50 @@ print_pif_class <- function(x, accuracy){
   pif_val <- scales::percent(x@pif, accuracy = accuracy)
   cilow   <- scales::percent(x@ci[1], accuracy = accuracy)
   cihigh  <- scales::percent(x@ci[2], accuracy = accuracy)
+  sdval   <- scales::comma(100*sqrt(x@variance), accuracy = accuracy)
   title   <- ifelse(x@type == "PIF", "Potential Impact Fraction",
                     "Population Attributable Fraction")
 
-  cli::cli_h3("{title}: {.val {x@label}}")
+  cli::cli_h2("{title}: {.emph [{x@label}]}")
   cli::cli_text(
     "{x@type} = {pif_val} ",
     "[{.emph {scales::percent(x@conf_level)} CI}: {cilow} to {cihigh}]"
   )
-  # cli::cli_text(
-  #   "standard_deviation({tolower(x@type)} %) = {scales::comma(100*sqrt(x@variance), accuracy = accuracy)}"
-  # )
-  # cli::cli_text(
-  #   "standard_deviation(link({tolower(x@type)})) = {scales::comma(sqrt(x@link_variance), accuracy = accuracy)}"
-  # )
+  cli::cli_text(
+    "standard_deviation({tolower(x@type)} %) = {sdval}"
+  )
 
+  return(invisible())
+}
+
+#' Print a `pif_global_ensemble_class`
+#'
+#' Prints a `pif_global_ensemble_class` object.
+#'
+#' @param x A `pif_global_ensemble_class`
+#'
+#' @param accuracy The accuracy parameter for [`scales::percent`].
+#'
+#' @return Called for its side-effects of printing to the console
+#'
+#' @keywords internal
+helper_print_pif_global_ensemble_class <- function(x, accuracy){
+
+  # Printed text looks like:
+  #   ── Potential Impact Fraction ──
+  #
+  # PIF = 4.421% [95% CI: 0.179% to 54.364%]
+  # standard_deviation(pif %) = 7.003
+  # standard_deviation(link(pif)) = 1.657
+  pif_list <- scales::percent(sapply(x@pif_list, coef), accuracy = accuracy)
+  sdval    <- scales::comma(sapply(x@pif_list, function(x)  100*standard_deviation(x)), accuracy = accuracy)
+  cli::cli_rule(center = "Components:")
+  cli::cli_ul()
+  for (k in 1:length(pif_list)){
+    cli::cli_li("{pif_list[k]} (sd %: {sdval[k]}) --- {.emph [{names(pif_list)[k]}]}")
+  }
+  cli::cli_end()
+  cli::cli_rule()
   return(invisible())
 }
 
@@ -60,12 +89,9 @@ print_pif_class <- function(x, accuracy){
 #' @export
 S7::method(print, pif_class) <- function(x, ..., accuracy = 0.001) {
   print_pif_class(x, accuracy)
-  # cli::cli_h3("Parameters:")
-  # cli::cli_ul()
-  # cli::cli_li("Observed prevalence ({.code p_obs}) = {x@p}")
-  # cli::cli_li("Counterfactual prevalence ({.code p_cft}) = {x@p_cft}")
-  # cli::cli_li("Relative risks ({.code rr}) = {x@rr}")
-  # cli::cli_end()
+  if (S7::S7_inherits(x, pif_global_ensemble_class)){
+    helper_print_pif_global_ensemble_class(x, accuracy)
+  }
 }
 
 #' Print or show a covariance structure class
@@ -268,6 +294,23 @@ S7::method(names, pif_global_ensemble_class) <- function(x, ...) {
   return(children(x))
 }
 
+#' Row and Column names
+#'
+#' Retrieve the row and column names of a `covariance_structure`
+#'
+#' @param x A `covariance_structure`
+#'
+#' @name rowcol
+#' @export
+row_names <- function(x) {
+  names(x@cov_list)
+}
+
+
+#' @rdname rowcol
+col_names <- function(x) {
+  names(x@cov_list)
+}
 
 #' Length of a `covariance_structure`
 #'
@@ -395,9 +438,11 @@ S7::method(as.matrix, covariance_structure_class) <- function(x, ...) {
 #' given by the `select` option as a vector.
 #'
 #' @param x A `covariance_structure`
-#' @param select A vector of covariates to keep
-#' @param cols A vector of column names to keep
-#' @param rows A vector of row names to keep
+#' @param select A vector of covariate names to keep in the `covariance_structure`.
+#' @param cols A vector of covariate column names to keep in the `covariance_structure`.
+#' @param rows A vector of covariate row names to keep in the `covariance_structure`.
+#' @param negate If `TRUE` subsets the variables that have not been specified
+#'
 #' @param ... Additional parameters (ignored)
 #'
 #' @examples
@@ -407,19 +452,39 @@ S7::method(as.matrix, covariance_structure_class) <- function(x, ...) {
 #'                       label = "Women radiation")
 #' covstr <- default_parameter_covariance_structure2(pif_lead_women, pif_rad_women, parameter = "beta")
 #' subset(covstr, "Women lead")
+#' subset(covstr, "Women lead", negate = TRUE)
 #' subset(covstr, c("Women radiation", "Women lead"))
 #' subset(covstr, 2)
 #' subset(covstr, 1:2)
 #'
 #' @name subset
 #' @export
-S7::method(subset, covariance_structure_class) <- function(x, select = NULL, cols = NULL, rows = NULL, ...) {
+S7::method(subset, covariance_structure_class) <- function(x, select = NULL, cols = NULL, rows = NULL, negate = FALSE, ...) {
 
   if (is.null(select) && is.null(cols) && is.null(rows)){
     return(x)
   }
 
-  if (!is.null(select) && is.null(cols) && is.null(rows)){
+  #Invert the names if negate
+  if (negate){
+    if (!is.null(select)){
+      names_of_x <- unique(c(row_names(x), col_names(x)))
+      select     <- names_of_x[which(!(names_of_x %in% select))]
+    }
+
+    if (!is.null(cols)){
+      names_of_x <- col_names(x)
+      cols       <- names_of_x[which(!(names_of_x %in% cols))]
+    }
+
+    if (!is.null(rows)){
+      names_of_x <- row_names(x)
+      rows       <- names_of_x[which(!(names_of_x %in% rows))]
+    }
+  }
+
+
+  if (!is.null(select) && length(select) > 0 && is.null(cols) && is.null(rows)){
 
     if (is.numeric(select) && max(select) > length(x) || min(select) < 0){
       cli::cli_abort(
@@ -469,19 +534,25 @@ S7::method(subset, covariance_structure_class) <- function(x, select = NULL, col
     #Add to class
     return(covariance_structure_class(cov_str))
 
-  } else if (!is.null(select) && (!is.null(cols) || !is.null(rows))){
+  } else if ( (!is.null(select) && length(select) > 0) && (!is.null(cols) || !is.null(rows))){
     cli::cli_abort(
       "Don't specify `select` at the same time as `cols` or `rows` as I don't know how to proceed."
     )
-  } else if (is.null(select)){
+  } else if (is.null(select) || length(select) < 1){
+
+    if ((is.null(rows) ||  length(rows) < 1) && (is.null(cols) || length(cols) < 1)){
+      cli::cli_abort(
+        "Empty selection. Check row_names or col_names to see which variables are present in your covariance structure."
+      )
+    }
 
     cov_str <- x
 
-    if (!is.null(rows)){
+    if (!is.null(rows) && length(rows) > 0){
       cov_str <- subset_row(cov_str, select = rows)
     }
 
-    if (!is.null(cols)){
+    if (!is.null(cols) && length(cols) > 0){
       cov_str <- subset_col(cov_str, select = cols)
     }
 
@@ -636,25 +707,80 @@ subset_row <- function(x, select, ...) {
 }
 
 
-#' Convert a `covariance_structure` to `list`
+#' Convert to list
 #'
-#' Transforms a `covariance_structure` into a `list`.
+#' Converts the object into a list.
 #'
-#' @param x A `covariance_structure`
+#' @param x Either a `covariance_structure`, a `pif_atomic_class`
+#' or `pif_global_ensemble_class`
+#'
 #' @param ... Additional parameters (ignored)
 #'
+#' @return The object as a list
+#'
+#' @examples
+#'
+#' #FOR POTENTIAL IMPACT FRACTIONS
+#' #------------------------------------------------------------------------
+#' #Potential impact fraction for women
+#' paf_lead_women <- paf(0.27, 2.2, quiet = TRUE, var_p = 0.001,
+#'     label = "Lead women")
+#' paf_rad_women  <- paf(0.12, 1.2, quiet = TRUE, var_p = 0.001,
+#'     label = "Radiation women")
+#' paf_women      <- paf_ensemble(paf_lead_women, paf_rad_women,
+#'     label = "Women")
+#'
+#' as.list(paf_women)
+#'
+#' #FOR COVARIANCE STRUCTURES
+#' #------------------------------------------------------------------------
+#' cov_str <- default_parameter_covariance_structure(paf_women)
+#' as.list(cov_str)
+#' @export
+#' @name as.list
+NULL
+
+#' @rdname as.list
 #' @name as.list
 #' @export
 S7::method(as.list, covariance_structure_class) <- function(x, ...) {
   x@cov_list
 }
 
+#' @rdname as.list
+#' @name as.list
+#' @export
+S7::method(as.list, pif_class) <- function(x, ...) {
+
+  if (S7::S7_inherits(x, pif_atomic_class)){
+    pifvec <- list(x)
+    names(pifvec) <- x@label
+    return(pifvec)
+  }
+
+  #Assuming its a pif_global_ensemble_class
+  pif_flattened_list <- list(x)
+  names(pif_flattened_list) <- x@label
+  for (k in 1:length(x@pif_list)){
+    pif_flattened_list <-
+      append(pif_flattened_list, as.list(x@pif_list[[k]]))
+  }
+
+  return(pif_flattened_list)
+
+}
+
+
 #' Get the children labels from a `pif_class`
 #'
-#' Gets the labels of the elemebts in the `pif_list` of an ensemble class.
+#' Gets the labels of the pif elements that make up a `pif_global_ensemble_class`.
 #'
 #' @param x A `pif_global_ensemble_class`
 #' @param ... Additional arguments (currently ignored)
+#'
+#' @note The result is `NULL` if `x` is a `pif_atomic_class`
+#'
+#' @returns A character vector with the names of the fractions that make up `x`
 #' @name children
 NULL
 
@@ -667,7 +793,9 @@ children <- S7::new_generic(
   }
 )
 S7::method(children, pif_global_ensemble_class) <- function(x, ...) {
-  sapply(x@pif_list, function(x) x@label)
+  the_children <- sapply(x@pif_list, function(x) x@label)
+  names(the_children) <- NULL
+  return(the_children)
 }
 S7::method(children, pif_atomic_class) <- function(x, ...) {
   NULL
@@ -688,6 +816,20 @@ S7::method(children, pif_atomic_class) <- function(x, ...) {
 #' mat <- matrix(c(1,3,2,4), ncol = 2,
 #'           dimnames = list(list("pif1", "pif2"), list("pif1", "pif2")))
 #' as_covariance_structure(mat)
+#'
+#' #Different colnames than dimnames
+#' as_covariance_structure(mat, col_names = c("first", "second"))
+#'
+#' #Also with a number
+#' as_covariance_structure(2, col_names = "col", row_names = "row")
+#'
+#' #Or with a vector
+#' as_covariance_structure(seq(0.1, 0.2, length.out = 4),
+#'     row_names = c("r1","r2","r3","r4"), col_names = "col")
+#'
+#' #As well as a data.frame
+#' data_mat <- as.data.frame(mat)
+#' as_covariance_structure(data_mat, row_names = c("r1","r2"))
 #' @export
 
 #' @rdname as_covstr
@@ -697,6 +839,18 @@ as_covariance_structure <- function(x, col_names = NULL, row_names = NULL, ...) 
   #Already a covariance structure
   if (S7::S7_inherits(x, covariance_structure_class)){
     return(x)
+  }
+
+  if (is.numeric(x) && length(x) == 1){
+    my_list <- list(x)
+    names(my_list) <- col_names
+    cov_list <- list(my_list)
+    names(cov_list) <- row_names
+    return(covariance_structure_class(cov_list = cov_list))
+  }
+
+  if (is.vector(x) || is.data.frame(x)){
+    x <- as.matrix(x)
   }
 
   if (!is.matrix(x) && !S7::S7_inherits(x, covariance_structure_class)){
@@ -750,3 +904,5 @@ as_covariance_structure <- function(x, col_names = NULL, row_names = NULL, ...) 
 
   covariance_structure_class(cov_list = row_list)
 }
+
+

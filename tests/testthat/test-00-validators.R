@@ -13,10 +13,16 @@ some_pifs <- S7::new_class(name = "some_pifs",
 
 test_that("Validators show errors",{
 
+  piflist <- list(a_pif, another_pif)
+  names(piflist) <- c(a_pif@label, another_pif@label)
+
+  not_a_piflist <- list(not_a_pif, another_pif)
+  names(not_a_piflist) <- c("not", another_pif@label)
+
   expect_silent(
     validate_global_ensemble(
       some_pifs(
-        pif_list = list(a_pif, another_pif),
+        pif_list = piflist,
         weights = c(1,1)
       )
     )
@@ -25,7 +31,7 @@ test_that("Validators show errors",{
   expect_error(
     validate_global_ensemble(
       some_pifs(
-        pif_list = list(a_pif, not_a_pif),
+        pif_list = not_a_piflist,
         weights = c(1,1)
       )
     ),
@@ -36,6 +42,16 @@ test_that("Validators show errors",{
     validate_global_ensemble(
       some_pifs(
         pif_list = list(a_pif, another_pif),
+        weights = c(1,1)
+      )
+    ),
+    "named list"
+  )
+
+  expect_error(
+    validate_global_ensemble(
+      some_pifs(
+        pif_list = piflist,
         weights = c(1, 2, 3)
       )
     ),

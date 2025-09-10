@@ -6,11 +6,13 @@
 \arguments{
 \item{x}{A \code{covariance_structure}}
 
-\item{select}{A vector of covariates to keep}
+\item{select}{A vector of covariate names to keep in the \code{covariance_structure}.}
 
-\item{cols}{A vector of column names to keep}
+\item{cols}{A vector of covariate column names to keep in the \code{covariance_structure}.}
 
-\item{rows}{A vector of row names to keep}
+\item{rows}{A vector of covariate row names to keep in the \code{covariance_structure}.}
+
+\item{negate}{If \code{TRUE} subsets the variables that have not been specified}
 
 \item{...}{Additional parameters (ignored)}
 }
@@ -25,6 +27,7 @@ pif_rad_women  <- paf(0.12, 1.2, quiet = TRUE, var_p = 0.001, var_beta = 0.022,
                       label = "Women radiation")
 covstr <- default_parameter_covariance_structure2(pif_lead_women, pif_rad_women, parameter = "beta")
 subset(covstr, "Women lead")
+subset(covstr, "Women lead", negate = TRUE)
 subset(covstr, c("Women radiation", "Women lead"))
 subset(covstr, 2)
 subset(covstr, 1:2)

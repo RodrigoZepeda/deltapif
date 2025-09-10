@@ -19,6 +19,42 @@ individuals for each of the \code{N} exposure levels.}
 A potential impact fraction (numeric)
 }
 \description{
-Compute the potential impact fraction
+Calculates the potential impact fraction following the formula:
+\deqn{
+\text{PIF} = \dfrac{
+\sum\limits_{i=1}^n p_i \cdot \text{RR}_i - \sum\limits_{i=1}^n p_i^{\text{cft}} \cdot \text{RR}_i
+}{
+\sum\limits_{i=1}^n p_i \cdot \text{RR}_i
+}
+}
+}
+\examples{
+\dontrun{
+#This example comes from Levin 1953
+#Relative risk of lung cancer given smoking was 3.6
+#Proportion of individuals smoking where 49.9\%
+#Counterfactual is 0\% smoking
+pif_fun(0.499, 0.0, 3.6)
+
+#You can also use multiple exposure categories. As an example
+#These are the relative risks for age-group 25-59 for each BMI level:
+rr <- c("<18.5" = 1.38, "25 to <30" = 0.83,
+  "30 to <35" = 1.20, ">=35" = 1.83)
+
+#While the prevalences are:
+p <- c("<18.5" = 1.9, "25 to <30" = 34.8,
+  "30 to <35" = 17.3, ">=35" = 13.3) / 100
+
+#A counterfactual of reducing the prevalence of >=35 by half and
+#having them be on the "30 to <35" category instead
+p_cft <- c("<18.5" = 1.9, "25 to <30" = 34.8,
+  "30 to <35" = 17.3 + 13.3/2, ">=35" = 13.3/2) / 100
+
+pif_fun(p = p, p_cft = p_cft, rr = rr)
+}
+}
+\seealso{
+\code{\link[=mu_cft_fun]{mu_cft_fun()}}, \code{\link[=mu_obs_fun]{mu_obs_fun()}}, and \code{\link[=pif_fun2]{pif_fun2()}} to calculate from
+the average relative risks. For the main function in the package see \code{\link[=pif]{pif()}}
 }
 \keyword{internal}

@@ -192,6 +192,15 @@ pif_validate_ensemble <- function(pif1, ..., weights, var_weights,
     )
   }
 
+  #Check that labels are different
+  label_names <- sapply(pif_list, function(x) x@label)
+  dups        <- duplicated(label_names)
+  if (any(dups)){
+    cli::cli_abort(
+      "Element {label_names[dups]} is duplicated. Use the `label` argument to set up a different label. Cannot combine fractions with duplicated labels."
+    )
+  }
+
   # Get the inverse function
   if (is.null(link_inv) & is.character(link)) {
     link_inv <- parse_inv_link(link)
@@ -225,6 +234,22 @@ pif_validate_ensemble <- function(pif1, ..., weights, var_weights,
     cli::cli_abort(
       "`var_weights` should be a number, vector or matrix."
     )
+  }
+
+  if (is.matrix(var_weights)){
+    if (length(weights) != ncol(var_weights) || length(weights) != nrow(var_weights)){
+      cli::cli_abort(
+        "Invalid dimensions for `var_weights`"
+      )
+    }
+  }
+
+  if (is.vector(var_weights) && length(var_weights) > 1){
+    if (length(weights) != length(var_weights)){
+      cli::cli_abort(
+        "Invalid dimensions for `var_weights`"
+      )
+    }
   }
 
   #Validate the matrix

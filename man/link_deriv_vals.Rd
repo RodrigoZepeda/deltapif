@@ -10,11 +10,26 @@ link_deriv_vals(x)
 \item{x}{A \code{pif_class} object}
 }
 \value{
-A number indicating the derivative of \code{link(pif)}
+A number indicating the derivative of \code{link()} evaluated at \code{pif}.
 }
 \description{
 Obtain the values of the derivative of the link function of
 a potential impact fraction (PIF) or a population attributable
 fraction (PAF) at \code{pif}
+}
+\examples{
+\dontrun{
+#Create a pif object
+pif_obj <- pif(p = 0.499, beta = log(3.6), p_cft = 0.499/2, var_p = 0.001,
+  var_beta = 0.1, link = "logit", quiet = TRUE)
+
+#Obtain the value of the link at the derivative
+link_deriv_vals(pif_obj)
+
+#This is the same as the derivative of logit evaluated at 0.2823
+deriv_logit(coef(pif_obj))
+}
+
+
 }
 \keyword{internal}

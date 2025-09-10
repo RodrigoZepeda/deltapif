@@ -1,5 +1,5 @@
 # Helper function to create mock PIF objects
-create_mock_pif_atomic <- function(type = "PIF") {
+create_mock_pif_atomic <- function(type = "PIF", label = "a") {
   pif_atomic_class(
     p = c(0.3, 0.7),
     p_cft = c(0.2, 0.5),
@@ -14,7 +14,7 @@ create_mock_pif_atomic <- function(type = "PIF") {
     upper_bound_p = FALSE,
     upper_bound_beta = FALSE,
     conf_level = 0.95,
-    label = "hello",
+    label = label,
     type = type
   )
 }
@@ -52,8 +52,8 @@ create_var_pif_weights_example <- function(n, include_null_case = TRUE) {
 
 test_that("paf_total validates inputs correctly", {
   # Create mock PAFs
-  paf1 <- create_mock_pif_atomic(type = "PAF")
-  paf2 <- create_mock_pif_atomic(type = "PAF")
+  paf1 <- create_mock_pif_atomic(type = "PAF", label = "1")
+  paf2 <- create_mock_pif_atomic(type = "PAF", label = "2")
 
   # Valid case
   expect_silent(paf_total(paf1, paf2, weights = c(0.5, 0.5)))
@@ -62,7 +62,7 @@ test_that("paf_total validates inputs correctly", {
 
 test_that("pif_total validates inputs correctly", {
   pif1 <- create_mock_pif_atomic()
-  pif2 <- create_mock_pif_atomic()
+  pif2 <- create_mock_pif_atomic(label = "b")
 
   # Valid cases
   expect_silent(pif_total(pif1, pif2, weights = c(0.5, 0.5)))
@@ -79,25 +79,29 @@ test_that("pif_total validates inputs correctly", {
     "provided have length 1"
   )
 
+  #This one used to give an error leaving it here just in case
+  expect_silent(
+    pif_total(pif1, pif2, weights = c(0.5, 0.5), var_weights = matrix(1:4, nrow = 2))
+  )
+
+
   # Invalid var_weights
-  #FIXME:
-  # expect_error(
-  #   pif_total(pif1, pif2, weights = c(0.5, 0.5), var_weights = matrix(1:4, nrow = 2)),
-  #   "Invalid dimensions"
-  # )
+  expect_error(
+     pif_total(pif1, pif1, weights = c(0.5, 0.5), var_weights = matrix(1:4, nrow = 2)),
+     "duplicated labels"
+  )
 
   expect_error(
     pif_total(pif1, pif2, weights = c(0.5, 0.5), var_weights = "a"),
     "should be a number"
   )
 
-  #FIXME: Throw error
-  # expect_error(
-  #   suppressWarnings(
-  #     pif_total(pif1, pif2, weights = c(0.5, 0.5), var_weights = 1:3)
-  #   ),
-  #   "has incorrect dimensions"
-  # )
+  expect_error(
+    pif_total(pif1, pif2, weights = c(0.5, 0.5), var_weights = 1:3)
+    ,
+    "dimensions"
+  )
+
 
   # Test link function handling
   expect_silent(pif_total(pif1, weights = 1, link = "logit"))
@@ -107,7 +111,7 @@ test_that("pif_total validates inputs correctly", {
 
 test_that("pif_total calculates correctly", {
   pif1 <- create_mock_pif_atomic()
-  pif2 <- create_mock_pif_atomic()
+  pif2 <- create_mock_pif_atomic(label = "2")
 
   # Test weights
   result <- pif_total(pif1, pif2, weights = c(0.7, 0.3))
@@ -118,16 +122,15 @@ test_that("pif_total calculates correctly", {
   expect_equal(result@pif, pif1@pif)
 
   # Test variance calculation
-  #FIXME: ERROR IN var_p
-  # result <- pif_total(pif1, pif2, weights = c(0.5, 0.5), var_weights = diag(0.01, 2))
-  # expect_type(result@variance, "double")
-  # expect_true(result@variance >= 0)
+  result <- pif_total(pif1, pif2, weights = c(0.5, 0.5), var_weights = diag(0.01, 2))
+  expect_type(result@variance, "double")
+  expect_true(result@variance >= 0)
 })
 
 test_that("pif_ensemble validates inputs correctly", {
   pif1 <- create_mock_pif_atomic()
-  pif2 <- create_mock_pif_atomic()
-  paf <- create_mock_pif_atomic() # Should work with PAFs too
+  pif2 <- create_mock_pif_atomic(label = "b")
+  paf <- create_mock_pif_atomic(label = "paf") # Should work with PAFs too
 
   # Valid cases
   expect_silent(pif_ensemble(pif1, pif2))
@@ -138,8 +141,8 @@ test_that("pif_ensemble validates inputs correctly", {
 })
 
 test_that("pif_ensemble calculates correctly", {
-  pif1 <- create_mock_pif_atomic()
-  pif2 <- create_mock_pif_atomic()
+  pif1 <- create_mock_pif_atomic(label = "a")
+  pif2 <- create_mock_pif_atomic(label = "b")
 
   # Test two PIFs
   result <- pif_ensemble(pif1, pif2)
@@ -150,17 +153,16 @@ test_that("pif_ensemble calculates correctly", {
   expect_equal(result@pif, pif1@pif)
 
   # Test variance calculation
-  #FIXME: Error in var_p
-  # result <- pif_ensemble(pif1, pif2)
-  # expect_type(result@variance, "double")
-  # expect_true(result@variance > 0)
+  result <- pif_ensemble(pif1, pif2)
+  expect_type(result@variance, "double")
+  expect_true(result@variance > 0)
 })
 
 
 test_that("paf_total validates inputs correctly", {
-  pif1 <- create_mock_pif_atomic("PIF")
-  paf1 <- create_mock_pif_atomic("PAF")
-  paf2 <- create_mock_pif_atomic("PAF")
+  pif1 <- create_mock_pif_atomic("PIF", label = "a")
+  paf1 <- create_mock_pif_atomic("PAF", label = "paf1")
+  paf2 <- create_mock_pif_atomic("PAF", label = "paf2")
 
   # Valid cases
   expect_silent(paf_total(paf1, paf2, weights = c(0.5, 0.5)))

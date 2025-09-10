@@ -146,7 +146,7 @@ test_that("pif_atomic_class construction and validation works", {
   )
 
   # Invalid variance matrices
-  suppressMessages(
+  expect_message(
     expect_error(
       pif_atomic_class(
         p = c(0.3, 0.7),
@@ -182,9 +182,11 @@ test_that("pif_total_class construction and validation works", {
   pif2 <- create_valid_pif_atomic(label = "pif2")
 
   # Valid construction
+  piflist <- list(pif1, pif2)
+  names(piflist) <- sapply(piflist, function(x) x@label)
   expect_silent(
     pif_total_class(
-      pif_list = list(pif1, pif2),
+      pif_list = piflist,
       weights = c(0.5, 0.5),
       var_weights = matrix(c(0.01, 0, 0, 0.01), nrow = 2),
       conf_level = 0.95,
@@ -215,7 +217,7 @@ test_that("pif_total_class construction and validation works", {
   # Length mismatch
   expect_error(
     pif_total_class(
-      pif_list = list(pif1, pif2),
+      pif_list = piflist,
       weights = c(0.5), # Too short
       var_weights = matrix(c(0.01, 0, 0, 0.01), nrow = 2,
                            dimnames = list(list("pif1", "pif2"), list("pif1", "pif2"))),
@@ -232,7 +234,7 @@ test_that("pif_total_class construction and validation works", {
 
   # Test property access
   pif_total <- pif_total_class(
-    pif_list = list(pif1, pif2),
+    pif_list = piflist,
     weights = c(0.5, 0.5),
     var_weights = matrix(c(0.01, 0, 0, 0.01), nrow = 2,
                          dimnames = list(list("pif1", "pif2"), list("pif1", "pif2"))),
@@ -245,10 +247,9 @@ test_that("pif_total_class construction and validation works", {
     link_deriv = function(x) 1
   )
 
-  expect_equal(pif_total@coefs, c(pif1@pif, pif2@pif))
+  expect_equal(as.vector(pif_total@coefs), c(pif1@pif, pif2@pif))
   expect_equal(pif_total@pif, as.numeric(t(c(0.5, 0.5)) %*% c(pif1@pif, pif2@pif)))
-  #FIXME:
-  #expect_equal(dim(pif_total@covariance), c(2, 2))
+  expect_equal(dim(pif_total@covariance), c(2, 2))
 })
 
 test_that("pif_ensemble_class construction and validation works", {
@@ -257,9 +258,13 @@ test_that("pif_ensemble_class construction and validation works", {
   pif2 <- create_valid_pif_atomic(label = "pif2")
 
   # Valid construction
+  piflist <- list(pif1, pif2)
+  names(piflist) <- sapply(piflist, function(x) x@label)
+
+  # Valid construction
   expect_silent(
     pif_ensemble_class(
-      pif_list = list(pif1, pif2),
+      pif_list = piflist,
       conf_level = 0.95,
       link = log_complement,
       link_inv = inv_log_complement,
@@ -293,7 +298,7 @@ test_that("pif_ensemble_class construction and validation works", {
 
   # Test property access
   pif_ensemble <- pif_ensemble_class(
-    pif_list = list(pif1, pif2),
+    pif_list = piflist,
     conf_level = 0.95,
     link = log_complement,
     link_inv = inv_log_complement,
@@ -306,11 +311,11 @@ test_that("pif_ensemble_class construction and validation works", {
                              dimnames = list(list("pif1", "pif2"), list("pif1", "pif2")))
   )
 
-  expect_equal(pif_ensemble@coefs, c(pif1@pif, pif2@pif))
+  expect_equal(as.vector(pif_ensemble@coefs), c(pif1@pif, pif2@pif))
   expect_equal(pif_ensemble@pif, 1 - (1 - pif1@pif) * (1 - pif2@pif))
 
-  #FIXME
-  #expect_equal(dim(pif_ensemble@covariance), c(2, 2))
+
+  expect_equal(dim(pif_ensemble@covariance), c(2, 2))
 
   # Verify link functions are set correctly
   expect_equal(pif_ensemble@link, log_complement)
@@ -322,8 +327,11 @@ test_that("Class inheritance works correctly", {
   pif_atomic <- create_valid_pif_atomic()
   pif1 <- create_valid_pif_atomic()
   pif2 <- create_valid_pif_atomic()
+
+  piflist <- list(pif1, pif2)
+  names(piflist) <- sapply(piflist, function(x) x@label)
   pif_total <- pif_total_class(
-    pif_list = list(pif1, pif2),
+    pif_list = piflist,
     weights = c(0.5, 0.5),
     conf_level = 0.95,
     link = identity,
@@ -337,7 +345,7 @@ test_that("Class inheritance works correctly", {
   )
 
   pif_ensemble <- pif_ensemble_class(
-    pif_list = list(pif1, pif2),
+    pif_list = piflist,
     conf_level = 0.95,
     link = log_complement,
     link_inv = inv_log_complement,
@@ -351,7 +359,7 @@ test_that("Class inheritance works correctly", {
   )
 
   pif_global_ensemble <- pif_global_ensemble_class(
-    pif_list = list(pif1, pif2),
+    pif_list = piflist,
     conf_level = 0.95,
     link = log_complement,
     link_inv = inv_log_complement,
@@ -378,9 +386,8 @@ test_that("Class inheritance works correctly", {
   # Verify methods work through inheritance
   expect_length(pif_atomic@ci, 2)
 
-  #FIXME:
-  #expect_length(pif_total@ci, 2)
-  #expect_length(pif_ensemble@ci, 2)
+  expect_length(pif_total@ci, 2)
+  expect_length(pif_ensemble@ci, 2)
 })
 
 test_that("Edge cases are handled properly", {

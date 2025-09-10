@@ -30,12 +30,15 @@ test_that("cov_atomic_pif validates inputs correctly", {
                                var_beta = default_parameter_covariance_structure2(pif1, pif2)))
 
   # Invalid class inputs
-  #FIXME: Errors not working
-  # expect_error(
-  #   cov_atomic_pif(list(), pif2),
-  #   "not a `deltapif::pif_atomic_class` object"
-  # )
+  expect_error(
+    cov_atomic_pif(list(), pif2),
+    "pif_atomic_class"
+  )
 
+  expect_error(
+    cov_atomic_pif(pif1, list()),
+    "pif_atomic_class"
+  )
 
 })
 
@@ -48,12 +51,13 @@ test_that("cov_atomic_pif calculates correctly", {
                           var_p = matrix(0, 2, 2), var_beta = diag(c(0.01, 0.02), 2),
                           label = "pif2")
 
-  var_p <- as.matrix(default_parameter_covariance_structure2(pif1, pif2))
+  var_p    <- default_parameter_covariance_structure2(pif1, pif2, parameter = "p")
+  var_p    <- subset(var_p, cols = "pif1", rows = "pif2")
   var_beta <- default_parameter_covariance_structure2(pif1, pif2, parameter = "beta")
   var_beta <- subset(var_beta, cols = "pif1", rows = "pif2")
 
   # Test basic calculation
-  result <- cov_atomic_pif(pif1, pif2, var_p, as.matrix(var_beta))
+  result <- cov_atomic_pif(pif1, pif2, as.matrix(var_p), as.matrix(var_beta))
   expect_type(result, "double")
 
   # Test with custom variance matrices
@@ -64,21 +68,23 @@ test_that("cov_atomic_pif calculates correctly", {
   )
 
   # Test with identical PIFs (should equal variance)
-  #FIXME: Error in the variance
-  #expect_equal(
-  #   cov_atomic_pif(pif1, pif1),
-  #   variance(pif1)
-  # )
+  expect_equal(
+     cov_atomic_pif(pif1, pif1, var_p = pif1@var_p, var_beta = pif1@var_beta),
+     variance(pif1)
+  )
 
 })
 
 test_that("cov_total_pif handles different PIF types", {
   atomic1 <- create_mock_pif(label = "1")
   atomic2 <- create_mock_pif(p = 0.4, p_cft = 0.2, beta = 1.8, label = "2")
+  atomic3 <- create_mock_pif(p = 0.4, p_cft = 0.2, beta = 1.8, label = "3")
 
   # Create a total PIF with two atomic PIFs
+  pif_list <- list(atomic2, atomic3)
+  names(pif_list) <- c(atomic2@label, atomic3@label)
   total_pif <- pif_total_class(
-    pif_list = list(atomic1, atomic2),
+    pif_list = pif_list,
     weights = c(0.5, 0.5),
     var_weights = matrix(c(0.01, 0, 0, 0.01), nrow = 2),
     conf_level = 0.95,
@@ -94,26 +100,24 @@ test_that("cov_total_pif handles different PIF types", {
     cov_total_pif(atomic1, atomic2)
   )
 
-  #FIXME
-  # Test atomic vs total
-  # expect_silent(
-  #   cov_total_pif(atomic1, total_pif)
-  # )
+  expect_silent(
+    cov_total_pif(atomic1, total_pif)
+  )
 
-  # expect_silent(
-  #   cov_total_pif(total_pif, atomic1)
-  # )
+  expect_silent(
+    cov_total_pif(total_pif, atomic1)
+  )
 
   # Test total vs total
-  # expect_silent(
-  #   cov_total_pif(total_pif, total_pif)
-  # )
+  expect_silent(
+    cov_total_pif(total_pif, total_pif)
+  )
 
   # # Test unsupported types
-  # expect_error(
-  #   cov_total_pif(atomic1, list()),
-  #   "Unsupported types"
-  # )
+  expect_error(
+    cov_total_pif(atomic1, list()),
+    " must be of `pif_class`"
+  )
 })
 
 test_that("covariance generic works correctly", {
@@ -139,13 +143,12 @@ test_that("covariance generic works correctly", {
     covariance(pif1, pif2, pif3)
   )
 
-  #FIXME
   # Test variance matrix input validation
-  # expect_error(
-  #   covariance(pif1, pif2,
-  #              var_p = matrix(1, nrow = 2, ncol = 2, dimnames = list(list("pif1", "pif"), list("pif1", "pif2")))),
-  #   "should be 2 x 2"
-  # )
+  expect_error(
+    covariance(pif1, pif2,
+               var_p = matrix(1, nrow = 2, ncol = 2, dimnames = list(list("pif1", "pif2"), list("pif1", "pif2")))),
+    "was not found"
+  )
 })
 
 test_that("variance generic works correctly", {

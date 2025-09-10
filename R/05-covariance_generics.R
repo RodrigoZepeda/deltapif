@@ -60,6 +60,14 @@ cov_atomic_pif <- function(pif1, pif2, var_p, var_beta) {
     var_beta <- as.matrix(var_beta)
   }
 
+  #Double check if they are collapsed to 0 make them bigger
+  if (length(var_p) == 1 && (var_p == 0 || identical(var_p, matrix(0)))){
+    var_p <- matrix(0, nrow = length(pif1@p), ncol = length(pif2@p))
+  }
+
+  if (length(var_beta) == 1 && (var_beta == 0 || identical(var_beta, matrix(0)))){
+    var_beta <- matrix(0, nrow = length(pif1@beta), ncol = length(pif2@beta))
+  }
 
 
   if (nrow(var_p) != length(pif1@p) || ncol(var_p) != length(pif2@p)){
@@ -363,6 +371,13 @@ cov_ensemble_atomic <- function(pif_ensemble, pif_atomic, var_p, var_beta,
 cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
                           var_weights = NULL, var_pif_weights = NULL,
                           var_pifs = NULL) {
+
+  #Check they are pifs
+  if (!S7::S7_inherits(pif1, pif_class) || !S7::S7_inherits(pif2, pif_class)){
+    cli::cli_abort(
+      "Variables `pif1` and `pif2` must be of `pif_class`"
+    )
+  }
 
   #If varp and varbeta are null set defaults
   if (is.null(var_p)){
@@ -692,22 +707,6 @@ S7::method(covariance,
     cov_mat <- matrix(0, ncol = npifs, nrow = npifs)
     for (i in 1:(npifs - 1)) {
       for (j in (i + 1):npifs) {
-
-        # Subsetting is not needed with the new structures
-        # if (!is.null(var_p)) {
-        #   nps <-  pif_class_apply_1st(x, length, "p")
-        #   sub_var_p <- var_p[(nps * (i - 1) + 1):(nps * i), (nps * (j - 1) + 1):(nps * j)] #FIXME: This should be a list
-        # } else {
-        #   sub_var_p <- NULL
-        # }
-        #
-        # if (!is.null(var_beta)) {
-        #   nbetas <- nps <-  pif_class_apply_1st(x, length, "beta")
-        #   sub_var_beta <- var_beta[(nbetas * (i - 1) + 1):(nbetas * i), (nbetas * (j - 1) + 1):(nbetas * j)] #FIXME: This should be a list
-        # } else {
-        #   sub_var_beta <- NULL
-        # }
-
 
         cov_mat[i, j] <- cov_total_pif(pif_list[[i]], pif_list[[j]],
                                        var_p = var_p, var_beta = var_beta)

@@ -116,11 +116,10 @@ test_that("pif and paf compute to known values", {
   )
 
   #Check the complete variance in the pif object
-  #FIXME: Error in var_p
-  # expect_equal(
-  #   variance(mypif),
-  #   variance_pif
-  # )
+  expect_equal(
+    variance(mypif),
+    variance_pif
+  )
 
 })
 
@@ -177,54 +176,59 @@ test_that("covariance calculations", {
 
 })
 
-#FIXME: varp error
 
-# test_that("covariance of a thing with itself is variance", {
-#
-#   p      <- c(0.4, 0.2)
-#   rr     <- c(1.2, 1.5)
-#   p_cft  <- c(0.5, 0.1)
-#   pif1   <- pif(p = p, p_cft = p_cft, beta = rr, quiet = TRUE, var_p = matrix(c(0.01, 0.0002, 0.0002, 0.01), ncol = 2))
-#   pif2   <- pif(p = p, p_cft = c(0.1, 0.2), beta = rr, quiet = TRUE, var_p = matrix(c(0.01, 0.0002, 0.0002, 0.01), ncol = 2))
-#
-#   # #Covariance of a thing with itself should be the variance
-#   # expect_equal(
-#   #   matrix(rep(variance(pif1), 4), ncol = 2),
-#   #   covariance(pif1, pif1)
-#   # )
-#   #
-#   # #Correlation of a thing with itself should be 1
-#   # expect_equal(
-#   #   matrix(rep(1, 4), ncol = 2),
-#   #   correlation(pif1, pif1, uncorrelated_beta = FALSE, uncorrelated_p = FALSE)
-#   # )
-#   #
-#   # #Covariance matrix should have the variance of pif1 and pif2 in the entries
-#   # #of the diagonal
-#   # expect_equal(
-#   #   c(variance(pif1), variance(pif2)),
-#   #   diag(covariance(pif1, pif2, uncorrelated_beta = FALSE, uncorrelated_p = FALSE))
-#   # )
-#   #
-#   # #Correlation matrix should have entries 1
-#   # expect_equal(
-#   #   rep(1, 2),
-#   #   diag(correlation(pif1, pif2, uncorrelated_beta = FALSE, uncorrelated_p = FALSE))
-#   # )
-#   #
-#   # expect_equal(
-#   #   from_parameters_pif_variance(0.2, 0.1, 1.2, 1.2, 0.2*(1.2-1), 0.1*(1.2-1), 0.01, 0.01),
-#   #   from_parameters_pif_covariance(0.2, 0.2, 0.1, 0.1, 1.2, 1.2, 1.2, 1.2,
-#   #                                  0.2*(1.2-1), 0.2*(1.2-1), 0.1*(1.2-1),0.1*(1.2-1), 0.01, 0.01)
-#   # )
-#   #
-#   # expect_true(
-#   #   #Covariance of a thing with itself should be the variance
-#   #   isSymmetric(
-#   #     covariance(pif1, pif2, uncorrelated_beta = FALSE, uncorrelated_p = FALSE)
-#   #   )
-#   # )
-#
-#
-# })
-#
+test_that("covariance of a thing with itself is variance", {
+
+  p      <- c(0.4, 0.2)
+  rr     <- c(1.2, 1.5)
+  p_cft  <- c(0.5, 0.1)
+  pif1   <- pif(p = p, p_cft = p_cft, beta = rr, quiet = TRUE, var_p = matrix(c(0.01, 0.0002, 0.0002, 0.01), ncol = 2))
+  pif2   <- pif(p = p, p_cft = c(0.1, 0.2), beta = rr, quiet = TRUE, var_p = matrix(c(0.01, 0.0002, 0.0002, 0.01), ncol = 2))
+
+  #Covariance of a thing with itself should be the variance
+  expect_equal(
+    matrix(rep(variance(pif1), 4), ncol = 2),
+    covariance(pif1, pif1)
+  )
+
+  #Correlation of a thing with itself should be 1
+  expect_equal(
+    matrix(rep(1, 4), ncol = 2),
+    correlation(pif1, pif1)
+  )
+
+  #Covariance matrix should have the variance of pif1 and pif2 in the entries
+  #of the diagonal
+  expect_equal(
+    c(variance(pif1), variance(pif2)),
+    diag(covariance(pif1, pif2))
+  )
+
+  #Correlation matrix should have entries 1
+  expect_equal(
+    rep(1, 2),
+    diag(correlation(pif1, pif2))
+  )
+
+  expect_equal(
+    from_parameters_pif_variance(p = 0.2, p_cft = 0.1, rr = 1.2,
+                                 rr_link_deriv_vals = 1.2,
+                                 var_p = 0.2*(1.2-1), var_beta = 0.1*(1.2-1)),
+    from_parameters_pif_covariance(p1 = 0.2, p2 = 0.2, p1_cft = 0.1,
+                                   p2_cft = 0.1, rr1 = 1.2, rr2 = 1.2,
+                                   rr_link_deriv_vals1 = 1.2,
+                                   rr_link_deriv_vals2 = 1.2,
+                                   var_p = 0.2*(1.2-1),
+                                   var_beta = 0.1*(1.2-1))
+  )
+
+  expect_true(
+    #Covariance of a thing with itself should be the variance
+    isSymmetric(
+      covariance(pif1, pif2)
+    )
+  )
+
+
+})
+

@@ -1,10 +1,27 @@
 #' Compute the mean under the observed prevalence
 #'
+#' Calculates the mean average relative risk of a population
+#' under the observed prevalence:
+#' \deqn{
+#' E[\text{RR}] = \sum\limits_{i=1}^{n} p_i \cdot \text{RR}_i
+#' }
+#'
 #' @inheritParams derivatives
 #'
 #' @return The mean relative risk under the observed prevalence
 #'
+#' @examples
+#' \dontrun{
+#' #Consider a popualtion with 3 exposure categories with
+#' #relative risks 1.0, 1.1, 1.3 and prevalences 0.6, 0.3, 0.1
+#' #Notice that the reference relative risk (1) is not added
+#' pval  <- c(0.3, 0.1) #Prevalences
+#' rrval <- c(1.1, 1.3) #Risks
+#' mu_obs_fun(p = pval, rr = rrval) #Average relative risk
+#' }
+#'
 #' @keywords internal
+#' @seealso [mu_cft_fun()]
 mu_obs_fun <- function(p, rr) {
   if (any(is.na(p)) || any(is.na(rr))){
     cli::cli_abort(
@@ -45,22 +62,74 @@ mu_obs_fun <- function(p, rr) {
 
 #' Compute the mean under the counterfactual prevalence
 #'
+#' Calculates the mean average relative risk of a population
+#' under the counterfactual prevalence:
+#' \deqn{
+#' E[\text{RR}] = \sum\limits_{i=1}^{n} p_i^{\text{cft}} \cdot \text{RR}_i
+#' }
+#'
 #' @inheritParams derivatives
 #'
 #' @return The mean relative risk under the counterfactual prevalence
 #'
+#' @examples
+#' \dontrun{
+#' #Consider a popualtion with 3 exposure categories with
+#' #relative risks 1.0, 1.1, 1.3 and prevalences 0.6, 0.3, 0.1
+#' #Notice that the reference relative risk (1) is not added
+#' pval  <- c(0.4, 0.0) #Prevalences on counterfactual scenarios
+#' rrval <- c(1.1, 1.3) #Risks
+#' mu_cft_fun(p_cft = pval, rr = rrval) #Average relative risk
+#' }
+#'
 #' @keywords internal
+#' @seealso [mu_obs_fun()]
 mu_cft_fun <- function(p_cft, rr) {
   mu_obs_fun(p_cft, rr)
 }
 
 #' Compute the potential impact fraction
 #'
+#' Calculates the potential impact fraction following the formula:
+#' \deqn{
+#' \text{PIF} = \dfrac{
+#' \sum\limits_{i=1}^n p_i \cdot \text{RR}_i - \sum\limits_{i=1}^n p_i^{\text{cft}} \cdot \text{RR}_i
+#' }{
+#' \sum\limits_{i=1}^n p_i \cdot \text{RR}_i
+#' }
+#' }
+#'
 #' @inheritParams derivatives
 #'
 #' @return A potential impact fraction (numeric)
 #'
+#' @examples
+#' \dontrun{
+#' #This example comes from Levin 1953
+#' #Relative risk of lung cancer given smoking was 3.6
+#' #Proportion of individuals smoking where 49.9%
+#' #Counterfactual is 0% smoking
+#' pif_fun(0.499, 0.0, 3.6)
+#'
+#' #You can also use multiple exposure categories. As an example
+#' #These are the relative risks for age-group 25-59 for each BMI level:
+#' rr <- c("<18.5" = 1.38, "25 to <30" = 0.83,
+#'   "30 to <35" = 1.20, ">=35" = 1.83)
+#'
+#' #While the prevalences are:
+#' p <- c("<18.5" = 1.9, "25 to <30" = 34.8,
+#'   "30 to <35" = 17.3, ">=35" = 13.3) / 100
+#'
+#' #A counterfactual of reducing the prevalence of >=35 by half and
+#' #having them be on the "30 to <35" category instead
+#' p_cft <- c("<18.5" = 1.9, "25 to <30" = 34.8,
+#'   "30 to <35" = 17.3 + 13.3/2, ">=35" = 13.3/2) / 100
+#'
+#' pif_fun(p = p, p_cft = p_cft, rr = rr)
+#' }
 #' @keywords internal
+#' @seealso [mu_cft_fun()], [mu_obs_fun()], and [pif_fun2()] to calculate from
+#' the average relative risks. For the main function in the package see [pif()]
 pif_fun <- function(p, p_cft, rr) {
   # Calculate the mean p and rr
   mu_obs <- mu_obs_fun(p, rr)
@@ -76,7 +145,38 @@ pif_fun <- function(p, p_cft, rr) {
 #'
 #' @return A potential impact fraction (numeric)
 #'
+#' @examples
+#' \dontrun{
+#' #This example comes from Levin 1953
+#' #Relative risk of lung cancer given smoking was 3.6
+#' #Proportion of individuals smoking where 49.9%
+#' #Counterfactual is 0% smoking
+#' mu_obs <- mu_obs_fun(p = 0.499, rr = 3.6)
+#' mu_cft <- mu_cft_fun(p_cft = 0.0, rr = 3.6)
+#' pif_fun2(mu_obs, mu_cft)
+#'
+#' #You can also use multiple exposure categories. As an example
+#' #These are the relative risks for age-group 25-59 for each BMI level:
+#' rr <- c("<18.5" = 1.38, "25 to <30" = 0.83,
+#'   "30 to <35" = 1.20, ">=35" = 1.83)
+#'
+#' #While the prevalences are:
+#' p <- c("<18.5" = 1.9, "25 to <30" = 34.8,
+#'   "30 to <35" = 17.3, ">=35" = 13.3) / 100
+#'
+#' #A counterfactual of reducing the prevalence of >=35 by half and
+#' #having them be on the "30 to <35" category instead
+#' p_cft <- c("<18.5" = 1.9, "25 to <30" = 34.8,
+#'   "30 to <35" = 17.3 + 13.3/2, ">=35" = 13.3/2) / 100
+#'
+#' mu_obs <- mu_obs_fun(p = p, rr = rr)
+#' mu_cft <- mu_cft_fun(p_cft = p_cft, rr = rr)
+#' pif_fun2(mu_obs, mu_cft)
+#' }
 #' @keywords internal
+#' @seealso [mu_cft_fun()], [mu_obs_fun()], and [pif_fun()] to calculate from
+#' the prevalence and relative risks. For the main function in the package
+#' see [pif()]
 pif_fun2 <- function(mu_obs, mu_cft) {
 
   if (length(mu_obs) != 1 || length(mu_cft) != 1){
@@ -103,9 +203,10 @@ pif_fun2 <- function(mu_obs, mu_cft) {
 #' @param link_inv Inverse of the link function used to compute `link_vals` and
 #' `link_variance`.
 #'
-#' @return A vector with the lower and upper bounds
+#' @return A vector with the lower and upper bounds of the confidence interval
 #'
 #' @keywords internal
+#' @seealso [confint]
 pif_atomic_ci <- function(link_vals, link_variance, conf_level, link_inv) {
 
   if (length(link_vals) != 1 || length(link_variance) != 1){
@@ -131,32 +232,6 @@ pif_atomic_ci <- function(link_vals, link_variance, conf_level, link_inv) {
   sort(c(b1, b2))
 }
 
-#' Apply a function to a property of a pif_class or to the first
-#' pif_class available in a pif_total_class
-#'
-#' @param x Either a `pif_class` or a `pif_total_class`
-#' @param fun A function to apply to the first element of a `pif_total_class`
-#' @param property A property of interest from the `pif_class` to extract
-#'
-#' @keywords internal
-pif_class_apply_1st <- function(x, fun, property){
-
-  if (S7::S7_inherits(x, pif_class)){
-    return(
-      fun(S7::prop(x, property))
-    )
-  }
-
-  # if (S7::S7_inherits(x, pif_total_class)){
-  #   return(
-  #     pif_class_apply_1st(x@pif_list[[1]], fun, property)
-  #   )
-  # }
-
-  cli::cli_abort(
-    "Invalid class for `x` should be a `pif_class`"
-  )
-}
 
 #' Get the values of the derivative of link
 #'
@@ -166,7 +241,21 @@ pif_class_apply_1st <- function(x, fun, property){
 #'
 #' @param x A `pif_class` object
 #'
-#' @return A number indicating the derivative of `link(pif)`
+#' @return A number indicating the derivative of `link()` evaluated at `pif`.
+#'
+#' @examples
+#' \dontrun{
+#' #Create a pif object
+#' pif_obj <- pif(p = 0.499, beta = log(3.6), p_cft = 0.499/2, var_p = 0.001,
+#'   var_beta = 0.1, link = "logit", quiet = TRUE)
+#'
+#' #Obtain the value of the link at the derivative
+#' link_deriv_vals(pif_obj)
+#'
+#' #This is the same as the derivative of logit evaluated at 0.2823
+#' deriv_logit(coef(pif_obj))
+#' }
+#'
 #'
 #' @keywords internal
 link_deriv_vals <- function(x){
@@ -206,7 +295,7 @@ fraction_type <- function(x){
   )
 }
 
-#' Change the link for the fraction's variance calculation
+#' Change the link
 #'
 #' Change the link function for the potential impact fraction
 #' or population attributable fraction to a different link.
@@ -261,7 +350,6 @@ change_link <- function(x, link = "identity", link_inv = NULL, link_deriv = NULL
     link_deriv <- Deriv::Deriv(link)
   }
 
-
   x@link       <- link
   x@link_inv   <- link_inv
   x@link_deriv <- link_deriv
@@ -277,4 +365,61 @@ change_link <- function(x, link = "identity", link_inv = NULL, link_deriv = NULL
   }
 
   return(x)
+}
+
+#' Names of a PIF's components
+#'
+#' Returns a character vector of the names of all of the fractions
+#' that make up a `pif` object. This is particularly useful for `pif_total`
+#' and `pif_ensemble` to obtain the names that build them up.
+#'
+#' @param pif A potential impact fraction of either `pif_atomic_class`
+#' or `pif_global_ensemble_class`
+#'
+#'
+#' @return A character vector with the names of all the fractions
+#' that make up the `pif`.
+#'
+#' @examples
+#' paf_lead_women <- paf(0.27, 2.2, quiet = TRUE, var_p = 0.001,
+#'         label = "Women lead")
+#' paf_rad_women  <- paf(0.12, 1.2, quiet = TRUE, var_p = 0.001,
+#'         label = "Women radiation")
+#' paf_women      <- paf_ensemble(paf_lead_women, paf_rad_women,
+#'         label = "Women")
+#' paf_lead_men   <- paf(0.30, 2.2, quiet = TRUE, var_p = 0.001,
+#'         label = "Men lead")
+#' paf_rad_men    <- paf(0.10, 1.2, quiet = TRUE, var_p = 0.001,
+#'         label = "Men radiation")
+#' paf_men        <- paf_ensemble(paf_lead_men, paf_rad_men,
+#'         label = "Men")
+#' paf_tot        <- paf_total(paf_men, paf_women, weights = c(0.49, 0.51),
+#'         label = "Population")
+#'
+#' #For a single PIF return the names
+#' flatten_names(paf_lead_women)
+#'
+#' #For an ensemble return the ones that make them up
+#' flatten_names(paf_women)
+#'
+#' #For totals return the ones that make them up
+#' flatten_names(paf_tot)
+#'
+#' @export
+flatten_names <- function(pif){
+
+  if (S7::S7_inherits(pif, pif_atomic_class)){
+    return(pif@label)
+  } else if (S7::S7_inherits(pif, pif_global_ensemble_class)){
+    labs <- c(pif@label, unlist(sapply(pif@pif_list, flatten_names)))
+    names(labs) <- NULL
+    return(labs)
+  } else {
+    cli::cli_abort(
+      paste0(
+        "The `flatten_names` function is only available for ",
+        "`pif_atomic_class` and `pif_global_ensemble_class` objects."
+      )
+    )
+  }
 }

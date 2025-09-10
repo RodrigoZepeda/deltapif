@@ -18,9 +18,12 @@ fraction (i.e. for \code{link(pif)})}
 \code{link_variance}.}
 }
 \value{
-A vector with the lower and upper bounds
+A vector with the lower and upper bounds of the confidence interval
 }
 \description{
 Confidence interval for a potential impact fraction
+}
+\seealso{
+\link{confint}
 }
 \keyword{internal}

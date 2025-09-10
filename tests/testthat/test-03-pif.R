@@ -42,11 +42,10 @@ test_that("pif validates inputs correctly", {
   )
 
   # Invalid type specification
-  #FIXME: Message not connecting
-  # expect_warning(
-  #   pif(p = 0.5, p_cft = 0.2, beta = 1.5, type = "PAF", var_p = 0, var_beta = 0),
-  #   "Are you sure you are not calculating a PIF"
-  # )
+  expect_warning(
+     pif(p = 0.5, p_cft = 0.2, beta = 1.5, type = "PAF", var_p = 0, var_beta = 0),
+     "Are you sure you are not"
+  )
 })
 
 test_that("pif handles variance inputs correctly", {
@@ -55,9 +54,10 @@ test_that("pif handles variance inputs correctly", {
   expect_message(pif(p = 0.5, p_cft = 0.2, beta = 1.5, var_p = 0), "have no variance")
   expect_message(pif(p = 0.5, p_cft = 0.2, beta = 1.5, var_beta = 0), "have no variance")
 
-  #This has a suppressmessages as the expect message doens't capture both messages for some reason
-  suppressMessages(
-    expect_message(pif(p = 0.5, p_cft = 0.2, beta = 1.5), "have no variance")
+  #Has two messages
+  expect_message(
+    expect_message(pif(p = 0.5, p_cft = 0.2, beta = 1.5), "have no variance"),
+    "have no variance"
   )
 
   # Scalar variance

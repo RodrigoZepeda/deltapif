@@ -1,8 +1,12 @@
 #' Function that checks the link
 #'
+#' Takes the link or the relative risk link of a `pif` or `paf` and checks
+#' that it has been correctly specified.
+#'
 #' @inheritParams pifpaf
 #'
 #' @returns Invisible. Called for its side effects
+#' @name linkcheck
 #' @keywords internal
 check_links <- function(link, link_deriv, link_inv){
 
@@ -70,12 +74,7 @@ check_links <- function(link, link_deriv, link_inv){
 }
 
 
-#' Function that checks the relative risk link
-#'
-#' @inheritParams pifpaf
-#'
-#' @returns Invisible. Called for its side effects
-#'
+#' @rdname linkcheck
 #' @keywords internal
 check_rr_links <- function(rr_link, rr_link_deriv){
 

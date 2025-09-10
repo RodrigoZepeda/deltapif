@@ -16,11 +16,11 @@
 \usage{
 covariance_structure(pif, is_variance = FALSE)
 
-covariance_structure2(pif1, pif2, parent_name = "Global")
+covariance_structure2(pif1, pif2)
 
 default_weight_covariance_structure(pif, is_variance = FALSE)
 
-default_weight_covariance_structure2(pif1, pif2, parent_name = "Global")
+default_weight_covariance_structure2(pif1, pif2)
 
 default_parameter_covariance_structure(
   pif,
@@ -28,20 +28,15 @@ default_parameter_covariance_structure(
   is_variance = FALSE
 )
 
-default_parameter_covariance_structure2(
-  pif1,
-  pif2,
-  parameter = "p",
-  parent_name = "Global"
-)
+default_parameter_covariance_structure2(pif1, pif2, parameter = "p")
 
 default_pif_covariance_structure(pif, is_variance = FALSE)
 
-default_pif_covariance_structure2(pif1, pif2, parent_name = "Global")
+default_pif_covariance_structure2(pif1, pif2)
 
 default_weight_pif_covariance_structure(pif, is_variance = FALSE)
 
-default_weight_pif_covariance_structure2(pif1, pif2, parent_name = "Global")
+default_weight_pif_covariance_structure2(pif1, pif2)
 }
 \arguments{
 \item{pif}{A potential impact fraction}
@@ -52,9 +47,6 @@ default_weight_pif_covariance_structure2(pif1, pif2, parent_name = "Global")
 \item{pif1}{A potential impact fraction to obtain a covariance structure with \code{pif2}.}
 
 \item{pif2}{A potential impact fraction to obtain a covariance structure with \code{pif1},}
-
-\item{parent_name}{For the ones ending in \code{2}. The name of the covariance
-associated to \code{pif1} against \code{pif2}.}
 
 \item{parameter}{Either \code{beta} or \code{p}. Indicating which parameter
 we are calculating covariance for.}

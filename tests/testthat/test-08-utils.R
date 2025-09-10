@@ -5,7 +5,9 @@ pif_atomic <- pif_atomic_class(p = c(0.1, 0.2), p_cft = rep(0, 2), beta = c(1.1,
                                var_p = matrix(0, 2, 2), var_beta = matrix(0, 2, 2),
                                rr_link = exp, rr_link_deriv = exp, upper_bound_p = FALSE,
                                upper_bound_beta = FALSE, label = "hello")
-pif_total <- pif_total_class(pif_list = list(pif_atomic, pif_atomic), link = logit,
+pif_list <- list(pif_atomic, pif_atomic)
+names(pif_list) <- c("hello", "hello")
+pif_total <- pif_total_class(pif_list = pif_list, link = logit,
                              link_inv = inv_logit, link_deriv = deriv_logit,
                              weights = c(0.5, 0.5), var_weights = matrix(0, 2, 2),
                              var_pif_weights = 0,
@@ -125,29 +127,7 @@ test_that("mu_obs_fun calculates correctly and validates inputs", {
    expect_error(pif_atomic_ci(0.2, 0.01, -0.1, identity), "Invalid confidence level")
  })
 
- test_that("pif_class_apply_1st works correctly", {
 
-
-   # Test with atomic pif
-   expect_equal(
-     pif_class_apply_1st(pif_atomic, identity, "pif"),
-     pif_atomic@pif
-   )
-
-   # Test with total pif (should use first element)
-   expect_equal(
-     pif_class_apply_1st(pif_total, identity, "pif"),
-     pif_total@pif_list[[1]]@pif
-   )
-
-   # Test invalid class
-   expect_error(
-     pif_class_apply_1st(list(), identity, "pif"),
-     "Invalid class"
-   )
-
-
- })
 
  test_that("link_deriv_vals works correctly", {
    pif_obj <- pif_atomic_class(p = c(0.1, 0.2), p_cft = rep(0, 2), beta = c(1.1, 1.2),
@@ -223,3 +203,24 @@ test_that("mu_obs_fun calculates correctly and validates inputs", {
    expect_warning(change_link(neg_pif, "logit"), "<= 0")
  })
 
+ test_that("Flatten names", {
+
+   #Get some fractions
+   pif_lead_women <- paf(0.27, 2.2, quiet = TRUE, var_p = 0.001,
+           label = "Women lead")
+   pif_rad_women  <- paf(0.12, 1.2, quiet = TRUE, var_p = 0.001,
+           label = "Women radiation")
+   pif_women      <- pif_ensemble(pif_lead_women, pif_rad_women,
+           label = "Women")
+
+   #Single pif returns their name
+   expect_equal(flatten_names(pif_lead_women), "Women lead")
+   expect_equal(flatten_names(pif_rad_women), pif_rad_women@label)
+
+   #For an ensemble return the ones that make them up
+   expect_equal(sort(flatten_names(pif_women)), sort(c("Women", "Women lead", "Women radiation")))
+
+   #For totals return the ones that make them up
+   expect_error(flatten_names(list()), "The `flatten_names` function is only available for `pif_atomic_class`")
+
+ })

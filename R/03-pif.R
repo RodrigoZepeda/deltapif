@@ -179,22 +179,22 @@
 #' # Relative risk of lung cancer given smoking was 3.6
 #' # Proportion of individuals smoking where 49.9%
 #' # Calculates PAF (i.e. counterfactual is no smoking)
-#' paf(p = 0.499, beta = 3.6)
+#' paf(p = 0.499, beta = log(3.6))
 #'
 #' # Assuming that beta and p had a link_variance
-#' paf(p = 0.499, beta = 3.6, var_p = 0.001, var_beta = 1)
+#' paf(p = 0.499, beta = log(3.6), var_p = 0.001, var_beta = 0.1)
 #'
 #' # If the link_variance was to high a logistic transform would be required
 #' # Generates incorrect values for the interval:
-#' paf(p = 0.499, beta = 3.6, var_p = 0.1, var_beta = 3)
+#' paf(p = 0.499, beta = log(3.6), var_p = 0.1, var_beta = 0.3)
 #'
 #' # Logit fixes it
-#' paf(p = 0.499, beta = 3.6, var_p = 0.1, var_beta = 3,
+#' paf(p = 0.499, beta = log(3.6), var_p = 0.1, var_beta = 0.3,
 #'     link = "logit", quiet = TRUE)
 #'
 #' # If the counterfactual was reducing the smoking population by 1/2
-#' pif(p = 0.499, beta = 1.6, p_cft = 0.499/2, var_p = 0.001,
-#'     var_beta = 1, link = "logit", quiet = TRUE)
+#' pif(p = 0.499, beta = log(3.6), p_cft = 0.499/2, var_p = 0.001,
+#'     var_beta = 0.1, link = "logit", quiet = TRUE)
 #'
 #' #EXAMPLE 2: MULTIPLE EXPOSURE CATEGORIES
 #' #---------------------------------------------------------------------------
@@ -295,7 +295,8 @@ pif <- function(p,
     var_beta <- as.matrix(var_beta)
   }
 
-  # Check that is link is given as character then link inv and link_deriv are not specified
+  # Check that is link is given as character then link inv and link_deriv are
+  # not specified
   link_name <- link #Variable saved until the pif is calculated
   check_links(link = link, link_inv = link_inv, link_deriv = link_deriv)
   check_rr_links(rr_link = rr_link, rr_link_deriv = rr_link_deriv)
