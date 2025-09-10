@@ -146,7 +146,7 @@ test_that("covariance generic works correctly", {
   # Test variance matrix input validation
   expect_error(
     covariance(pif1, pif2,
-               var_p = matrix(1, nrow = 2, ncol = 2, dimnames = list(list("pif1", "pif2"), list("pif1", "pif2")))),
+               var_p = matrix(1, nrow = 2, ncol = 2, dimnames = list(list("pif", "pif2"), list("pif1", "pif2")))),
     "was not found"
   )
 })
