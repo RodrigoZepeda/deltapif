@@ -14,125 +14,139 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 coverage](https://codecov.io/gh/RodrigoZepeda/deltapif/graph/badge.svg)](https://app.codecov.io/gh/RodrigoZepeda/deltapif)
 <!-- badges: end -->
 
-Calculate both **Potential Impact Fractions (PIF)** and **Population
-Attributable Fractions (PAF)** for aggregated data and their confidence
-intervals using the delta method.
+The `deltapif` R package calculates **Potential Impact Fractions (PIF)
+and Population Attributable Fractions (PAF) for aggregated data**. It
+uses the delta method to derive confidence intervals, providing a robust
+approach for quantifying the burden of disease attributable to risk
+factors and the potential impact of interventions.
 
 ## Installation
 
-You can install the development version of deltapif with:
+You can install the development version of deltapif from
+[GitHub](https://github.com/RodrigoZepeda/deltapif) with:
 
 ``` r
-#install.packages("remotes")
 remotes::install_github("RodrigoZepeda/deltapif")
 ```
 
-## Calculating a population attributable fraction
+## Overview
 
-To estimate a population attributable fraction two ingredients are
-required:
+The package provides two core functions:
 
-- `beta`: the relative risk or a value from which to calculate the
-  relative risk (with variance `var_beta`).
-- `p`: the exposure prevalence (with variance `var_p`).
+- `paf()`: Calculates the Population Attributable Fraction.
 
-and in the case of potential impact fractions we also require:
+- `pif()`: Calculates the Potential Impact Fraction.
 
-- `p_cft`: the counterfactual prevalence.
+Both functions require:
 
-> **Note** An important hypothesis of the current method is that the
-> relative risk estimate and the prevalence of exposure are both
-> independent in the sense that they were estimated in different
-> populations and studies.
+- `p`: The exposure prevalence in the population.
 
-For example [Lee et
-al](https://doi.org/10.1001/jamanetworkopen.2022.19672) estimate the
-attributable fraction of smoking on dementia. For that purpose they
-report the following:
+- `beta`: The log-relatieve risk coefficient(s) (or a value from which
+  the relative risk can be obtained).
 
-- A relative risk of `1.59 (1.15, 2.20)`
-- An exposure prevalence of `8.5`
+- `var_p`, `var_beta`: Variances for the prevalence and log-relative
+  risk estimates.
 
-We can calculate a point estimate of the PAF as follows:
+The `pif()` function additionally requires:
+
+- `p_cft`: The counterfactual exposure prevalence under an intervention
+  scenario.
+
+> **Note** A key assumption of the delta method implementation is that
+> the relative risk and exposure prevalence estimates are independent
+> (i.e., derived from different studies or populations).
+
+## Usage
+
+Example: Population Attributable Fraction (PAF)
+
+[Lee et al. (2022)](https://doi.org/10.1001/jamanetworkopen.2022.19672)
+estimated the fraction of dementia cases attributable to smoking in the
+US. They reported:
+
+- A relative risk of 1.59 (95% CI: 1.15, 2.20)
+
+- A smoking prevalence of 8.5%
+
+The point estimate of the PAF can be calculated using [Levin’s
+formula](https://doi.org/10.1016/j.gloepi.2021.100062):
 
 ``` r
 library(deltapif)
+
 paf(p = 0.085, beta = 1.59, quiet = TRUE)
 #> 
-#> ── Population Attributable Fraction ──
-#> 
+#> ── Population Attributable Fraction: "deltapif-055828243925223"
 #> PAF = 4.776% [95% CI: 4.776% to 4.776%]
-#> standard_deviation(paf %) = 0.000
-#> standard_deviation(link(paf)) = 0.000
 ```
 
-Note that this follows the formula by
-[Levin](https://doi.org/10.1016/j.gloepi.2021.100062):
+#### Incorporating Uncertainty
 
-$$
-\textrm{PAF} = \frac{p \cdot (\text{RR} - 1)}{1 + p \cdot (\text{RR} - 1)}
-$$
-
-[Additional examples](rodrigozepeda.github.io/deltapif/Introduction)
-show how to calculate the PAF for multiple categories.
-
-### Adding uncertainty
-
-Note that there is no uncertainty in the fraction as we have not inputed
-the standard deviation of the relative risk. To do so we notice that the
-variance for the relative risk is actually for the log of the relative
-risk. We follow the formula from [Cochrane’s
-handbook](https://handbook-5-1.cochrane.org/chapter_7/7_7_3_2_obtaining_standard_deviations_from_standard_errors_and.htm):
-
-$$
-\text{variance}_{\ln(\text{RR})} = \Bigg(\frac{\ln(\text{upper limit}) - \ln(\text{lower limit})}{2\times 1.95}\Bigg)^2
-$$
+To calculate confidence intervals, we need the variance of the
+log-relative risk. The variance can be derived from the confidence
+interval following the [Cochrane
+Handbook](https://handbook-5-1.cochrane.org/chapter_7/7_7_3_2_obtaining_standard_deviations_from_standard_errors_and.htm):
 
 ``` r
-((log(2.20) - log(1.15)) / (2*1.95))^2
-#> [1] 0.02766639
+var_log_rr <- ((log(2.20) - log(1.15)) / (2 * 1.96))^2
+var_log_rr
+#> [1] 0.0273848
 ```
 
-And because the uncertainty was specified for the log of the relative
-risk we use the natural logarithm `ln` of `1.59` as our `beta` where
-`log(1.59) = 0.4637` and specify that the way to get our relative risk
-is through the exponential (`exp`) function. Finally as no uncertainty
-was given for `p` we set `var_p = 0`.
+We then provide the log-relative risk (`log(1.59)`) and its variance to
+`paf()`, specifying the `rr_link` as `exp` to convert the coefficient to
+a relative risk by exponentiating the log. Since the prevalence variance
+was not reported, we set `var_p = 0`.
 
 ``` r
-paf(p = 0.085, beta = 0.4637, var_beta = 0.02766639, var_p = 0, rr_link = exp)
+paf(
+  p = 0.085, 
+  beta = log(1.59), 
+  var_beta = var_log_rr, 
+  var_p = 0, 
+  rr_link = exp
+)
 #> 
-#> ── Population Attributable Fraction ──
-#> 
-#> PAF = 4.775% [95% CI: 0.695% to 8.688%]
-#> standard_deviation(paf %) = 2.038
-#> standard_deviation(link(paf)) = 0.021
+#> ── Population Attributable Fraction: "deltapif-045534934279893"
+#> PAF = 4.776% [95% CI: 0.717% to 8.669%]
 ```
 
-## Calculating a potential impact fraction
+The results match those reported by Lee et al.: **PAF = 4.9% (95% CI:
+1.3–9.3)**.
 
-The paper also considers the potential impact fraction of a 15%
-reduction of smoking this can be achieved with the `pif` function by
-specifying the counterfactual distribution (in this case the 15%
-reduction results in $0.085 \times (1 - 0.15) = 0.07225$)
+### Example: Potential Impact Fraction (PIF)
+
+[Lee et al. (2022)](https://doi.org/10.1001/jamanetworkopen.2022.19672)
+also considered a scenario reducing smoking prevalence by 15% (from 8.5%
+to 7.225%). The PIF for this intervention is:
 
 ``` r
-pif(p = 0.085, p_cft = 0.07225, beta = 0.4637, var_beta = 0.02766639, var_p = 0, rr_link = exp)
+pif(
+  p = 0.085, 
+  p_cft = 0.085 * (1 - 0.15), # 15% reduction
+  beta = log(1.59), 
+  var_beta = var_log_rr, 
+  var_p = 0, 
+  rr_link = exp
+)
 #> 
-#> ── Potential Impact Fraction ──
-#> 
-#> PIF = 0.716% [95% CI: 0.115% to 1.314%]
-#> standard_deviation(pif %) = 0.306
-#> standard_deviation(link(pif)) = 0.003
+#> ── Potential Impact Fraction: "deltapif-103430676446224"
+#> PIF = 0.716% [95% CI: 0.118% to 1.311%]
 ```
 
-Note that both the PIF and PAF result in similar point estimates and CIs
-as in *Lee et al* who report:
+This result is consistent with the reported estimate: **PIF = 0.7% (95%
+CI: 0.2–1.4)**.
 
-- **PAF**: 4.9 (1.3-9.3)
-- **PIF**: 0.7 (0.2-1.4)
+## Learn More
 
-## More
+- For more detailed examples, including multi-category risk factors, and
+  combining fractions into a total see the [package’s
+  website](https://rodrigozepeda.github.io/deltapif/).
 
-Visit the [deltapif](https://rodrigozepeda.github.io/deltapif/) website
-for more examples and additional operations you can do with `PIF`.
+- See the vignette: [Introduction to
+  deltapif](https://rodrigozepeda.github.io/deltapif/articles/Introduction.html)
+
+## Contributing
+
+Contributions are welcome! Please file issues and pull requests on
+[GitHub](https://github.com/RodrigoZepeda/deltapif).

@@ -135,7 +135,7 @@ then the ensemble impact fraction of the combination of those factors
 can be written as:
 
 \deqn{
- \text{PIF}_{\text{Ensemble}} = 1 - \prod\limits_{\ell = 1}^{K} \Big(1 - \cdot \text{PIF}_{\ell}\Big)
+ \text{PIF}_{\text{Ensemble}} = 1 - \prod\limits_{\ell = 1}^{K} \Big(1 - \pi_{\ell} \cdot  \text{PIF}_{\ell}\Big)
 }
 
 where each \eqn{\text{PIF}_{\ell}} corresponds to the potential impact

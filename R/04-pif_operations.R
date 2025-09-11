@@ -47,7 +47,7 @@
 #' can be written as:
 #'
 #' \deqn{
-#'  \text{PIF}_{\text{Ensemble}} = 1 - \prod\limits_{\ell = 1}^{K} \Big(1 - \cdot \text{PIF}_{\ell}\Big)
+#'  \text{PIF}_{\text{Ensemble}} = 1 - \prod\limits_{\ell = 1}^{K} \Big(1 - \pi_{\ell} \cdot  \text{PIF}_{\ell}\Big)
 #' }
 #'
 #' where each \eqn{\text{PIF}_{\ell}} corresponds to the potential impact
@@ -426,6 +426,7 @@ pif_ensemble <- function(pif1, ...,
                          quiet = FALSE,
                          label = NULL,
                          is_paf = FALSE){
+
 
   pif_params <- pif_validate_ensemble(pif1 = pif1, ..., weights = weights,
                                       var_weights = var_weights,

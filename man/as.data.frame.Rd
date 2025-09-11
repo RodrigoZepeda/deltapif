@@ -13,6 +13,13 @@ Gets the potential impact fraction value, the link_variance and the confidence
 interval values
 }
 \examples{
-my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1, var_beta = 0.2)
+#Transform one pif
+my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1,
+    var_beta = 0.2, label = "My pif")
 as.data.frame(my_pif)
+
+#Transform more than one pif
+my_paf <- paf(p = 0.5, beta = 1.3, var_p = 0.1, var_beta = 0.2,
+    label = "My paf")
+as.data.frame(my_pif, my_paf)
 }

@@ -247,12 +247,42 @@ S7::method(summary, pif_class) <- function(object, level = object@conf_level, ..
 #' @param ... Additional parameters (ignored)
 #'
 #' @examples
-#' my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1, var_beta = 0.2)
+#' #Transform one pif
+#' my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1,
+#'     var_beta = 0.2, label = "My pif")
 #' as.data.frame(my_pif)
+#'
+#' #Transform more than one pif
+#' my_paf <- paf(p = 0.5, beta = 1.3, var_p = 0.1, var_beta = 0.2,
+#'     label = "My paf")
+#' as.data.frame(my_pif, my_paf)
 #' @name as.data.frame
 #' @export
 S7::method(as.data.frame, pif_class) <- function(x, ..., level = 0.95) {
-  as.data.frame(t(summary(x, level = level)))
+
+  #Get the elements in list
+  pif_list <- list(...)
+
+  if (!S7::S7_inherits(x, pif_class)){
+    cli::cli_abort("Element x must be a `pif_class`")
+  }
+
+
+  #Transform to data frame the first element
+  df <- as.data.frame(t(summary(x, level = level)))
+  df["type"]      <- colnames(df)[1]
+  colnames(df)[1] <- "value"
+  df["label"]     <- x@label
+
+  #Check we don't have anything in pif_list
+  if (length(pif_list) > 0){
+    for (k in 1:length(pif_list)){
+      df <- rbind(df, as.data.frame(pif_list[[k]]))
+    }
+  }
+
+  return(df)
+
 }
 
 #' Get the label of a PIF or PAF

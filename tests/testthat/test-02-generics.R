@@ -110,8 +110,8 @@ test_that("as.data.frame.pif_class works correctly", {
 
   expect_s3_class(df, "data.frame")
   expect_equal(nrow(df), 1)
-  expect_equal(ncol(df), 5)
-  expect_equal(df$PIF, pif_obj@pif)
+  expect_equal(ncol(df), 7)
+  expect_equal(df$value, pif_obj@pif)
   expect_equal(df$standard_deviation, sqrt(pif_obj@variance))
 
   # Test with custom level
@@ -122,7 +122,8 @@ test_that("as.data.frame.pif_class works correctly", {
   paf_obj <- pif_obj
   paf_obj@type <- "PAF"
   df <- as.data.frame(paf_obj)
-  expect_equal(names(df)[1], "PAF")
+  expect_equal(names(df)[1], "value")
+  expect_equal(df[1,"type"], "PAF")
 })
 
 test_that("names work", {
