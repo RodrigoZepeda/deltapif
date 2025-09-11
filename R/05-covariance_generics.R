@@ -735,10 +735,19 @@ S7::method(variance, S7::new_union(pif_global_ensemble_class, pif_atomic_class))
   cov_total_pif(x, x)
 }
 
+S7::method(variance, cases_class) <- function(x, ...) {
+  if (length(list(...)) > 0) {
+    cli::cli_warn(
+      "Currently this function does not support more than 1 argument. Ignoring the rest."
+    )
+  }
+  x@variance
+}
+
 #' @rdname covcor
 #' @export
 standard_deviation <- S7::new_generic("standard_deviation", "x")
-S7::method(standard_deviation, S7::new_union(pif_global_ensemble_class, pif_atomic_class)) <- function(x, ...) {
+S7::method(standard_deviation, S7::new_union(pif_global_ensemble_class, pif_atomic_class, cases_class)) <- function(x, ...) {
   sqrt(variance(x, ...))
 }
 

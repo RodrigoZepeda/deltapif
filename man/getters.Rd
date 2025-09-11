@@ -7,9 +7,13 @@
 \alias{get_mu_cft}
 \alias{get_pif}
 \alias{get_link_vals}
+\alias{get_link_vals_cases}
+\alias{get_link_deriv_vals_cases}
+\alias{get_cases}
 \alias{get_link_deriv_vals}
 \alias{get_rr_link_deriv_vals}
 \alias{get_link_variance}
+\alias{get_variance_cases}
 \alias{get_variance_atomic}
 \alias{get_ci}
 \alias{get_ensemble_coefs}
@@ -32,11 +36,19 @@ get_pif(self)
 
 get_link_vals(self)
 
+get_link_vals_cases(self)
+
+get_link_deriv_vals_cases(self)
+
+get_cases(self)
+
 get_link_deriv_vals(self)
 
 get_rr_link_deriv_vals(self)
 
 get_link_variance(self)
+
+get_variance_cases(self)
 
 get_variance_atomic(self)
 

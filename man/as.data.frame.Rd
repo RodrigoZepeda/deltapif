@@ -22,4 +22,12 @@ as.data.frame(my_pif)
 my_paf <- paf(p = 0.5, beta = 1.3, var_p = 0.1, var_beta = 0.2,
     label = "My paf")
 as.data.frame(my_pif, my_paf)
+
+#Transform averted cases
+cases_1 <- averted_cases(16234, my_paf)
+as.data.frame(cases_1)
+
+#Transform multiple averted cases
+cases_2 <- averted_cases(87980, my_pif)
+as.data.frame(cases_1, cases_2)
 }

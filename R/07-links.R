@@ -235,6 +235,8 @@ parse_link <- function(link_name) {
     return(log_complement)
   } else if (link_name == "hawkins") {
     return(hawkins)
+  } else if (link_name == "log" || link_name == "logarithm") {
+    return(log)
   } else if (link_name == "exponential" || link_name == "exp") {
     return(exp)
   } else {
@@ -265,6 +267,8 @@ parse_inv_link <- function(link_name) {
     return(inv_log_complement)
   } else if (link_name == "hawkins") {
     return(inv_hawkins)
+  } else if (link_name == "log" || link_name == "logarithm") {
+    return(exp)
   } else if (link_name == "exponential" || link_name == "exp") {
     return(log)
   } else {
@@ -295,6 +299,8 @@ parse_deriv_link <- function(link_name) {
     return(deriv_log_complement)
   } else if (link_name == "hawkins") {
     return(deriv_hawkins)
+  } else if (link_name == "log" || link_name == "logarithm") {
+    return(function(x) {1 / x})
   } else if (link_name == "exponential" || link_name == "exp") {
     return(exp)
   } else {

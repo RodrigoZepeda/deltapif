@@ -3,6 +3,7 @@
 \name{classes}
 \alias{classes}
 \alias{pif_class}
+\alias{cases_class}
 \alias{pif_atomic_class}
 \alias{pif_global_ensemble_class}
 \alias{pif_total_class}
@@ -18,6 +19,16 @@ pif_class(
   link = function() NULL,
   link_inv = function() NULL,
   link_deriv = function() NULL
+)
+
+cases_class(
+  overall_cases,
+  pif_obj,
+  variance_cases,
+  link,
+  link_deriv,
+  link_inv,
+  conf_level
 )
 
 pif_atomic_class(
@@ -98,6 +109,13 @@ is \code{logit} this should be \code{inv_logit}.}
 
 \item{link_deriv}{The derivative of \code{link}. For example if \code{link}
 is \code{logit} this should be \code{deriv_logit} (i.e. \code{function(pif) 1 / (pif * (1 - pif))}).}
+
+\item{overall_cases}{Overall number of cases so that attributable cases is given by
+\code{overall_cases * pif_obj}}
+
+\item{pif_obj}{A \code{pif_class} to calculate the percentage of cases with.}
+
+\item{variance_cases}{Variance of the cases estimate.}
 
 \item{p}{Prevalence (proportion) of the exposed individuals for
 each of the \code{N} exposure levels.}

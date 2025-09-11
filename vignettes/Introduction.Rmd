@@ -108,7 +108,8 @@ paf_white <- paf(p = 0.084, beta = 0.4637340, var_beta = 0.0273858,
 We can calculate the **total population attributable fraction** by combining the fractions of the subpopulations weighted by the proportion of the population. According to Wikipedia the distribution in 2020 of the US population by race was as follows:
 
 ```{r}
-weights <- c("white" = 0.5784, "hispanic" = 0.1873, "black" = 0.1205, "asian" = 0.0592)
+weights <- c("white" = 0.5784, "hispanic" = 0.1873, 
+             "black" = 0.1205, "asian" = 0.0592)
 
 #Normalized weights to sum to 1
 weights <- weights / sum(weights)
@@ -125,6 +126,17 @@ paf_population
 
 where we set `var_weights = 0` as no covariance matrix was known for the race distribution data (it does exist its just not on Wikipedia). 
 
+The `paf` total implements the following formula:
+
+$$
+\textrm{PAF}_{\text{Total}} = w_1 \cdot \text{PAF}_{\text{White}} + 
+  w_2 \cdot \text{PAF}_{\text{Hispanic}} +
+  w_3 \cdot \text{PAF}_{\text{Black}} +
+  w_4 \cdot \text{PAF}_{\text{Asian}}
+$$
+
+where the weights stand for the proportion of the population in each subgroup. 
+
 The `coef`, `confint`, `summary`, and `as.data.frame` functions have been extended to 
 allow the user to extract information from a `paf` (or `pif`):
 
@@ -132,6 +144,12 @@ allow the user to extract information from a `paf` (or `pif`):
 as.data.frame(paf_population)
 ```
 
+Attributable cases can be calculated for example using the estimates from 
+[@dhana2023prevalence](https://pmc.ncbi.nlm.nih.gov/articles/PMC10593099/#SD2). They estimate the number of people with Alzheimer's Disease in New York, USA 426.5 (400.2, 452.7) thousand. This implies a variance of `((452.7 - 400.2) / 2*qnorm(0.975))^2 = 2647.005`. 
+
+```{r}
+attributable_cases(426.5, paf_population, variance = 2647)
+```
 
 #### Why are we using the log relative risk?
 
@@ -231,6 +249,12 @@ if (requireNamespace("ggplot2", quietly = TRUE)){
 }
 ```
 
+
+Averted cases can be calculated with the same number as before with the `averted_cases` function:
+
+```{r}
+averted_cases(426.5, pif_population, variance = 2647)
+```
 
 ### Example 3: A categorical population attributable fraction
 
@@ -387,9 +411,6 @@ paf_ensemble(paf_alcohol, paf_physical, paf_smoking,
              label       = "Behavioural factors")
 ```
 
-<!--
-### Example 5: Calculating attributable cases
--->
 
 ### Example 6: Ensuring non-negative fractions
 

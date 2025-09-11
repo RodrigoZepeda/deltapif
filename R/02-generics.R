@@ -37,6 +37,39 @@ print_pif_class <- function(x, accuracy){
   return(invisible())
 }
 
+#' Print a `cases_class`
+#'
+#' Prints a `cases_class` object.
+#'
+#' @param x A `cases_class`
+#'
+#' @param accuracy The accuracy parameter for [`scales::comma`].
+#'
+#' @return Called for its side-effects of printing to the console
+#'
+#' @keywords internal
+print_cases_class <- function(x, accuracy){
+
+
+  case_val <- scales::comma(x@cases, accuracy = accuracy)
+  cilow   <- scales::comma(x@ci[1], accuracy = accuracy)
+  cihigh  <- scales::comma(x@ci[2], accuracy = accuracy)
+  sdval   <- scales::comma(100*sqrt(x@variance), accuracy = accuracy)
+  title   <- ifelse(x@pif_obj@type == "PIF", "Averted cases",
+                    "Attributable cases")
+
+  cli::cli_h2("{title}: {.emph [{x@pif_obj@label}]}")
+  cli::cli_text(
+    "{title} = {case_val} ",
+    "[{.emph {scales::percent(x@conf_level)} CI}: {cilow} to {cihigh}]"
+  )
+  cli::cli_text(
+    "standard_deviation({tolower(title)}) = {sdval}"
+  )
+
+  return(invisible())
+}
+
 #' Print a `pif_global_ensemble_class`
 #'
 #' Prints a `pif_global_ensemble_class` object.
@@ -86,12 +119,21 @@ helper_print_pif_global_ensemble_class <- function(x, accuracy){
 #' # Change the ammount of digits to show just 1
 #' print(my_pif, accuracy = 0.1)
 #' @name print
+NULL
+
+#' @name print
 #' @export
 S7::method(print, pif_class) <- function(x, ..., accuracy = 0.001) {
   print_pif_class(x, accuracy)
   if (S7::S7_inherits(x, pif_global_ensemble_class)){
     helper_print_pif_global_ensemble_class(x, accuracy)
   }
+}
+
+#' @name print
+#' @export
+S7::method(print, cases_class) <- function(x, ..., accuracy = 0.001) {
+  print_cases_class(x, accuracy)
 }
 
 #' Print or show a covariance structure class
@@ -162,9 +204,18 @@ S7::method(print, covariance_structure_class) <- function(x, ..., quote = FALSE)
 #' my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1, var_beta = 0.2)
 #' coef(my_pif)
 #' @name coef
+NULL
+
+#' @name coef
 #' @export
 S7::method(coef, pif_class) <- function(object, ...) {
   object@pif
+}
+
+#' @name coef
+#' @export
+S7::method(coef, cases_class) <- function(object, ...) {
+  object@cases
 }
 
 #' Extract confidence intervals of a pif object
@@ -183,8 +234,20 @@ S7::method(coef, pif_class) <- function(object, ...) {
 #' #Custom 90% ci:
 #' confint(my_pif, level = 0.90)
 #' @name confint
+NULL
+
+#' @name confint
 #' @export
 S7::method(confint, pif_class) <- function(object, ..., level = object@conf_level) {
+  #Set the level
+  object@conf_level <- level
+  return(object@ci)
+
+}
+
+#' @name confint
+#' @export
+S7::method(confint, cases_class) <- function(object, ..., level = object@conf_level) {
   #Set the level
   object@conf_level <- level
   return(object@ci)
@@ -221,6 +284,9 @@ S7::method(weights, pif_global_ensemble_class) <- function(object, ...) {
 #' my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1, var_beta = 0.2)
 #' summary(my_pif)
 #' @name summary
+NULL
+
+#' @name summary
 #' @export
 S7::method(summary, pif_class) <- function(object, level = object@conf_level, ...) {
   conf_interval <- confint(object, level = level)
@@ -234,6 +300,22 @@ S7::method(summary, pif_class) <- function(object, level = object@conf_level, ..
 
   #Assign the name
   names(return_vec)[1] <- fraction_type(object)
+
+  return(return_vec)
+}
+
+#' @name summary
+#' @export
+S7::method(summary, cases_class) <- function(object, level = object@conf_level, ...) {
+  conf_interval <- confint(object, level = level)
+
+  #Build the return vector
+  return_vec <- c("cases"      = coef(object),
+                  "standard_deviation" = sqrt(object@variance),
+                  "ci_low"     = conf_interval[1],
+                  "ci_up"      = conf_interval[2],
+                  "confidence" = level)
+
 
   return(return_vec)
 }
@@ -256,6 +338,17 @@ S7::method(summary, pif_class) <- function(object, level = object@conf_level, ..
 #' my_paf <- paf(p = 0.5, beta = 1.3, var_p = 0.1, var_beta = 0.2,
 #'     label = "My paf")
 #' as.data.frame(my_pif, my_paf)
+#'
+#' #Transform averted cases
+#' cases_1 <- averted_cases(16234, my_paf)
+#' as.data.frame(cases_1)
+#'
+#' #Transform multiple averted cases
+#' cases_2 <- averted_cases(87980, my_pif)
+#' as.data.frame(cases_1, cases_2)
+#' @name as.data.frame
+NULL
+
 #' @name as.data.frame
 #' @export
 S7::method(as.data.frame, pif_class) <- function(x, ..., level = 0.95) {
@@ -267,7 +360,6 @@ S7::method(as.data.frame, pif_class) <- function(x, ..., level = 0.95) {
     cli::cli_abort("Element x must be a `pif_class`")
   }
 
-
   #Transform to data frame the first element
   df <- as.data.frame(t(summary(x, level = level)))
   df["type"]      <- colnames(df)[1]
@@ -278,6 +370,33 @@ S7::method(as.data.frame, pif_class) <- function(x, ..., level = 0.95) {
   if (length(pif_list) > 0){
     for (k in 1:length(pif_list)){
       df <- rbind(df, as.data.frame(pif_list[[k]]))
+    }
+  }
+
+  return(df)
+
+}
+
+#' @name as.data.frame
+#' @export
+S7::method(as.data.frame, cases_class) <- function(x, ..., level = 0.95) {
+
+  #Get the elements in list
+  cases_list <- list(...)
+
+  if (!S7::S7_inherits(x, cases_class)){
+    cli::cli_abort("Element x must be a `cases_class`")
+  }
+
+  #Transform to data frame the first element
+  df <- as.data.frame(t(summary(x, level = level)))
+  colnames(df)[1] <- "value"
+  df["label"]     <- x@pif_obj@label
+
+  #Check we don't have anything in pif_list
+  if (length(cases_list) > 0){
+    for (k in 1:length(cases_list)){
+      df <- rbind(df, as.data.frame(cases_list[[k]]))
     }
   }
 

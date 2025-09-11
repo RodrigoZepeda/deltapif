@@ -49,6 +49,24 @@ get_link_vals <- function(self) {
   return(pif_vals)
 }
 
+#' Get the cases transformed by the link function
+#' @rdname getters
+get_link_vals_cases <- function(self) {
+  self@link(self@cases)
+}
+
+#' Get the derivative of the link function evaluated at the pif
+#' @rdname getters
+get_link_deriv_vals_cases <- function(self) {
+  self@link_deriv(self@cases)
+}
+
+#' Get the cases = paf * overall_cases
+#' @rdname getters
+get_cases <- function(self){
+  self@overall_cases * self@pif_obj@pif
+}
+
 #' Get the derivative of the link function evaluated at the pif
 #' @rdname getters
 get_link_deriv_vals <- function(self) {
@@ -73,6 +91,13 @@ get_rr_link_deriv_vals <- function(self) {
 #' @rdname getters
 get_link_variance <- function(self){
   (self@link_deriv_vals)^2 * self@variance
+}
+
+#' Get the variance of the cases
+#' @rdname getters
+get_variance_cases <- function(self){
+  var_prod(x = self@overall_cases, y = self@pif_obj@pif,
+           var_x = self@variance_cases, var_y = self@pif_obj@variance)
 }
 
 #' Get the link_variance

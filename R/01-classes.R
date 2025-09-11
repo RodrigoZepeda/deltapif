@@ -4,6 +4,13 @@
 #' considering an observed prevalence of  `p` and a relative risk
 #' (or relative risk parameter) of `beta`.
 #'
+#' @param pif_obj A `pif_class` to calculate the percentage of cases with.
+#'
+#' @param overall_cases Overall number of cases so that attributable cases is given by
+#' `overall_cases * pif_obj`
+#'
+#' @param variance_cases Variance of the cases estimate.
+#'
 #' @param conf_level Confidence level for the confidence interval (default 0.95).
 #'
 #' @param link Link function such that the `pif` confidence intervals
@@ -181,6 +188,9 @@
 #' @name classes
 NULL
 
+
+
+
 #' @rdname classes
 #pif_class-----
 pif_class <- S7::new_class("pif_class",
@@ -269,6 +279,66 @@ pif_class <- S7::new_class("pif_class",
   }
 )
 #S7::S4_register(pif_class)
+
+#' @rdname classes
+#cases_class-----
+cases_class <- S7::new_class("cases_class",
+   package = "deltapif",
+   properties = list(
+     # > Data inputs-----
+     overall_cases = S7::class_numeric,
+
+     # Fraction
+     pif_obj       = S7::class_any,
+
+     # Variance for the potential impact fraction
+     variance_cases = S7::class_numeric,
+
+
+     # Confidence level
+     conf_level    = S7::new_property(S7::class_numeric, setter = set_conf_level),
+
+     # PIF link function
+     link          = S7::new_property(S7::class_function),
+
+     # PIF link function's inverse
+     link_inv      = S7::new_property(S7::class_function),
+
+     # PIF link function's derivative
+     link_deriv    = S7::new_property(S7::class_function),
+
+     # > Dynamic properties----
+     cases         = S7::new_property(S7::class_numeric, getter = get_cases),
+
+     # Variance
+     variance      = S7::new_property(S7::class_numeric, getter = get_variance_cases),
+
+     # Get the derivative of pif link at pif
+     link_deriv_vals = S7::new_property(S7::class_numeric, getter = get_link_deriv_vals_cases),
+
+     # Transform of the pif via the link function
+     link_vals     = S7::new_property(S7::class_numeric, getter = get_link_vals_cases),
+
+     # Variance for link(pif)
+     # FIXME:
+     link_variance = S7::new_property(S7::class_numeric, getter = get_link_variance),
+
+     # Get confidence intervals
+     ci            = S7::new_property(S7::class_numeric, getter = get_ci)
+
+   ),
+   constructor = function(overall_cases, pif_obj, variance_cases, link, link_deriv, link_inv, conf_level) {
+
+     S7::new_object(S7::S7_object(),
+                    overall_cases = overall_cases,
+                    pif_obj    = pif_obj,
+                    variance_cases   = variance_cases,
+                    conf_level = conf_level,
+                    link       = link,
+                    link_inv   = link_inv,
+                    link_deriv = link_deriv)
+   }
+)
 
 #' @rdname classes
 #pif_atomic_class-------
