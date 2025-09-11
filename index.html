@@ -64,100 +64,107 @@
 </div>
 <!-- badges: start -->
 
-<p>Calculate both <strong>Potential Impact Fractions (PIF)</strong> and <strong>Population Attributable Fractions (PAF)</strong> for aggregated data and their confidence intervals using the delta method.</p>
+<p>The <code>deltapif</code> R package calculates <strong>Potential Impact Fractions (PIF) and Population Attributable Fractions (PAF) for aggregated data</strong>. It uses the delta method to derive confidence intervals, providing a robust approach for quantifying the burden of disease attributable to risk factors and the potential impact of interventions.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the development version of deltapif with:</p>
+<p>You can install the development version of deltapif from <a href="https://github.com/RodrigoZepeda/deltapif" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#install.packages("remotes")</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"RodrigoZepeda/deltapif"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"RodrigoZepeda/deltapif"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="calculating-a-population-attributable-fraction">Calculating a population attributable fraction<a class="anchor" aria-label="anchor" href="#calculating-a-population-attributable-fraction"></a>
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>To estimate a population attributable fraction two ingredients are required:</p>
+<p>The package provides two core functions:</p>
 <ul>
-<li>
-<code>beta</code>: the relative risk or a value from which to calculate the relative risk (with variance <code>var_beta</code>).</li>
-<li>
-<code>p</code>: the exposure prevalence (with variance <code>var_p</code>).</li>
+<li><p><code><a href="reference/pifpaf.html">paf()</a></code>: Calculates the Population Attributable Fraction.</p></li>
+<li><p><code><a href="reference/pifpaf.html">pif()</a></code>: Calculates the Potential Impact Fraction.</p></li>
 </ul>
-<p>and in the case of potential impact fractions we also require:</p>
+<p>Both functions require:</p>
+<ul>
+<li><p><code>p</code>: The exposure prevalence in the population.</p></li>
+<li><p><code>beta</code>: The log-relatieve risk coefficient(s) (or a value from which the relative risk can be obtained).</p></li>
+<li><p><code>var_p</code>, <code>var_beta</code>: Variances for the prevalence and log-relative risk estimates.</p></li>
+</ul>
+<p>The <code><a href="reference/pifpaf.html">pif()</a></code> function additionally requires:</p>
 <ul>
 <li>
-<code>p_cft</code>: the counterfactual prevalence.</li>
+<code>p_cft</code>: The counterfactual exposure prevalence under an intervention scenario.</li>
 </ul>
 <blockquote>
-<p><strong>Note</strong> An important hypothesis of the current method is that the relative risk estimate and the prevalence of exposure are both independent in the sense that they were estimated in different populations and studies.</p>
+<p><strong>Note</strong> A key assumption of the delta method implementation is that the relative risk and exposure prevalence estimates are independent (i.e., derived from different studies or populations).</p>
 </blockquote>
-<p>For example <a href="https://doi.org/10.1001/jamanetworkopen.2022.19672" class="external-link">Lee et al</a> estimate the attributable fraction of smoking on dementia. For that purpose they report the following:</p>
+</div>
+<div class="section level2">
+<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+</h2>
+<p>Example: Population Attributable Fraction (PAF)</p>
+<p><a href="https://doi.org/10.1001/jamanetworkopen.2022.19672" class="external-link">Lee et al. (2022)</a> estimated the fraction of dementia cases attributable to smoking in the US. They reported:</p>
 <ul>
-<li>A relative risk of <code>1.59 (1.15, 2.20)</code>
-</li>
-<li>An exposure prevalence of <code>8.5</code>
-</li>
+<li><p>A relative risk of 1.59 (95% CI: 1.15, 2.20)</p></li>
+<li><p>A smoking prevalence of 8.5%</p></li>
 </ul>
-<p>We can calculate a point estimate of the PAF as follows:</p>
+<p>The point estimate of the PAF can be calculated using <a href="https://doi.org/10.1016/j.gloepi.2021.100062" class="external-link">Levin’s formula</a>:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rodrigozepeda.github.io/deltapif/">deltapif</a></span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu"><a href="reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.085</span>, beta <span class="op">=</span> <span class="fl">1.59</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Population Attributable Fraction ──</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PAF = 4.776% [95% CI: 4.776% to 4.776%]</span></span>
-<span><span class="co">#&gt; standard_deviation(paf %) = 0.000</span></span>
-<span><span class="co">#&gt; standard_deviation(link(paf)) = 0.000</span></span></code></pre></div>
-<p>Note that this follows the formula by <a href="https://doi.org/10.1016/j.gloepi.2021.100062" class="external-link">Levin</a>:</p>
-<p><span class="math display">\[
-\textrm{PAF} = \frac{p \cdot (\text{RR} - 1)}{1 + p \cdot (\text{RR} - 1)}
-\]</span></p>
-<p><a href="rodrigozepeda.github.io/deltapif/Introduction">Additional examples</a> show how to calculate the PAF for multiple categories.</p>
-<div class="section level3">
-<h3 id="adding-uncertainty">Adding uncertainty<a class="anchor" aria-label="anchor" href="#adding-uncertainty"></a>
-</h3>
-<p>Note that there is no uncertainty in the fraction as we have not inputed the standard deviation of the relative risk. To do so we notice that the variance for the relative risk is actually for the log of the relative risk. We follow the formula from <a href="https://handbook-5-1.cochrane.org/chapter_7/7_7_3_2_obtaining_standard_deviations_from_standard_errors_and.htm" class="external-link">Cochrane’s handbook</a>:</p>
-<p><span class="math display">\[
-\text{variance}_{\ln(\text{RR})} = \Bigg(\frac{\ln(\text{upper limit}) - \ln(\text{lower limit})}{2\times 1.95}\Bigg)^2
-\]</span></p>
+<span><span class="co">#&gt; ── Population Attributable Fraction: "deltapif-055828243925223"</span></span>
+<span><span class="co">#&gt; PAF = 4.776% [95% CI: 4.776% to 4.776%]</span></span></code></pre></div>
+<div class="section level4">
+<h4 id="incorporating-uncertainty">Incorporating Uncertainty<a class="anchor" aria-label="anchor" href="#incorporating-uncertainty"></a>
+</h4>
+<p>To calculate confidence intervals, we need the variance of the log-relative risk. The variance can be derived from the confidence interval following the <a href="https://handbook-5-1.cochrane.org/chapter_7/7_7_3_2_obtaining_standard_deviations_from_standard_errors_and.htm" class="external-link">Cochrane Handbook</a>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="op">(</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">2.20</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.15</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="fl">1.95</span><span class="op">)</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span></span>
-<span><span class="co">#&gt; [1] 0.02766639</span></span></code></pre></div>
-<p>And because the uncertainty was specified for the log of the relative risk we use the natural logarithm <code>ln</code> of <code>1.59</code> as our <code>beta</code> where <code>log(1.59) = 0.4637</code> and specify that the way to get our relative risk is through the exponential (<code>exp</code>) function. Finally as no uncertainty was given for <code>p</code> we set <code>var_p = 0</code>.</p>
+<code class="sourceCode R"><span><span class="va">var_log_rr</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">2.20</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.15</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="fl">1.96</span><span class="op">)</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span></span>
+<span><span class="va">var_log_rr</span></span>
+<span><span class="co">#&gt; [1] 0.0273848</span></span></code></pre></div>
+<p>We then provide the log-relative risk (<code>log(1.59)</code>) and its variance to <code><a href="reference/pifpaf.html">paf()</a></code>, specifying the <code>rr_link</code> as <code>exp</code> to convert the coefficient to a relative risk by exponentiating the log. Since the prevalence variance was not reported, we set <code>var_p = 0</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.085</span>, beta <span class="op">=</span> <span class="fl">0.4637</span>, var_beta <span class="op">=</span> <span class="fl">0.02766639</span>, var_p <span class="op">=</span> <span class="fl">0</span>, rr_link <span class="op">=</span> <span class="va">exp</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/pifpaf.html">paf</a></span><span class="op">(</span></span>
+<span>  p <span class="op">=</span> <span class="fl">0.085</span>, </span>
+<span>  beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.59</span><span class="op">)</span>, </span>
+<span>  var_beta <span class="op">=</span> <span class="va">var_log_rr</span>, </span>
+<span>  var_p <span class="op">=</span> <span class="fl">0</span>, </span>
+<span>  rr_link <span class="op">=</span> <span class="va">exp</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Population Attributable Fraction ──</span></span>
+<span><span class="co">#&gt; ── Population Attributable Fraction: "deltapif-045534934279893"</span></span>
+<span><span class="co">#&gt; PAF = 4.776% [95% CI: 0.717% to 8.669%]</span></span></code></pre></div>
+<p>The results match those reported by Lee et al.: <strong>PAF = 4.9% (95% CI: 1.3–9.3)</strong>.</p>
+</div>
+<div class="section level3">
+<h3 id="example-potential-impact-fraction-pif">Example: Potential Impact Fraction (PIF)<a class="anchor" aria-label="anchor" href="#example-potential-impact-fraction-pif"></a>
+</h3>
+<p><a href="https://doi.org/10.1001/jamanetworkopen.2022.19672" class="external-link">Lee et al. (2022)</a> also considered a scenario reducing smoking prevalence by 15% (from 8.5% to 7.225%). The PIF for this intervention is:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/pifpaf.html">pif</a></span><span class="op">(</span></span>
+<span>  p <span class="op">=</span> <span class="fl">0.085</span>, </span>
+<span>  p_cft <span class="op">=</span> <span class="fl">0.085</span> <span class="op">*</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="fl">0.15</span><span class="op">)</span>, <span class="co"># 15% reduction</span></span>
+<span>  beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.59</span><span class="op">)</span>, </span>
+<span>  var_beta <span class="op">=</span> <span class="va">var_log_rr</span>, </span>
+<span>  var_p <span class="op">=</span> <span class="fl">0</span>, </span>
+<span>  rr_link <span class="op">=</span> <span class="va">exp</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PAF = 4.775% [95% CI: 0.695% to 8.688%]</span></span>
-<span><span class="co">#&gt; standard_deviation(paf %) = 2.038</span></span>
-<span><span class="co">#&gt; standard_deviation(link(paf)) = 0.021</span></span></code></pre></div>
+<span><span class="co">#&gt; ── Potential Impact Fraction: "deltapif-103430676446224"</span></span>
+<span><span class="co">#&gt; PIF = 0.716% [95% CI: 0.118% to 1.311%]</span></span></code></pre></div>
+<p>This result is consistent with the reported estimate: <strong>PIF = 0.7% (95% CI: 0.2–1.4)</strong>.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="calculating-a-potential-impact-fraction">Calculating a potential impact fraction<a class="anchor" aria-label="anchor" href="#calculating-a-potential-impact-fraction"></a>
+<h2 id="learn-more">Learn More<a class="anchor" aria-label="anchor" href="#learn-more"></a>
 </h2>
-<p>The paper also considers the potential impact fraction of a 15% reduction of smoking this can be achieved with the <code>pif</code> function by specifying the counterfactual distribution (in this case the 15% reduction results in <span class="math inline">\(0.085 \times (1 - 0.15) = 0.07225\)</span>)</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/pifpaf.html">pif</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.085</span>, p_cft <span class="op">=</span> <span class="fl">0.07225</span>, beta <span class="op">=</span> <span class="fl">0.4637</span>, var_beta <span class="op">=</span> <span class="fl">0.02766639</span>, var_p <span class="op">=</span> <span class="fl">0</span>, rr_link <span class="op">=</span> <span class="va">exp</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Potential Impact Fraction ──</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PIF = 0.716% [95% CI: 0.115% to 1.314%]</span></span>
-<span><span class="co">#&gt; standard_deviation(pif %) = 0.306</span></span>
-<span><span class="co">#&gt; standard_deviation(link(pif)) = 0.003</span></span></code></pre></div>
-<p>Note that both the PIF and PAF result in similar point estimates and CIs as in <em>Lee et al</em> who report:</p>
 <ul>
-<li>
-<strong>PAF</strong>: 4.9 (1.3-9.3)</li>
-<li>
-<strong>PIF</strong>: 0.7 (0.2-1.4)</li>
+<li><p>For more detailed examples, including multi-category risk factors, and combining fractions into a total see the <a href="https://rodrigozepeda.github.io/deltapif/">package’s website</a>.</p></li>
+<li><p>See the vignette: <a href="https://rodrigozepeda.github.io/deltapif/articles/Introduction.html">Introduction to deltapif</a></p></li>
 </ul>
 </div>
 <div class="section level2">
-<h2 id="more">More<a class="anchor" aria-label="anchor" href="#more"></a>
+<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
 </h2>
-<p>Visit the <a href="https://rodrigozepeda.github.io/deltapif/">deltapif</a> website for more examples and additional operations you can do with <code>PIF</code>.</p>
+<p>Contributions are welcome! Please file issues and pull requests on <a href="https://github.com/RodrigoZepeda/deltapif" class="external-link">GitHub</a>.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="license">

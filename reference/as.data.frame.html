@@ -63,10 +63,20 @@ interval values</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">my_pif</span> <span class="op">&lt;-</span> <span class="fu"><a href="pifpaf.html">pif</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.5</span>, p_cft <span class="op">=</span> <span class="fl">0.25</span>, beta <span class="op">=</span> <span class="fl">1.3</span>, var_p <span class="op">=</span> <span class="fl">0.1</span>, var_beta <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#Transform one pif</span></span></span>
+<span class="r-in"><span><span class="va">my_pif</span> <span class="op">&lt;-</span> <span class="fu"><a href="pifpaf.html">pif</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.5</span>, p_cft <span class="op">=</span> <span class="fl">0.25</span>, beta <span class="op">=</span> <span class="fl">1.3</span>, var_p <span class="op">=</span> <span class="fl">0.1</span>,</span></span>
+<span class="r-in"><span>    var_beta <span class="op">=</span> <span class="fl">0.2</span>, label <span class="op">=</span> <span class="st">"My pif"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">as.data.frame</span><span class="op">(</span><span class="va">my_pif</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        PIF standard_deviation     ci_low     ci_up confidence</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.285835          0.2689564 -0.4940436 0.6586233       0.95</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      value standard_deviation     ci_low     ci_up confidence type  label</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.285835          0.2689564 -0.4940436 0.6586233       0.95  PIF My pif</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#Transform more than one pif</span></span></span>
+<span class="r-in"><span><span class="va">my_paf</span> <span class="op">&lt;-</span> <span class="fu"><a href="pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.5</span>, beta <span class="op">=</span> <span class="fl">1.3</span>, var_p <span class="op">=</span> <span class="fl">0.1</span>, var_beta <span class="op">=</span> <span class="fl">0.2</span>,</span></span>
+<span class="r-in"><span>    label <span class="op">=</span> <span class="st">"My paf"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">as.data.frame</span><span class="op">(</span><span class="va">my_pif</span>, <span class="va">my_paf</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      value standard_deviation     ci_low     ci_up confidence type  label</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.285835          0.2689564 -0.4940436 0.6586233       0.95  PIF My pif</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.571670          0.2159692 -0.1507069 0.8405618       0.95  PAF My paf</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

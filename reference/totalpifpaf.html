@@ -206,7 +206,7 @@ The weights are such that \(\sum_{i=1}^{N} \pi_i = 1\).</p>
 then the ensemble impact fraction of the combination of those factors
 can be written as:</p>
 <p>$$
- \text{PIF}_{\text{Ensemble}} = 1 - \prod\limits_{\ell = 1}^{K} \Big(1 - \cdot \text{PIF}_{\ell}\Big)
+ \text{PIF}_{\text{Ensemble}} = 1 - \prod\limits_{\ell = 1}^{K} \Big(1 - \pi_{\ell} \cdot  \text{PIF}_{\ell}\Big)
 $$</p>
 <p>where each \(\text{PIF}_{\ell}\) corresponds to the potential impact
 fraction of the \(\ell\)-th risk factor for the same population.</p>
@@ -223,13 +223,13 @@ fraction of the \(\ell\)-th risk factor for the same population.</p>
 <span class="r-in"><span><span class="co">#Population potential impact fraction with 49% men and 51% women</span></span></span>
 <span class="r-in"><span><span class="fu">pif_total</span><span class="op">(</span><span class="va">pif_men</span>, <span class="va">pif_women</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.49</span>, <span class="fl">0.51</span><span class="op">)</span>, link <span class="op">=</span> <span class="st">"logit"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Potential Impact Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-124126307530705]</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Potential Impact Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-063317817552485]</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> PIF = 27.862% [<span style="font-style: italic;">95% CI</span>: 24.650% to 31.318%]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(pif %) = 14.883</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ────────────────────────────────── Components: ─────────────────────────────────</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • 26.372% (sd %: 36.119) --- <span style="font-style: italic;">[deltapif-113870765340302]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • 29.294% (sd %: 29.772) --- <span style="font-style: italic;">[deltapif-0376499328478288]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • 26.372% (sd %: 36.119) --- <span style="font-style: italic;">[deltapif-109850890182595]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • 29.294% (sd %: 29.772) --- <span style="font-style: italic;">[deltapif-00654866414102238]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ────────────────────────────────────────────────────────────────────────────────</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#Population attributable  fraction for women</span></span></span>
@@ -239,13 +239,13 @@ fraction of the \(\ell\)-th risk factor for the same population.</p>
 <span class="r-in"><span><span class="va">paf_men</span> <span class="op">&lt;-</span> <span class="fu"><a href="pifpaf.html">paf</a></span><span class="op">(</span><span class="fl">0.27</span>, <span class="fl">1.3</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span>, var_p <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">paf_total</span><span class="op">(</span><span class="va">paf_men</span>, <span class="va">paf_women</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.49</span>, <span class="fl">0.51</span><span class="op">)</span>, link <span class="op">=</span> <span class="st">"logit"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0340424487561302]</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-063953477020697]</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 44.018% [<span style="font-style: italic;">95% CI</span>: 40.450% to 47.649%]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(paf %) = 12.274</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ────────────────────────────────── Components: ─────────────────────────────────</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • 41.884% (sd %: 28.509) --- <span style="font-style: italic;">[deltapif-12333900648819]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • 46.068% (sd %: 24.552) --- <span style="font-style: italic;">[deltapif-0998432550587131]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • 41.884% (sd %: 28.509) --- <span style="font-style: italic;">[deltapif-00710533595677785]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • 46.068% (sd %: 24.552) --- <span style="font-style: italic;">[deltapif-156251843464585]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ────────────────────────────────────────────────────────────────────────────────</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Calculate the ensemble from lead and radiation exposure</span></span></span>
@@ -253,13 +253,13 @@ fraction of the \(\ell\)-th risk factor for the same population.</p>
 <span class="r-in"><span><span class="va">paf_rad</span>  <span class="op">&lt;-</span> <span class="fu"><a href="pifpaf.html">paf</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">1.2</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span>, var_p <span class="op">=</span> <span class="fl">0.0001</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">pif_ensemble</span><span class="op">(</span><span class="va">paf_lead</span>, <span class="va">paf_rad</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-145584140300823]</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-021223603483794]</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 68.841% [<span style="font-style: italic;">95% CI</span>: 67.690% to 69.993%]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(paf %) = 0.853</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ────────────────────────────────── Components: ─────────────────────────────────</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • 61.612% (sd %: 3.740) --- <span style="font-style: italic;">[deltapif-119364118200992]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • 18.832% (sd %: 1.529) --- <span style="font-style: italic;">[deltapif-0751723322890923]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • 61.612% (sd %: 3.740) --- <span style="font-style: italic;">[deltapif-14333211002982]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • 18.832% (sd %: 1.529) --- <span style="font-style: italic;">[deltapif-0010303318628592]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ────────────────────────────────────────────────────────────────────────────────</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Totals and ensembles can be combined</span></span></span>
@@ -272,13 +272,13 @@ fraction of the \(\ell\)-th risk factor for the same population.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">pif_total</span><span class="op">(</span><span class="va">pif_men</span>, <span class="va">pif_women</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.49</span>, <span class="fl">0.51</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0941498075931439]</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-151502452882071]</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 75.731% [<span style="font-style: italic;">95% CI</span>: 74.841% to 76.589%]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(paf %) = 1.622</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ────────────────────────────────── Components: ─────────────────────────────────</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • 76.180% (sd %: 2.359) --- <span style="font-style: italic;">[deltapif-112983515341746]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • 75.299% (sd %: 2.231) --- <span style="font-style: italic;">[deltapif-0563380077249887]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • 76.180% (sd %: 2.359) --- <span style="font-style: italic;">[deltapif-160440732826108]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • 75.299% (sd %: 2.231) --- <span style="font-style: italic;">[deltapif-0221744517133824]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ────────────────────────────────────────────────────────────────────────────────</span>
 </code></pre></div>
     </div>
