@@ -12,6 +12,7 @@
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/as.matrix.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/as_covstr.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/cancer_rr.html</loc></url>
+<url><loc>https://rodrigozepeda.github.io/deltapif/reference/casecalc.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/change_link.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/children.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/classes.html</loc></url>
@@ -49,6 +50,7 @@
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/pif_validate_ensemble.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/pifpaf.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/print.html</loc></url>
+<url><loc>https://rodrigozepeda.github.io/deltapif/reference/print_cases_class.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/print_pif_class.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/rowcol.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/setters.html</loc></url>
@@ -58,6 +60,7 @@
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/summary.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/validators.html</loc></url>
+<url><loc>https://rodrigozepeda.github.io/deltapif/reference/var_prod.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/verify_var_pif_weights.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/weights.html</loc></url>
 </urlset>
