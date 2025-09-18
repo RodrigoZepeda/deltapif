@@ -271,7 +271,6 @@ default_weight_covariance_structure2 <- function(pif1, pif2){
   parent_name  <-paste0( "N-", stats::rnorm(1))
 
   #This is just a hack to apply the same function as before
-  #This is just a hack to apply the same function as before
   piflist <- list(pif1, pif2)
   names(piflist) <- c(pif1@label, pif2@label)
   together_pif <- pif_global_ensemble_class(piflist,

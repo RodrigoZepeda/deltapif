@@ -164,13 +164,8 @@ get_ensemble_type <- function(self){
 get_covariance <- function(self){
   npifs <- length(self@pif_list)
   if (npifs > 1){
-    cov_mat <- matrix(0, ncol = npifs, nrow = npifs)
-    for (i in 1:(npifs - 1)){
-      for (j in (i + 1):npifs){
-        cov_mat[i,j] <- cov_total_pif(self@pif_list[[i]], self@pif_list[[j]])
-      }
-    }
-    cov_mat <- cov_mat + t(cov_mat) + diag(sapply(self@pif_list, variance)) #TODO: Double check this part
+    cov_mat <- do.call(covariance,
+                       list(x = self@pif_list[[1]], ... = self@pif_list[[2:npifs]]))
     return(cov_mat)
   } else {
     return(

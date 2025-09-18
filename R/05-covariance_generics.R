@@ -116,8 +116,9 @@ cov_atomic_pif <- function(pif1, pif2, var_p, var_beta) {
 #'
 #' @param pif2 A `pif_global_ensemble_class` or `pif_atomic_class` to compute the covariance
 #'
-#' @param var_weights Covariance vector between the weights of
-#' `pif1` and the j-th weight of `pif2`.
+#' @param var_weights Covariance matrix between the weights of
+#' `pif1` and the weights of `pif2`. Entry `var_weights[i,j]` is the
+#' covariance between the `i`th weight of `pif1` and the `j`th weight of `pif2`.
 #'
 #' @param var_pif_weights Covariance structure between the potential
 #' impact fractions in `pif1` and the weights in `pif2`.
@@ -127,20 +128,24 @@ cov_atomic_pif <- function(pif1, pif2, var_p, var_beta) {
 #' Given a `pif_global_ensemble`:
 #' \deqn{
 #' \widehat{\textrm{PIF}}_{1} =
-#' g^{-1}\Bigg(\sum\limits_{i=1}^{M_1} g(\hat{q}_i \cdot \widehat{\textrm{PIF}}_{1,i})\Bigg)
+#' g^{-1}\Bigg(\sum\limits_{i=1}^{M_1} g(\hat{q}_i \cdot
+#' \widehat{\textrm{PIF}}_{1,i})\Bigg)
 #' }
 #' and a second `pif_global_ensemble`:
 #' \deqn{
-#' \widehat{\textrm{PIF}}_{2} = h^{-1}\Bigg(\sum\limits_{j=1}^{M_2} g(\hat{w}_j \cdot
+#' \widehat{\textrm{PIF}}_{2} = h^{-1}\Bigg(\sum\limits_{j=1}^{M_2} h(\hat{w}_j \cdot
 #' \widehat{\textrm{PIF}}_{2,j})\Bigg)
 #' }
 #' This function computes the covariance between the first impact fraction and the
-#' jth weight \eqn{w_j} of the second fraction by computing:
+#' weights of the second fraction. This returns a vector where the `j`th entry
+#' is given by:
 #' \deqn{
 #' \operatorname{Cov}(\widehat{\textrm{PIF}}_A, \hat{w}_j) \approx
 #' \frac{1}{g'\big(\widehat{\textrm{PIF}}_A\big)}\sum\limits_{i=1}^{M_1}g'(\hat{q}_i
-#' \cdot \widehat{\textrm{PIF}}_{A,i}) \Bigg[ \hat{q} \operatorname{Cov}\Big(
-#' \widehat{\textrm{PIF}}_{A,i}, \hat{w}_j\Big) +  \widehat{\textrm{PIF}}_{A,i} \operatorname{Cov}\Big( \hat{q}_j,
+#' \cdot \widehat{\textrm{PIF}}_{A,i})
+#' \Bigg[ \hat{q}_i \operatorname{Cov}\Big(
+#' \widehat{\textrm{PIF}}_{A,i}, \hat{w}_j\Big) +
+#' \widehat{\textrm{PIF}}_{A,i} \operatorname{Cov}\Big( \hat{q}_i,
 #' \hat{w}_j\Big) \Bigg]
 #' }
 #' where \eqn{\widehat{\textrm{PIF}}_{1,:} = (\widehat{\textrm{PIF}}_{1,1},
@@ -149,9 +154,57 @@ cov_atomic_pif <- function(pif1, pif2, var_p, var_beta) {
 #' @note The model currently works under the assumption that all `pif_atomic_class`
 #' are independent from weights. Hence will return `0` if `pif2` is an atomic pif.
 #'
-#' @seealso [cov_atomic_pif()], [cov_ensemble_atomic()]
+#' @examples
+#' \dontrun{
+#' p1 <- paf(c(0.1, 0.2), beta = c(0.01, 0.14), var_p = diag(c(0.01, 0.011)),
+#'   var_beta = 0, label ="1")
+#' p2 <- paf(c(0.2, 0.3), beta = c(0.01, 0.15), var_p = diag(c(0.06, 0.052)),
+#'   var_beta = 0, label = "2")
+#' var_weights <- matrix(c(0.1, 0.01, -0.03, 0.01, 0.4, 0.02, -0.03, 0.02, 0.01), ncol = 3)
+#' pt1 <- paf_total(p1, p2, weights = c(0.1, 0.9), var_weights = var_weights[1:2,1:2],
+#'   label ="total")
+#'
+#' #This gives 0 as the assumption is that atomic pifs don't correlate with anything
+#' cov_ensemble_weights(p1, p2, var_weights = NULL, var_pif_weights = NULL)
+#'
+#' #This returns the correlation of pt1 with its weights
+#' cov_ensemble_weights(pt1, pt1, var_weights = NULL, var_pif_weights = NULL)
+#'
+#' #Changes if it changes to ensemble
+#' p3 <- paf(c(0.1, 0.2), beta = c(0.01, 0.14), var_p = diag(c(0.01, 0.011)),
+#'   var_beta = 0, label = "3")
+#' p4 <- paf(c(0.2, 0.3), beta = c(0.01, 0.15), var_p = diag(c(0.06, 0.052)),
+#'   var_beta = 0, label = "4")
+#' p5 <- paf(c(0.2, 0.3), beta = c(0.01, 0.15), var_p = diag(c(0.06, 0.052)),
+#'   var_beta = 0, label = "5")
+#' pe1 <- paf_ensemble(p3, p4, p5, weights = c(0.1, 0.5, 0.4),
+#'   var_weights = var_weights, label = "ensemble")
+#'
+#' #This returns the correlation of pt1 with its weights
+#' cov_ensemble_weights(pe1, pe1, var_weights = NULL, var_pif_weights = NULL)
+#'
+#' #You can also specify var_weights as either a matrix
+#' var_weights     <- matrix(c(0.1, 0.2, 0.1, 0.3, 0.4, -0.2), ncol = 2)
+#' var_pif_weights <- matrix(c(0.01, 0.03, 0.021, -0.02, 0.004, -0.5), ncol = 2)
+#' cov_ensemble_weights(pe1, pt1, var_weights = var_weights, var_pif_weights = var_pif_weights)
+#'
+#' #or a covariance structure:
+#' var_weights2     <- default_weight_covariance_structure2(pe1, pt1)
+#' var_weights2[[pe1@label]][[pt1@label]] <- var_weights
+#' var_weights2[[pt1@label]][[pe1@label]] <- var_weights
+#'
+#' var_pif_weights2 <- default_weight_pif_covariance_structure2(pe1, pt1)
+#' var_pif_weights2[[pe1@label]][[pt1@label]] <- var_pif_weights
+#' var_pif_weights2[[pt1@label]][[pe1@label]] <- var_pif_weights
+#' cov_ensemble_weights(pe1, pt1, var_weights = var_weights2, var_pif_weights = var_pif_weights2)
+#'
+#' }
+#'
+#'
+#' @seealso [cov_atomic_pif()], [cov_ensemble_atomic()] [cov_total_pif()]
 #' @keywords internal
 cov_ensemble_weights <- function(pif1, pif2, var_weights, var_pif_weights, recursive = !is.null(var_pif_weights)){
+
   #Return 0 if pif1 or pif2 are atomic as there is no covariance between weights
   if (S7::S7_inherits(pif1, pif_atomic_class) || S7::S7_inherits(pif2, pif_atomic_class)){
     return(0)
@@ -170,8 +223,55 @@ cov_ensemble_weights <- function(pif1, pif2, var_weights, var_pif_weights, recur
     )
   }
 
+  #Assign default weights if missing
+  if (!is.matrix(var_weights)){
+    if (is.null(var_weights)){
+      var_weights <- default_weight_covariance_structure2(pif1, pif2)
+    } else if (!S7::S7_inherits(var_weights, covariance_structure_class)){
+      cli::cli_abort(
+        paste0(
+          "`var_weights` should be a `covariance_structure_class`. Use ",
+          "`default_weight_covariance_structure2(pif1, pif2, parameter = 'beta')`",
+          "to create a prototype and work from there."
+        )
+      )
+    }
+  } else {
+    if (ncol(var_weights) != length(pif2@weights) || nrow(var_weights) != length(pif1@coefs)){
+      cli::cli_abort(
+        paste0(
+          "Invalid dimensions for `var_weights` matrix. Should be a matrix of ",
+          "{length(pif1@coefs)} x {length(pif2@weights)}"
+        )
+      )
+    }
+  }
 
-  if (recursive){
+  if (!is.matrix(var_pif_weights)){
+    if (is.null(var_pif_weights)){
+      var_pif_weights <- default_weight_pif_covariance_structure2(pif1, pif2)
+    } else if (!S7::S7_inherits(var_pif_weights, covariance_structure_class)){
+      cli::cli_abort(
+        paste0(
+          "`var_pif_weights` should be a `covariance_structure_class`. Use ",
+          "`covariance_structure2(pif1, pif2)`",
+          "to create a prototype and work from there."
+        )
+      )
+    }
+  } else {
+    if (ncol(var_pif_weights) != length(pif2@weights) || nrow(var_pif_weights) != length(pif1@coefs)){
+      cli::cli_abort(
+        paste0(
+          "Invalid dimensions for `var_pif_weights` matrix. Should be a matrix of ",
+          "{length(pif1@coefs)} x {length(pif2@weights)}"
+        )
+      )
+    }
+  }
+
+  #Loop deeper to get the covariance Cov(pif_1, w)
+  if (recursive && !is.matrix(var_pif_weights)){ #TODO: This is the part that I have not yet checked
     for (k in 1:length(pif1@coefs)){
       name_pif_k <- names(pif1@pif_list)[k]
       var_pif_weights[[name_pif_k]][[pif2@label]] <-
@@ -183,52 +283,45 @@ cov_ensemble_weights <- function(pif1, pif2, var_weights, var_pif_weights, recur
     }
   }
 
-  # #Check the dimensions
-  # if (!identical(pif1, pif2) && length(var_weights) != length(flatten_names(pif1)) +  length(flatten_names(pif2))){
-  #   cli::cli_abort(
-  #     paste0(
-  #       "Invalid dimensions for `var_weights` should be a `covariance_structure` of ",
-  #       "length {length(flatten_names(pif1)) +  length(flatten_names(pif2))}"
-  #     )
-  #   )
-  # } else if (identical(pif1, pif2) && length(var_weights) != length(flatten_names(pif1))){
-  #   cli::cli_abort(
-  #     paste0(
-  #       "Invalid dimensions for `var_weights` should be a `covariance_structure` of ",
-  #       "length {length(flatten_names(pif1))}"
-  #     )
-  #   )
-  # }
-
-
   #Get the factors involved in covariance
   alabel <- pif1@label
   klabel <- pif2@label
 
+  #Loop applying the transform to each q*PIF
+  pif_deriv_transform_vals <- sapply(pif1@weights*pif1@coefs, pif1@pif_deriv_transform)
 
-  #Loop applying the transform
-  for (k in 1:length(pif1@coefs)){
-    pif_deriv_transform_vals <- pif1@pif_deriv_transform(pif1@weights[k]*pif1@coefs[k])
+  #Expand the variances to matrix form if needed
+  if (S7::S7_inherits(var_pif_weights, covariance_structure_class)){
+    var_pif_w <- var_pif_weights[[klabel]][[alabel]]
+  } else {
+    var_pif_w <- var_pif_weights
+  }
+
+  if (!is.matrix(var_pif_w)){
+    var_pif_w <- matrix(var_pif_w, ncol = length(pif2@weights), nrow = length(pif1@coefs))
   }
 
   #Expand the variances to matrix form if needed
-  var_pif_w <- var_pif_weights[[klabel]][[alabel]]
-  if (!is.matrix(var_pif_w)){
-    var_pif_w <- matrix(var_pif_w, ncol = length(pif2@weights), nrow = length(pif1@weights))
+  if (S7::S7_inherits(var_weights, covariance_structure_class)){
+    var_w <- var_weights[[klabel]][[alabel]]
+  } else {
+    var_w <- var_weights
   }
 
-  var_w <- var_weights[[klabel]][[alabel]]
   if (!is.matrix(var_w)){
     var_w <- matrix(var_w, ncol = length(pif2@weights), nrow = length(pif1@weights))
   }
 
   #Transform so that it makes sense
+  #var_w = matrix of M1 x M2 with entry
+  #pif1@coefs = vector of M1
+  #
   as.numeric(
-    pif_deriv_transform_vals * (
-      t(pif1@weights) %*% var_pif_w + t(pif1@coefs) %*% var_w
-    ) / pif2@pif_deriv_transform(pif2@pif)
+    (1 / pif1@pif_deriv_transform(pif1@pif)) * (
+      (pif_deriv_transform_vals * pif1@weights) %*% var_pif_w +
+        (pif_deriv_transform_vals * pif1@coefs) %*% var_w
+    )
   )
-
 
 }
 
@@ -497,14 +590,13 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
                                     var_pif_weights = var_pif_weights)
     }
 
-
+    #FIXME: Here
+    deriv_transformed <- sapply(pif1@weights*pif1@coefs, pif1@pif_deriv_transform)
     return(
       as.numeric(
-        pif1@pif_deriv_transform(pif1@weights[i]*pif1@coefs[i])*(
-          pif1@weights %*% total_cov +
-          pif1@coefs %*% cov_weights
-        ) / multiplier
-      )
+          (deriv_transformed * pif1@weights) %*% total_cov +
+          (deriv_transformed * pif1@coefs) %*% cov_weights
+      ) / multiplier
     )
 
   }
