@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Uses the delta-method to estimate the Potential Impact Fraction (PIF) and the Population Attributable Fraction (PAF) from aggregated data. It creates point-estimates, confidence intervals, and estimates of the variance.
+Uses the delta-method to estimate the Potential Impact Fraction (PIF) and the Population Attributable Fraction (PAF) from summary data. It creates point-estimates, confidence intervals, and estimates of the variance.
 }
 \seealso{
 Useful links:

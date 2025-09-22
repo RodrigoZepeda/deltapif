@@ -4,7 +4,7 @@
 \alias{cov_atomic_pif}
 \title{Covariance between two atomic pifs}
 \usage{
-cov_atomic_pif(pif1, pif2, var_p, var_beta)
+cov_atomic_pif(pif1, pif2, var_p = NULL, var_beta = NULL)
 }
 \arguments{
 \item{pif1}{A \code{pif_atomic_class} object.}
@@ -44,7 +44,38 @@ impact fraction \code{pif1} and  \eqn{p_2} and \eqn{\beta_2} to the respective
 parameters of \code{pif2}.
 }
 
+\examples{
+\dontrun{
+p1 <- pif(p = 0.5, p_cft = 0.1, beta = 0.2, 0.003, 0.04, label = "Population 1")
+p2 <- pif(p = 0.4, p_cft = 0.1, beta = 0.2, 0.003, 0.04, label = "Population 2")
+
+#Positive covariance as program automatically detects same beta and p
+cov_atomic_pif(p1, p2)
+
+#Zero covariance as they have no covariates in common
+p3 <- pif(p = 0.6, p_cft = 0.1, beta = 0.12, 0.003, 0.04, label = "Population 3")
+cov_atomic_pif(p1, p3)
+
+#Covariance has to be given to specify the covariance between p and/or beta parameters
+cov_atomic_pif(p1, p3, var_p = 0.12, var_beta = 0.11)
+
+#Works with parameters of different dimensions with entry i-j being the
+#covariance between entry p[i] of pif1 and entry p[j] of pif2
+#(same with the betas)
+p_dim_3 <- paf(p = c(0.5, 0.2, 0.1), beta = c(0.2, 0.1, 0.4),
+  label = "Population 1", quiet = TRUE)
+p_dim_2 <- pif(p = c(0.4, 0.1), p_cft = c(0.1, 0.05), beta = c(0.3, 0.8),
+  label = "Population 2", quiet = TRUE)
+cov_atomic_pif(p_dim_2, p_dim_3,
+  var_p = matrix(c(0.1, 0.2, 0.4, 0.5, 0.6, 0.08), ncol = 3))
+}
+
+}
 \seealso{
-\code{\link[=from_parameters_covariance_p_component]{from_parameters_covariance_p_component()}}
+\code{\link[=from_parameters_covariance_p_component]{from_parameters_covariance_p_component()}} to calculate the covariance
+from first principles, \link{cov_ensemble_atomic} and \code{\link[=cov_ensemble_weights]{cov_ensemble_weights()}}
+for the covariance between an ensemble fraction and an atomic fraction
+and the covariance between the weights of an ensemble fraction
+and another fraction.
 }
 \keyword{internal}

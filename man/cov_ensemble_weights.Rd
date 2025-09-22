@@ -2,14 +2,13 @@
 % Please edit documentation in R/05-covariance_generics.R
 \name{cov_ensemble_weights}
 \alias{cov_ensemble_weights}
-\title{Covariance between the j-th weight of a \code{pif_global_ensemble_class} and
-another \code{pif_global_ensemble_class}}
+\title{Covariance between a pif and a weight}
 \usage{
 cov_ensemble_weights(
   pif1,
   pif2,
-  var_weights,
-  var_pif_weights,
+  var_weights = NULL,
+  var_pif_weights = NULL,
   recursive = !is.null(var_pif_weights)
 )
 }
@@ -20,13 +19,18 @@ cov_ensemble_weights(
 
 \item{var_weights}{Covariance matrix between the weights of
 \code{pif1} and the weights of \code{pif2}. Entry \code{var_weights[i,j]} is the
-covariance between the \code{i}th weight of \code{pif1} and the \code{j}th weight of \code{pif2}.}
+covariance between the \code{i}th weight of \code{pif1} and the \code{j}th weight of \code{pif2}.
+This refers to the term \eqn{\operatorname{Cov}\Big( \hat{q}_i,\hat{w}_j\Big)}
+in the equation before.}
 
 \item{var_pif_weights}{Covariance structure between the potential
-impact fractions in \code{pif1} and the weights in \code{pif2}.}
+impact fractions in \code{pif1} and the weights in \code{pif2}. Entry \code{var_pif_weights[i,j]} is the
+covariance between the \code{i}th fraction of \code{pif1} and the \code{j}th weight of \code{pif2}.
+This refers to the term \eqn{\operatorname{Cov}\Big(\widehat{\textrm{PIF}}_{A,i}, \hat{w}_j\Big)}
+in the equation before.}
 }
 \description{
-Calculates the covariance of the jth-weight
+Calculates the covariance of the weight
 of a potential impact fraction of \code{pif_global_ensemble_class}
 with a second \code{pif_global_ensemble_class} or \code{pif_atomic_class}.
 }
@@ -95,9 +99,19 @@ cov_ensemble_weights(pe1, pe1, var_weights = NULL, var_pif_weights = NULL)
 #You can also specify var_weights as either a matrix
 var_weights     <- matrix(c(0.1, 0.2, 0.1, 0.3, 0.4, -0.2), ncol = 2)
 var_pif_weights <- matrix(c(0.01, 0.03, 0.021, -0.02, 0.004, -0.5), ncol = 2)
-cov_ensemble_weights(pe1, pt1, var_weights = var_weights, var_pif_weights = var_pif_weights)
+cov_ensemble_weights(pe1, pt1, var_weights = var_weights,
+  var_pif_weights = var_pif_weights)
 
 #or a covariance structure:
+var_weights2     <- default_weight_covariance_structure2(pe1, pt1)
+var_weights2[[pe1@label]][[pt1@label]] <- var_weights
+var_weights2[[pt1@label]][[pe1@label]] <- var_weights
+
+var_pif_weights2 <- default_weight_pif_covariance_structure2(pe1, pt1)
+var_pif_weights2[[pe1@label]][[pt1@label]] <- var_pif_weights
+var_pif_weights2[[pt1@label]][[pe1@label]] <- var_pif_weights
+cov_ensemble_weights(pe1, pt1, var_weights = var_weights2,
+  var_pif_weights = var_pif_weights2)
 
 }
 

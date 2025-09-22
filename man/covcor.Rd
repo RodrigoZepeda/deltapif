@@ -41,10 +41,15 @@ and \code{pif2}. Default \code{NULL} (no correlation).}
 contained in \code{pif1} and all the fractions contained in \code{pif2}.}
 
 \item{var_pif_weights}{Covariance structure between the potential
-impact fractions in \code{pif1} and the weights in \code{pif2}.}
+impact fractions in \code{pif1} and the weights in \code{pif2}. Entry \code{var_pif_weights[i,j]} is the
+covariance between the \code{i}th fraction of \code{pif1} and the \code{j}th weight of \code{pif2}.
+This refers to the term \eqn{\operatorname{Cov}\Big(\widehat{\textrm{PIF}}_{A,i}, \hat{w}_j\Big)}
+in the equation before.}
 
 \item{var_pifs}{Covariance vector between the potential
-impact fractions in \code{pif_ensemble} and \code{pif_atomic}.}
+impact fractions in \code{pif_ensemble} and \code{pif_atomic}. This refers to
+the term \eqn{\operatorname{Cov}\Big( \textrm{PIF}_{A,i}, \widehat{\textrm{PIF}}_{B,j}\Big)}
+in the equation below. If set to \code{NULL} its automatically calculated.}
 }
 \description{
 Computes the covariance (\code{covariance}) or correlation (\code{correlation}) for multiple

@@ -1,10 +1,10 @@
 Package: deltapif
 Title: Estimate Potential Impact and Population Attributable Fractions with Aggregated Data
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: 
     person("Rodrigo", "Zepeda-Tello", , "rzepeda17@gmail.com", role = c("aut", "cre"))
 Description: Uses the delta-method to estimate the Potential Impact Fraction (PIF) 
-  and the Population Attributable Fraction (PAF) from aggregated data. It creates 
+  and the Population Attributable Fraction (PAF) from summary data. It creates 
   point-estimates, confidence intervals, and estimates of the variance. 
 License: MIT + file LICENSE
 Encoding: UTF-8

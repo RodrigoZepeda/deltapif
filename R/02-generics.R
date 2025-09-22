@@ -512,28 +512,12 @@ S7::method(length, pif_atomic_class) <- function(x) {
 #'
 #' @export
 S7::method(as.matrix, covariance_structure_class) <- function(x, ...) {
-  flag <- TRUE
+
+  #Get number of observations
   nrow <- length(x)
   ncol <- length(x@cov_list[[1]])
-  mat  <- matrix(0, nrow = nrow, ncol = ncol)
-  for (k in 1:ncol){
-    for (j in 1:nrow){
-      if (!is.matrix(x@cov_list[[j]][[k]]) && !is.vector(x@cov_list[[j]][[k]])){
-        mat[j,k] <- x@cov_list[[j]][[k]]
-      } else if (is.matrix(x@cov_list[[j]][[k]]) && ncol(x@cov_list[[j]][[k]]) == 1 && nrow(x@cov_list[[j]][[k]] == 1)){
-        mat[j,k] <- as.numeric(x@cov_list[[j]][[k]])
-      } else if (is.vector(x@cov_list[[j]][[k]]) && length(x@cov_list[[j]][[k]]) == 1){
-        mat[j,k] <- as.numeric(x@cov_list[[j]][[k]])
-      } else {
-        flag <- TRUE
-      }
-    }
-  }
 
-  if (!flag){
-    return(mat)
-  }
-
+  #In case you have multiple matrices one needs to expand
   #Go through each of the columns and get the maximum column
   max_col <- 0
   for (k in 1:ncol){
@@ -545,6 +529,7 @@ S7::method(as.matrix, covariance_structure_class) <- function(x, ...) {
       }
     }
   }
+
   #Go through each of the rows and get the maximum number of rows
   max_row <- 0
   for (k in 1:ncol){
@@ -557,7 +542,7 @@ S7::method(as.matrix, covariance_structure_class) <- function(x, ...) {
     }
   }
 
-  #Create a matrix of that size
+  #Setup matrix
   mat <- matrix(0, ncol = max_col*ncol, nrow = max_row*nrow)
   for (k in 1:ncol){
     for (j in 1:nrow){
@@ -568,11 +553,13 @@ S7::method(as.matrix, covariance_structure_class) <- function(x, ...) {
           init_row:(init_row + nrow(x@cov_list[[j]][[k]]) - 1),
           init_col:(init_col + ncol(x@cov_list[[j]][[k]]) - 1)
         ] <- x@cov_list[[j]][[k]]
-      } else if (is.vector(x@cov_list[[j]][[k]])){
+      } else if (is.vector(x@cov_list[[j]][[k]]) && length(x@cov_list[[j]][[k]]) > 1){
         mat[
           init_col:(init_col + length(x@cov_list[[j]][[k]]) - 1),
           1
         ] <- x@cov_list[[j]][[k]]
+      } else if (!is.matrix(x@cov_list[[j]][[k]]) && length(x@cov_list[[j]][[k]]) == 1){
+        mat[j,k] <- x@cov_list[[j]][[k]]
       }
     }
   }
