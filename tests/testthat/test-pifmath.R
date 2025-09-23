@@ -232,6 +232,30 @@ test_that("covariance of a thing with itself is variance", {
 
 })
 
+test_that("computation of ensemble variance", {
+
+  pif1 <- paf(0.2, 0.1, var_p = 0.01)
+  pif2 <- paf(0.2, 0.3, var_p = 0.01)
+
+  var_weights = matrix(c(0.1, 0.2, 0.2, 0.3), ncol = 2, nrow = 2)
+  weights = c(0.4, 0.6)
+  result  <- pif_ensemble(pif1, pif2, weights = weights, var_weights = var_weights)
+  cov_mat <- covariance(pif1, pif2)
+  val <- 0
+  for (i in 1:2){
+    for (j in 1:2){
+      val <- val + (
+        weights[i] %*% cov_mat[i,j] %*% weights[j] +
+          result@coefs[i]* var_weights[i,j] * result@coefs[j]
+      ) / ((1 - weights[i]*result@coefs[i])*(1 - weights[j]*result@coefs[j]))
+    }
+  }
+  val <- val * (1 - result@pif)^2
+  expect_equal(result@variance, as.numeric(val))
+
+
+})
+
 test_that("computation of the variance", {
 
   pvar_men <- matrix(

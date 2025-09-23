@@ -62,7 +62,13 @@ averted_cases <- function(cases, pif, variance = 0, conf_level = 0.95,
                           link = "identity", link_inv = NULL,
                           link_deriv = NULL){
 
-  if (!(link %in% c("log", "identity"))){
+  if (!S7::S7_inherits(pif, pif_class)){
+    cli::cli_abort(
+      "Object `pif` should be a `pif_class`. Use `pif` or `paf` to create a fraction."
+    )
+  }
+
+  if (!is.function(link) && !(link %in% c("log", "identity"))){
     cli::cli_abort(
       "Invalid link {link}. Use either 'log'  or 'identity'."
     )

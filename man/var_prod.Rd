@@ -6,12 +6,39 @@
 \usage{
 var_prod(x, y, var_x, var_y)
 }
+\arguments{
+\item{x}{Numeric value representing the mean of the first random variable X.}
+
+\item{y}{Numeric value representing the mean of the second random variable Y.}
+
+\item{var_x}{Numeric value representing the variance of X. Must be non-negative.}
+
+\item{var_y}{Numeric value representing the variance of Y. Must be non-negative.}
+}
+\value{
+Numeric value representing the variance of the product X*Y.
+}
 \description{
-Implements the variance product formula. This is the formula for
-\code{var(X*Y)} given by:
+Implements the variance product formula for the product of two random variables.
+This is the formula for \code{var(X*Y)} given by:
 \deqn{
 \text{Var}[XY] = Y^2\cdot\text{Var}[X]  + X^2\cdot \text{Var}[Y]
 + \text{Var}[X] \cdot \text{Var}[Y]
+}
+}
+\examples{
+\dontrun{
+# Basic usage
+var_prod(x = 2, y = 3, var_x = 0.5, var_y = 0.8)
+
+# When one variable has zero variance
+var_prod(x = 5, y = 4, var_x = 0, var_y = 1.2)
+
+# When both variables have zero variance
+var_prod(x = 10, y = 20, var_x = 0, var_y = 0)
+
+# With larger variances
+var_prod(x = 100, y = 200, var_x = 25, var_y = 36)
 }
 }
 \keyword{internal}

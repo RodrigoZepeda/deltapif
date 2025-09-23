@@ -87,84 +87,6 @@
 #' @name totalpifpaf
 NULL
 
-
-#' Verify the variance between pif weights
-#' @keywords internal
-verify_var_pif_weights <- function(sigma_list, pif_list) {
-  return(TRUE)
-  n <- length(pif_list)
-#FIXME: This function doesn't verify anything right now
-  # Case 1: NULL is valid
-  if (is.null(sigma_list)) {
-    return(TRUE)
-  }
-
-  # Case 2: Check if it's a list
-  if (!is.list(sigma_list)) {
-    cli::cli_abort(
-      "`sigma_list` must be a list or NULL"
-    )
-  }
-
-  # Case 3: Check length
-  if (length(sigma_list) != n) {
-    cli::cli_abort(
-      "`var_pif_weights` must have length {n} but has length {length(sigma_list)}"
-    )
-  }
-
-  # Check each element
-  for (i in 1:n) {
-    # Check if each row element is a list
-    if (!is.list(sigma_list[[i]])) {
-      cli::cli_abort(
-        "Element {i} var_pif_weights must be a list"
-      )
-    }
-
-    # Check length of each row
-    if (length(sigma_list[[i]]) != n) {
-      cli::cli_abort(
-        "Element {i} must have length {n} but has length {length(sigma_list[[i]])}"
-      )
-    }
-
-    for (j in 1:n) {
-      # Check if element is a matrix
-      if (!is.matrix(sigma_list[[i]][[j]]) && !is.null(sigma_list[[i]][[j]])) {
-        cli::cli_abort(
-          "Element [{i}][{j}] must be a matrix or `NULL`"
-        )
-      }
-
-      if (S7::S7_inherits(pif_list[[i]], pif_atomic_class) || S7::S7_inherits(pif_list[[j]], pif_atomic_class)){
-        if (is.matrix(sigma_list[[i]][[j]])){
-          cli::cli_abort(
-            "Element [{i}][{j}] must be `NULL` as either the i-th or j-th fraction has no weights (is atomic)"
-          )
-        }
-      }
-
-      # Check matrix dimensions
-      if (S7::S7_inherits(pif_list[[i]], pif_ensemble_class) && S7::S7_inherits(pif_list[[j]], pif_ensemble_class)){
-        if (is.matrix(sigma_list[[i]][[j]])){
-          nrows <- length(weights(pif_list[[i]]))
-          ncols <- length(weights(pif_list[[j]]))
-          if (nrow(sigma_list[[i]][[j]]) != nrows || ncol(sigma_list[[i]][[j]]) != ncols) {
-            cli::cli_abort(
-              paste0(
-                "Matrix at [{i}][{j}] must be {nrows} x {ncols}",
-                "but is, {nrow(sigma_list[[i]][[j]])} x {ncol(sigma_list[[i]][[j]])}"
-              )
-            )
-          }
-        }
-      }
-    }
-  }
-  return(TRUE)
-}
-
 #' Prepare a global_ensemble
 #'
 #' Helper function that helps validate the inputs on any global ensemble
@@ -251,9 +173,6 @@ pif_validate_ensemble <- function(pif1, ..., weights, var_weights,
       )
     }
   }
-
-  #Validate the matrix
-  #verify_var_pif_weights(var_pif_weights, pif_list)
 
   #Check in case is paf that each element is a paf
   if (is_paf){
