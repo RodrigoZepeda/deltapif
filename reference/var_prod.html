@@ -5,13 +5,13 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Variance product formula — var_prod"><meta name="description" content="Implements the variance product formula. This is the formula for
-var(X*Y) given by:
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Variance product formula — var_prod"><meta name="description" content="Implements the variance product formula for the product of two random variables.
+This is the formula for var(X*Y) given by:
 $$
 \text{Var}[XY] = Y^2\cdot\text{Var}[X]  + X^2\cdot \text{Var}[Y]
 + \text{Var}[X] \cdot \text{Var}[Y]
-$$"><meta property="og:description" content="Implements the variance product formula. This is the formula for
-var(X*Y) given by:
+$$"><meta property="og:description" content="Implements the variance product formula for the product of two random variables.
+This is the formula for var(X*Y) given by:
 $$
 \text{Var}[XY] = Y^2\cdot\text{Var}[X]  + X^2\cdot \text{Var}[Y]
 + \text{Var}[X] \cdot \text{Var}[Y]
@@ -51,8 +51,8 @@ $$"><meta property="og:image" content="https://rodrigozepeda.github.io/deltapif/
     </div>
 
     <div class="ref-description section level2">
-    <p>Implements the variance product formula. This is the formula for
-<code>var(X*Y)</code> given by:
+    <p>Implements the variance product formula for the product of two random variables.
+This is the formula for <code>var(X*Y)</code> given by:
 $$
 \text{Var}[XY] = Y^2\cdot\text{Var}[X]  + X^2\cdot \text{Var}[Y]
 + \text{Var}[X] \cdot \text{Var}[Y]
@@ -64,8 +64,50 @@ $$</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">var_prod</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">var_x</span>, <span class="va">var_y</span><span class="op">)</span></span></code></pre></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
-  </main></div>
+
+<dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
+<dd><p>Numeric value representing the mean of the first random variable X.</p></dd>
+
+
+<dt id="arg-y">y<a class="anchor" aria-label="anchor" href="#arg-y"></a></dt>
+<dd><p>Numeric value representing the mean of the second random variable Y.</p></dd>
+
+
+<dt id="arg-var-x">var_x<a class="anchor" aria-label="anchor" href="#arg-var-x"></a></dt>
+<dd><p>Numeric value representing the variance of X. Must be non-negative.</p></dd>
+
+
+<dt id="arg-var-y">var_y<a class="anchor" aria-label="anchor" href="#arg-var-y"></a></dt>
+<dd><p>Numeric value representing the variance of Y. Must be non-negative.</p></dd>
+
+</dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>Numeric value representing the variance of the product X*Y.</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co"># Basic usage</span></span></span>
+<span class="r-in"><span><span class="fu">var_prod</span><span class="op">(</span>x <span class="op">=</span> <span class="fl">2</span>, y <span class="op">=</span> <span class="fl">3</span>, var_x <span class="op">=</span> <span class="fl">0.5</span>, var_y <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># When one variable has zero variance</span></span></span>
+<span class="r-in"><span><span class="fu">var_prod</span><span class="op">(</span>x <span class="op">=</span> <span class="fl">5</span>, y <span class="op">=</span> <span class="fl">4</span>, var_x <span class="op">=</span> <span class="fl">0</span>, var_y <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># When both variables have zero variance</span></span></span>
+<span class="r-in"><span><span class="fu">var_prod</span><span class="op">(</span>x <span class="op">=</span> <span class="fl">10</span>, y <span class="op">=</span> <span class="fl">20</span>, var_x <span class="op">=</span> <span class="fl">0</span>, var_y <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># With larger variances</span></span></span>
+<span class="r-in"><span><span class="fu">var_prod</span><span class="op">(</span>x <span class="op">=</span> <span class="fl">100</span>, y <span class="op">=</span> <span class="fl">200</span>, var_x <span class="op">=</span> <span class="fl">25</span>, var_y <span class="op">=</span> <span class="fl">36</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
