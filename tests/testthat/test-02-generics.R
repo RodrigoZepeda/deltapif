@@ -147,3 +147,163 @@ test_that("names work", {
 
 
 })
+
+
+test_that("print.pif_global_ensemble_class prints components block", {
+  p1 <- paf(0.1, 1.2, var_p = 0.01, var_beta = 0, label = "A",
+            rr_link = identity, rr_link_deriv = function(x) 1)
+  p2 <- paf(0.2, 1.3, var_p = 0.01, var_beta = 0, label = "B",
+            rr_link = identity, rr_link_deriv = function(x) 1)
+  ens <- pif_ensemble(p1, p2, weights = c(0.5, 0.5), label = "Ensemble")
+  out <- capture.output(print(ens, accuracy = 0.001), type = "message")
+  expect_true(any(grepl("Components:", out)))
+  expect_true(any(grepl("A", out)))
+  expect_true(any(grepl("B", out)))
+})
+
+test_that("print.cases_class works correctly", {
+  p <- paf(0.2, 1.3, var_p = 0.001, var_beta = 0, label = "Label",
+           rr_link = identity, rr_link_deriv = function(x) 1)
+  cs <- averted_cases(1000, p, link = "identity", variance = 25, conf_level = 0.9)
+  out <- capture.output(print(cs, accuracy = 1), type = "message")
+  expect_true(any(grepl("Averted cases|Attributable cases", out)))
+  expect_true(any(grepl("90% CI", out)))
+})
+
+test_that("print.covariance_structure_class summarizes shapes and values", {
+  mat <- matrix(c(1, 0, 0, 2), ncol = 2, dimnames = list(c("r1","r2"), c("c1","c2")))
+  covs <- as_covariance_structure(mat)
+  out <- capture.output(print(covs))
+  expect_true(any(grepl("r1", out)))
+  expect_true(any(grepl("c2", out)))
+  expect_true(any(grepl("1|2", out)))
+})
+
+test_that("coef/confint/summary/as.data.frame work for cases_class", {
+  p <- paf(0.2, 1.3, var_p = 0.001, var_beta = 0, label = "P",
+           rr_link = identity, rr_link_deriv = function(x) 1)
+  cs <- averted_cases(1000, p, link = "identity", variance = 16, conf_level = 0.95)
+
+  expect_equal(coef(cs), cs@cases)
+
+  ci_default <- confint(cs)
+  ci_custom  <- confint(cs, level = 0.90)
+  expect_length(ci_default, 2)
+  expect_length(ci_custom, 2)
+  expect_true(ci_custom[1] <= ci_custom[2])
+
+  s <- summary(cs)
+  expect_named(s, c("cases", "standard_deviation", "ci_low", "ci_up", "confidence"))
+  expect_equal(as.numeric(s["cases"]), cs@cases)
+  expect_equal(as.numeric(s["standard_deviation"]), sqrt(cs@variance))
+
+  df <- as.data.frame(cs)
+  expect_s3_class(df, "data.frame")
+  expect_equal(nrow(df), 1)
+  expect_equal(df$value, cs@cases)
+
+  # multiple cases_class to as.data.frame
+  cs2 <- averted_cases(500, p, link = "identity", variance = 9)
+  df2 <- as.data.frame(cs, cs2)
+  expect_equal(nrow(df2), 2)
+})
+
+test_that("names() for pif_global_ensemble_class returns children labels", {
+  p1 <- paf(0.1, 1.2, var_p = 0.01, var_beta = 0, label = "X",
+            rr_link = identity, rr_link_deriv = function(x) 1)
+  p2 <- paf(0.2, 1.3, var_p = 0.01, var_beta = 0, label = "Y",
+            rr_link = identity, rr_link_deriv = function(x) 1)
+  tot <- pif_total(p1, p2, weights = c(0.4, 0.6), label = "T")
+  expect_equal(names(tot), c("X","Y"))
+})
+
+test_that("children() returns NULL for atomic and labels for ensembles", {
+  p <- paf(0.2, 1.1, var_p = 0.001, var_beta = 0, label = "Atom",
+           rr_link = identity, rr_link_deriv = function(x) 1)
+  p2 <- paf(0.2, 1.1, var_p = 0.001, var_beta = 0, label = "Atom2",
+           rr_link = identity, rr_link_deriv = function(x) 1)
+  expect_null(children(p))
+  ens <- pif_ensemble(p, p2, weights = c(0.5, 0.5), label = "Ens")
+  expect_equal(children(ens), c("Atom", "Atom2"))
+})
+
+test_that("row_names/col_names, length and as.matrix for covariance_structure", {
+  m <- matrix(c(1,2,3,4), ncol = 2, dimnames = list(c("r1","r2"), c("c1","c2")))
+  cs <- as_covariance_structure(m)
+  expect_equal(row_names(cs), c("r1","r2"))
+  expect_equal(col_names(cs), c("r1","r2")) # col_names returns names(x@cov_list)
+  expect_equal(length(cs), 2L)
+
+  mat <- as.matrix(cs)
+  expect_true(is.matrix(mat))
+  expect_equal(dim(mat), c(2,2))
+  expect_equal(mat[1,1], 1)
+})
+
+test_that("subset() on covariance_structure supports numeric, character, rows/cols and negate", {
+  m <- matrix(c(1,2,3,4), ncol = 2, dimnames = list(c("r1","r2"), c("c1","c2")))
+  cs <- as_covariance_structure(m)
+
+  # select by numeric
+  cs12 <- subset(cs, 1:2)
+  expect_equal(length(cs12), 2L)
+
+  # select by character
+  csc1 <- subset(cs, "r1")
+  expect_equal(row_names(csc1), "r1")
+
+  # rows/cols
+  byrow <- subset(cs, rows = "r2")
+  expect_equal(row_names(byrow), "r2")
+  bycol <- subset(cs, cols = "c2")
+  # after col subset, column names come from inner list names
+  expect_true(all(names(bycol@cov_list[[1]]) == "c2"))
+
+  # negate
+  cs_neg <- subset(cs, select = "r1", negate = TRUE)
+  expect_equal(row_names(cs_neg), "r2")
+
+  # errors
+  expect_error(subset(cs, select = 3), "outside the range")
+  expect_error(subset(cs, select = 1.5), "non integer")
+  expect_error(subset(cs, select = TRUE), "either numeric or character")
+})
+
+test_that("subset_row/subset_col internal helpers validate and subset", {
+  m <- matrix(c(1,2,3,4), ncol = 2, dimnames = list(c("r1","r2"), c("c1","c2")))
+  cs <- as_covariance_structure(m)
+
+  expect_error(subset_row(list(), "r1"), "only supports `covariance_structures`")
+  expect_error(subset_col(list(), "c1"), "only supports `covariance_structures`")
+  expect_error(subset_row(cs, 1.2), "non integer")
+  expect_error(subset_col(cs, 3), "outside the range")
+
+  r <- subset_row(cs, 2)
+  expect_equal(row_names(r), "r2")
+
+  c <- subset_col(cs, "c1")
+  expect_true(all(names(c@cov_list[[1]]) == "c1"))
+})
+
+test_that("as_covariance_structure handles scalars, vectors, data.frames and errors", {
+  # scalar
+  cs1 <- as_covariance_structure(2, col_names = "col", row_names = "row")
+  expect_true(S7::S7_inherits(cs1, covariance_structure_class))
+  expect_equal(row_names(cs1), "row")
+
+  # vector
+  v <- c(0.1, 0.2, 0.3)
+  csv <- as_covariance_structure(v, row_names = c("r1","r2","r3"), col_names = "c1")
+  expect_equal(row_names(csv), c("r1","r2","r3"))
+
+  # data.frame
+  df <- data.frame(a = c(1,2), b = c(3,4))
+  csd <- as_covariance_structure(df, row_names = c("r1","r2"))
+  expect_true(S7::S7_inherits(csd, covariance_structure_class))
+
+  # errors on wrong col/row name lengths
+  m <- matrix(1:4, ncol = 2)
+  expect_error(as_covariance_structure(m, col_names = c("a","b","c")))
+  expect_error(as_covariance_structure(m, row_names = c("r1")))
+  expect_error(as_covariance_structure(list()))
+})

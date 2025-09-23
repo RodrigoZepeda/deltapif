@@ -13,3 +13,4 @@ logo
 ^data-raw$
 ^codecov\.yml$
 ^dev$
+^\.idea$
