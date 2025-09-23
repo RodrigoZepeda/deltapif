@@ -143,7 +143,7 @@ get_global_ensemble_pif <- function(self){
 #' Get the ensemble coefficients
 #' @rdname getters
 get_ensemble_pif <- function(self){
-  1 - exp(sum(log(1 - self@coefs)))
+  1 - exp(sum(log(1 - self@weights*self@coefs)))
 }
 
 #' Get the coefficients

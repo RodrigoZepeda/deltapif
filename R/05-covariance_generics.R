@@ -639,13 +639,13 @@ cov_ensemble_atomic <- function(pif_ensemble, pif_atomic,
   gprime          <- sapply(pif_ensemble@weights*pif_ensemble@coefs, pif_ensemble@pif_deriv_transform)
 
   if (!is.matrix(var_pifs)){
-    var_pif <- subset(var_pifs, cols = alabel, rows = children(pif_ensemble)) |> as.matrix()
+    var_pif <- as.matrix(subset(var_pifs, cols = alabel, rows = children(pif_ensemble)))
   } else {
     var_pif <- var_pifs
   }
 
   if (!is.matrix(var_pif_weights)){
-    var_pif_weight  <- subset(var_pif_weights, cols = alabel, rows = children(pif_ensemble)) |> as.matrix()
+    var_pif_weight  <- as.matrix(subset(var_pif_weights, cols = alabel, rows = children(pif_ensemble)))
   } else {
     var_pif_weight <- var_pif_weights
   }
