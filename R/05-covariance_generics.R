@@ -764,15 +764,6 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
     #Get the denominator
     multiplier <- pif1@pif_deriv_transform(pif1@pif)*pif2@pif_deriv_transform(pif2@pif)
 
-    #Get covariance between the weights
-    #cov(pif1, weights_2)
-    # cov_weights_1 <- cov_ensemble_weights(pif1 = pif1, pif2 = pif2, var_weights = var_weights,
-    #                                     var_pif_weights = var_pif_weights, recursive = TRUE)
-    #
-    #cov(pif2, weights_1)
-    # cov_weights_2 <- cov_ensemble_weights(pif1 = pif1, pif2 = pif2, var_weights = var_weights,
-    #                                       var_pif_weights = var_pif_weights, recursive = TRUE)
-
     #Get the covariance vector for the sub-pifs
     total_cov <- matrix(NA, nrow = length(pif1), ncol = length(pif2))
 
@@ -793,6 +784,10 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
 
     if (!is.matrix(var_weights)){
       var_weights <- as.matrix(subset(var_weights, cols = pif1@label, rows = pif2@label))
+    }
+
+    if (identical(var_weights, matrix(0, ncol = 1, nrow = 1))){
+      var_weights <- matrix(0, nrow = length(pif1), ncol = length(pif2))
     }
 
     var_val <- as.numeric(
