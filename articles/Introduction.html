@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">deltapif</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -228,8 +228,8 @@ distribution in 2020 of the US population by race was as follows:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[All]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PAF = 4.663% [<span style="font-style: italic;">95% CI</span>: 4.555% to 4.771%]</span></span>
-<span><span class="co">#&gt; standard_deviation(paf %) = 1.214</span></span>
+<span><span class="co">#&gt; PAF = 4.663% [<span style="font-style: italic;">95% CI</span>: 4.486% to 4.839%]</span></span>
+<span><span class="co">#&gt; standard_deviation(paf %) = 1.979</span></span>
 <span><span class="co">#&gt; ────────────────────────────────── Components: ─────────────────────────────────</span></span>
 <span><span class="co">#&gt; • 4.722% (sd %: 2.006) --- <span style="font-style: italic;">[White]</span></span></span>
 <span><span class="co">#&gt; • 3.912% (sd %: 1.676) --- <span style="font-style: italic;">[Hispanic]</span></span></span>
@@ -255,7 +255,7 @@ user to extract information from a <code>paf</code> (or
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">paf_population</span><span class="op">)</span></span>
 <span><span class="co">#&gt;        value standard_deviation     ci_low      ci_up confidence type label</span></span>
-<span><span class="co">#&gt; 1 0.04662895          0.0121439 0.04554519 0.04771149       0.95  PAF   All</span></span></code></pre></div>
+<span><span class="co">#&gt; 1 0.04662895         0.01979259 0.04486196 0.04839268       0.95  PAF   All</span></span></code></pre></div>
 <p>Attributable cases can be calculated for example using the estimates
 from <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10593099/#SD2" class="external-link"><span class="citation">Dhana et al. (2023)</span></a>. They estimate the
 number of people with Alzheimer’s Disease in New York, USA 426.5 (400.2,
@@ -266,8 +266,8 @@ number of people with Alzheimer’s Disease in New York, USA 426.5 (400.2,
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Attributable cases: </span><span style="font-weight: bold; font-style: italic;">[All]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attributable cases = 19.887 [<span style="font-style: italic;">95% CI</span>: 5.479 to 34.296]</span></span>
-<span><span class="co">#&gt; standard_deviation(attributable cases) = 735.134</span></span></code></pre></div>
+<span><span class="co">#&gt; Attributable cases = 19.887 [<span style="font-style: italic;">95% CI</span>: -3.596 to 43.371]</span></span>
+<span><span class="co">#&gt; standard_deviation(attributable cases) = 1,198.149</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="why-are-we-using-the-log-relative-risk">Why are we using the log relative risk?<a class="anchor" aria-label="anchor" href="#why-are-we-using-the-log-relative-risk"></a>
@@ -339,8 +339,8 @@ variable:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Potential Impact Fraction: </span><span style="font-weight: bold; font-style: italic;">[All]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PIF = 0.699% [<span style="font-style: italic;">95% CI</span>: 0.697% to 0.702%]</span></span>
-<span><span class="co">#&gt; standard_deviation(pif %) = 0.182</span></span>
+<span><span class="co">#&gt; PIF = 0.699% [<span style="font-style: italic;">95% CI</span>: 0.695% to 0.703%]</span></span>
+<span><span class="co">#&gt; standard_deviation(pif %) = 0.297</span></span>
 <span><span class="co">#&gt; ────────────────────────────────── Components: ─────────────────────────────────</span></span>
 <span><span class="co">#&gt; • 0.708% (sd %: 0.301) --- <span style="font-style: italic;">[White]</span></span></span>
 <span><span class="co">#&gt; • 0.587% (sd %: 0.251) --- <span style="font-style: italic;">[Hispanic]</span></span></span>
@@ -353,7 +353,7 @@ variable:</p>
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">pif_population</span>, <span class="va">pif_white</span>, <span class="va">pif_black</span>, <span class="va">pif_hispanic</span>, <span class="va">pif_asian</span><span class="op">)</span></span>
 <span><span class="va">df</span></span>
 <span><span class="co">#&gt;         value standard_deviation       ci_low       ci_up confidence type</span></span>
-<span><span class="co">#&gt; 1 0.006994343        0.001821585 0.0069694589 0.007019226       0.95  PIF</span></span>
+<span><span class="co">#&gt; 1 0.006994343        0.002968888 0.0069537857 0.007034899       0.95  PIF</span></span>
 <span><span class="co">#&gt; 2 0.007082968        0.003009649 0.0011666075 0.012964284       0.95  PIF</span></span>
 <span><span class="co">#&gt; 3 0.009685883        0.004040705 0.0017344947 0.017573937       0.95  PIF</span></span>
 <span><span class="co">#&gt; 4 0.005867629        0.002514437 0.0009271875 0.010783639       0.95  PIF</span></span>
@@ -392,8 +392,8 @@ the <code>averted_cases</code> function:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Averted cases: </span><span style="font-weight: bold; font-style: italic;">[All]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Averted cases = 2.983 [<span style="font-style: italic;">95% CI</span>: 0.822 to 5.144]</span></span>
-<span><span class="co">#&gt; standard_deviation(averted cases) = 110.270</span></span></code></pre></div>
+<span><span class="co">#&gt; Averted cases = 2.983 [<span style="font-style: italic;">95% CI</span>: -0.539 to 6.506]</span></span>
+<span><span class="co">#&gt; standard_deviation(averted cases) = 179.722</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="example-3-a-categorical-population-attributable-fraction">Example 3: A categorical population attributable fraction<a class="anchor" aria-label="anchor" href="#example-3-a-categorical-population-attributable-fraction"></a>
@@ -499,8 +499,8 @@ assuming both males and females are 50% each of the population:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0974069593265456]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PAF = 67.689% [<span style="font-style: italic;">95% CI</span>: 67.607% to 67.771%]</span></span>
-<span><span class="co">#&gt; standard_deviation(paf %) = 0.133</span></span>
+<span><span class="co">#&gt; PAF = 67.689% [<span style="font-style: italic;">95% CI</span>: 67.426% to 67.950%]</span></span>
+<span><span class="co">#&gt; standard_deviation(paf %) = 0.427</span></span>
 <span><span class="co">#&gt; ────────────────────────────────── Components: ─────────────────────────────────</span></span>
 <span><span class="co">#&gt; • 70.114% (sd %: 0.812) --- <span style="font-style: italic;">[Males]</span></span></span>
 <span><span class="co">#&gt; • 65.264% (sd %: 0.267) --- <span style="font-style: italic;">[Females]</span></span></span>
@@ -561,8 +561,8 @@ paper the communality estimates were:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[Behavioural factors]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PAF = 6.406% [<span style="font-style: italic;">95% CI</span>: 6.395% to 6.417%]</span></span>
-<span><span class="co">#&gt; standard_deviation(paf %) = 0.090</span></span>
+<span><span class="co">#&gt; PAF = 6.406% [<span style="font-style: italic;">95% CI</span>: 6.202% to 6.610%]</span></span>
+<span><span class="co">#&gt; standard_deviation(paf %) = 1.627</span></span>
 <span><span class="co">#&gt; ────────────────────────────────── Components: ─────────────────────────────────</span></span>
 <span><span class="co">#&gt; • 0.644% (sd %: 0.227) --- <span style="font-style: italic;">[Alcohol]</span></span></span>
 <span><span class="co">#&gt; • 19.674% (sd %: 5.236) --- <span style="font-style: italic;">[Physical Activity]</span></span></span>
@@ -588,8 +588,8 @@ matrix:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[Behavioural factors]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PAF = 6.406% [<span style="font-style: italic;">95% CI</span>: 2.465% to 10.346%]</span></span>
-<span><span class="co">#&gt; standard_deviation(paf %) = 31.385</span></span>
+<span><span class="co">#&gt; PAF = 6.406% [<span style="font-style: italic;">95% CI</span>: 3.807% to 9.005%]</span></span>
+<span><span class="co">#&gt; standard_deviation(paf %) = 20.699</span></span>
 <span><span class="co">#&gt; ────────────────────────────────── Components: ─────────────────────────────────</span></span>
 <span><span class="co">#&gt; • 0.644% (sd %: 0.227) --- <span style="font-style: italic;">[Alcohol]</span></span></span>
 <span><span class="co">#&gt; • 19.674% (sd %: 5.236) --- <span style="font-style: italic;">[Physical Activity]</span></span></span>

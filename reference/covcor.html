@@ -17,7 +17,7 @@ standard_deviationfor a potential impact fractions."><meta property="og:image" c
 
     <a class="navbar-brand me-2" href="../index.html">deltapif</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,12 +99,17 @@ contained in <code>pif1</code> and all the fractions contained in <code>pif2</co
 
 <dt id="arg-var-pif-weights">var_pif_weights<a class="anchor" aria-label="anchor" href="#arg-var-pif-weights"></a></dt>
 <dd><p>Covariance structure between the potential
-impact fractions in <code>pif1</code> and the weights in <code>pif2</code>.</p></dd>
+impact fractions in <code>pif1</code> and the weights in <code>pif2</code>. Entry <code>var_pif_weights[i,j]</code> is the
+covariance between the <code>i</code>th fraction of <code>pif1</code> and the <code>j</code>th weight of <code>pif2</code>.
+This refers to the term \(\operatorname{Cov}\Big(\widehat{\textrm{PIF}}_{A,i}, \hat{w}_j\Big)\)
+in the equation before.</p></dd>
 
 
 <dt id="arg-var-pifs">var_pifs<a class="anchor" aria-label="anchor" href="#arg-var-pifs"></a></dt>
 <dd><p>Covariance vector between the potential
-impact fractions in <code>pif_ensemble</code> and <code>pif_atomic</code>.</p></dd>
+impact fractions in <code>pif_ensemble</code> and <code>pif_atomic</code>. This refers to
+the term \(\operatorname{Cov}\Big( \textrm{PIF}_{A,i}, \widehat{\textrm{PIF}}_{B,j}\Big)\)
+in the equation below. If set to <code>NULL</code> its automatically calculated.</p></dd>
 
 </dl></div>
 
