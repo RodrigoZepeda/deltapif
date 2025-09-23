@@ -465,7 +465,6 @@ default_weight_pif_covariance_structure <- function(pif, is_variance = FALSE) {
   #Get the flattened impact fractions
   flat_pif <- as.list(pif)
 
-
   if (length(flat_pif) == 1){
     flat_pif <- list(flat_pif)
   }
@@ -473,7 +472,7 @@ default_weight_pif_covariance_structure <- function(pif, is_variance = FALSE) {
 
   for (k in 1:npifs){
     name_k <- flat_pif[[k]]@label
-    if (S7::S7_inherits(flat_pif[[k]], pif_ensemble_class)){
+    if (S7::S7_inherits(flat_pif[[k]], pif_global_ensemble_class)){
       cov_str[[name_k]][[name_k]] <- flat_pif[[k]]@var_weights
     }
   }

@@ -706,63 +706,23 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
   #If varp and varbeta are null set defaults
   if (is.null(var_p)){
     var_p <- default_parameter_covariance_structure2(pif1, pif2, parameter = "p")
-  } else if (!S7::S7_inherits(var_p, covariance_structure_class)){
-    cli::cli_abort(
-      paste0(
-        "`var_p` should be a `covariance_structure_class`. Use ",
-        "`default_parameter_covariance_structure2(pif1, pif2, parameter = 'p')`",
-        "to create a prototype and work from there."
-      )
-    )
   }
 
   if (is.null(var_beta)){
     var_beta <- default_parameter_covariance_structure2(pif1, pif2, parameter = "beta")
-  } else if (!S7::S7_inherits(var_beta, covariance_structure_class)){
-    cli::cli_abort(
-      paste0(
-        "`var_beta` should be a `covariance_structure_class`. Use ",
-        "`default_parameter_covariance_structure2(pif1, pif2, parameter = 'beta')`",
-        "to create a prototype and work from there."
-      )
-    )
   }
 
   if (is.null(var_weights)){
     var_weights <- default_weight_covariance_structure2(pif1, pif2)
-  } else if (!S7::S7_inherits(var_weights, covariance_structure_class)){
-    cli::cli_abort(
-      paste0(
-        "`var_weights` should be a `covariance_structure_class`. Use ",
-        "`default_weight_covariance_structure2(pif1, pif2, parameter = 'beta')`",
-        "to create a prototype and work from there."
-      )
-    )
   }
 
   #If sigma_*_weights are null set defaults
   if (is.null(var_pif_weights)){
     var_pif_weights <- default_weight_pif_covariance_structure2(pif1, pif2)
-  } else if (!S7::S7_inherits(var_pif_weights, covariance_structure_class)){
-    cli::cli_abort(
-      paste0(
-        "`var_pif_weights` should be a `covariance_structure_class`. Use ",
-        "`covariance_structure2(pif1, pif2)`",
-        "to create a prototype and work from there."
-      )
-    )
   }
 
   if (is.null(var_pifs)){
     var_pifs <- default_pif_covariance_structure2(pif1, pif2)
-  } else if (!S7::S7_inherits(var_pifs, covariance_structure_class)){
-    cli::cli_abort(
-      paste0(
-        "`var_pifs` should be a `covariance_structure_class`. Use ",
-        "`covariance_structure2(pif1, pif2)`",
-        "to create a prototype and work from there."
-      )
-    )
   }
 
   # Base case: both are pif_atomic
@@ -802,33 +762,45 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
   if (S7::S7_inherits(pif1, pif_global_ensemble_class) && S7::S7_inherits(pif2, pif_global_ensemble_class)) {
 
     #Get the denominator
-    multiplier <- pif1@pif_deriv_transform(pif1@pif)
+    multiplier <- pif1@pif_deriv_transform(pif1@pif)*pif2@pif_deriv_transform(pif2@pif)
 
-    #Get covariance betweem the weights
-    cov_weights <- cov_ensemble_weights(pif1 = pif1, pif2 = pif2, var_weights = var_weights,
-                                        var_pif_weights = var_pif_weights, recursive = TRUE)
+    #Get covariance between the weights
+    #cov(pif1, weights_2)
+    # cov_weights_1 <- cov_ensemble_weights(pif1 = pif1, pif2 = pif2, var_weights = var_weights,
+    #                                     var_pif_weights = var_pif_weights, recursive = TRUE)
+    #
+    #cov(pif2, weights_1)
+    # cov_weights_2 <- cov_ensemble_weights(pif1 = pif1, pif2 = pif2, var_weights = var_weights,
+    #                                       var_pif_weights = var_pif_weights, recursive = TRUE)
 
     #Get the covariance vector for the sub-pifs
-    total_cov <- rep(NA, length(pif1@coefs))
+    total_cov <- matrix(NA, nrow = length(pif1), ncol = length(pif2))
 
-
-    for (i in 1:length(total_cov)) {
-      total_cov[i] <- cov_total_pif(pif1 = pif1@pif_list[[i]],
-                                    pif2 = pif2, var_p = var_p,
-                                    var_beta = var_beta,
-                                    var_weights = var_weights,
-                                    var_pifs = var_pifs,
-                                    var_pif_weights = var_pif_weights)
+    for (i in 1:length(pif1)) {
+      for (j in 1:length(pif2)) {
+        total_cov[i,j] <- cov_total_pif(pif1 = pif1@pif_list[[i]],
+                                        pif2 = pif2@pif_list[[j]],
+                                        var_p = var_p,
+                                        var_beta = var_beta,
+                                        var_weights = var_weights,
+                                        var_pifs = var_pifs,
+                                        var_pif_weights = var_pif_weights)
+      }
     }
 
-    #FIXME: Here
-    deriv_transformed <- sapply(pif1@weights*pif1@coefs, pif1@pif_deriv_transform)
-    return(
-      as.numeric(
-          (deriv_transformed * pif1@weights) %*% total_cov +
-          (deriv_transformed * pif1@coefs) %*% cov_weights
+    deriv_transformed_1 <- sapply(pif1@weights*pif1@coefs, pif1@pif_deriv_transform)
+    deriv_transformed_2 <- sapply(pif2@weights*pif2@coefs, pif2@pif_deriv_transform)
+
+    if (!is.matrix(var_weights)){
+      var_weights <- as.matrix(subset(var_weights, cols = pif1@label, rows = pif2@label))
+    }
+
+    var_val <- as.numeric(
+      (deriv_transformed_1 * pif1@weights) %*% total_cov %*% (deriv_transformed_2 * pif2@weights) +
+      (deriv_transformed_1 * pif1@coefs) %*% var_weights %*% (deriv_transformed_2 * pif2@coefs)
       ) / multiplier
-    )
+
+    return(var_val)
 
   }
 
@@ -1055,6 +1027,7 @@ S7::method(variance, S7::new_union(pif_global_ensemble_class, pif_atomic_class))
       "Currently this function does not support more than 1 argument. Ignoring the rest."
     )
   }
+
   cov_total_pif(x, x)
 }
 
