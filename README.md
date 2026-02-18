@@ -74,11 +74,11 @@ formula](https://doi.org/10.1016/j.gloepi.2021.100062):
 ``` r
 library(deltapif)
 
-paf(p = 0.085, beta = 1.59, quiet = TRUE)
+paf(p = 0.085, beta = log(1.59), quiet = TRUE)
 #> 
-#> ── Population Attributable Fraction: [deltapif-063978701225508] ──
+#> ── Population Attributable Fraction: [deltapif-0511095345499815] ──
 #> 
-#> PAF = 24.915% [95% CI: 24.915% to 24.915%]
+#> PAF = 4.776% [95% CI: 4.776% to 4.776%]
 #> standard_deviation(paf %) = 0.000
 ```
 
@@ -98,19 +98,18 @@ var_log_rr
 We then provide the log-relative risk (`log(1.59)`) and its variance to
 `paf()`, specifying the `rr_link` as `exp` to convert the coefficient to
 a relative risk by exponentiating the log. Since the prevalence variance
-was not reported, we set `var_p = 0`.
+was not reported, we assume `var_p = 0`.
 
 ``` r
 paf_dementia <- paf(
-  p = 0.085, 
-  beta = log(1.59), 
-  var_beta = var_log_rr, 
-  var_p = 0, 
-  rr_link = exp
+  p         = 0.085, 
+  beta      = log(1.59), 
+  var_beta  = var_log_rr, 
+  var_p     = 0
 )
 paf_dementia
 #> 
-#> ── Population Attributable Fraction: [deltapif-0685736966379462] ──
+#> ── Population Attributable Fraction: [deltapif-19198847279648] ──
 #> 
 #> PAF = 4.776% [95% CI: 0.717% to 8.669%]
 #> standard_deviation(paf %) = 2.028
@@ -127,16 +126,15 @@ to 7.225%). The PIF for this intervention is:
 
 ``` r
 lee_pif <- pif(
-  p = 0.085, 
-  p_cft = 0.085 * (1 - 0.15), # 15% reduction
-  beta = log(1.59), 
+  p        = 0.085, 
+  p_cft    = 0.085 * (1 - 0.15), # 15% reduction
+  beta     = log(1.59), 
   var_beta = var_log_rr, 
-  var_p = 0, 
-  rr_link = exp
+  var_p    = 0
 )
 lee_pif
 #> 
-#> ── Potential Impact Fraction: [deltapif-146652105400366] ──
+#> ── Potential Impact Fraction: [deltapif-184482483829208] ──
 #> 
 #> PIF = 0.716% [95% CI: 0.118% to 1.311%]
 #> standard_deviation(pif %) = 0.304
@@ -159,27 +157,24 @@ smoking by 15% assuming the prevalence of smoking is identical to the
 rest of the US is given by:
 
 ``` r
-averted_cases(426.5, lee_pif, variance = 2647.005, link = "log")
+averted_cases(426.5, lee_pif, variance = 2647.005)
 #> 
-#> ── Averted cases: [deltapif-146652105400366] ──
+#> ── Averted cases: [deltapif-184482483829208] ──
 #> 
-#> Averted cases = 3.055 [95% CI: 0.937 to 9.956]
-#> standard_deviation(averted cases) = 184.148
+#> Averted cases = 3.055 [95% CI: 0.394 to 5.716]
+#> standard_deviation(averted cases) = 135.779
 ```
-
-where we used `link = "log"` transformation to guarantee positivity of
-the confidence interval.
 
 Attributable cases can likewise be estimated using the previous `paf`
 as:
 
 ``` r
-attributable_cases(426.5, paf_dementia, variance = 2647.005, link = "log")
+attributable_cases(426.5, paf_dementia, variance = 2647.005)
 #> 
-#> ── Attributable cases: [deltapif-0685736966379462] ──
+#> ── Attributable cases: [deltapif-19198847279648] ──
 #> 
-#> Attributable cases = 20.368 [95% CI: 6.250 to 66.374]
-#> standard_deviation(attributable cases) = 1,227.655
+#> Attributable cases = 20.368 [95% CI: 2.626 to 38.109]
+#> standard_deviation(attributable cases) = 905.195
 ```
 
 ### Combining fractions from subpopulations
@@ -203,10 +198,10 @@ Assuming the distribution is 51% women and 49% men:
 ``` r
 paf_total(paf_men, paf_women, weights = c(0.49, 0.51))
 #> 
-#> ── Population Attributable Fraction: [deltapif-0892382911349468] ──
+#> ── Population Attributable Fraction: [deltapif-0963265949933456] ──
 #> 
-#> PAF = 13.201% [95% CI: 11.287% to 15.073%]
-#> standard_deviation(paf %) = 7.885
+#> PAF = 13.201% [95% CI: 10.473% to 15.845%]
+#> standard_deviation(paf %) = 11.187
 #> ────────────────────────────────── Components: ─────────────────────────────────
 #> • 12.968% (sd %: 15.867) --- [Men]
 #> • 13.424% (sd %: 15.773) --- [Women]
@@ -227,10 +222,10 @@ asbestus:
 
 ``` r
 paf_lead  <- paf(p = 0.41, beta = 0.31, var_p = 0.001,
-                 var_beta = 0.14,
+                 var_beta = 0.014,
                  label = "Lead")
-paf_absts <- paf(p = 0.37, beta = 0.35, var_p = 0.001, 
-                 var_beta = 0.16,
+paf_absts <- paf(p = 0.61, beta = 0.15, var_p = 0.001, 
+                 var_beta = 0.001,
                  label = "Asbestus")
 ```
 
@@ -241,13 +236,13 @@ commonality correction (say of `c(0.1, 0.2)`):
 ``` r
 paf_ensemble(paf_lead, paf_absts, weights = c(0.1, 0.2))
 #> 
-#> ── Population Attributable Fraction: [deltapif-0671407130462526] ──
+#> ── Population Attributable Fraction: [deltapif-0551097107604195] ──
 #> 
-#> PAF = 3.947% [95% CI: 3.778% to 4.116%]
-#> standard_deviation(paf %) = 2.186
+#> PAF = 3.070% [95% CI: 3.033% to 3.108%]
+#> standard_deviation(paf %) = 0.625
 #> ────────────────────────────────── Components: ─────────────────────────────────
-#> • 12.968% (sd %: 15.867) --- [Lead]
-#> • 13.424% (sd %: 15.773) --- [Asbestus]
+#> • 12.968% (sd %: 5.085) --- [Lead]
+#> • 8.985% (sd %: 1.904) --- [Asbestus]
 #> ────────────────────────────────────────────────────────────────────────────────
 ```
 
@@ -256,6 +251,50 @@ where this quantity estimates:
 $$
 \textrm{PAF}_{\text{Ensemble}} = 1 - (1 - 0.1 \cdot \textrm{PAF}_{\text{Lead}}) \cdot (1 - 0.2 \cdot \textrm{PAF}_{\text{Asbestus}})
 $$
+
+## Adjusting fractions for commonality
+
+Adjuting for commonality is usually performed when different risks can
+be concurrent. In the previous example, exposure to lead and to asbestus
+can happen at the same time. [Mukadan et
+al](https://doi.org/10.1016/S2214-109X(19)30074-9) propose the
+individual weighted (adjusted) fractions based on commonality weights.
+These weights represent the proportion of the variance shared among risk
+factors. To calculate the adjusted fractions one needs to estimate:
+
+$$
+\textrm{PIF}_k^{\text{Adjusted}} = \dfrac{\text{PIF}_k}{\sum_k \text{PIF}_k} \cdot \text{PIF}_{\text{Overall}}
+$$ where
+
+$$
+\textrm{PIF}^{\text{Overall}} = 1 - \prod\limits_k (1 - w_k \text{PIF}_k)
+$$ with
+
+$$
+w_k = 1 - \text{commonality}_k
+$$
+
+The adjusted fractions can be calculated with the `weighted_adjusted`
+as:
+
+``` r
+weighted_adjusted_paf(paf_lead, paf_absts, weights = c(0.2, 0.3))
+#> $Lead
+#> 
+#> ── Population Attributable Fraction: [Lead_adj] ──
+#> 
+#> PAF = 3.083% [95% CI: 0.964% to 5.202%]
+#> standard_deviation(paf %) = 1.081
+#> 
+#> $Asbestus
+#> 
+#> ── Population Attributable Fraction: [Asbestus_adj] ──
+#> 
+#> PAF = 2.136% [95% CI: 1.294% to 2.978%]
+#> standard_deviation(paf %) = 0.429
+```
+
+which returns a named list of the adjusted fractions.
 
 ## Learn More
 

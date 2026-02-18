@@ -1,3 +1,4 @@
-# deltapif 0.4.2
+# deltapif 0.4.3
 
-* Initial CRAN submission.
+* Initial release of package
+* Improved Readme. 
