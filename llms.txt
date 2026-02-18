@@ -1,0 +1,423 @@
+# deltapif
+
+The `deltapif` R package calculates **Potential Impact Fractions (PIF)
+and Population Attributable Fractions (PAF) for aggregated data**. It
+uses the delta method to derive confidence intervals, providing a robust
+approach for quantifying the burden of disease attributable to risk
+factors and the potential impact of interventions.
+
+## Installation
+
+You can install the development version of deltapif from
+[GitHub](https://github.com/RodrigoZepeda/deltapif) with:
+
+``` r
+remotes::install_github("RodrigoZepeda/deltapif")
+```
+
+## Overview
+
+The package provides two core functions:
+
+- [`paf()`](https://rodrigozepeda.github.io/deltapif/reference/pifpaf.md):
+  Calculates the Population Attributable Fraction.
+
+- [`pif()`](https://rodrigozepeda.github.io/deltapif/reference/pifpaf.md):
+  Calculates the Potential Impact Fraction.
+
+Both functions require:
+
+- `p`: The exposure prevalence in the population.
+
+- `beta`: The log-relatieve risk coefficient(s) (or a value from which
+  the relative risk can be obtained).
+
+- `var_p`, `var_beta`: Variances for the prevalence and log-relative
+  risk estimates.
+
+The
+[`pif()`](https://rodrigozepeda.github.io/deltapif/reference/pifpaf.md)
+function additionally requires:
+
+- `p_cft`: The counterfactual exposure prevalence under an intervention
+  scenario.
+
+> **Note** A key assumption of the delta method implementation is that
+> the relative risk and exposure prevalence estimates are independent
+> (i.e., derived from different studies or populations).
+
+## Usage
+
+### Population Attributable Fraction (PAF)
+
+[Lee et al. (2022)](https://doi.org/10.1001/jamanetworkopen.2022.19672)
+estimated the fraction of dementia cases attributable to smoking in the
+US. They reported:
+
+- A relative risk of 1.59 (95% CI: 1.15, 2.20)
+
+- A smoking prevalence of 8.5%
+
+The point estimate of the PAF can be calculated using [Levin’s
+formula](https://doi.org/10.1016/j.gloepi.2021.100062):
+
+``` r
+library(deltapif)
+
+paf(p = 0.085, beta = 1.59, quiet = TRUE)
+#> 
+#> ── Population Attributable Fraction: [deltapif-063978701225508] ──
+#> 
+#> PAF = 24.915% [95% CI: 24.915% to 24.915%]
+#> standard_deviation(paf %) = 0.000
+```
+
+#### Incorporating Uncertainty
+
+To calculate confidence intervals, we need the variance of the
+log-relative risk. The variance can be derived from the confidence
+interval following the [Cochrane
+Handbook](https://handbook-5-1.cochrane.org/chapter_7/7_7_3_2_obtaining_standard_deviations_from_standard_errors_and.htm):
+
+``` r
+var_log_rr <- ((log(2.20) - log(1.15)) / (2 * 1.96))^2
+var_log_rr
+#> [1] 0.0273848
+```
+
+We then provide the log-relative risk (`log(1.59)`) and its variance to
+[`paf()`](https://rodrigozepeda.github.io/deltapif/reference/pifpaf.md),
+specifying the `rr_link` as `exp` to convert the coefficient to a
+relative risk by exponentiating the log. Since the prevalence variance
+was not reported, we set `var_p = 0`.
+
+``` r
+paf_dementia <- paf(
+  p = 0.085, 
+  beta = log(1.59), 
+  var_beta = var_log_rr, 
+  var_p = 0, 
+  rr_link = exp
+)
+paf_dementia
+#> 
+#> ── Population Attributable Fraction: [deltapif-0685736966379462] ──
+#> 
+#> PAF = 4.776% [95% CI: 0.717% to 8.669%]
+#> standard_deviation(paf %) = 2.028
+```
+
+The results match those reported by Lee et al.: **PAF = 4.9% (95% CI:
+1.3–9.3)**.
+
+### Potential Impact Fraction (PIF)
+
+[Lee et al. (2022)](https://doi.org/10.1001/jamanetworkopen.2022.19672)
+also considered a scenario reducing smoking prevalence by 15% (from 8.5%
+to 7.225%). The PIF for this intervention is:
+
+``` r
+lee_pif <- pif(
+  p = 0.085, 
+  p_cft = 0.085 * (1 - 0.15), # 15% reduction
+  beta = log(1.59), 
+  var_beta = var_log_rr, 
+  var_p = 0, 
+  rr_link = exp
+)
+lee_pif
+#> 
+#> ── Potential Impact Fraction: [deltapif-146652105400366] ──
+#> 
+#> PIF = 0.716% [95% CI: 0.118% to 1.311%]
+#> standard_deviation(pif %) = 0.304
+```
+
+This result is consistent with the reported estimate: **PIF = 0.7% (95%
+CI: 0.2–1.4)**.
+
+### Attributable and averted cases
+
+Attributable and averted cases can be calculated with the
+`attributable_cases` function. For example [Dhana et
+al](https://pmc.ncbi.nlm.nih.gov/articles/PMC10593099/#SD2) estimate the
+number of people with Alzheimer’s Disease in New York, USA 426.5 (400.2,
+452.7) thousand. This implies a variance of
+`((452.7 - 400.2) / 2*qnorm(0.975))^2 = 2647.005`.
+
+The number of cases (in thousands) that would be averted if we reduced
+smoking by 15% assuming the prevalence of smoking is identical to the
+rest of the US is given by:
+
+``` r
+averted_cases(426.5, lee_pif, variance = 2647.005, link = "log")
+#> 
+#> ── Averted cases: [deltapif-146652105400366] ──
+#> 
+#> Averted cases = 3.055 [95% CI: 0.937 to 9.956]
+#> standard_deviation(averted cases) = 184.148
+```
+
+where we used `link = "log"` transformation to guarantee positivity of
+the confidence interval.
+
+Attributable cases can likewise be estimated using the previous `paf`
+as:
+
+``` r
+attributable_cases(426.5, paf_dementia, variance = 2647.005, link = "log")
+#> 
+#> ── Attributable cases: [deltapif-0685736966379462] ──
+#> 
+#> Attributable cases = 20.368 [95% CI: 6.250 to 66.374]
+#> standard_deviation(attributable cases) = 1,227.655
+```
+
+### Combining fractions from subpopulations
+
+Multiple fractions can be combined into totals and ensembles. For
+example the fraction among men and women can be combined into an overall
+fraction by specifying the distribution of the subgroups in the
+population:
+
+``` r
+paf_men   <- paf(p = 0.41, beta = 0.31, var_p = 0.001,
+                 var_beta = 0.14,
+                 label = "Men")
+paf_women <- paf(p = 0.37, beta = 0.35, var_p = 0.001, 
+                 var_beta = 0.16,
+                 label = "Women")
+```
+
+Assuming the distribution is 51% women and 49% men:
+
+``` r
+paf_total(paf_men, paf_women, weights = c(0.49, 0.51))
+#> 
+#> ── Population Attributable Fraction: [deltapif-0892382911349468] ──
+#> 
+#> PAF = 13.201% [95% CI: 11.287% to 15.073%]
+#> standard_deviation(paf %) = 7.885
+#> ────────────────────────────────── Components: ─────────────────────────────────
+#> • 12.968% (sd %: 15.867) --- [Men]
+#> • 13.424% (sd %: 15.773) --- [Women]
+#> ────────────────────────────────────────────────────────────────────────────────
+```
+
+This is equivalent to calculating:
+
+\\ \textrm{PAF}\_{\text{All}} = 0.49 \cdot \text{PAF}\_{\text{Men}} +
+0.51 \cdot \text{PAF}\_{\text{Women}} \\
+
+### Combining fractions from multiple risks
+
+Fractions from disjointed risks can be calculated as an ensemble. For
+example the fraction of exposure to lead and the fraction of exposure to
+asbestus:
+
+``` r
+paf_lead  <- paf(p = 0.41, beta = 0.31, var_p = 0.001,
+                 var_beta = 0.14,
+                 label = "Lead")
+paf_absts <- paf(p = 0.37, beta = 0.35, var_p = 0.001, 
+                 var_beta = 0.16,
+                 label = "Asbestus")
+```
+
+A fraction of **environmental** exposure considering both can be
+calculated by multiplying the inverse of the fractions, assuming a
+commonality correction (say of `c(0.1, 0.2)`):
+
+``` r
+paf_ensemble(paf_lead, paf_absts, weights = c(0.1, 0.2))
+#> 
+#> ── Population Attributable Fraction: [deltapif-0671407130462526] ──
+#> 
+#> PAF = 3.947% [95% CI: 3.778% to 4.116%]
+#> standard_deviation(paf %) = 2.186
+#> ────────────────────────────────── Components: ─────────────────────────────────
+#> • 12.968% (sd %: 15.867) --- [Lead]
+#> • 13.424% (sd %: 15.773) --- [Asbestus]
+#> ────────────────────────────────────────────────────────────────────────────────
+```
+
+where this quantity estimates:
+
+\\ \textrm{PAF}\_{\text{Ensemble}} = 1 - (1 - 0.1 \cdot
+\textrm{PAF}\_{\text{Lead}}) \cdot (1 - 0.2 \cdot
+\textrm{PAF}\_{\text{Asbestus}}) \\
+
+## Learn More
+
+- For more detailed examples, including multi-category risk factors, and
+  combining fractions into a total see the [package’s
+  website](https://rodrigozepeda.github.io/deltapif/).
+
+- See the vignette: [Introduction to
+  deltapif](https://rodrigozepeda.github.io/deltapif/articles/Introduction.html)
+
+## Contributing
+
+Contributions are welcome! Please file issues and pull requests on
+[GitHub](https://github.com/RodrigoZepeda/deltapif).
+
+# Package index
+
+## All functions
+
+- [`alcohol`](https://rodrigozepeda.github.io/deltapif/reference/alcohol.md)
+  : Alcohol consumption in Australia from Pandeya et al
+
+- [`as.data.frame`](https://rodrigozepeda.github.io/deltapif/reference/as.data.frame.md)
+  : Transform a pif object into a data.frame
+
+- [`as.list`](https://rodrigozepeda.github.io/deltapif/reference/as.list.md)
+  : Convert to list
+
+- [`as.matrix`](https://rodrigozepeda.github.io/deltapif/reference/as.matrix.md)
+  :
+
+  Convert a `covariance_structure` to `matrix`
+
+- [`as_covariance_structure()`](https://rodrigozepeda.github.io/deltapif/reference/as_covstr.md)
+  : Transform into a covariance structure
+
+- [`cancer_rr`](https://rodrigozepeda.github.io/deltapif/reference/cancer_rr.md)
+  : Relative risks for cancer from Pandeya et al
+
+- [`averted_cases()`](https://rodrigozepeda.github.io/deltapif/reference/casecalc.md)
+  [`attributable_cases()`](https://rodrigozepeda.github.io/deltapif/reference/casecalc.md)
+  : Attributable cases
+
+- [`change_link()`](https://rodrigozepeda.github.io/deltapif/reference/change_link.md)
+  : Change the link
+
+- [`children()`](https://rodrigozepeda.github.io/deltapif/reference/children.md)
+  :
+
+  Get the children labels from a `pif_class`
+
+- [`pif_class()`](https://rodrigozepeda.github.io/deltapif/reference/classes.md)
+  [`cases_class()`](https://rodrigozepeda.github.io/deltapif/reference/classes.md)
+  [`pif_atomic_class()`](https://rodrigozepeda.github.io/deltapif/reference/classes.md)
+  [`pif_global_ensemble_class()`](https://rodrigozepeda.github.io/deltapif/reference/classes.md)
+  [`pif_total_class()`](https://rodrigozepeda.github.io/deltapif/reference/classes.md)
+  [`pif_ensemble_class()`](https://rodrigozepeda.github.io/deltapif/reference/classes.md)
+  : Potential Impact Fraction related classes
+
+- [`coef`](https://rodrigozepeda.github.io/deltapif/reference/coef.md) :
+  Extract coefficients of a pif object
+
+- [`confint`](https://rodrigozepeda.github.io/deltapif/reference/confint.md)
+  : Extract confidence intervals of a pif object
+
+- [`covariance_structure_class()`](https://rodrigozepeda.github.io/deltapif/reference/covariance_structure_class.md)
+  : Covariance structure class
+
+- [`covariance_structure()`](https://rodrigozepeda.github.io/deltapif/reference/covariance_structures.md)
+  [`covariance_structure2()`](https://rodrigozepeda.github.io/deltapif/reference/covariance_structures.md)
+  [`default_weight_covariance_structure()`](https://rodrigozepeda.github.io/deltapif/reference/covariance_structures.md)
+  [`default_weight_covariance_structure2()`](https://rodrigozepeda.github.io/deltapif/reference/covariance_structures.md)
+  [`default_parameter_covariance_structure()`](https://rodrigozepeda.github.io/deltapif/reference/covariance_structures.md)
+  [`default_parameter_covariance_structure2()`](https://rodrigozepeda.github.io/deltapif/reference/covariance_structures.md)
+  [`default_pif_covariance_structure()`](https://rodrigozepeda.github.io/deltapif/reference/covariance_structures.md)
+  [`default_pif_covariance_structure2()`](https://rodrigozepeda.github.io/deltapif/reference/covariance_structures.md)
+  [`default_weight_pif_covariance_structure()`](https://rodrigozepeda.github.io/deltapif/reference/covariance_structures.md)
+  [`default_weight_pif_covariance_structure2()`](https://rodrigozepeda.github.io/deltapif/reference/covariance_structures.md)
+  : Default covariance structures
+
+- [`covariance()`](https://rodrigozepeda.github.io/deltapif/reference/covcor.md)
+  [`variance()`](https://rodrigozepeda.github.io/deltapif/reference/covcor.md)
+  [`standard_deviation()`](https://rodrigozepeda.github.io/deltapif/reference/covcor.md)
+  [`correlation()`](https://rodrigozepeda.github.io/deltapif/reference/covcor.md)
+  : Covariance matrix, correlation matrix, variance and standard
+  deviation for potential impact fractions
+
+- [`dementiacov`](https://rodrigozepeda.github.io/deltapif/reference/dementiacov.md)
+  : Relative risk covariance from Lee et al
+
+- [`dementiarisk`](https://rodrigozepeda.github.io/deltapif/reference/dementiarisk.md)
+  : Exposure and Relative Risk data from Lee et Al
+
+- [`deriv_logit()`](https://rodrigozepeda.github.io/deltapif/reference/deriv_linkfuns.md)
+  [`deriv_log_complement()`](https://rodrigozepeda.github.io/deltapif/reference/deriv_linkfuns.md)
+  [`deriv_hawkins()`](https://rodrigozepeda.github.io/deltapif/reference/deriv_linkfuns.md)
+  [`deriv_identity()`](https://rodrigozepeda.github.io/deltapif/reference/deriv_linkfuns.md)
+  : Derivatives of link functions
+
+- [`deriv_pif_p()`](https://rodrigozepeda.github.io/deltapif/reference/derivatives.md)
+  [`deriv_pif_beta()`](https://rodrigozepeda.github.io/deltapif/reference/derivatives.md)
+  : Partial derivatives of PIF
+
+- [`flatten_names()`](https://rodrigozepeda.github.io/deltapif/reference/flatten_names.md)
+  : Names of a PIF's components
+
+- [`fraction_type()`](https://rodrigozepeda.github.io/deltapif/reference/fraction_type.md)
+  : Get the type of the fraction
+
+- [`inv_logit()`](https://rodrigozepeda.github.io/deltapif/reference/inv_linkfuns.md)
+  [`inv_log_complement()`](https://rodrigozepeda.github.io/deltapif/reference/inv_linkfuns.md)
+  [`inv_hawkins()`](https://rodrigozepeda.github.io/deltapif/reference/inv_linkfuns.md)
+  : Inverses of link functions
+
+- [`length`](https://rodrigozepeda.github.io/deltapif/reference/length.md)
+  :
+
+  Length of a `covariance_structure`
+
+- [`parse_link()`](https://rodrigozepeda.github.io/deltapif/reference/link_parsers.md)
+  [`parse_inv_link()`](https://rodrigozepeda.github.io/deltapif/reference/link_parsers.md)
+  [`parse_deriv_link()`](https://rodrigozepeda.github.io/deltapif/reference/link_parsers.md)
+  : Link parsers
+
+- [`logit()`](https://rodrigozepeda.github.io/deltapif/reference/linkfuns.md)
+  [`log_complement()`](https://rodrigozepeda.github.io/deltapif/reference/linkfuns.md)
+  [`hawkins()`](https://rodrigozepeda.github.io/deltapif/reference/linkfuns.md)
+  : Link functions
+
+- [`names`](https://rodrigozepeda.github.io/deltapif/reference/names.md)
+  : Get the label of a PIF or PAF
+
+- [`paf()`](https://rodrigozepeda.github.io/deltapif/reference/pifpaf.md)
+  [`pif()`](https://rodrigozepeda.github.io/deltapif/reference/pifpaf.md)
+  : Potential Impact fraction and Population Attributable Fraction
+
+- [`print`](https://rodrigozepeda.github.io/deltapif/reference/print.md)
+  : Print or show a potential impact fraction
+
+- [`row_names()`](https://rodrigozepeda.github.io/deltapif/reference/rowcol.md)
+  [`col_names()`](https://rodrigozepeda.github.io/deltapif/reference/rowcol.md)
+  : Row and Column names
+
+- [`subset`](https://rodrigozepeda.github.io/deltapif/reference/subset.md)
+  :
+
+  Subset a `covariance_structure`
+
+- [`summary`](https://rodrigozepeda.github.io/deltapif/reference/summary.md)
+  : Summary of a pif object
+
+- [`paf_total()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md)
+  [`pif_total()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md)
+  [`paf_ensemble()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md)
+  [`pif_ensemble()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md)
+  : Combine Potential Impact Fractions and Population Attributable
+  Fractions
+
+- [`weighted_adjusted_fractions()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted_fractions.md)
+  : Weighted Adjusted Fractions
+
+- [`weighted_adjusted_paf()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted_paf.md)
+  : Weighted Adjusted PAF
+
+- [`weighted_adjusted_pif()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted_pif.md)
+  : Weighted Adjusted PIF
+
+- [`weights`](https://rodrigozepeda.github.io/deltapif/reference/weights.md)
+  : Extract weights of a pif_global_ensemble
+
+# Articles
+
+### All vignettes
+
+- [Introduction](https://rodrigozepeda.github.io/deltapif/articles/Introduction.md):
