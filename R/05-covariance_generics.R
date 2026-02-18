@@ -303,6 +303,15 @@ cov_atomic_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL) {
 cov_ensemble_weights <- function(pif1, pif2, var_weights = NULL, var_pif_weights = NULL,
                                  recursive = !is.null(var_pif_weights)){
 
+  #Throw an error if they are not pfis
+  if (!S7::S7_inherits(pif1, pif_class)){
+    cli::cli_abort("pif1 must be of `pif_class`. Given a {class(pif1)} object")
+  }
+
+  if (!S7::S7_inherits(pif2, pif_class)){
+    cli::cli_abort("pif2 must be of `pif_class`. Given a {class(pif2)} object")
+  }
+
   #Return 0 if pif1 or pif2 are atomic as there is no covariance between weights
   if (S7::S7_inherits(pif1, pif_atomic_class) || S7::S7_inherits(pif2, pif_atomic_class)){
     return(0)
@@ -453,6 +462,9 @@ cov_ensemble_weights <- function(pif1, pif2, var_weights = NULL, var_pif_weights
 #' the `pif_atomic`. This refers to
 #' the term \eqn{\operatorname{Cov}\Big( \hat{q}_i,\widehat{\textrm{PIF}}_{B,j}\Big)}
 #' in the equation below. If set to `NULL` its automatically calculated.
+#'
+#' @param warning Boolean indicating whether to throw a warning if the labels on the
+#' fractions involved are not unique.
 #'
 #' @section Formula:
 #' Given a `pif_global_ensemble`:
@@ -677,6 +689,7 @@ cov_ensemble_atomic <- function(pif_ensemble, pif_atomic,
 #' contained in `pif1` and all the fractions contained in `pif2`.
 #'
 #' @inheritParams cov_atomic_pif
+#' @inheritParams cov_ensemble_atomic
 #'
 #' @section Computation:
 #' This computes:
@@ -877,21 +890,20 @@ NULL
 covariance <- S7::new_generic(
   "covariance", "x",
   function(x, ..., var_p = NULL, var_beta = NULL, var_weights = NULL,
-           var_pif_weights = NULL, var_pifs = NULL) {
+           var_pif_weights = NULL, var_pifs = NULL, warning = FALSE) {
     S7::S7_dispatch()
   }
 )
-S7::method(covariance,
-           S7::new_union(pif_global_ensemble_class,
-                         pif_atomic_class)) <- function(x, ...,
-                                                        var_p = NULL,
-                                                        var_beta = NULL,
-                                                        var_weights = NULL,
-                                                        var_pif_weights = NULL,
-                                                        var_pifs = NULL) {
+S7::method(covariance, S7::new_union(pif_global_ensemble_class, pif_atomic_class)) <- function(x, ...,
+                                                                                               var_p = NULL,
+                                                                                               var_beta = NULL,
+                                                                                               var_weights = NULL,
+                                                                                               var_pif_weights = NULL,
+                                                                                               var_pifs = NULL,
+                                                                                               warning = FALSE) {
 
 
-  #FIXME: Pass var_pifs to covariance
+  #TODO: Pass var_pifs to covariance
   # Get the list of fractions
   pif_list <- append(list(x), list(...))
   npifs    <- length(pif_list)
@@ -899,8 +911,8 @@ S7::method(covariance,
   #Get the names of the pif_list
   pif_names <- sapply(pif_list, names)
 
-  #FIXME: Make covariance pass the other structures too
-  #FIXME: Check that the names of the pifs given are in var_beta and var_p
+  #TODO: Make covariance pass the other structures too
+  #TODO: Check that the names of the pifs given are in var_beta and var_p
   if (!is.null(var_p)){
 
     if (!is.null(colnames(var_p)) && !all(pif_names %in% colnames(var_p))){
@@ -1008,7 +1020,8 @@ S7::method(covariance,
       for (j in (i + 1):npifs) {
 
         cov_mat[i, j] <- cov_total_pif(pif_list[[i]], pif_list[[j]],
-                                       var_p = var_p, var_beta = var_beta)
+                                       var_p = var_p, var_beta = var_beta,
+                                       warning = warning)
       }
     }
 

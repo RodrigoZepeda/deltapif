@@ -243,7 +243,7 @@ test_that("cov_ensemble_weights works correctly", {
   # Test error handling
   expect_error(
     cov_ensemble_weights(list(), ensemble1),
-    "must be a `pif_global_ensemble_class`"
+    "must be.*pif_class"
   )
 })
 
