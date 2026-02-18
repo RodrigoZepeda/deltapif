@@ -5,6 +5,7 @@
 \alias{logit}
 \alias{log_complement}
 \alias{hawkins}
+\alias{identity_link}
 \title{Link functions}
 \usage{
 logit(pif)
@@ -12,6 +13,8 @@ logit(pif)
 log_complement(pif)
 
 hawkins(pif)
+
+identity_link(pif)
 }
 \arguments{
 \item{pif}{The value of a potential impact fraction or a

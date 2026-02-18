@@ -85,7 +85,7 @@ test_that("pif and paf compute to known values", {
   variance_pif <- as.numeric(varp_component + varb_component)
 
   mypif <- pif(p = p, p_cft = p_cft, beta = log(rr), var_p = sigma_p, var_beta = sigma_b,
-               rr_link = "exp")
+               rr_link = "exp", quiet = TRUE)
 
   #Check the p component of the variance
   expect_equal(
@@ -134,7 +134,7 @@ test_that("nothing changes when constructing a pif object", {
   mu_cft  <- as.numeric(1 + p_cft %*% (rr - 1))
 
   mypif <- pif(p = p, p_cft = p_cft, beta = log(rr), var_p = sigma_p, var_beta = sigma_b,
-               rr_link = "exp", link = "logit", conf_level = 0.9)
+               rr_link = "exp", link = "logit", conf_level = 0.9, quiet = TRUE)
 
   expect_equal(mypif@p, p)
   expect_equal(mypif@p_cft, p_cft)
@@ -157,8 +157,8 @@ test_that("nothing changes when constructing a pif object", {
 
 test_that("covariance calculations", {
 
-  pif1 <- pif(p = 0.52, p_cft = 0.1, beta = 1.4, var_p = 0, var_beta = 0.1, rr_link = "identity")
-  pif2 <- pif(p = 0.55, p_cft = 0.12, beta = 1.3, var_p = 0, var_beta = 0.2, rr_link = "identity")
+  pif1 <- pif(p = 0.52, p_cft = 0.1, beta = 1.4, var_p = 0, var_beta = 0.1, rr_link = "identity", quiet = TRUE)
+  pif2 <- pif(p = 0.55, p_cft = 0.12, beta = 1.3, var_p = 0, var_beta = 0.2, rr_link = "identity", quiet = TRUE)
 
   #For the covariance by hand
   beta_1 <- deriv_pif_beta(0.52, 0.1, 1.4, 1)
@@ -234,12 +234,12 @@ test_that("covariance of a thing with itself is variance", {
 
 test_that("computation of ensemble variance", {
 
-  pif1 <- paf(0.2, 0.1, var_p = 0.01)
-  pif2 <- paf(0.2, 0.3, var_p = 0.01)
+  pif1 <- paf(0.2, 0.1, var_p = 0.01, quiet = TRUE)
+  pif2 <- paf(0.2, 0.3, var_p = 0.01, quiet = TRUE)
 
   var_weights = matrix(c(0.1, 0.2, 0.2, 0.3), ncol = 2, nrow = 2)
   weights = c(0.4, 0.6)
-  result  <- pif_ensemble(pif1, pif2, weights = weights, var_weights = var_weights)
+  result  <- pif_ensemble(pif1, pif2, weights = weights, var_weights = var_weights, quiet = TRUE)
   cov_mat <- covariance(pif1, pif2)
   val <- 0
   for (i in 1:2){
@@ -423,12 +423,12 @@ test_that("computation of the variance", {
   paf_men <- paf(p = p_men, beta = beta_men,
                  var_p = pvar_men,
                  var_beta = beta_var_men,
-                 label = "Men")
+                 label = "Men", quiet = TRUE)
 
   paf_women <- paf(p = p_women, beta = beta_women,
                    var_p = pvar_women,
                    var_beta = beta_var_women,
-                   label = "Women")
+                   label = "Women", quiet = TRUE)
 
   total <- paf_total(paf_men, paf_women, weights = c(0.5, 0.5), link = "identity",
                      var_weights = matrix(c(0.01, 0.0, 0.0, 0.021), ncol = 2))

@@ -98,7 +98,7 @@ test_that("pif handles link functions correctly", {
 
   # Character-specified links
   expect_equal(pif(p = 0.5, p_cft = 0.2, beta = 1.5, link = "logit", quiet = TRUE)@link, logit)
-  expect_equal(pif(p = 0.5, p_cft = 0.2, beta = 1.5, link = "identity", quiet = TRUE)@link, identity)
+  expect_equal(pif(p = 0.5, p_cft = 0.2, beta = 1.5, link = "identity", quiet = TRUE)@link, identity_link)
   expect_equal(pif(p = 0.5, p_cft = 0.2, beta = 1.5, link = "hawkins", quiet = TRUE)@link, hawkins)
 
   # Custom function links
@@ -117,7 +117,7 @@ test_that("pif handles link functions correctly", {
 test_that("pif handles rr_link functions correctly", {
   # Default identity link
   result <- pif(p = 0.5, p_cft = 0.2, beta = 1.5, quiet = TRUE, rr_link = "identity")
-  expect_equal(result@rr_link, identity)
+  expect_equal(result@rr_link, identity_link)
 
   result <- pif(p = 0.5, p_cft = 0.2, beta = 1.5, quiet = TRUE, rr_link = "exp")
   expect_equal(result@rr_link, exp)

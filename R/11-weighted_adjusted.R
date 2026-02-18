@@ -29,16 +29,16 @@
 #' @param pif_ensemble_link_deriv Derivative of the link to pass to `pif_ensemble` in the numerator
 #' of the adjustment
 #'
-#' @param weights_ensemble Weights for the ensemble (`pif_ensemble`).
+#' @param weights Weights for the ensemble (`pif_ensemble`).
 #'   Passed directly to [pif_ensemble()] / [paf_ensemble()].
 #'   Defaults to `NULL` (equal weights of 1 for each fraction).
 #'
-#' @param var_weights_ensemble Covariance structure for `weights_ensemble`.
+#' @param var_weights Covariance structure for `weights`.
 #'   Passed directly to [pif_ensemble()] / [paf_ensemble()].
 #'   Defaults to `0`.
 #'
-#' @param var_pif_weights_ensemble Covariance matrix between individual
-#'   fractions and `weights_ensemble`. Passed to [pif_ensemble()] /
+#' @param var_pif_weights Covariance matrix between individual
+#'   fractions and `weights`. Passed to [pif_ensemble()] /
 #'   [paf_ensemble()]. Defaults to `NULL`.
 #'
 #' @param var_p Covariance matrix for the prevalence parameters `p` across
@@ -132,15 +132,15 @@
 weighted_adjusted_fractions <- function(
     pif1,
     ...,
+    weights                  = NULL,
     pif_total_link           = "log-complement",
     pif_total_link_inv       = NULL,
     pif_total_link_deriv     = NULL,
     pif_ensemble_link        = "identity",
     pif_ensemble_link_inv    = NULL,
     pif_ensemble_link_deriv  = NULL,
-    weights_ensemble         = NULL,
-    var_weights_ensemble     = 0,
-    var_pif_weights_ensemble = NULL,
+    var_weights              = 0,
+    var_pif_weights          = NULL,
     var_p                    = NULL,
     var_beta                 = NULL,
     conf_level               = 0.95,
@@ -153,6 +153,15 @@ weighted_adjusted_fractions <- function(
 
   pif_list <- c(list(pif1), list(...))
   n        <- length(pif_list)
+
+  if (is.null(weights)){
+    weights <- rep(1, n)
+  }
+
+  if (length(weights) != n){
+    cli::cli_abort(
+      "{.val {n}} fractions where given but weights has length {length(weights)}. There should be a weight per fraction.")
+  }
 
   if (!all(sapply(pif_list, function(x) S7::S7_inherits(x, pif_class)))) {
     cli::cli_abort(
@@ -184,13 +193,12 @@ weighted_adjusted_fractions <- function(
   }
 
   ens_label <- if (is.null(label_ensemble)) {
-    paste0("deltapif-ens-", sub("\\.", "", as.character(abs(stats::rnorm(1)))))
+    paste0("deltapif-ensemble-", sub("\\.", "", as.character(abs(stats::rnorm(1)))))
   } else {
     label_ensemble
   }
 
   # ── 4. Build the sum as pif_total_class with weights = rep(1, n) ───────────
-
   pif_sum <- pif_total(
     pif1, ...,
     weights         = rep(1, n),
@@ -205,16 +213,15 @@ weighted_adjusted_fractions <- function(
   )
 
   # ── 5. Build the ensemble ────────────────────────────────────────────────────
-
   pif_ens_obj <-
     pif_ensemble(
       pif1, ...,
       link            = pif_ensemble_link,
       link_inv        = pif_ensemble_link_inv,
       link_deriv      = pif_ensemble_link_deriv,
-      weights         = weights_ensemble,
-      var_weights     = var_weights_ensemble,
-      var_pif_weights = var_pif_weights_ensemble,
+      weights         = weights,
+      var_weights     = var_weights,
+      var_pif_weights = var_pif_weights,
       conf_level      = conf_level,
       label           = ens_label,
       quiet           = quiet,
@@ -284,7 +291,7 @@ weighted_adjusted_fractions <- function(
 
     # ── Back-transform: Var[X] ≈ X^2 * Var[ln X] ────────────────────────────
     var_adj <- pif_adj^2 * var_log_adj
-    var_adj <- max(var_adj, 0)
+    var_adj <- max(var_adj, 0, na.rm = TRUE)
 
     if (!quiet && var_log_adj < 0) {
       cli::cli_warn(
@@ -336,9 +343,9 @@ weighted_adjusted_fractions <- function(
 weighted_adjusted_paf <- function(
     paf1,
     ...,
-    weights_ensemble         = NULL,
-    var_weights_ensemble     = 0,
-    var_pif_weights_ensemble = NULL,
+    weights         = NULL,
+    var_weights     = 0,
+    var_pif_weights = NULL,
     var_p                    = NULL,
     var_beta                 = NULL,
     conf_level               = 0.95,
@@ -356,9 +363,9 @@ weighted_adjusted_paf <- function(
   weighted_adjusted_fractions(
     paf1,
     ...,
-    weights_ensemble         = weights_ensemble,
-    var_weights_ensemble     = var_weights_ensemble,
-    var_pif_weights_ensemble = var_pif_weights_ensemble,
+    weights         = weights,
+    var_weights     = var_weights,
+    var_pif_weights = var_pif_weights,
     var_p                    = var_p,
     var_beta                 = var_beta,
     conf_level               = conf_level,
@@ -392,9 +399,9 @@ weighted_adjusted_paf <- function(
 weighted_adjusted_pif <- function(
     pif1,
     ...,
-    weights_ensemble         = NULL,
-    var_weights_ensemble     = 0,
-    var_pif_weights_ensemble = NULL,
+    weights         = NULL,
+    var_weights     = 0,
+    var_pif_weights = NULL,
     var_p                    = NULL,
     var_beta                 = NULL,
     pif_total_link           = "log-complement",
@@ -411,9 +418,9 @@ weighted_adjusted_pif <- function(
   weighted_adjusted_fractions(
     pif1,
     ...,
-    weights_ensemble         = weights_ensemble,
-    var_weights_ensemble     = var_weights_ensemble,
-    var_pif_weights_ensemble = var_pif_weights_ensemble,
+    weights         = weights,
+    var_weights     = var_weights,
+    var_pif_weights = var_pif_weights,
     var_p                    = var_p,
     var_beta                 = var_beta,
     pif_total_link           = "log-complement",

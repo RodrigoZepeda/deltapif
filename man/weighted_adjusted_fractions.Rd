@@ -7,15 +7,15 @@
 weighted_adjusted_fractions(
   pif1,
   ...,
+  weights = NULL,
   pif_total_link = "log-complement",
   pif_total_link_inv = NULL,
   pif_total_link_deriv = NULL,
   pif_ensemble_link = "identity",
   pif_ensemble_link_inv = NULL,
   pif_ensemble_link_deriv = NULL,
-  weights_ensemble = NULL,
-  var_weights_ensemble = 0,
-  var_pif_weights_ensemble = NULL,
+  var_weights = 0,
+  var_pif_weights = NULL,
   var_p = NULL,
   var_beta = NULL,
   conf_level = 0.95,
@@ -30,6 +30,10 @@ the first of the individual fractions to be adjusted.}
 
 \item{...}{The remaining potential impact fractions (class \code{pif_class}).
 All fractions must be of the same type (all \code{PIF} or all \code{PAF}).}
+
+\item{weights}{Weights for the ensemble (\code{pif_ensemble}).
+Passed directly to \code{\link[=pif_ensemble]{pif_ensemble()}} / \code{\link[=paf_ensemble]{paf_ensemble()}}.
+Defaults to \code{NULL} (equal weights of 1 for each fraction).}
 
 \item{pif_total_link}{Link to pass to \code{pif_total} in the denominator
 of the adjustment}
@@ -49,16 +53,12 @@ of the adjustment}
 \item{pif_ensemble_link_deriv}{Derivative of the link to pass to \code{pif_ensemble} in the numerator
 of the adjustment}
 
-\item{weights_ensemble}{Weights for the ensemble (\code{pif_ensemble}).
-Passed directly to \code{\link[=pif_ensemble]{pif_ensemble()}} / \code{\link[=paf_ensemble]{paf_ensemble()}}.
-Defaults to \code{NULL} (equal weights of 1 for each fraction).}
-
-\item{var_weights_ensemble}{Covariance structure for \code{weights_ensemble}.
+\item{var_weights}{Covariance structure for \code{weights}.
 Passed directly to \code{\link[=pif_ensemble]{pif_ensemble()}} / \code{\link[=paf_ensemble]{paf_ensemble()}}.
 Defaults to \code{0}.}
 
-\item{var_pif_weights_ensemble}{Covariance matrix between individual
-fractions and \code{weights_ensemble}. Passed to \code{\link[=pif_ensemble]{pif_ensemble()}} /
+\item{var_pif_weights}{Covariance matrix between individual
+fractions and \code{weights}. Passed to \code{\link[=pif_ensemble]{pif_ensemble()}} /
 \code{\link[=paf_ensemble]{paf_ensemble()}}. Defaults to \code{NULL}.}
 
 \item{var_p}{Covariance matrix for the prevalence parameters \code{p} across

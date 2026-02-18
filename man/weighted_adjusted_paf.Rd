@@ -7,9 +7,9 @@
 weighted_adjusted_paf(
   paf1,
   ...,
-  weights_ensemble = NULL,
-  var_weights_ensemble = 0,
-  var_pif_weights_ensemble = NULL,
+  weights = NULL,
+  var_weights = 0,
+  var_pif_weights = NULL,
   var_p = NULL,
   var_beta = NULL,
   conf_level = 0.95,
@@ -25,16 +25,16 @@ weighted_adjusted_paf(
 \item{...}{The remaining potential impact fractions (class \code{pif_class}).
 All fractions must be of the same type (all \code{PIF} or all \code{PAF}).}
 
-\item{weights_ensemble}{Weights for the ensemble (\code{pif_ensemble}).
+\item{weights}{Weights for the ensemble (\code{pif_ensemble}).
 Passed directly to \code{\link[=pif_ensemble]{pif_ensemble()}} / \code{\link[=paf_ensemble]{paf_ensemble()}}.
 Defaults to \code{NULL} (equal weights of 1 for each fraction).}
 
-\item{var_weights_ensemble}{Covariance structure for \code{weights_ensemble}.
+\item{var_weights}{Covariance structure for \code{weights}.
 Passed directly to \code{\link[=pif_ensemble]{pif_ensemble()}} / \code{\link[=paf_ensemble]{paf_ensemble()}}.
 Defaults to \code{0}.}
 
-\item{var_pif_weights_ensemble}{Covariance matrix between individual
-fractions and \code{weights_ensemble}. Passed to \code{\link[=pif_ensemble]{pif_ensemble()}} /
+\item{var_pif_weights}{Covariance matrix between individual
+fractions and \code{weights}. Passed to \code{\link[=pif_ensemble]{pif_ensemble()}} /
 \code{\link[=paf_ensemble]{paf_ensemble()}}. Defaults to \code{NULL}.}
 
 \item{var_p}{Covariance matrix for the prevalence parameters \code{p} across

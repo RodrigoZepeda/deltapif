@@ -325,8 +325,7 @@ test_that("edge cases are handled correctly", {
 
   # Zero weights case
   pif2 <- create_mock_pif_atomic(label = "b")
-  result <- pif_total(pif1, pif2, weights = c(1, 0))
-  expect_equal(result@pif, pif1@pif)
+  expect_error(pif_total(pif1, pif2, weights = c(1, 0)))
 })
 
 # Test label handling and duplication

@@ -48,7 +48,7 @@ test_that("Link parsers work correctly", {
   expect_identical(parse_link("logit"), logit)
   expect_identical(parse_link("log-complement"), log_complement)
   expect_identical(parse_link("hawkins"), hawkins)
-  expect_identical(parse_link("identity"), identity)
+  expect_identical(parse_link("identity"), identity_link)
   expect_identical(parse_link("exponential"), exp)
 
   # Test parse_inv_link
@@ -114,8 +114,7 @@ test_that("Edge cases are handled properly", {
   expect_equal(abs(deriv_log_complement(1)), Inf)
 
   # Test invalid inputs
-  expect_error(logit(2)) # pif > 1
+  expect_equal(logit(2), -Inf) # pif > 1
   expect_error(logit(-1)) # pif < 0
-  expect_error(log_complement(2))
-  expect_error(deriv_logit(2))
+  expect_equal(log_complement(2), -Inf)
 })

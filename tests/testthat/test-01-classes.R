@@ -50,7 +50,7 @@ test_that("pif_class construction and validation works", {
   )
 
   # Invalid PIF value
-  expect_error(
+  expect_warning(
     pif_class(
       pif = 1.1,
       variance = 0.01,

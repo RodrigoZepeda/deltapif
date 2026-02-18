@@ -154,6 +154,12 @@ pif_validate_ensemble <- function(pif1, ..., weights, var_weights,
     )
   }
 
+  if (any(weights < sqrt(.Machine$double.eps))){
+    cli::cli_abort(
+      "`weights` should be strictly positive and greater than {sqrt(.Machine$double.eps)}"
+    )
+  }
+
   if (!is.numeric(var_weights)){
     cli::cli_abort(
       "`var_weights` should be a number, vector or matrix."

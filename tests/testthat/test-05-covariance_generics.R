@@ -578,9 +578,6 @@ test_that("ensemble weight covariance handles edge cases", {
   # Should handle single component
   expect_equal(cov_ensemble_weights(single_ensemble, single_ensemble), 0)
 
-  # Test with zero weights
-  zero_weight_ensemble <- pif_total(atomic1, atomic2, weights = c(0, 1), label = "zero")
-  expect_silent(cov_ensemble_weights(zero_weight_ensemble, zero_weight_ensemble))
 })
 
 # Test complex nested structures

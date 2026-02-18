@@ -85,6 +85,7 @@
 #' @param pif_inverse_transform Inverse of the transform applied to the
 #' `pif` for summation in a `pif_global_ensemble_class` (see section below).
 #'
+#'
 #' @section Properties of a  `pif_class`:
 #' Any object that is a `pif_class` contains a potential impact fraction
 #' with intervals estimated as follows:
@@ -263,10 +264,10 @@ pif_class <- S7::new_class("pif_class",
      }
 
      if (self@pif > 1) {
-       cli::cli_abort(
+       cli::cli_warn(
          paste0(
            "Value for the potential impact fraction PIF > 1. ",
-          "This is biologically impossible."
+          "This is biologically impossible. Are you calculating correctly? (in some cases this might make statistical sense)"
          )
        )
      }
@@ -320,7 +321,6 @@ cases_class <- S7::new_class("cases_class",
      link_vals     = S7::new_property(S7::class_numeric, getter = get_link_vals_cases),
 
      # Variance for link(pif)
-     # FIXME:
      link_variance = S7::new_property(S7::class_numeric, getter = get_link_variance),
 
      # Get confidence intervals
@@ -588,7 +588,7 @@ pif_global_ensemble_class <- S7::new_class(
   constructor = function(pif_list, weights, var_weights, var_pif_weights,
                          pif_transform,
                          pif_deriv_transform, pif_inverse_transform,
-                         link, link_inv, link_deriv, conf_level = 0.95, label){
+                         link, link_inv, link_deriv, conf_level = 0.95,  label){
 
     S7::new_object(S7::S7_object(),
                    conf_level = conf_level,
@@ -647,7 +647,8 @@ pif_ensemble_class <- S7::new_class(
   validator = validate_global_ensemble,
   constructor = function(pif_list,
                          weights,
-                         var_weights, var_pif_weights,
+                         var_weights,
+                         var_pif_weights,
                          link,
                          link_inv,
                          link_deriv,

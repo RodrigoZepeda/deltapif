@@ -39,28 +39,36 @@ NULL
 #' @rdname linkfuns
 #' @export
 logit <- function(pif) {
-  if (pif > 1 || pif < 0){
-    cli::cli_abort("Invalid value for pif = {round(pif,2)}. PIF must be in (0,1)")
+  if (pif < 0){
+    cli::cli_abort("Invalid value for pif = {round(pif,2)}. PIF must be positive when using `logit`")
   }
-  log(pif / (1 - pif))
+  if (pif > 1){
+    return(-Inf)
+  } else {
+    log(pif / (1 - pif))
+  }
 }
 
 #' @rdname linkfuns
 #' @export
 log_complement <- function(pif) {
   if (pif > 1){
-    cli::cli_abort("Invalid value for pif = {round(pif,2)} > 1.")
+    return(-Inf)
+  } else {
+    log(1 - pif)
   }
-  log(1 - pif)
 }
 
 #' @rdname linkfuns
 #' @export
 hawkins <- function(pif) {
-  if (pif > 1){
-    cli::cli_warn("Invalid value for pif = {round(pif,2)} > 1.")
-  }
   log(pif + sqrt(pif^2 + 1))
+}
+
+#' @rdname linkfuns
+#' @export
+identity_link <- function(pif) {
+  pif
 }
 
 #' Inverses of link functions
@@ -162,27 +170,18 @@ NULL
 #' @rdname deriv_linkfuns
 #' @export
 deriv_logit <- function(pif) {
-  if (pif > 1 || pif < 0){
-    cli::cli_abort("Invalid value for pif = {round(pif,2)}. PIF must be in (0,1)")
-  }
   1 / (pif * (1 - pif))
 }
 
 #' @rdname deriv_linkfuns
 #' @export
 deriv_log_complement <- function(pif) {
-  if (pif > 1){
-    cli::cli_abort("Invalid value for pif = {round(pif,2)} > 1.")
-  }
   1 / (pif - 1)
 }
 
 #' @rdname deriv_linkfuns
 #' @export
 deriv_hawkins <- function(pif) {
-  if (pif > 1){
-    cli::cli_warn("Invalid value for pif = {round(pif,2)} > 1.")
-  }
   1 / (sqrt(pif^2 + 1))
 }
 
@@ -228,7 +227,7 @@ parse_link <- function(link_name) {
 
 
   if (link_name == "identity") {
-    return(identity)
+    return(identity_link)
   } else if (link_name == "logit") {
     return(logit)
   } else if (link_name == "logcomplement") {
