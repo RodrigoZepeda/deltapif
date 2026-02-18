@@ -29,6 +29,9 @@ in the equation below. If set to \code{NULL} its automatically calculated.}
 the \code{pif_atomic}. This refers to
 the term \eqn{\operatorname{Cov}\Big( \hat{q}_i,\widehat{\textrm{PIF}}_{B,j}\Big)}
 in the equation below. If set to \code{NULL} its automatically calculated.}
+
+\item{warning}{Boolean indicating whether to throw a warning if the labels on the
+fractions involved are not unique.}
 }
 \description{
 Calculates the covariance of a potential impact fraction of a

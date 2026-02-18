@@ -28,6 +28,19 @@ and \code{pif2}. Default \code{NULL} (no correlation).}
 
 \item{var_weights}{Covariance between the weights of all the fractions
 contained in \code{pif1} and all the fractions contained in \code{pif2}.}
+
+\item{var_pif_weights}{Covariance vector between the weights in  \code{pif_ensemble} and
+the \code{pif_atomic}. This refers to
+the term \eqn{\operatorname{Cov}\Big( \hat{q}_i,\widehat{\textrm{PIF}}_{B,j}\Big)}
+in the equation below. If set to \code{NULL} its automatically calculated.}
+
+\item{var_pifs}{Covariance vector between the potential
+impact fractions in \code{pif_ensemble} and \code{pif_atomic}. This refers to
+the term \eqn{\operatorname{Cov}\Big( \textrm{PIF}_{A,i}, \widehat{\textrm{PIF}}_{B,j}\Big)}
+in the equation below. If set to \code{NULL} its automatically calculated.}
+
+\item{warning}{Boolean indicating whether to throw a warning if the labels on the
+fractions involved are not unique.}
 }
 \description{
 Recursively obtains the covariance matrix of a \code{pif_global_ensemble_class}
