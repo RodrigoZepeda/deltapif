@@ -10,9 +10,9 @@ for potential impact fractions (PIF).
 weighted_adjusted_pif(
   pif1,
   ...,
-  weights_ensemble = NULL,
-  var_weights_ensemble = 0,
-  var_pif_weights_ensemble = NULL,
+  weights = NULL,
+  var_weights = 0,
+  var_pif_weights = NULL,
   var_p = NULL,
   var_beta = NULL,
   pif_total_link = "log-complement",
@@ -40,7 +40,7 @@ weighted_adjusted_pif(
   The remaining potential impact fractions (class `pif_class`). All
   fractions must be of the same type (all `PIF` or all `PAF`).
 
-- weights_ensemble:
+- weights:
 
   Weights for the ensemble (`pif_ensemble`). Passed directly to
   [`pif_ensemble()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md)
@@ -48,18 +48,18 @@ weighted_adjusted_pif(
   [`paf_ensemble()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md).
   Defaults to `NULL` (equal weights of 1 for each fraction).
 
-- var_weights_ensemble:
+- var_weights:
 
-  Covariance structure for `weights_ensemble`. Passed directly to
+  Covariance structure for `weights`. Passed directly to
   [`pif_ensemble()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md)
   /
   [`paf_ensemble()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md).
   Defaults to `0`.
 
-- var_pif_weights_ensemble:
+- var_pif_weights:
 
-  Covariance matrix between individual fractions and `weights_ensemble`.
-  Passed to
+  Covariance matrix between individual fractions and `weights`. Passed
+  to
   [`pif_ensemble()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md)
   /
   [`paf_ensemble()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md).

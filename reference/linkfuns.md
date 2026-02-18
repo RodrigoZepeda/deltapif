@@ -11,6 +11,8 @@ logit(pif)
 log_complement(pif)
 
 hawkins(pif)
+
+identity_link(pif)
 ```
 
 ## Arguments

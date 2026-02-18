@@ -19,7 +19,7 @@ the ensemble fraction."><meta property="og:image" content="https://rodrigozepeda
 
     <a class="navbar-brand me-2" href="../index.html">deltapif</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,15 +58,15 @@ the ensemble fraction.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">weighted_adjusted_fractions</span><span class="op">(</span></span>
 <span>  <span class="va">pif1</span>,</span>
 <span>  <span class="va">...</span>,</span>
+<span>  weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pif_total_link <span class="op">=</span> <span class="st">"log-complement"</span>,</span>
 <span>  pif_total_link_inv <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pif_total_link_deriv <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pif_ensemble_link <span class="op">=</span> <span class="st">"identity"</span>,</span>
 <span>  pif_ensemble_link_inv <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pif_ensemble_link_deriv <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  weights_ensemble <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  var_weights_ensemble <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  var_pif_weights_ensemble <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  var_weights <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  var_pif_weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  var_p <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  var_beta <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  conf_level <span class="op">=</span> <span class="fl">0.95</span>,</span>
@@ -88,6 +88,12 @@ the first of the individual fractions to be adjusted.</p></dd>
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>The remaining potential impact fractions (class <code>pif_class</code>).
 All fractions must be of the same type (all <code>PIF</code> or all <code>PAF</code>).</p></dd>
+
+
+<dt id="arg-weights">weights<a class="anchor" aria-label="anchor" href="#arg-weights"></a></dt>
+<dd><p>Weights for the ensemble (<code>pif_ensemble</code>).
+Passed directly to <code><a href="totalpifpaf.html">pif_ensemble()</a></code> / <code><a href="totalpifpaf.html">paf_ensemble()</a></code>.
+Defaults to <code>NULL</code> (equal weights of 1 for each fraction).</p></dd>
 
 
 <dt id="arg-pif-total-link">pif_total_link<a class="anchor" aria-label="anchor" href="#arg-pif-total-link"></a></dt>
@@ -120,21 +126,15 @@ of the adjustment</p></dd>
 of the adjustment</p></dd>
 
 
-<dt id="arg-weights-ensemble">weights_ensemble<a class="anchor" aria-label="anchor" href="#arg-weights-ensemble"></a></dt>
-<dd><p>Weights for the ensemble (<code>pif_ensemble</code>).
-Passed directly to <code><a href="totalpifpaf.html">pif_ensemble()</a></code> / <code><a href="totalpifpaf.html">paf_ensemble()</a></code>.
-Defaults to <code>NULL</code> (equal weights of 1 for each fraction).</p></dd>
-
-
-<dt id="arg-var-weights-ensemble">var_weights_ensemble<a class="anchor" aria-label="anchor" href="#arg-var-weights-ensemble"></a></dt>
-<dd><p>Covariance structure for <code>weights_ensemble</code>.
+<dt id="arg-var-weights">var_weights<a class="anchor" aria-label="anchor" href="#arg-var-weights"></a></dt>
+<dd><p>Covariance structure for <code>weights</code>.
 Passed directly to <code><a href="totalpifpaf.html">pif_ensemble()</a></code> / <code><a href="totalpifpaf.html">paf_ensemble()</a></code>.
 Defaults to <code>0</code>.</p></dd>
 
 
-<dt id="arg-var-pif-weights-ensemble">var_pif_weights_ensemble<a class="anchor" aria-label="anchor" href="#arg-var-pif-weights-ensemble"></a></dt>
+<dt id="arg-var-pif-weights">var_pif_weights<a class="anchor" aria-label="anchor" href="#arg-var-pif-weights"></a></dt>
 <dd><p>Covariance matrix between individual
-fractions and <code>weights_ensemble</code>. Passed to <code><a href="totalpifpaf.html">pif_ensemble()</a></code> /
+fractions and <code>weights</code>. Passed to <code><a href="totalpifpaf.html">pif_ensemble()</a></code> /
 <code><a href="totalpifpaf.html">paf_ensemble()</a></code>. Defaults to <code>NULL</code>.</p></dd>
 
 

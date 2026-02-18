@@ -110,6 +110,7 @@
 - [`logit()`](https://rodrigozepeda.github.io/deltapif/reference/linkfuns.md)
   [`log_complement()`](https://rodrigozepeda.github.io/deltapif/reference/linkfuns.md)
   [`hawkins()`](https://rodrigozepeda.github.io/deltapif/reference/linkfuns.md)
+  [`identity_link()`](https://rodrigozepeda.github.io/deltapif/reference/linkfuns.md)
   : Link functions
 
 - [`names`](https://rodrigozepeda.github.io/deltapif/reference/names.md)
