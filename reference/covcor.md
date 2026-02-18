@@ -14,7 +14,8 @@ covariance(
   var_beta = NULL,
   var_weights = NULL,
   var_pif_weights = NULL,
-  var_pifs = NULL
+  var_pifs = NULL,
+  warning = FALSE
 )
 
 variance(x, ...)
@@ -52,12 +53,10 @@ correlation(x, ..., var_p = NULL, var_beta = NULL)
 
 - var_pif_weights:
 
-  Covariance structure between the potential impact fractions in `pif1`
-  and the weights in `pif2`. Entry `var_pif_weights[i,j]` is the
-  covariance between the `i`th fraction of `pif1` and the `j`th weight
-  of `pif2`. This refers to the term
-  \\\operatorname{Cov}\Big(\widehat{\textrm{PIF}}\_{A,i},
-  \hat{w}\_j\Big)\\ in the equation before.
+  Covariance vector between the weights in `pif_ensemble` and the
+  `pif_atomic`. This refers to the term \\\operatorname{Cov}\Big(
+  \hat{q}\_i,\widehat{\textrm{PIF}}\_{B,j}\Big)\\ in the equation below.
+  If set to `NULL` its automatically calculated.
 
 - var_pifs:
 
@@ -66,6 +65,11 @@ correlation(x, ..., var_p = NULL, var_beta = NULL)
   \\\operatorname{Cov}\Big( \textrm{PIF}\_{A,i},
   \widehat{\textrm{PIF}}\_{B,j}\Big)\\ in the equation below. If set to
   `NULL` its automatically calculated.
+
+- warning:
+
+  Boolean indicating whether to throw a warning if the labels on the
+  fractions involved are not unique.
 
 ## Examples
 

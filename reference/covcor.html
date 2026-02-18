@@ -59,7 +59,8 @@ potential impact fractions and the variance <code>variance</code> and standard d
 <span>  var_beta <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  var_weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  var_pif_weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  var_pifs <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  var_pifs <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  warning <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">variance</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
@@ -98,11 +99,10 @@ contained in <code>pif1</code> and all the fractions contained in <code>pif2</co
 
 
 <dt id="arg-var-pif-weights">var_pif_weights<a class="anchor" aria-label="anchor" href="#arg-var-pif-weights"></a></dt>
-<dd><p>Covariance structure between the potential
-impact fractions in <code>pif1</code> and the weights in <code>pif2</code>. Entry <code>var_pif_weights[i,j]</code> is the
-covariance between the <code>i</code>th fraction of <code>pif1</code> and the <code>j</code>th weight of <code>pif2</code>.
-This refers to the term \(\operatorname{Cov}\Big(\widehat{\textrm{PIF}}_{A,i}, \hat{w}_j\Big)\)
-in the equation before.</p></dd>
+<dd><p>Covariance vector between the weights in  <code>pif_ensemble</code> and
+the <code>pif_atomic</code>. This refers to
+the term \(\operatorname{Cov}\Big( \hat{q}_i,\widehat{\textrm{PIF}}_{B,j}\Big)\)
+in the equation below. If set to <code>NULL</code> its automatically calculated.</p></dd>
 
 
 <dt id="arg-var-pifs">var_pifs<a class="anchor" aria-label="anchor" href="#arg-var-pifs"></a></dt>
@@ -110,6 +110,11 @@ in the equation before.</p></dd>
 impact fractions in <code>pif_ensemble</code> and <code>pif_atomic</code>. This refers to
 the term \(\operatorname{Cov}\Big( \textrm{PIF}_{A,i}, \widehat{\textrm{PIF}}_{B,j}\Big)\)
 in the equation below. If set to <code>NULL</code> its automatically calculated.</p></dd>
+
+
+<dt id="arg-warning">warning<a class="anchor" aria-label="anchor" href="#arg-warning"></a></dt>
+<dd><p>Boolean indicating whether to throw a warning if the labels on the
+fractions involved are not unique.</p></dd>
 
 </dl></div>
 

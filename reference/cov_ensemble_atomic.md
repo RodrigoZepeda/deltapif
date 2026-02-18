@@ -43,6 +43,11 @@ cov_ensemble_atomic(
   \hat{q}\_i,\widehat{\textrm{PIF}}\_{B,j}\Big)\\ in the equation below.
   If set to `NULL` its automatically calculated.
 
+- warning:
+
+  Boolean indicating whether to throw a warning if the labels on the
+  fractions involved are not unique.
+
 ## Formula
 
 Given a `pif_global_ensemble`: \$\$ \widehat{\textrm{PIF}}\_{1} =

@@ -43,6 +43,26 @@ cov_total_pif(
   Covariance between the weights of all the fractions contained in
   `pif1` and all the fractions contained in `pif2`.
 
+- var_pif_weights:
+
+  Covariance vector between the weights in `pif_ensemble` and the
+  `pif_atomic`. This refers to the term \\\operatorname{Cov}\Big(
+  \hat{q}\_i,\widehat{\textrm{PIF}}\_{B,j}\Big)\\ in the equation below.
+  If set to `NULL` its automatically calculated.
+
+- var_pifs:
+
+  Covariance vector between the potential impact fractions in
+  `pif_ensemble` and `pif_atomic`. This refers to the term
+  \\\operatorname{Cov}\Big( \textrm{PIF}\_{A,i},
+  \widehat{\textrm{PIF}}\_{B,j}\Big)\\ in the equation below. If set to
+  `NULL` its automatically calculated.
+
+- warning:
+
+  Boolean indicating whether to throw a warning if the labels on the
+  fractions involved are not unique.
+
 ## Computation
 
 This computes: \$\$ \operatorname{Cov}(\widehat{\textrm{PIF}}\_{A},
