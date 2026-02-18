@@ -14,35 +14,47 @@
 \alias{default_weight_pif_covariance_structure2}
 \title{Default covariance structures}
 \usage{
-covariance_structure(pif, is_variance = FALSE)
+covariance_structure(pif, is_variance = FALSE, warning = TRUE)
 
-covariance_structure2(pif1, pif2)
+covariance_structure2(pif1, pif2, warning = TRUE)
 
-default_weight_covariance_structure(pif, is_variance = FALSE)
+default_weight_covariance_structure(pif, is_variance = FALSE, warning = TRUE)
 
-default_weight_covariance_structure2(pif1, pif2)
+default_weight_covariance_structure2(pif1, pif2, warning = TRUE)
 
 default_parameter_covariance_structure(
   pif,
   parameter = "p",
-  is_variance = FALSE
+  is_variance = FALSE,
+  warning = TRUE
 )
 
-default_parameter_covariance_structure2(pif1, pif2, parameter = "p")
+default_parameter_covariance_structure2(
+  pif1,
+  pif2,
+  parameter = "p",
+  warning = TRUE
+)
 
-default_pif_covariance_structure(pif, is_variance = FALSE)
+default_pif_covariance_structure(pif, is_variance = FALSE, warning = TRUE)
 
-default_pif_covariance_structure2(pif1, pif2)
+default_pif_covariance_structure2(pif1, pif2, warning = TRUE)
 
-default_weight_pif_covariance_structure(pif, is_variance = FALSE)
+default_weight_pif_covariance_structure(
+  pif,
+  is_variance = FALSE,
+  warning = TRUE
+)
 
-default_weight_pif_covariance_structure2(pif1, pif2)
+default_weight_pif_covariance_structure2(pif1, pif2, warning = TRUE)
 }
 \arguments{
 \item{pif}{A potential impact fraction}
 
 \item{is_variance}{Whether the covariance structure corresponds to a \code{variance}
 (i.e. when \code{pif1} and \code{pif2} are identical)}
+
+\item{warning}{Whether to throw a warning if \code{pif1} or \code{pif2} have common labels}
 
 \item{pif1}{A potential impact fraction to obtain a covariance structure with \code{pif2}.}
 

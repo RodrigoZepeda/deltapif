@@ -1,6 +1,6 @@
 Package: deltapif
 Title: Estimate Potential Impact and Population Attributable Fractions with Aggregated Data
-Version: 0.3.0
+Version: 0.4.0
 Authors@R: 
     person("Rodrigo", "Zepeda-Tello", , "rzepeda17@gmail.com", role = c("aut", "cre"))
 Description: Uses the delta-method to estimate the Potential Impact Fraction (PIF) 
@@ -26,4 +26,4 @@ Depends:
     R (>= 3.5)
 LazyData: true
 Config/testthat/edition: 3
-Config/testthat/parallel: true
+Config/testthat/parallel: false

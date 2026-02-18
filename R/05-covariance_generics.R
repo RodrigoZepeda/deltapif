@@ -528,7 +528,7 @@ cov_ensemble_weights <- function(pif1, pif2, var_weights = NULL, var_pif_weights
 cov_ensemble_atomic <- function(pif_ensemble, pif_atomic,
                                 var_p = NULL, var_beta = NULL,
                                 var_pifs = NULL, var_pif_weights = NULL,
-                                recursive = !is.null(var_pifs)){
+                                recursive = !is.null(var_pifs), warning = TRUE){
 
   if (!S7::S7_inherits(pif_ensemble, pif_global_ensemble_class) && !S7::S7_inherits(pif_ensemble, pif_atomic_class)){
     cli::cli_abort(
@@ -542,6 +542,7 @@ cov_ensemble_atomic <- function(pif_ensemble, pif_atomic,
     )
   }
 
+
   if (S7::S7_inherits(pif_ensemble, pif_atomic_class)){
     return(
       cov_atomic_pif(pif1     = pif_ensemble,
@@ -550,6 +551,8 @@ cov_ensemble_atomic <- function(pif_ensemble, pif_atomic,
                      var_beta = var_beta)
     )
   }
+
+
 
   if (is.numeric(var_pif_weights)){
     var_pif_weights <- as.matrix(var_pif_weights)
@@ -562,7 +565,7 @@ cov_ensemble_atomic <- function(pif_ensemble, pif_atomic,
 
   if (!is.matrix(var_pif_weights)){
     if (is.null(var_pif_weights)){
-      var_pif_weights <- default_weight_pif_covariance_structure2(pif_ensemble, pif_atomic)
+      var_pif_weights <- default_weight_pif_covariance_structure2(pif_ensemble, pif_atomic, warning = warning)
     } else if (!S7::S7_inherits(var_pif_weights, covariance_structure_class)){
       cli::cli_abort(
         paste0(
@@ -582,6 +585,8 @@ cov_ensemble_atomic <- function(pif_ensemble, pif_atomic,
     }
   }
 
+
+
   if (is.numeric(var_pifs)){
     var_pifs <- as.matrix(var_pifs)
   }
@@ -593,7 +598,7 @@ cov_ensemble_atomic <- function(pif_ensemble, pif_atomic,
 
   if (!is.matrix(var_pifs)){
     if (is.null(var_pifs)){
-      var_pifs <- default_pif_covariance_structure2(pif_ensemble, pif_atomic)
+      var_pifs <- default_pif_covariance_structure2(pif_ensemble, pif_atomic, warning = warning)
     } else if (!S7::S7_inherits(var_pifs, covariance_structure_class)){
       cli::cli_abort(
         paste0(
@@ -613,6 +618,7 @@ cov_ensemble_atomic <- function(pif_ensemble, pif_atomic,
     }
   }
 
+
   #Calculate the inner weights of the pifs
   if (recursive && !is.matrix(var_pifs)){
     #Loop through each fraction in the ensemble and repeat
@@ -626,7 +632,8 @@ cov_ensemble_atomic <- function(pif_ensemble, pif_atomic,
           var_beta     = var_beta,
           var_pifs     = var_pifs,
           var_pif_weights = var_pif_weights,
-          recursive    = TRUE)
+          recursive    = TRUE,
+          warning      = warning)
 
       #Symmetry assignment
       var_pifs[[pif_atomic@label]][[name_pif_k]]  <- var_pifs[[name_pif_k]][[pif_atomic@label]]
@@ -649,7 +656,6 @@ cov_ensemble_atomic <- function(pif_ensemble, pif_atomic,
   } else {
     var_pif_weight <- var_pif_weights
   }
-
 
   as.numeric(
     1/pif_ensemble@pif_deriv_transform(pif_ensemble@pif)*(
@@ -694,7 +700,7 @@ cov_ensemble_atomic <- function(pif_ensemble, pif_atomic,
 #' @keywords internal
 cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
                           var_weights = NULL, var_pif_weights = NULL,
-                          var_pifs = NULL) {
+                          var_pifs = NULL, warning = TRUE) {
 
   #Check they are pifs
   if (!S7::S7_inherits(pif1, pif_class) || !S7::S7_inherits(pif2, pif_class)){
@@ -705,24 +711,24 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
 
   #If varp and varbeta are null set defaults
   if (is.null(var_p)){
-    var_p <- default_parameter_covariance_structure2(pif1, pif2, parameter = "p")
+    var_p <- default_parameter_covariance_structure2(pif1, pif2, parameter = "p", warning = warning)
   }
 
   if (is.null(var_beta)){
-    var_beta <- default_parameter_covariance_structure2(pif1, pif2, parameter = "beta")
+    var_beta <- default_parameter_covariance_structure2(pif1, pif2, parameter = "beta", warning = warning)
   }
 
   if (is.null(var_weights)){
-    var_weights <- default_weight_covariance_structure2(pif1, pif2)
+    var_weights <- default_weight_covariance_structure2(pif1, pif2, warning = warning)
   }
 
   #If sigma_*_weights are null set defaults
   if (is.null(var_pif_weights)){
-    var_pif_weights <- default_weight_pif_covariance_structure2(pif1, pif2)
+    var_pif_weights <- default_weight_pif_covariance_structure2(pif1, pif2, warning = warning)
   }
 
   if (is.null(var_pifs)){
-    var_pifs <- default_pif_covariance_structure2(pif1, pif2)
+    var_pifs <- default_pif_covariance_structure2(pif1, pif2, warning = warning)
   }
 
   # Base case: both are pif_atomic
@@ -743,7 +749,8 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
                           var_p = var_p, var_beta = var_beta,
                           var_pifs = var_pifs,
                           var_pif_weights = var_pif_weights,
-                          recursive = TRUE)
+                          recursive = TRUE,
+                          warning = warning)
     )
   }
 
@@ -754,7 +761,8 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
                           var_p = var_p, var_beta = var_beta,
                           var_pifs = var_pifs,
                           var_pif_weights = var_pif_weights,
-                          recursive = TRUE)
+                          recursive = TRUE,
+                          warning = warning)
     )
   }
 
@@ -775,7 +783,8 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
                                         var_beta = var_beta,
                                         var_weights = var_weights,
                                         var_pifs = var_pifs,
-                                        var_pif_weights = var_pif_weights)
+                                        var_pif_weights = var_pif_weights,
+                                        warning = warning)
       }
     }
 
@@ -1026,6 +1035,10 @@ S7::method(variance, S7::new_union(pif_global_ensemble_class, pif_atomic_class))
   cov_total_pif(x, x)
 }
 
+S7::method(variance, pif_class) <- function(x, ...) {
+  x@variance
+}
+
 S7::method(variance, cases_class) <- function(x, ...) {
   if (length(list(...)) > 0) {
     cli::cli_warn(
@@ -1038,9 +1051,10 @@ S7::method(variance, cases_class) <- function(x, ...) {
 #' @rdname covcor
 #' @export
 standard_deviation <- S7::new_generic("standard_deviation", "x")
-S7::method(standard_deviation, S7::new_union(pif_global_ensemble_class, pif_atomic_class, cases_class)) <- function(x, ...) {
+S7::method(standard_deviation, S7::new_union(pif_class, cases_class)) <- function(x, ...) {
   sqrt(variance(x, ...))
 }
+
 
 #' @rdname covcor
 #' @export

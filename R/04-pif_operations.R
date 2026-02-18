@@ -19,6 +19,9 @@
 #' the weights are not random, a vector if only the link_variances of the weights
 #' are available or a link_covariance matrix.
 #'
+#' @param weights_sum_to_1 Boolean flag indicating if the weights sum to 1 (normalized weights)
+#' or if they are not (unnormalized).
+#'
 #' @inheritParams pifpaf
 #' @inheritParams classes
 #' @param is_paf Whether the computed quantity is a population attributable fraction or not
@@ -92,7 +95,6 @@ NULL
 #' Helper function that helps validate the inputs on any global ensemble
 #'
 #' @inheritParams totalpifpaf
-#' @param weights_sum_to_1 Whether to check if the weights sum to 1
 #'
 #' @return A list of validated values for use in `pif_total` or `pif_ensemble`.
 #' @keywords internal
@@ -283,8 +285,8 @@ pif_total <- function(pif1, ..., weights,
                       link_deriv = NULL,
                       quiet = FALSE,
                       label = NULL,
-                      is_paf = FALSE){
-
+                      is_paf = FALSE,
+                      weights_sum_to_1 = TRUE){
 
 
   pif_params <- pif_validate_ensemble(pif1 = pif1, ..., weights = weights,
@@ -295,7 +297,8 @@ pif_total <- function(pif1, ..., weights,
                                       link_deriv = link_deriv,
                                       quiet = quiet,
                                       label = label,
-                                      is_paf = is_paf, weights_sum_to_1 = TRUE)
+                                      is_paf = is_paf,
+                                      weights_sum_to_1 = weights_sum_to_1)
 
 
   pif <- do.call(pif_total_class, pif_params)

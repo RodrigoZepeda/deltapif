@@ -96,6 +96,7 @@ covariance_structure_class <- S7::new_class(
 #' we are calculating covariance for.
 #' @param is_variance Whether the covariance structure corresponds to a `variance`
 #' (i.e. when `pif1` and `pif2` are identical)
+#' @param warning Whether to throw a warning if `pif1` or `pif2` have common labels
 #'
 #' @note The `covariance_structure`s ending in `2` are meant to
 #' obtain the default covariance structure between two fractions `pif1` and `pif2`
@@ -138,7 +139,7 @@ NULL
 
 #' @rdname covariance_structures
 #' @export
-covariance_structure <- function(pif, is_variance = FALSE) {
+covariance_structure <- function(pif, is_variance = FALSE, warning = TRUE) {
 
   if (S7::S7_inherits(pif, pif_atomic_class)){
     is_variance <- TRUE
@@ -147,17 +148,18 @@ covariance_structure <- function(pif, is_variance = FALSE) {
   names_of_list <- flatten_names(pif)
 
   #Check the names are unique
-  if (!is_variance && length(names_of_list) != length(unique(names_of_list))){
+  if (warning & !is_variance && length(names_of_list) != length(unique(names_of_list))){
     dups <- names_of_list[duplicated(names_of_list)]
-    cli::cli_abort(
+    cli::cli_warn(
       paste0(
         "Some of the labels used for the fractions are not unique. ",
         "Labels {.val {dups}} were used multiple times."
       )
     )
-  } else if (is_variance){
-    names_of_list <- unique(names_of_list)
   }
+
+  names_of_list <- unique(names_of_list)
+
 
   npifs         <- length(names_of_list)
   cov_str       <- vector("list", length = npifs)
@@ -178,7 +180,7 @@ covariance_structure <- function(pif, is_variance = FALSE) {
 
 #' @rdname covariance_structures
 #' @export
-covariance_structure2 <- function(pif1, pif2){
+covariance_structure2 <- function(pif1, pif2, warning = TRUE){
 
   #Create a fake parent name
   parent_name  <-paste0( "N-", stats::rnorm(1))
@@ -198,7 +200,7 @@ covariance_structure2 <- function(pif1, pif2){
                                             )
 
   is_variance <- identical(pif1, pif2)
-  cov_str     <- covariance_structure(together_pif, is_variance = is_variance)
+  cov_str     <- covariance_structure(together_pif, is_variance = is_variance, warning = warning)
 
   #Eliminate the one that says global
   subset(cov_str, parent_name, negate = TRUE)
@@ -207,10 +209,10 @@ covariance_structure2 <- function(pif1, pif2){
 
 #' @rdname covariance_structures
 #' @export
-default_weight_covariance_structure <- function(pif, is_variance = FALSE) {
+default_weight_covariance_structure <- function(pif, is_variance = FALSE, warning = TRUE) {
 
   #Get the default covariance structure
-  cov_str  <- covariance_structure(pif, is_variance = is_variance)
+  cov_str  <- covariance_structure(pif, is_variance = is_variance, warning = warning)
   npifs    <- length(cov_str)
   cov_str  <- as.list(cov_str)
 
@@ -265,7 +267,7 @@ default_weight_covariance_structure <- function(pif, is_variance = FALSE) {
 
 #' @rdname covariance_structures
 #' @export
-default_weight_covariance_structure2 <- function(pif1, pif2){
+default_weight_covariance_structure2 <- function(pif1, pif2, warning = TRUE){
 
   #Create a fake parent name
   parent_name  <-paste0( "N-", stats::rnorm(1))
@@ -285,7 +287,7 @@ default_weight_covariance_structure2 <- function(pif1, pif2){
   )
 
   is_variance <- identical(pif1, pif2)
-  cov_str <- default_weight_covariance_structure(together_pif, is_variance = is_variance)
+  cov_str <- default_weight_covariance_structure(together_pif, is_variance = is_variance, warning = warning)
 
   #Eliminate the one that says global
   subset(cov_str, parent_name, negate = TRUE)
@@ -294,7 +296,7 @@ default_weight_covariance_structure2 <- function(pif1, pif2){
 
 #' @rdname covariance_structures
 #' @export
-default_parameter_covariance_structure <- function(pif, parameter = "p", is_variance = FALSE) {
+default_parameter_covariance_structure <- function(pif, parameter = "p", is_variance = FALSE, warning = TRUE) {
 
   if (parameter != "p" && parameter != "beta"){
     cli::cli_abort(
@@ -303,7 +305,7 @@ default_parameter_covariance_structure <- function(pif, parameter = "p", is_vari
   }
 
   #Get the default covariance structure
-  cov_str  <- covariance_structure(pif,  is_variance = is_variance)
+  cov_str  <- covariance_structure(pif,  is_variance = is_variance, warning = warning)
   npifs    <- length(cov_str)
 
   #Get the flattened impact fractions
@@ -371,7 +373,7 @@ default_parameter_covariance_structure <- function(pif, parameter = "p", is_vari
 
 #' @rdname covariance_structures
 #' @export
-default_parameter_covariance_structure2 <- function(pif1, pif2, parameter = "p"){
+default_parameter_covariance_structure2 <- function(pif1, pif2, parameter = "p", warning = TRUE){
 
   #Create a fake parent name
   parent_name  <-paste0( "N-", stats::rnorm(1))
@@ -392,7 +394,8 @@ default_parameter_covariance_structure2 <- function(pif1, pif2, parameter = "p")
 
   is_variance <- identical(pif1, pif2)
   cov_str <- default_parameter_covariance_structure(together_pif, parameter = parameter,
-                                                    is_variance = is_variance)
+                                                    is_variance = is_variance,
+                                                    warning = warning)
 
   #Eliminate the one that says global
   subset(cov_str, parent_name, negate = TRUE)
@@ -401,10 +404,10 @@ default_parameter_covariance_structure2 <- function(pif1, pif2, parameter = "p")
 
 #' @rdname covariance_structures
 #' @export
-default_pif_covariance_structure <- function(pif,  is_variance = FALSE) {
+default_pif_covariance_structure <- function(pif,  is_variance = FALSE, warning = TRUE) {
 
   #Get the default covariance structure
-  cov_str  <- covariance_structure(pif, is_variance = is_variance)
+  cov_str  <- covariance_structure(pif, is_variance = is_variance, warning = warning)
   npifs    <- length(cov_str)
 
   #Get the flattened impact fractions
@@ -426,7 +429,7 @@ default_pif_covariance_structure <- function(pif,  is_variance = FALSE) {
 
 #' @rdname covariance_structures
 #' @export
-default_pif_covariance_structure2 <- function(pif1, pif2){
+default_pif_covariance_structure2 <- function(pif1, pif2, warning = TRUE){
 
   #Create a fake parent name
   parent_name  <-paste0( "N-", stats::rnorm(1))
@@ -446,7 +449,7 @@ default_pif_covariance_structure2 <- function(pif1, pif2){
   )
 
   is_variance <- identical(pif1, pif2)
-  cov_str <- default_pif_covariance_structure(together_pif, is_variance = is_variance)
+  cov_str <- default_pif_covariance_structure(together_pif, is_variance = is_variance, warning = warning)
 
   #Eliminate the one that says global
   subset(cov_str, parent_name, negate = TRUE)
@@ -455,11 +458,11 @@ default_pif_covariance_structure2 <- function(pif1, pif2){
 
 #' @rdname covariance_structures
 #' @export
-default_weight_pif_covariance_structure <- function(pif, is_variance = FALSE) {
+default_weight_pif_covariance_structure <- function(pif, is_variance = FALSE, warning = TRUE) {
 
 
   #Get the default covariance structure
-  cov_str  <- covariance_structure(pif,  is_variance = is_variance)
+  cov_str  <- covariance_structure(pif,  is_variance = is_variance, warning = warning)
   npifs    <- length(cov_str)
 
   #Get the flattened impact fractions
@@ -482,7 +485,7 @@ default_weight_pif_covariance_structure <- function(pif, is_variance = FALSE) {
 
 #' @rdname covariance_structures
 #' @export
-default_weight_pif_covariance_structure2 <- function(pif1, pif2){
+default_weight_pif_covariance_structure2 <- function(pif1, pif2, warning = TRUE){
 
   #Create a fake parent name
   parent_name  <-paste0( "N-", stats::rnorm(1))
@@ -503,7 +506,8 @@ default_weight_pif_covariance_structure2 <- function(pif1, pif2){
 
   is_variance <- identical(pif1, pif2)
   cov_str <- default_weight_pif_covariance_structure(together_pif,
-                                              is_variance = is_variance)
+                                              is_variance = is_variance,
+                                              warning = warning)
 
   #Eliminate the one that says global
   subset(cov_str, parent_name, negate = TRUE)

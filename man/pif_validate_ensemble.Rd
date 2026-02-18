@@ -52,7 +52,8 @@ to build it automatically from \code{link} using \code{\link[Deriv:Deriv]{Deriv:
 
 \item{is_paf}{Whether the computed quantity is a population attributable fraction or not}
 
-\item{weights_sum_to_1}{Whether to check if the weights sum to 1}
+\item{weights_sum_to_1}{Boolean flag indicating if the weights sum to 1 (normalized weights)
+or if they are not (unnormalized).}
 
 \item{label}{Character identifier for the impact fraction. This is for}
 }

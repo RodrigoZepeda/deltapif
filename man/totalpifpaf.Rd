@@ -34,7 +34,8 @@ pif_total(
   link_deriv = NULL,
   quiet = FALSE,
   label = NULL,
-  is_paf = FALSE
+  is_paf = FALSE,
+  weights_sum_to_1 = TRUE
 )
 
 paf_ensemble(
@@ -101,6 +102,9 @@ to build it automatically from \code{link} using \code{\link[Deriv:Deriv]{Deriv:
 \item{pif1}{A potential impact fraction (class \code{pif_class})}
 
 \item{is_paf}{Whether the computed quantity is a population attributable fraction or not}
+
+\item{weights_sum_to_1}{Boolean flag indicating if the weights sum to 1 (normalized weights)
+or if they are not (unnormalized).}
 }
 \description{
 Combine potential impact fractions or the population attributable fractions
