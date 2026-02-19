@@ -188,36 +188,23 @@ machinery that already handles atomic, total, and ensemble fractions.
 [`pif_ensemble()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md),
 [`paf_ensemble()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md),
 [`cov_total_pif()`](https://rodrigozepeda.github.io/deltapif/reference/cov_total_pif.md),
-[`weighted_adjusted_paf()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted_paf.md),
-[`weighted_adjusted_pif()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted_pif.md)
+[`weighted_adjusted_paf()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted.md),
+[`weighted_adjusted_pif()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted.md)
 
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 paf_lead <- paf(0.2, 2.2, quiet = TRUE, var_p = 0.001, label = "Lead")
 paf_rad  <- paf(0.1, 1.2, quiet = TRUE, var_p = 0.0001, label = "Radiation")
 
 # Adjusted fractions (covariances computed automatically)
 adj <- weighted_adjusted_fractions(paf_lead, paf_rad)
 adj$Lead
-#> 
-#> ── Population Attributable Fraction: [Lead_adj] ──
-#> 
-#> PAF = 52.726% [95% CI: 46.604% to 58.847%]
-#> standard_deviation(paf %) = 3.123
 adj$Radiation
-#> 
-#> ── Population Attributable Fraction: [Radiation_adj] ──
-#> 
-#> PAF = 16.116% [95% CI: 13.560% to 18.671%]
-#> standard_deviation(paf %) = 1.304
 
 # With correlated prevalences
 adj2 <- weighted_adjusted_fractions(paf_lead, paf_rad, var_p = 0.0001)
 adj2$Lead
-#> 
-#> ── Population Attributable Fraction: [Lead_adj] ──
-#> 
-#> PAF = 52.726% [95% CI: 44.538% to 60.913%]
-#> standard_deviation(paf %) = 4.177
+} # }
 ```

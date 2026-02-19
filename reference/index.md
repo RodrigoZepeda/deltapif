@@ -142,14 +142,9 @@
   : Combine Potential Impact Fractions and Population Attributable
   Fractions
 
-- [`weighted_adjusted_fractions()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted_fractions.md)
-  : Weighted Adjusted Fractions
-
-- [`weighted_adjusted_paf()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted_paf.md)
+- [`weighted_adjusted_paf()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted.md)
+  [`weighted_adjusted_pif()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted.md)
   : Weighted Adjusted PAF
-
-- [`weighted_adjusted_pif()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted_pif.md)
-  : Weighted Adjusted PIF
 
 - [`weights`](https://rodrigozepeda.github.io/deltapif/reference/weights.md)
   : Extract weights of a pif_global_ensemble

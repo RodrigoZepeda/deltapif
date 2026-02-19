@@ -42,7 +42,8 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/Introduction.html">Introduction</a></li>
+<li><a class="dropdown-item" href="articles/Examples.html">Examples</a></li>
+    <li><a class="dropdown-item" href="articles/Introduction.html">Introduction</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -65,7 +66,7 @@
 </div>
 <!-- badges: start -->
 
-<p>The <code>deltapif</code> R package calculates <strong>Potential Impact Fractions (PIF) and Population Attributable Fractions (PAF) for aggregated data</strong>. It uses the delta method to derive confidence intervals, providing a robust approach for quantifying the burden of disease attributable to risk factors and the potential impact of interventions.</p>
+<p>The <code>deltapif</code> R package calculates <strong>Potential Impact Fractions (PIF) and Population Attributable Fractions (PAF) from aggregated data</strong>. It uses the delta method to derive confidence intervals, providing a robust approach for quantifying the burden of disease attributable to risk factors and the potential impact of interventions.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -84,7 +85,7 @@
 <p>Both functions require:</p>
 <ul>
 <li><p><code>p</code>: The exposure prevalence in the population.</p></li>
-<li><p><code>beta</code>: The log-relatieve risk coefficient(s) (or a value from which the relative risk can be obtained).</p></li>
+<li><p><code>beta</code>: The log-relative risk coefficient(s)</p></li>
 <li><p><code>var_p</code>, <code>var_beta</code>: Variances for the prevalence and log-relative risk estimates.</p></li>
 </ul>
 <p>The <code><a href="reference/pifpaf.html">pif()</a></code> function additionally requires:</p>
@@ -113,7 +114,7 @@
 <span></span>
 <span><span class="fu"><a href="reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.085</span>, beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.59</span><span class="op">)</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Population Attributable Fraction: [deltapif-0511095345499815] ──</span></span>
+<span><span class="co">#&gt; ── Population Attributable Fraction: [deltapif-0254073139135798] ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; PAF = 4.776% [95% CI: 4.776% to 4.776%]</span></span>
 <span><span class="co">#&gt; standard_deviation(paf %) = 0.000</span></span></code></pre></div>
@@ -135,7 +136,7 @@
 <span><span class="op">)</span></span>
 <span><span class="va">paf_dementia</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Population Attributable Fraction: [deltapif-19198847279648] ──</span></span>
+<span><span class="co">#&gt; ── Population Attributable Fraction: [deltapif-179593470672817] ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; PAF = 4.776% [95% CI: 0.717% to 8.669%]</span></span>
 <span><span class="co">#&gt; standard_deviation(paf %) = 2.028</span></span></code></pre></div>
@@ -156,7 +157,7 @@
 <span><span class="op">)</span></span>
 <span><span class="va">lee_pif</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Potential Impact Fraction: [deltapif-184482483829208] ──</span></span>
+<span><span class="co">#&gt; ── Potential Impact Fraction: [deltapif-0791392256343812] ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; PIF = 0.716% [95% CI: 0.118% to 1.311%]</span></span>
 <span><span class="co">#&gt; standard_deviation(pif %) = 0.304</span></span></code></pre></div>
@@ -170,7 +171,7 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/casecalc.html">averted_cases</a></span><span class="op">(</span><span class="fl">426.5</span>, <span class="va">lee_pif</span>, variance <span class="op">=</span> <span class="fl">2647.005</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Averted cases: [deltapif-184482483829208] ──</span></span>
+<span><span class="co">#&gt; ── Averted cases: [deltapif-0791392256343812] ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Averted cases = 3.055 [95% CI: 0.394 to 5.716]</span></span>
 <span><span class="co">#&gt; standard_deviation(averted cases) = 135.779</span></span></code></pre></div>
@@ -178,7 +179,7 @@
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/casecalc.html">attributable_cases</a></span><span class="op">(</span><span class="fl">426.5</span>, <span class="va">paf_dementia</span>, variance <span class="op">=</span> <span class="fl">2647.005</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Attributable cases: [deltapif-19198847279648] ──</span></span>
+<span><span class="co">#&gt; ── Attributable cases: [deltapif-179593470672817] ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Attributable cases = 20.368 [95% CI: 2.626 to 38.109]</span></span>
 <span><span class="co">#&gt; standard_deviation(attributable cases) = 905.195</span></span></code></pre></div>
@@ -198,7 +199,7 @@
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/totalpifpaf.html">paf_total</a></span><span class="op">(</span><span class="va">paf_men</span>, <span class="va">paf_women</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.49</span>, <span class="fl">0.51</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Population Attributable Fraction: [deltapif-0963265949933456] ──</span></span>
+<span><span class="co">#&gt; ── Population Attributable Fraction: [deltapif-0813300686781551] ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; PAF = 13.201% [95% CI: 10.473% to 15.845%]</span></span>
 <span><span class="co">#&gt; standard_deviation(paf %) = 11.187</span></span>
@@ -226,7 +227,7 @@
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/totalpifpaf.html">paf_ensemble</a></span><span class="op">(</span><span class="va">paf_lead</span>, <span class="va">paf_absts</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Population Attributable Fraction: [deltapif-0551097107604195] ──</span></span>
+<span><span class="co">#&gt; ── Population Attributable Fraction: [deltapif-034339470239797] ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; PAF = 3.070% [95% CI: 3.033% to 3.108%]</span></span>
 <span><span class="co">#&gt; standard_deviation(paf %) = 0.625</span></span>
@@ -255,7 +256,7 @@ w_k = 1 - \text{commonality}_k
 \]</span></p>
 <p>The adjusted fractions can be calculated with the <code>weighted_adjusted</code> as:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/weighted_adjusted_paf.html">weighted_adjusted_paf</a></span><span class="op">(</span><span class="va">paf_lead</span>, <span class="va">paf_absts</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.3</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/weighted_adjusted.html">weighted_adjusted_paf</a></span><span class="op">(</span><span class="va">paf_lead</span>, <span class="va">paf_absts</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $Lead</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Population Attributable Fraction: [Lead_adj] ──</span></span>
