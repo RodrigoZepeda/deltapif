@@ -145,6 +145,7 @@ fractions.
 }
 
 \examples{
+\dontrun{
 paf_lead <- paf(0.2, 2.2, quiet = TRUE, var_p = 0.001, label = "Lead")
 paf_rad  <- paf(0.1, 1.2, quiet = TRUE, var_p = 0.0001, label = "Radiation")
 
@@ -156,9 +157,10 @@ adj$Radiation
 # With correlated prevalences
 adj2 <- weighted_adjusted_fractions(paf_lead, paf_rad, var_p = 0.0001)
 adj2$Lead
-
+}
 }
 \seealso{
 \code{\link[=pif_ensemble]{pif_ensemble()}}, \code{\link[=paf_ensemble]{paf_ensemble()}}, \code{\link[=cov_total_pif]{cov_total_pif()}},
 \code{\link[=weighted_adjusted_paf]{weighted_adjusted_paf()}}, \code{\link[=weighted_adjusted_pif]{weighted_adjusted_pif()}}
 }
+\keyword{internal}

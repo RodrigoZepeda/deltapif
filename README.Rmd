@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 [![Codecov test coverage](https://codecov.io/gh/RodrigoZepeda/deltapif/graph/badge.svg)](https://app.codecov.io/gh/RodrigoZepeda/deltapif)
 <!-- badges: end -->
 
-The `deltapif` R package calculates **Potential Impact Fractions (PIF) and Population Attributable Fractions (PAF) for aggregated data**. It uses the delta method to derive confidence intervals, providing a robust approach for quantifying the burden of disease attributable to risk factors and the potential impact of interventions.
+The `deltapif` R package calculates **Potential Impact Fractions (PIF) and Population Attributable Fractions (PAF) from aggregated data**. It uses the delta method to derive confidence intervals, providing a robust approach for quantifying the burden of disease attributable to risk factors and the potential impact of interventions.
 
 ## Installation
 
@@ -45,13 +45,13 @@ Both functions require:
 
   + `p`: The exposure prevalence in the population.
   
-  + `beta`: The log-relatieve risk coefficient(s) (or a value from which the relative risk can be obtained).
+  + `beta`: The log-relative risk coefficient(s)
   
   + `var_p`, `var_beta`: Variances for the prevalence and log-relative risk estimates.
 
 The `pif()` function additionally requires:
 
-+ `p_cft`: The counterfactual exposure prevalence under an intervention scenario.
+  + `p_cft`: The counterfactual exposure prevalence under an intervention scenario.
 
 > **Note** A key assumption of the delta method implementation is that the relative risk and exposure prevalence estimates are independent (i.e., derived from different studies or populations).
 

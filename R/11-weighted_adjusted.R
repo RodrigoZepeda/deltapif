@@ -113,6 +113,7 @@
 #' fractions.
 #'
 #' @examples
+#' \dontrun{
 #' paf_lead <- paf(0.2, 2.2, quiet = TRUE, var_p = 0.001, label = "Lead")
 #' paf_rad  <- paf(0.1, 1.2, quiet = TRUE, var_p = 0.0001, label = "Radiation")
 #'
@@ -124,11 +125,11 @@
 #' # With correlated prevalences
 #' adj2 <- weighted_adjusted_fractions(paf_lead, paf_rad, var_p = 0.0001)
 #' adj2$Lead
-#'
+#' }
 #' @seealso [pif_ensemble()], [paf_ensemble()], [cov_total_pif()],
 #'   [weighted_adjusted_paf()], [weighted_adjusted_pif()]
 #'
-#' @export
+#' @keywords internal
 weighted_adjusted_fractions <- function(
     pif1,
     ...,
@@ -326,11 +327,12 @@ weighted_adjusted_fractions <- function(
 #' population attributable fractions (PAF).
 #'
 #' @inheritParams weighted_adjusted_fractions
-#' @param paf1 A population attributable fraction (class `pif_class` with
-#'   `type = "PAF"`).
+
+#' @param paf1 A population attributable fraction
+#' @param pif1 A potential impact fraction
 #'
-#' @return A named list of `pif_class` objects (type `"PAF"`), one per input
-#'   fraction, each being the weighted adjusted PAF.
+#' @return A named list of `pif_class` objects, one per input
+#'   fraction, each being the weighted adjusted PAF (or PIF, respectively).
 #'
 #' @examples
 #' paf_lead <- paf(0.2, 2.2, quiet = TRUE, var_p = 0.001, label = "Lead")
@@ -338,7 +340,15 @@ weighted_adjusted_fractions <- function(
 #'
 #' weighted_adjusted_paf(paf_lead, paf_rad)
 #'
-#' @seealso [weighted_adjusted_fractions()], [paf_ensemble()]
+#' pif_lead <- pif(0.2, p_cft = 0.1, beta = log(2.2), quiet = TRUE,
+#'                 var_p = 0.001, label = "Lead")
+#' pif_rad  <- pif(0.1, p_cft = 0.05, beta = log(1.2), quiet = TRUE,
+#'                 var_p = 0.0001, label = "Radiation")
+#'
+#' weighted_adjusted_pif(pif_lead, pif_rad)
+#'
+#' @seealso [weighted_adjusted_fractions()], [paf_ensemble()] [pif()]
+#' @name weighted_adjusted
 #' @export
 weighted_adjusted_paf <- function(
     paf1,
@@ -376,25 +386,8 @@ weighted_adjusted_paf <- function(
 }
 
 
-#' Weighted Adjusted PIF
-#'
-#' Convenience wrapper around [weighted_adjusted_fractions()] for
-#' potential impact fractions (PIF).
-#'
-#' @inheritParams weighted_adjusted_fractions
-#'
-#' @return A named list of `pif_class` objects (type `"PIF"`), one per input
-#'   fraction, each being the weighted adjusted PIF.
-#'
-#' @examples
-#' pif_lead <- pif(0.2, p_cft = 0.1, beta = log(2.2), quiet = TRUE,
-#'                 var_p = 0.001, label = "Lead")
-#' pif_rad  <- pif(0.1, p_cft = 0.05, beta = log(1.2), quiet = TRUE,
-#'                 var_p = 0.0001, label = "Radiation")
-#'
-#' weighted_adjusted_pif(pif_lead, pif_rad)
-#'
 #' @seealso [weighted_adjusted_fractions()], [pif_ensemble()]
+#' @rdname weighted_adjusted
 #' @export
 weighted_adjusted_pif <- function(
     pif1,
