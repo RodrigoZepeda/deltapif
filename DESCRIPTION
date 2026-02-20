@@ -18,8 +18,6 @@ Imports:
 URL: https://rodrigozepeda.github.io/deltapif/
 Suggests: 
     EValue,
-    Evalue,
-    ggplot2,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
