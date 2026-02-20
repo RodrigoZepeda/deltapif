@@ -15,7 +15,7 @@ with respect to the parameters p or beta."><meta property="og:image" content="ht
 
     <a class="navbar-brand me-2" href="../index.html">deltapif</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -103,16 +103,19 @@ derivatives.</p>
 <p>The partial derivative of <code>PIF</code> with respect to <code>p</code> is:
 $$
 \dfrac{\partial \textrm{PIF}}{\partial p} =
-\dfrac{\mu^{\text{cft}}}{\big(\mu^{\text{obs}}\big)^2} \cdot \big( \text{RR}(\beta) - 1)
+\dfrac{\mu^{\text{cft}}}{\big(\mu^{\text{obs}}\big)^2} \cdot \big( \text{RR}(\beta) - 1\big)
 $$
 The partial derivative of <code>PIF</code> with respect to <code>beta</code> is:
 $$
 \dfrac{\partial \textrm{PIF}}{\partial \beta} =
-\Bigg(\dfrac{
- \mu^{\text{cft}} \cdot p - \mu^{\text{obs}} \cdot p_{*}
-}{
- \Big( \mu^{\text{obs}}\Big)^2
-}\Bigg)\odot \text{RR}'(\beta)$$
+\Bigg(
+ \dfrac{
+   \mu^{\text{cft}} \cdot p - \mu^{\text{obs}} \cdot p_{*}
+ }{
+   \Big( \mu^{\text{obs}}\Big)^2
+ }
+\Bigg)\odot \text{RR}^{\prime}(\beta)
+$$
 with \(\odot\) representing the Hadamard (elementwise) product.</p>
     </div>
 
