@@ -182,35 +182,12 @@ pif_population <- pif_total(pif_white, pif_hispanic, pif_black,
                             label = "All")
 pif_population
 ```
+
 We can use the `as.data.frame` function to create a `data.frame` with all of the results:
 
 ```{r}
 df <- as.data.frame(pif_population, pif_white, pif_black, pif_hispanic, pif_asian)
 df
-```
-
-Graphically we can visualize the fractions:
-
-
-```{r, echo = FALSE}
-if (requireNamespace("ggplot2", quietly = TRUE)){
-  library(ggplot2)
-  
-  df$label <- factor(df$label, levels = df$label)
-  
-  ggplot(df) +
-    geom_errorbar(aes(x = label, ymin = ci_low, ymax = ci_up, color = label)) +
-    geom_point(aes(x = label, y = value, color = label)) +
-    theme_bw() +
-    labs(
-      x = "Race/Ethnicity",
-      y = "Potential Impact Fraction",
-      title = "Prevented dementia cases",
-      subtitle = "15% reduction in smoking"
-    ) +
-    theme(legend.position = "none") +
-    scale_y_continuous(label = scales::percent_format())
-}
 ```
 
 
