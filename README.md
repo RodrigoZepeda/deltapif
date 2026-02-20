@@ -301,12 +301,10 @@ which returns a named list of the adjusted fractions.
 
 ## Learn More
 
-- For more detailed examples, including multi-category risk factors, and
-  combining fractions into a total see the [package’s
-  website](https://rodrigozepeda.github.io/deltapif/).
+- For more detailed examples, see the [Examples](https://rodrigozepeda.github.io/deltapif/articles/Examples.html) article where we reproduce some results from the literature.
 
-- See the vignette: [Introduction to
-  deltapif](https://rodrigozepeda.github.io/deltapif/articles/Introduction.html)
+- There is additional information on the [package’s website](https://rodrigozepeda.github.io/deltapif/).
+  
 
 ## Contributing
 
