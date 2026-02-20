@@ -16,13 +16,14 @@
 #' @param link Link function such that the `pif` confidence intervals
 #' stays within the expected bounds.
 #'
-#' @param link_inv The inverse of `link`. For example if `link`
-#' is `logit` this should be `inv_logit`.
+#' @param link_inv (Optional). If `link` is a function then
+#' yhe inverse of `link`. For example if `link` is `logit` this
+#' should be `inv_logit`.
 #'
-#' @param link_deriv The derivative of `link`. For example if `link`
+#' @param link_deriv (Optional) If `link` is a function, the derivative of `link`. For example if `link`
 #' is `logit` this should be `deriv_logit` (i.e. `function(pif) 1 / (pif * (1 - pif))`).
 #'
-#' @param pif Potential Impact Fraction estimate
+#' @param pif Potential Impact Fraction point estimate
 #'
 #' @param type Character either Potential Impact Fraction (`PIF`) or
 #' Population Attributable Fraction (`PAF`)

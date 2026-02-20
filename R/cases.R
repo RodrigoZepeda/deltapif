@@ -13,7 +13,7 @@
 #'  `paf_total` or `paf_ensemble`.
 #'
 #' @param link Link function such that the case confidence intervals stay
-#' within the expected bounds (either `logit` or `identity`).
+#' within the expected bounds (either `log` or `identity`).
 #'
 #' @param variance The estimated variance for the cases (default = 0).
 #'

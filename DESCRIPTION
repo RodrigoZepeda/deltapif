@@ -17,6 +17,8 @@ Imports:
     scales
 URL: https://rodrigozepeda.github.io/deltapif/
 Suggests: 
+    EValue,
+    Evalue,
     ggplot2,
     knitr,
     rmarkdown,

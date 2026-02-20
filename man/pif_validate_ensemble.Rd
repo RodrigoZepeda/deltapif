@@ -42,8 +42,9 @@ fraction of the list and the \code{j}-th weight}
 \item{link}{Link function such that the \code{pif} confidence intervals
 stays within the expected bounds.}
 
-\item{link_inv}{The inverse of \code{link}. For example if \code{link}
-is \code{logit} this should be \code{inv_logit}.}
+\item{link_inv}{(Optional). If \code{link} is a function then
+yhe inverse of \code{link}. For example if \code{link} is \code{logit} this
+should be \code{inv_logit}.}
 
 \item{link_deriv}{Derivative of the \code{link} function. The function tries
 to build it automatically from \code{link} using \code{\link[Deriv:Deriv]{Deriv::Deriv()}}.}

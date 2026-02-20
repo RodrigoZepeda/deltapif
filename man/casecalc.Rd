@@ -37,10 +37,11 @@ attributable_cases(
 \item{conf_level}{Confidence level for the confidence interval (default 0.95).}
 
 \item{link}{Link function such that the case confidence intervals stay
-within the expected bounds (either \code{logit} or \code{identity}).}
+within the expected bounds (either \code{log} or \code{identity}).}
 
-\item{link_inv}{The inverse of \code{link}. For example if \code{link}
-is \code{logit} this should be \code{inv_logit}.}
+\item{link_inv}{(Optional). If \code{link} is a function then
+yhe inverse of \code{link}. For example if \code{link} is \code{logit} this
+should be \code{inv_logit}.}
 
 \item{link_deriv}{Derivative of the \code{link} function. The function tries
 to build it automatically from \code{link} using \code{\link[Deriv:Deriv]{Deriv::Deriv()}}.}

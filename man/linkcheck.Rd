@@ -17,8 +17,9 @@ stays within the expected bounds.}
 \item{link_deriv}{Derivative of the \code{link} function. The function tries
 to build it automatically from \code{link} using \code{\link[Deriv:Deriv]{Deriv::Deriv()}}.}
 
-\item{link_inv}{The inverse of \code{link}. For example if \code{link}
-is \code{logit} this should be \code{inv_logit}.}
+\item{link_inv}{(Optional). If \code{link} is a function then
+yhe inverse of \code{link}. For example if \code{link} is \code{logit} this
+should be \code{inv_logit}.}
 
 \item{rr_link}{Link function such that the relative risk is given by
 \code{rr_link(beta)}.}

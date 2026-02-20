@@ -89,7 +89,7 @@ pif_ensemble_class(
 )
 }
 \arguments{
-\item{pif}{Potential Impact Fraction estimate}
+\item{pif}{Potential Impact Fraction point estimate}
 
 \item{variance}{variance estimate for the potential impact fraction (i.e.
 for \code{pif})}
@@ -104,10 +104,11 @@ Population Attributable Fraction (\code{PAF})}
 \item{link}{Link function such that the \code{pif} confidence intervals
 stays within the expected bounds.}
 
-\item{link_inv}{The inverse of \code{link}. For example if \code{link}
-is \code{logit} this should be \code{inv_logit}.}
+\item{link_inv}{(Optional). If \code{link} is a function then
+yhe inverse of \code{link}. For example if \code{link} is \code{logit} this
+should be \code{inv_logit}.}
 
-\item{link_deriv}{The derivative of \code{link}. For example if \code{link}
+\item{link_deriv}{(Optional) If \code{link} is a function, the derivative of \code{link}. For example if \code{link}
 is \code{logit} this should be \code{deriv_logit} (i.e. \code{function(pif) 1 / (pif * (1 - pif))}).}
 
 \item{overall_cases}{Overall number of cases so that attributable cases is given by
