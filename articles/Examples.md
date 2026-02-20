@@ -208,10 +208,6 @@ df
 #> 5    Asian
 ```
 
-Graphically we can visualize the fractions:
-
-![](Examples_files/figure-html/unnamed-chunk-17-1.png)
-
 Averted cases can be calculated with the same number as before with the
 `averted_cases` function:
 
