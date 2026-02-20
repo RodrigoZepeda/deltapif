@@ -42,17 +42,18 @@ derivatives.
 The partial derivative of \code{PIF} with respect to \code{p} is:
 \deqn{
 \dfrac{\partial \textrm{PIF}}{\partial p} =
-\dfrac{\mu^{\text{cft}}}{\big(\mu^{\text{obs}}\big)^2} \cdot \big( \text{RR}(\beta) - 1)
+\dfrac{\mu^{\text{cft}}}{\big(\mu^{\text{obs}}\big)^2} \cdot \big( \text{RR}(\beta) - 1\big)
 }
 The partial derivative of \code{PIF} with respect to \code{beta} is:
 \deqn{
 \dfrac{\partial \textrm{PIF}}{\partial \beta} =
-\Bigg(\dfrac{
- \mu^{\text{cft}} \cdot p - \mu^{\text{obs}} \cdot p_{*}
-}{
- \Big( \mu^{\text{obs}}\Big)^2
-}\Bigg)\odot \text{RR}'(\beta)
-
+\Bigg(
+ \dfrac{
+   \mu^{\text{cft}} \cdot p - \mu^{\text{obs}} \cdot p_{*}
+ }{
+   \Big( \mu^{\text{obs}}\Big)^2
+ }
+\Bigg)\odot \text{RR}^{\prime}(\beta)
 }
 with \eqn{\odot} representing the Hadamard (elementwise) product.
 }

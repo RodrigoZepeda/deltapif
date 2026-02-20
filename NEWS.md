@@ -1,3 +1,7 @@
+# deltapif 0.4.4
+
+* Fixes typo that impeded pdf manual creation. 
+
 # deltapif 0.4.3
 
 * Initial release of package
