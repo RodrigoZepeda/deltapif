@@ -263,11 +263,15 @@ factors. To calculate the adjusted fractions one needs to estimate:
 
 $$
 \textrm{PIF}_k^{\text{Adjusted}} = \dfrac{\text{PIF}_k}{\sum_k \text{PIF}_k} \cdot \text{PIF}_{\text{Overall}}
-$$ where
+$$ 
+
+where
 
 $$
 \textrm{PIF}^{\text{Overall}} = 1 - \prod\limits_k (1 - w_k \text{PIF}_k)
-$$ with
+$$ 
+
+with
 
 $$
 w_k = 1 - \text{commonality}_k
