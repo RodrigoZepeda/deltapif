@@ -547,11 +547,121 @@ We remark that this option is not turned on by default as the
 
 2.  Epidemiological rationale on why the fraction should be positive.
 
-#### Example 8: Computing averted cases
+### Example 8: Computing averted and attributable cases
 
-#### Example 9: Computing averted cases (strictly positive)
+Attributable and averted cases can be calculated with the
+`attributable_cases` (resp. `averted_cases`) function. For example
+[Dhana et al.
+(2023)](https://pmc.ncbi.nlm.nih.gov/articles/PMC10593099/#SD2)
+estimates the number of people with Alzheimer’s Disease in New York, USA
+426.5 (400.2, 452.7) thousand. This implies a variance of
+`((452.7 - 400.2) / 2*qnorm(0.975))^2 = 2647.005`.
 
-#### Example 10: Using Hazard Ratios instead of Relative Risks
+To estimate cases we need to:
+
+1.  Estimate the corresponding potential impact fraction (averted) or
+    population attributable fraction (attributable)
+2.  Use the `averted_cases` (resp. `attributable_cases` function)
+
+We start by calcualting the same fraction as before from [M. Lee et al.
+(2022)](https://doi.org/10.1001/jamanetworkopen.2022.19672). This
+considers the impact on dementia of reducing smoking prevalence by 15%
+(from 8.5% to 7.225%). The PIF for this intervention is:
+
+``` r
+pif_smoking <- pif(
+  p        = 0.085, 
+  p_cft    = 0.085 * (1 - 0.15), # 15% reduction
+  beta     = log(1.59), 
+  var_beta = ((log(2.20) - log(1.15)) / (2 * 1.96))^2, 
+  var_p    = 0
+)
+pif_smoking
+#> 
+#> ── Potential Impact Fraction: [deltapif-0698429449342544] ──
+#> 
+#> PIF = 0.716% [95% CI: 0.118% to 1.311%]
+#> standard_deviation(pif %) = 0.304
+```
+
+``` r
+averted_cases(426.5, pif_smoking, variance = 2647.005)
+#> 
+#> ── Averted cases: [deltapif-0698429449342544] ──
+#> 
+#> Averted cases = 3.055 [95% CI: 0.394 to 5.716]
+#> standard_deviation(averted cases) = 135.779
+```
+
+### Example 9: Computing averted cases (strictly positive)
+
+In some cases it might be of interest to guarantee the positivity of the
+averted cases. Following the previous example, a higher (hypothetical)
+variance might result in a confidence interval that includes negative
+values:
+
+``` r
+averted_cases(426.5, pif_smoking, variance = 100000)
+#> 
+#> ── Averted cases: [deltapif-0698429449342544] ──
+#> 
+#> Averted cases = 3.055 [95% CI: -2.398 to 8.508]
+#> standard_deviation(averted cases) = 278.207
+```
+
+When there is an epidemiological rationale on the interval being
+strictly positive (for example, the relative risk is known to be
+strictly greater than 1) we can change the link function to `logit` to
+guarantee the interval is always positive:
+
+``` r
+averted_cases(426.5, pif_smoking, variance = 100000, link = "log")
+#> 
+#> ── Averted cases: [deltapif-0698429449342544] ──
+#> 
+#> Averted cases = 3.055 [95% CI: 0.513 to 18.203]
+#> standard_deviation(averted cases) = 278.207
+```
+
+### Example 10: Using Hazard Ratios (HR) and Odds Ratios (OR) instead of Relative Risks (RR)
+
+Sometimes Hazard Rates or Odds Ratios are reported in the literature. As
+the potential impact fraction and the population attributable fraction
+require relative risks, one needs to convert the former. One way is via
+the `EValues` package which uses the method described in [Maya B. Mathur
+and Tyler J. VanderWeele
+(2019)](https://doi.org/10.1080/01621459.2018.1529598).
+
+In the following example we used the Hazard Ratio of shingles
+vaccination on dementia by Wu et al:
+
+``` r
+library(EValue)
+
+upper_rr <- HR(0.72, rare = FALSE) |> toRR() |> as.numeric()
+lower_rr <- HR(0.67, rare = FALSE) |> toRR() |> as.numeric()
+rr_value <- HR(0.69, rare = FALSE) |> toRR() |> as.numeric()
+```
+
+which results in the risk of 0.7735267 with interval 0.76, 0.8. From
+here one can calculate the potential impact fraction of doubling
+vaccination coverage from the baseline of `p = 0.438` to
+`p_cft = 0.876`:
+
+``` r
+pif(
+  p     = 0.438,
+  beta  = log(rr_value),
+  p_cft = 0.876,
+  var_beta = ((log(upper_rr) - log(lower_rr)) / (2 * 1.96))^2,
+  quiet = TRUE
+)
+#> 
+#> ── Potential Impact Fraction: [deltapif-0960449159030135] ──
+#> 
+#> PIF = 11.012% [95% CI: 9.969% to 12.043%]
+#> standard_deviation(pif %) = 0.529
+```
 
 ### References
 
@@ -574,6 +684,10 @@ Monte Carlo Methods to Select an Optimal Approach for Calculating the
 95% Confidence Interval of the Population-Attributable Fraction:
 Guidance for Epidemiological Research.” *Journal of Preventive Medicine
 and Public Health* 57 (5): 499.
+
+Maya B. Mathur, and Tyler J. VanderWeele. 2019. “Sensitivity Analysis
+for Unmeasured Confounding in Meta-Analyses.” *Journal of the American
+Statistical Association\>*.
 
 Pandeya, Nirmala, Louise F Wilson, Penelope M Webb, Rachel E Neale,
 Christopher J Bain, and David C Whiteman. 2015. “Cancers in Australia in

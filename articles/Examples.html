@@ -613,18 +613,109 @@ fraction’s intervals:</p>
 <li><p>Epidemiological rationale on why the fraction should be
 positive.</p></li>
 </ol>
-<div class="section level4">
-<h4 id="example-8-computing-averted-cases">Example 8: Computing averted cases<a class="anchor" aria-label="anchor" href="#example-8-computing-averted-cases"></a>
-</h4>
 </div>
-<div class="section level4">
-<h4 id="example-9-computing-averted-cases-strictly-positive">Example 9: Computing averted cases (strictly positive)<a class="anchor" aria-label="anchor" href="#example-9-computing-averted-cases-strictly-positive"></a>
-</h4>
+<div class="section level3">
+<h3 id="example-8-computing-averted-and-attributable-cases">Example 8: Computing averted and attributable cases<a class="anchor" aria-label="anchor" href="#example-8-computing-averted-and-attributable-cases"></a>
+</h3>
+<p>Attributable and averted cases can be calculated with the
+<code>attributable_cases</code> (resp. <code>averted_cases</code>)
+function. For example <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10593099/#SD2" class="external-link"><span class="citation">Dhana et al. (2023)</span></a> estimates the number of
+people with Alzheimer’s Disease in New York, USA 426.5 (400.2, 452.7)
+thousand. This implies a variance of
+<code>((452.7 - 400.2) / 2*qnorm(0.975))^2 = 2647.005</code>.</p>
+<p>To estimate cases we need to:</p>
+<ol style="list-style-type: decimal">
+<li>Estimate the corresponding potential impact fraction (averted) or
+population attributable fraction (attributable)</li>
+<li>Use the <code>averted_cases</code> (resp.
+<code>attributable_cases</code> function)</li>
+</ol>
+<p>We start by calcualting the same fraction as before from <a href="https://doi.org/10.1001/jamanetworkopen.2022.19672" class="external-link"><span class="citation">M. Lee et al. (2022)</span></a>. This considers the
+impact on dementia of reducing smoking prevalence by 15% (from 8.5% to
+7.225%). The PIF for this intervention is:</p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pif_smoking</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">pif</a></span><span class="op">(</span></span>
+<span>  p        <span class="op">=</span> <span class="fl">0.085</span>, </span>
+<span>  p_cft    <span class="op">=</span> <span class="fl">0.085</span> <span class="op">*</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="fl">0.15</span><span class="op">)</span>, <span class="co"># 15% reduction</span></span>
+<span>  beta     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.59</span><span class="op">)</span>, </span>
+<span>  var_beta <span class="op">=</span> <span class="op">(</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">2.20</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.15</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="fl">1.96</span><span class="op">)</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span>, </span>
+<span>  var_p    <span class="op">=</span> <span class="fl">0</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">pif_smoking</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── <span style="font-weight: bold;">Potential Impact Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0698429449342544]</span> ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; PIF = 0.716% [<span style="font-style: italic;">95% CI</span>: 0.118% to 1.311%]</span></span>
+<span><span class="co">#&gt; standard_deviation(pif %) = 0.304</span></span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/casecalc.html">averted_cases</a></span><span class="op">(</span><span class="fl">426.5</span>, <span class="va">pif_smoking</span>, variance <span class="op">=</span> <span class="fl">2647.005</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── <span style="font-weight: bold;">Averted cases: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0698429449342544]</span> ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Averted cases = 3.055 [<span style="font-style: italic;">95% CI</span>: 0.394 to 5.716]</span></span>
+<span><span class="co">#&gt; standard_deviation(averted cases) = 135.779</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="example-10-using-hazard-ratios-instead-of-relative-risks">Example 10: Using Hazard Ratios instead of Relative Risks<a class="anchor" aria-label="anchor" href="#example-10-using-hazard-ratios-instead-of-relative-risks"></a>
-</h4>
+<div class="section level3">
+<h3 id="example-9-computing-averted-cases-strictly-positive">Example 9: Computing averted cases (strictly positive)<a class="anchor" aria-label="anchor" href="#example-9-computing-averted-cases-strictly-positive"></a>
+</h3>
+<p>In some cases it might be of interest to guarantee the positivity of
+the averted cases. Following the previous example, a higher
+(hypothetical) variance might result in a confidence interval that
+includes negative values:</p>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/casecalc.html">averted_cases</a></span><span class="op">(</span><span class="fl">426.5</span>, <span class="va">pif_smoking</span>, variance <span class="op">=</span> <span class="fl">100000</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── <span style="font-weight: bold;">Averted cases: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0698429449342544]</span> ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Averted cases = 3.055 [<span style="font-style: italic;">95% CI</span>: -2.398 to 8.508]</span></span>
+<span><span class="co">#&gt; standard_deviation(averted cases) = 278.207</span></span></code></pre></div>
+<p>When there is an epidemiological rationale on the interval being
+strictly positive (for example, the relative risk is known to be
+strictly greater than 1) we can change the link function to
+<code>logit</code> to guarantee the interval is always positive:</p>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/casecalc.html">averted_cases</a></span><span class="op">(</span><span class="fl">426.5</span>, <span class="va">pif_smoking</span>, variance <span class="op">=</span> <span class="fl">100000</span>, link <span class="op">=</span> <span class="st">"log"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── <span style="font-weight: bold;">Averted cases: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0698429449342544]</span> ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Averted cases = 3.055 [<span style="font-style: italic;">95% CI</span>: 0.513 to 18.203]</span></span>
+<span><span class="co">#&gt; standard_deviation(averted cases) = 278.207</span></span></code></pre></div>
 </div>
+<div class="section level3">
+<h3 id="example-10-using-hazard-ratios-hr-and-odds-ratios-or-instead-of-relative-risks-rr">Example 10: Using Hazard Ratios (HR) and Odds Ratios (OR) instead of
+Relative Risks (RR)<a class="anchor" aria-label="anchor" href="#example-10-using-hazard-ratios-hr-and-odds-ratios-or-instead-of-relative-risks-rr"></a>
+</h3>
+<p>Sometimes Hazard Rates or Odds Ratios are reported in the literature.
+As the potential impact fraction and the population attributable
+fraction require relative risks, one needs to convert the former. One
+way is via the <code>EValues</code> package which uses the method
+described in <a href="https://doi.org/10.1080/01621459.2018.1529598" class="external-link"><span class="citation">Maya B. Mathur and Tyler J. VanderWeele
+(2019)</span></a>.</p>
+<p>In the following example we used the Hazard Ratio of shingles
+vaccination on dementia by Wu et al:</p>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">EValue</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">upper_rr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/EValue/man/effect_measures.html" class="external-link">HR</a></span><span class="op">(</span><span class="fl">0.72</span>, rare <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/pkg/EValue/man/convert_measures.html" class="external-link">toRR</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">lower_rr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/EValue/man/effect_measures.html" class="external-link">HR</a></span><span class="op">(</span><span class="fl">0.67</span>, rare <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/pkg/EValue/man/convert_measures.html" class="external-link">toRR</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">rr_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/EValue/man/effect_measures.html" class="external-link">HR</a></span><span class="op">(</span><span class="fl">0.69</span>, rare <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/pkg/EValue/man/convert_measures.html" class="external-link">toRR</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>which results in the risk of 0.7735267 with interval 0.76, 0.8. From
+here one can calculate the potential impact fraction of doubling
+vaccination coverage from the baseline of <code>p =  0.438</code> to
+<code>p_cft = 0.876</code>:</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/pifpaf.html">pif</a></span><span class="op">(</span></span>
+<span>  p     <span class="op">=</span> <span class="fl">0.438</span>,</span>
+<span>  beta  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">rr_value</span><span class="op">)</span>,</span>
+<span>  p_cft <span class="op">=</span> <span class="fl">0.876</span>,</span>
+<span>  var_beta <span class="op">=</span> <span class="op">(</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">upper_rr</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">lower_rr</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="fl">1.96</span><span class="op">)</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span>,</span>
+<span>  quiet <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── <span style="font-weight: bold;">Potential Impact Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0960449159030135]</span> ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; PIF = 11.012% [<span style="font-style: italic;">95% CI</span>: 9.969% to 12.043%]</span></span>
+<span><span class="co">#&gt; standard_deviation(pif %) = 0.529</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
@@ -653,6 +744,11 @@ and Monte Carlo Methods to Select an Optimal Approach for Calculating
 the 95% Confidence Interval of the Population-Attributable Fraction:
 Guidance for Epidemiological Research.”</span> <em>Journal of Preventive
 Medicine and Public Health</em> 57 (5): 499.
+</div>
+<div id="ref-mathurevalue" class="csl-entry">
+Maya B. Mathur, and Tyler J. VanderWeele. 2019. <span>“Sensitivity
+Analysis for Unmeasured Confounding in Meta-Analyses.”</span>
+<em>Journal of the American Statistical Association&gt;</em>.
 </div>
 <div id="ref-pandeya" class="csl-entry">
 Pandeya, Nirmala, Louise F Wilson, Penelope M Webb, Rachel E Neale,

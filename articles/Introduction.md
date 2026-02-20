@@ -291,10 +291,11 @@ weighted_adjusted_paf(paf_lead, paf_absts, weights = c(0.2, 0.3))
 
 which returns a named list of the adjusted fractions.
 
-The `deltapif` package calculates **Potential Impact Fractions (PIF) and
-Population Attributable Fractions (PAF)** for summary data, along with
-their confidence intervals, using the delta method. This vignette
-provides a practical introduction to the package’s core functionality.
+## Additional information
+
+Read the
+[examples](https://rodrigozepeda.github.io/deltapif/articles/Examples.html)
+vignette
 
 ## References
 

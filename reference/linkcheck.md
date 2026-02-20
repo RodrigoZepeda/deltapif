@@ -26,8 +26,8 @@ check_rr_links(rr_link, rr_link_deriv)
 
 - link_inv:
 
-  The inverse of `link`. For example if `link` is `logit` this should be
-  `inv_logit`.
+  (Optional). If `link` is a function then yhe inverse of `link`. For
+  example if `link` is `logit` this should be `inv_logit`.
 
 - rr_link:
 

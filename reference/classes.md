@@ -90,7 +90,7 @@ pif_ensemble_class(
 
 - pif:
 
-  Potential Impact Fraction estimate
+  Potential Impact Fraction point estimate
 
 - variance:
 
@@ -116,13 +116,14 @@ pif_ensemble_class(
 
 - link_inv:
 
-  The inverse of `link`. For example if `link` is `logit` this should be
-  `inv_logit`.
+  (Optional). If `link` is a function then yhe inverse of `link`. For
+  example if `link` is `logit` this should be `inv_logit`.
 
 - link_deriv:
 
-  The derivative of `link`. For example if `link` is `logit` this should
-  be `deriv_logit` (i.e. `function(pif) 1 / (pif * (1 - pif))`).
+  (Optional) If `link` is a function, the derivative of `link`. For
+  example if `link` is `logit` this should be `deriv_logit` (i.e.
+  `function(pif) 1 / (pif * (1 - pif))`).
 
 - overall_cases:
 

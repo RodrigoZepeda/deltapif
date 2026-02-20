@@ -50,12 +50,12 @@ attributable_cases(
 - link:
 
   Link function such that the case confidence intervals stay within the
-  expected bounds (either `logit` or `identity`).
+  expected bounds (either `log` or `identity`).
 
 - link_inv:
 
-  The inverse of `link`. For example if `link` is `logit` this should be
-  `inv_logit`.
+  (Optional). If `link` is a function then yhe inverse of `link`. For
+  example if `link` is `logit` this should be `inv_logit`.
 
 - link_deriv:
 
