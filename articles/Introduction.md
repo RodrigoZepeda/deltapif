@@ -52,8 +52,7 @@ have individual-level data for exposure the [`pifpaf`
 package](https://github.com/INSP-RH/pifpaf) is more appropriate as it
 leverages the individual-level variability. If individual-level exposure
 and outcome data is available from the same source the [`graphPAF`
-package](https://cran.r-project.org/web/packages/graphPAF/index.html) is
-ideal.
+package](https://CRAN.R-project.org/package=graphPAF) is ideal.
 
 ## Usage
 
