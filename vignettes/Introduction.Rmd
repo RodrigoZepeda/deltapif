@@ -43,7 +43,7 @@ The `deltapif` package is designed for a specific, common scenario in public hea
 
 + The estimate of the exposure prevalence (`p`) comes from a separate, independent source (e.g., a national survey).
 
-The delta method implementation here relies on this independence. If you have individual-level data for exposure the [`pifpaf` package](https://github.com/INSP-RH/pifpaf) is more appropriate as it leverages the individual-level variability. If individual-level exposure and outcome data is available from the same source the [`graphPAF` package](https://cran.r-project.org/web/packages/graphPAF/index.html) is ideal. 
+The delta method implementation here relies on this independence. If you have individual-level data for exposure the [`pifpaf` package](https://github.com/INSP-RH/pifpaf) is more appropriate as it leverages the individual-level variability. If individual-level exposure and outcome data is available from the same source the [`graphPAF` package](https://CRAN.R-project.org/package=graphPAF) is ideal. 
 
 
 ## Usage
