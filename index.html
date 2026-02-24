@@ -114,7 +114,7 @@
 <span></span>
 <span><span class="fu"><a href="reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.085</span>, beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.59</span><span class="op">)</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Population Attributable Fraction: [deltapif-0254073139135798] ──</span></span>
+<span><span class="co">#&gt; ── Population Attributable Fraction: [deltapif-141979693923337] ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; PAF = 4.776% [95% CI: 4.776% to 4.776%]</span></span>
 <span><span class="co">#&gt; standard_deviation(paf %) = 0.000</span></span></code></pre></div>
@@ -136,7 +136,7 @@
 <span><span class="op">)</span></span>
 <span><span class="va">paf_dementia</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Population Attributable Fraction: [deltapif-179593470672817] ──</span></span>
+<span><span class="co">#&gt; ── Population Attributable Fraction: [deltapif-0157965898816461] ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; PAF = 4.776% [95% CI: 0.717% to 8.669%]</span></span>
 <span><span class="co">#&gt; standard_deviation(paf %) = 2.028</span></span></code></pre></div>
@@ -157,7 +157,7 @@
 <span><span class="op">)</span></span>
 <span><span class="va">lee_pif</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Potential Impact Fraction: [deltapif-0791392256343812] ──</span></span>
+<span><span class="co">#&gt; ── Potential Impact Fraction: [deltapif-104780633021809] ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; PIF = 0.716% [95% CI: 0.118% to 1.311%]</span></span>
 <span><span class="co">#&gt; standard_deviation(pif %) = 0.304</span></span></code></pre></div>
@@ -171,7 +171,7 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/casecalc.html">averted_cases</a></span><span class="op">(</span><span class="fl">426.5</span>, <span class="va">lee_pif</span>, variance <span class="op">=</span> <span class="fl">2647.005</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Averted cases: [deltapif-0791392256343812] ──</span></span>
+<span><span class="co">#&gt; ── Averted cases: [deltapif-104780633021809] ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Averted cases = 3.055 [95% CI: 0.394 to 5.716]</span></span>
 <span><span class="co">#&gt; standard_deviation(averted cases) = 135.779</span></span></code></pre></div>
@@ -179,7 +179,7 @@
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/casecalc.html">attributable_cases</a></span><span class="op">(</span><span class="fl">426.5</span>, <span class="va">paf_dementia</span>, variance <span class="op">=</span> <span class="fl">2647.005</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Attributable cases: [deltapif-179593470672817] ──</span></span>
+<span><span class="co">#&gt; ── Attributable cases: [deltapif-0157965898816461] ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Attributable cases = 20.368 [95% CI: 2.626 to 38.109]</span></span>
 <span><span class="co">#&gt; standard_deviation(attributable cases) = 905.195</span></span></code></pre></div>
@@ -199,7 +199,7 @@
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/totalpifpaf.html">paf_total</a></span><span class="op">(</span><span class="va">paf_men</span>, <span class="va">paf_women</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.49</span>, <span class="fl">0.51</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Population Attributable Fraction: [deltapif-0813300686781551] ──</span></span>
+<span><span class="co">#&gt; ── Population Attributable Fraction: [deltapif-0567645527156959] ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; PAF = 13.201% [95% CI: 10.473% to 15.845%]</span></span>
 <span><span class="co">#&gt; standard_deviation(paf %) = 11.187</span></span>
@@ -227,7 +227,7 @@
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/totalpifpaf.html">paf_ensemble</a></span><span class="op">(</span><span class="va">paf_lead</span>, <span class="va">paf_absts</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Population Attributable Fraction: [deltapif-034339470239797] ──</span></span>
+<span><span class="co">#&gt; ── Population Attributable Fraction: [deltapif-00616746785569084] ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; PAF = 3.070% [95% CI: 3.033% to 3.108%]</span></span>
 <span><span class="co">#&gt; standard_deviation(paf %) = 0.625</span></span>
@@ -247,12 +247,10 @@
 <p>Adjuting for commonality is usually performed when different risks can be concurrent. In the previous example, exposure to lead and to asbestus can happen at the same time. <a href="https://doi.org/10.1016/S2214-109X(19)30074-9" class="external-link">Mukadan et al</a> propose the individual weighted (adjusted) fractions based on commonality weights. These weights represent the proportion of the variance shared among risk factors. To calculate the adjusted fractions one needs to estimate:</p>
 <p><span class="math display">\[
 \textrm{PIF}_k^{\text{Adjusted}} = \dfrac{\text{PIF}_k}{\sum_k \text{PIF}_k} \cdot \text{PIF}_{\text{Overall}}
-\]</span></p>
-<p>where</p>
+\]</span> where</p>
 <p><span class="math display">\[
 \textrm{PIF}^{\text{Overall}} = 1 - \prod\limits_k (1 - w_k \text{PIF}_k)
-\]</span></p>
-<p>with</p>
+\]</span> with</p>
 <p><span class="math display">\[
 w_k = 1 - \text{commonality}_k
 \]</span></p>
