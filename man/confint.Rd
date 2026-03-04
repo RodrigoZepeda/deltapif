@@ -2,16 +2,20 @@
 % Please edit documentation in R/02-generics.R
 \name{confint}
 \alias{confint}
-\title{Extract confidence intervals of a pif object}
+\title{Extract confidence intervals}
 \arguments{
-\item{object}{A \code{pif_class} object.}
+\item{object}{A \code{pif_class} or a \code{cases_class}.}
 
 \item{level}{Level of confidence desired.}
 
 \item{...}{Additional parameters to pass to \code{confint} (ignored)}
 }
+\value{
+A vector containing the lower and upper bounds of the
+confidence interval for the object.
+}
 \description{
-Gets the confidence interval for the potential impact fraction
+Gets the confidence interval for any fraction or cases.
 }
 \examples{
 my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1, var_beta = 0.2)
@@ -20,4 +24,5 @@ confint(my_pif)
 
 #Custom 90\% ci:
 confint(my_pif, level = 0.90)
+
 }

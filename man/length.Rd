@@ -2,14 +2,34 @@
 % Please edit documentation in R/02-generics.R
 \name{length}
 \alias{length}
-\title{Length of a \code{covariance_structure}}
+\title{Length of an object}
 \arguments{
-\item{x}{A \code{pif_atomic_class}}
+\item{x}{A \code{pif_class} or a \code{covariance_structure}}
+}
+\value{
+The number of entries in a \code{covariance_structure_class} or in
+a \code{pif_class} (for example in an ensemble composed of multiple fractions)
 }
 \description{
-Gets the length of a covariance structure
+Gets the length of a covariance structure or a \code{pif_class}
+}
+\examples{
+#Calculate the length of a single fraction
+pif_lead_women <- paf(0.27, 2.2, quiet = TRUE, var_p = 0.001,
+  var_beta = 0.015, label = "Women lead")
+length(pif_lead_women)
 
-Gets the length of a \code{pif_ensemble_class}
+#Calculate the length of an ensemble
+pif_rad_women  <- paf(0.12, 1.2, quiet = TRUE, var_p = 0.001,
+  var_beta = 0.022, label = "Women radiation")
 
-Gets the length of a \code{pif_atomic_class}
+pif_women      <- pif_ensemble(pif_lead_women, pif_rad_women,
+  label = "Women", weights = c(0.8, 0.72),
+  var_weights = matrix(c(0.3, 0.1, 0.1, 0.4), ncol = 2))
+
+length(pif_women) #= 2 as it contains 2 fractions
+
+#Calculate the length of a covariance structure (= # cols)
+length(covariance_structure2(pif_lead_women, pif_rad_women))
+
 }

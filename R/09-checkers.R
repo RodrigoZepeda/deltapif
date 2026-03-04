@@ -8,6 +8,7 @@
 #' @returns Invisible. Called for its side effects
 #' @name linkcheck
 #' @keywords internal
+#' @noRd
 check_links <- function(link, link_deriv, link_inv){
 
   if (!is.function(link) && (is.null(link) || is.na(link))){
@@ -76,6 +77,7 @@ check_links <- function(link, link_deriv, link_inv){
 
 #' @rdname linkcheck
 #' @keywords internal
+#' @noRd
 check_rr_links <- function(rr_link, rr_link_deriv){
 
   if (!is.function(rr_link) && (is.null(rr_link) || is.na(rr_link))){

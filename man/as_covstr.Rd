@@ -16,6 +16,12 @@ as_covariance_structure(x, col_names = NULL, row_names = NULL, ...)
 
 \item{...}{Additional arguments (currently ignored)}
 }
+\value{
+A \code{covariance_structure} object representing the given
+matrix, number, vector or \code{data.frame} as a covariance structure
+for using with \code{\link[=pif]{pif()}}, \code{\link[=paf]{paf()}}, \code{\link[=attributable_cases]{attributable_cases()}}, and
+\code{\link[=averted_cases]{averted_cases()}}
+}
 \description{
 Transforms either a matrix or a vector into a covariance structure.
 }
@@ -37,4 +43,5 @@ as_covariance_structure(seq(0.1, 0.2, length.out = 4),
 #As well as a data.frame
 data_mat <- as.data.frame(mat)
 as_covariance_structure(data_mat, row_names = c("r1","r2"))
+
 }

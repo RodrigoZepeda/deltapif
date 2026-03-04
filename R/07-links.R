@@ -34,10 +34,13 @@
 #' derivatives
 #'
 #' @name linkfuns
+#' @keywords internal
+#' @noRd
 NULL
 
 #' @rdname linkfuns
-#' @export
+#' @keywords internal
+#' @noRd
 logit <- function(pif) {
   if (pif < 0){
     cli::cli_abort("Invalid value for pif = {round(pif,2)}. PIF must be positive when using `logit`")
@@ -50,7 +53,8 @@ logit <- function(pif) {
 }
 
 #' @rdname linkfuns
-#' @export
+#' @keywords internal
+#' @noRd
 log_complement <- function(pif) {
   if (pif > 1){
     return(-Inf)
@@ -60,13 +64,15 @@ log_complement <- function(pif) {
 }
 
 #' @rdname linkfuns
-#' @export
+#' @keywords internal
+#' @noRd
 hawkins <- function(pif) {
   log(pif + sqrt(pif^2 + 1))
 }
 
 #' @rdname linkfuns
-#' @export
+#' @keywords internal
+#' @noRd
 identity_link <- function(pif) {
   pif
 }
@@ -105,22 +111,27 @@ identity_link <- function(pif) {
 #' @seealso [linkfuns] for the definition of the link functions and
 #' [deriv_linkfuns] for their derivatives.
 #' @name inv_linkfuns
+#' @keywords internal
+#' @noRd
 NULL
 
 #' @rdname inv_linkfuns
-#' @export
+#' @keywords internal
+#' @noRd
 inv_logit <- function(x) {
   1 / (1 + exp(-x))
 }
 
 #' @rdname inv_linkfuns
-#' @export
+#' @keywords internal
+#' @noRd
 inv_log_complement <- function(x) {
   1 - exp(x)
 }
 
 #' @rdname inv_linkfuns
-#' @export
+#' @keywords internal
+#' @noRd
 inv_hawkins <- function(x) {
   0.5 * exp(-x) * (exp(2 * x) - 1)
 }
@@ -165,28 +176,34 @@ inv_hawkins <- function(x) {
 #' for the inverses of the link functions.
 #'
 #' @name deriv_linkfuns
+#' @keywords internal
+#' @noRd
 NULL
 
 #' @rdname deriv_linkfuns
-#' @export
+#' @keywords internal
+#' @noRd
 deriv_logit <- function(pif) {
   1 / (pif * (1 - pif))
 }
 
 #' @rdname deriv_linkfuns
-#' @export
+#' @keywords internal
+#' @noRd
 deriv_log_complement <- function(pif) {
   1 / (pif - 1)
 }
 
 #' @rdname deriv_linkfuns
-#' @export
+#' @keywords internal
+#' @noRd
 deriv_hawkins <- function(pif) {
   1 / (sqrt(pif^2 + 1))
 }
 
 #' @rdname deriv_linkfuns
-#' @export
+#' @keywords internal
+#' @noRd
 deriv_identity <- function(pif) {
   rep(1, length(pif))
 }
@@ -214,9 +231,13 @@ deriv_identity <- function(pif) {
 #'
 #' @note If a function is supplied to `link_name` the same function is returned
 #' @name link_parsers
-
+#' @keywords internal
+#' @noRd
+NULL
 
 #' @rdname link_parsers
+#' @keywords internal
+#' @noRd
 parse_link <- function(link_name) {
   if (is.function(link_name)) {
     return(link_name)
@@ -249,6 +270,8 @@ parse_link <- function(link_name) {
 }
 
 #' @rdname link_parsers
+#' @keywords internal
+#' @noRd
 parse_inv_link <- function(link_name) {
   if (is.function(link_name)) {
     return(link_name)
@@ -281,6 +304,8 @@ parse_inv_link <- function(link_name) {
 }
 
 #' @rdname link_parsers
+#' @keywords internal
+#' @noRd
 parse_deriv_link <- function(link_name) {
   if (is.function(link_name)) {
     return(link_name)

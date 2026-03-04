@@ -6,13 +6,45 @@
 \arguments{
 \item{x}{A \code{covariance_structure}}
 
+\item{default}{How to fill the empty values (default = NA)}
+
 \item{...}{Additional parameters (ignored)}
+}
+\value{
+A matrix with the flattened covariance among all the involved
+fractions
 }
 \description{
 Transforms a \code{covariance_structure} into a \code{matrix}.
 }
+\details{
+Because each entry of a covariance structure class can be a matrix
+containing the covariances of different fractions, the \code{as.matrix}
+command flattens that matrix into a single object.
+}
 \examples{
-as.matrix(covariance_structure_class(list(b = list(a = 1:3))))
+#Simple covariance structure to matrix
+my_cov <- covariance_structure_class(
+  list(
+    "pif1" = list("pif1" = 0.21, "pif2" = 0.12, "pif3" = 0.31),
+    "pif2" = list("pif1" = 0.12, "pif2" = 0.33, "pif3" = -0.01),
+    "pif3" = list("pif1" = 0.31, "pif2" = -0.01, "pif3" = 0.80)
+  )
+)
+as.matrix(my_cov)
+
+#More complicated example: the covariance matrix is flattened
+mat <- matrix(c(0.1, 0.21, 0.47, -0.3), ncol = 2)
+vec <- c(0.22, -0.9, 0.01)
+
+cov2 <- covariance_structure_class(
+  list(
+    "pif1" = list("pif1" = 0.21, "pif2" = mat, "pif3" = 0.31),
+    "pif2" = list("pif1" = mat, "pif2" = 0.33, "pif3" = vec),
+    "pif3" = list("pif1" = 0.31, "pif2" = vec, "pif3" = 0.80)
+  )
+)
+as.matrix(cov2)
 
 
 }

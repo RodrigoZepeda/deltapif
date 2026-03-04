@@ -16,6 +16,10 @@
 
 \item{...}{Additional parameters (ignored)}
 }
+\value{
+A \code{covariance_structure} with only the elements specified
+for the subset.
+}
 \description{
 Obtains a smaller \code{covariance_structure} with the entries
 given by the \code{select} option as a vector.

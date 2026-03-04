@@ -59,10 +59,14 @@
 #'
 #' @seealso [derivatives] for the definition of the derivatives involved
 #' in the formulas.
+#'
 #' @keywords internal
+#' @noRd
 NULL
 
 #' @rdname covariance_from_parameters
+#' @keywords internal
+#' @noRd
 from_parameters_covariance_p_component <- function(
     p1, p2, p1_cft, p2_cft, rr1, rr2,
     var_p, upper_bound) {
@@ -109,6 +113,8 @@ from_parameters_covariance_beta_component <- function(
 }
 
 #' @rdname covariance_from_parameters
+#' @keywords internal
+#' @noRd
 from_parameters_pif_covariance <- function(
     p1, p2, p1_cft, p2_cft, rr1, rr2, rr_link_deriv_vals1, rr_link_deriv_vals2,
     var_p, var_beta,
@@ -140,6 +146,8 @@ from_parameters_pif_covariance <- function(
 }
 
 #' @rdname covariance_from_parameters
+#' @keywords internal
+#' @noRd
 from_parameters_pif_variance <- function(
     p, p_cft, rr, rr_link_deriv_vals, var_p,
     var_beta, upper_bound_p = FALSE, upper_bound_beta = FALSE) {

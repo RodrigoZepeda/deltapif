@@ -5,100 +5,12 @@
 #' is rescaled proportionally so that together they are consistent with
 #' the ensemble fraction.
 #'
-#' @param pif1 A potential impact fraction (class `pif_class`). This is
-#'   the first of the individual fractions to be adjusted.
-#'
-#' @param ... The remaining potential impact fractions (class `pif_class`).
-#'   All fractions must be of the same type (all `PIF` or all `PAF`).
-#'
-#' @param pif_total_link Link to pass to `pif_total` in the denominator
-#' of the adjustment
-#'
-#' @param pif_total_link_inv Inverse of the link to pass to `pif_total` in the denominator
-#' of the adjustment
-#'
-#' @param pif_total_link_deriv Derivative of the link to pass to `pif_total` in the denominator
-#' of the adjustment
-#'
-#' @param pif_ensemble_link Link to pass to `pif_ensemble` in the numerator
-#' of the adjustment
-#'
-#' @param pif_ensemble_link_inv Inverse of the link to pass to `pif_ensemble` in the numerator
-#' of the adjustment
-#'
-#' @param pif_ensemble_link_deriv Derivative of the link to pass to `pif_ensemble` in the numerator
-#' of the adjustment
-#'
-#' @param weights Weights for the ensemble (`pif_ensemble`).
-#'   Passed directly to [pif_ensemble()] / [paf_ensemble()].
-#'   Defaults to `NULL` (equal weights of 1 for each fraction).
-#'
-#' @param var_weights Covariance structure for `weights`.
-#'   Passed directly to [pif_ensemble()] / [paf_ensemble()].
-#'   Defaults to `0`.
-#'
-#' @param var_pif_weights Covariance matrix between individual
-#'   fractions and `weights`. Passed to [pif_ensemble()] /
-#'   [paf_ensemble()]. Defaults to `NULL`.
-#'
-#' @param var_p Covariance matrix for the prevalence parameters `p` across
-#'   all fractions. Passed to [cov_total_pif()] when computing cross-covariances.
-#'   Defaults to `NULL`.
-#'
-#' @param var_beta Covariance matrix for the relative-risk parameters `beta`
-#'   across all fractions. Passed to [cov_total_pif()] when computing
-#'   cross-covariances. Defaults to `NULL`.
-#'
-#' @param label_ensemble Character label for the internally constructed
-#'   ensemble fraction. Defaults to `NULL` (auto-generated).
-#'
-#' @param label_sum Character label for the internally constructed sum
-#'   (total) fraction. Defaults to `NULL` (auto-generated).
-#'
-#' @inheritParams pifpaf
-#' @inheritParams classes
+#' @inheritParams weighted_adjusted
 #'
 #' @return A named list of `pif_class` objects, one per input fraction,
 #'   where each element is \eqn{\widehat{\text{PIF}}_i^{\text{adj}}}.
 #'   Names are taken from the `label` slots of the input fractions.
 #'
-#' @section Formula:
-#'
-#' The weighted adjusted fraction for the \eqn{i}-th exposure is:
-#' \deqn{
-#'   \widehat{\text{PIF}}_i^{\text{adj}} =
-#'     \frac{\widehat{\text{PIF}}_i}{\sum_{j=1}^{n} \widehat{\text{PIF}}_j}
-#'     \cdot \widehat{\text{PIF}}_{\text{Ensemble}}
-#' }
-#'
-#' Using the log-transform, the variance is:
-#' \deqn{
-#' \begin{aligned}
-#'   \operatorname{Var}\!\Big[\ln \widehat{\text{PIF}}_i^{\text{adj}}\Big]
-#'     &= \operatorname{Var}\!\left[\ln \widehat{\text{PIF}}_i\right]
-#'      + \operatorname{Var}\!\left[\ln \textstyle\sum_j \widehat{\text{PIF}}_j\right]
-#'      + \operatorname{Var}\!\left[\ln \widehat{\text{PIF}}_{\text{Ensemble}}\right] \\
-#'     &\quad + 2\Bigg[
-#'         \operatorname{Cov}\!\Big(\ln \widehat{\text{PIF}}_i,
-#'           \ln \widehat{\text{PIF}}_{\text{Ensemble}}\Big)
-#'       - \operatorname{Cov}\!\Big(\ln \widehat{\text{PIF}}_i,
-#'           \ln \textstyle\sum_j \widehat{\text{PIF}}_j\Big)
-#'       - \operatorname{Cov}\!\Big(\ln \widehat{\text{PIF}}_{\text{Ensemble}},
-#'           \ln \textstyle\sum_j \widehat{\text{PIF}}_j\Big)
-#'       \Bigg]
-#' \end{aligned}
-#' }
-#'
-#' where each log-covariance is approximated via the delta method:
-#' \deqn{
-#'   \operatorname{Cov}\!\big(\ln X, \ln Y\big) \approx
-#'     \frac{\operatorname{Cov}(X, Y)}{X \cdot Y}
-#' }
-#'
-#' The covariances \eqn{\operatorname{Cov}(\widehat{\text{PIF}}_i, \cdot)} are
-#' computed by [cov_total_pif()] applied to the individual fraction and the
-#' internally constructed sum/ensemble objects, which automatically propagates
-#' the full uncertainty structure already embedded in those objects.
 #'
 #' @section Internal construction:
 #'
@@ -109,7 +21,7 @@
 #'   \item An **ensemble** fraction via [pif_ensemble()] / [paf_ensemble()].
 #' }
 #' All cross-covariances are then computed automatically through the recursive
-#' [cov_total_pif()] machinery that already handles atomic, total, and ensemble
+#' [covariance()] machinery that already handles atomic, total, and ensemble
 #' fractions.
 #'
 #' @examples
@@ -126,10 +38,11 @@
 #' adj2 <- weighted_adjusted_fractions(paf_lead, paf_rad, var_p = 0.0001)
 #' adj2$Lead
 #' }
-#' @seealso [pif_ensemble()], [paf_ensemble()], [cov_total_pif()],
+#' @seealso [pif_ensemble()], [paf_ensemble()], [covariance()],
 #'   [weighted_adjusted_paf()], [weighted_adjusted_pif()]
 #'
 #' @keywords internal
+#' @noRd
 weighted_adjusted_fractions <- function(
     pif1,
     ...,
@@ -321,15 +234,107 @@ weighted_adjusted_fractions <- function(
 }
 
 
-#' Weighted Adjusted PAF
+#' Weighted Adjusted Fractions
 #'
-#' Convenience wrapper around [weighted_adjusted_fractions()] for
-#' population attributable fractions (PAF).
+#' Calculates the weighted adjusted potential impact fractions (or population
+#' attributable fractions). Each individual fraction \eqn{\widehat{\text{PIF}}_i}
+#' is rescaled proportionally so that together they are consistent with
+#' the ensemble fraction.
 #'
-#' @inheritParams weighted_adjusted_fractions
-
-#' @param paf1 A population attributable fraction
-#' @param pif1 A potential impact fraction
+#' @param pif1 A potential impact fraction (class `pif_class`). This is
+#'   the first of the individual fractions to be adjusted.
+#'
+#' @param paf1 A population attributable fraction (class `pif_class`). This is
+#'   the first of the individual fractions to be adjusted.
+#'
+#' @param ... The remaining potential impact fractions (class `pif_class`).
+#'   All fractions must be of the same type (all `PIF` or all `PAF`).
+#'
+#' @param pif_total_link Link to pass to `pif_total` in the denominator
+#' of the adjustment
+#'
+#' @param pif_total_link_inv Inverse of the link to pass to `pif_total` in the denominator
+#' of the adjustment
+#'
+#' @param pif_total_link_deriv Derivative of the link to pass to `pif_total` in the denominator
+#' of the adjustment
+#'
+#' @param pif_ensemble_link Link to pass to `pif_ensemble` in the numerator
+#' of the adjustment
+#'
+#' @param pif_ensemble_link_inv Inverse of the link to pass to `pif_ensemble` in the numerator
+#' of the adjustment
+#'
+#' @param pif_ensemble_link_deriv Derivative of the link to pass to `pif_ensemble` in the numerator
+#' of the adjustment
+#'
+#' @param weights Weights for the ensemble (`pif_ensemble`).
+#'   Passed directly to [pif_ensemble()] / [paf_ensemble()].
+#'   Defaults to `NULL` (equal weights of 1 for each fraction).
+#'
+#' @param var_weights Covariance structure for `weights`.
+#'   Passed directly to [pif_ensemble()] / [paf_ensemble()].
+#'   Defaults to `0`.
+#'
+#' @param var_pif_weights Covariance matrix between individual
+#'   fractions and `weights`. Passed to [pif_ensemble()] /
+#'   [paf_ensemble()]. Defaults to `NULL`.
+#'
+#' @param var_p Covariance matrix for the prevalence parameters `p` across
+#'   all fractions. Passed to [covariance()] when computing cross-covariances.
+#'   Defaults to `NULL`.
+#'
+#' @param var_beta Covariance matrix for the relative-risk parameters `beta`
+#'   across all fractions. Passed to [covariance()] when computing
+#'   cross-covariances. Defaults to `NULL`.
+#'
+#' @param label_ensemble Character label for the internally constructed
+#'   ensemble fraction. Defaults to `NULL` (auto-generated).
+#'
+#' @param label_sum Character label for the internally constructed sum
+#'   (total) fraction. Defaults to `NULL` (auto-generated).
+#'
+#' @inheritParams pifpaf
+#' @inheritParams classes
+#'
+#' @section Formula:
+#'
+#' The weighted adjusted fraction for the \eqn{i}-th exposure is:
+#' \deqn{
+#'   \widehat{\text{PIF}}_i^{\text{adj}} =
+#'     \frac{\widehat{\text{PIF}}_i}{\sum_{j=1}^{n} \widehat{\text{PIF}}_j}
+#'     \cdot \widehat{\text{PIF}}_{\text{Ensemble}}
+#' }
+#'
+#' Using the log-transform, the variance is:
+#' \deqn{
+#' \begin{aligned}
+#'   \operatorname{Var}\!\Big[\ln \widehat{\text{PIF}}_i^{\text{adj}}\Big]
+#'     &= \operatorname{Var}\!\left[\ln \widehat{\text{PIF}}_i\right]
+#'      + \operatorname{Var}\!\left[\ln \textstyle\sum_j \widehat{\text{PIF}}_j\right]
+#'      + \operatorname{Var}\!\left[\ln \widehat{\text{PIF}}_{\text{Ensemble}}\right] \\
+#'     &\quad + 2\Bigg[
+#'         \operatorname{Cov}\!\Big(\ln \widehat{\text{PIF}}_i,
+#'           \ln \widehat{\text{PIF}}_{\text{Ensemble}}\Big)
+#'       - \operatorname{Cov}\!\Big(\ln \widehat{\text{PIF}}_i,
+#'           \ln \textstyle\sum_j \widehat{\text{PIF}}_j\Big)
+#'       - \operatorname{Cov}\!\Big(\ln \widehat{\text{PIF}}_{\text{Ensemble}},
+#'           \ln \textstyle\sum_j \widehat{\text{PIF}}_j\Big)
+#'       \Bigg]
+#' \end{aligned}
+#' }
+#'
+#' where each log-covariance is approximated via the delta method:
+#' \deqn{
+#'   \operatorname{Cov}\!\big(\ln X, \ln Y\big) \approx
+#'     \frac{\operatorname{Cov}(X, Y)}{X \cdot Y}
+#' }
+#'
+#' The covariances \eqn{\operatorname{Cov}(\widehat{\text{PIF}}_i, \cdot)} are
+#' computed by the internal function `cov_total_pif()` applied to the
+#' individual fraction and the internally constructed sum/ensemble objects,
+#' which automatically propagates the full uncertainty structure already
+#' embedded in those objects.
 #'
 #' @return A named list of `pif_class` objects, one per input
 #'   fraction, each being the weighted adjusted PAF (or PIF, respectively).
@@ -347,7 +352,7 @@ weighted_adjusted_fractions <- function(
 #'
 #' weighted_adjusted_pif(pif_lead, pif_rad)
 #'
-#' @seealso [weighted_adjusted_fractions()], [paf_ensemble()] [pif()]
+#' @seealso [pif()], [paf()], [pif_ensemble()], [paf_ensemble()]
 #' @name weighted_adjusted
 #' @export
 weighted_adjusted_paf <- function(
@@ -356,12 +361,12 @@ weighted_adjusted_paf <- function(
     weights         = NULL,
     var_weights     = 0,
     var_pif_weights = NULL,
-    var_p                    = NULL,
-    var_beta                 = NULL,
-    conf_level               = 0.95,
-    label_ensemble           = NULL,
-    label_sum                = NULL,
-    quiet                    = FALSE
+    var_p           = NULL,
+    var_beta        = NULL,
+    conf_level      = 0.95,
+    label_ensemble  = NULL,
+    label_sum       = NULL,
+    quiet           = FALSE
 ) {
 
   if (paf1@type != "PAF"){
@@ -376,25 +381,24 @@ weighted_adjusted_paf <- function(
     weights         = weights,
     var_weights     = var_weights,
     var_pif_weights = var_pif_weights,
-    var_p                    = var_p,
-    var_beta                 = var_beta,
-    conf_level               = conf_level,
-    label_ensemble           = label_ensemble,
-    label_sum                = label_sum,
-    quiet                    = quiet
+    var_p           = var_p,
+    var_beta        = var_beta,
+    conf_level      = conf_level,
+    label_ensemble  = label_ensemble,
+    label_sum       = label_sum,
+    quiet           = quiet
   )
 }
 
 
-#' @seealso [weighted_adjusted_fractions()], [pif_ensemble()]
 #' @rdname weighted_adjusted
 #' @export
 weighted_adjusted_pif <- function(
     pif1,
     ...,
-    weights         = NULL,
-    var_weights     = 0,
-    var_pif_weights = NULL,
+    weights                  = NULL,
+    var_weights              = 0,
+    var_pif_weights          = NULL,
     var_p                    = NULL,
     var_beta                 = NULL,
     pif_total_link           = "log-complement",
@@ -411,9 +415,9 @@ weighted_adjusted_pif <- function(
   weighted_adjusted_fractions(
     pif1,
     ...,
-    weights         = weights,
-    var_weights     = var_weights,
-    var_pif_weights = var_pif_weights,
+    weights                  = weights,
+    var_weights              = var_weights,
+    var_pif_weights          = var_pif_weights,
     var_p                    = var_p,
     var_beta                 = var_beta,
     pif_total_link           = "log-complement",

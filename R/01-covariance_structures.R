@@ -49,6 +49,10 @@
 #' @seealso [as_covariance_structure()] to transform matrices to covariance
 #' structures and [covariance_structures()] for default covariance
 #' structures
+#'
+#' @returns An `S7`  `covariance_structure_class` where entry in row `i`
+#' and column `j` represents the covariance between fraction `i` and `j`.
+#'
 #' @export
 covariance_structure_class <- S7::new_class(
   name = "covariance_structure_class",

@@ -172,6 +172,10 @@
 #' counterfactual prevalence `p_cft` is specified, the model computes
 #' the population attributable fraction.
 #'
+#' @returns A `pif_class` object with the estimate of the
+#' potential impact fraction ([pif()]) or the population attributable
+#' fraction ([paf()]).
+#'
 #' @examples
 #' #EXAMPLE 1: ONE EXPOSURE CATEGORY (CLASSIC LEVIN)
 #' #---------------------------------------------------------------------------
@@ -229,6 +233,8 @@
 #'
 #' @name pifpaf
 #' @seealso [pif_total()], [pif_ensemble()], [paf_total()], [paf_ensemble()],
+#' [weighted_adjusted_paf()], [weighted_adjusted_pif()], [averted_cases()],
+#' [attributable_cases()].
 #' @md
 NULL
 

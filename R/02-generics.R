@@ -9,6 +9,7 @@
 #' @return Called for its side-effects of printing to the console
 #'
 #' @keywords internal
+#' @noRd
 print_pif_class <- function(x, accuracy){
 
   # Printed text looks like:
@@ -48,6 +49,7 @@ print_pif_class <- function(x, accuracy){
 #' @return Called for its side-effects of printing to the console
 #'
 #' @keywords internal
+#' @noRd
 print_cases_class <- function(x, accuracy){
 
 
@@ -81,6 +83,7 @@ print_cases_class <- function(x, accuracy){
 #' @return Called for its side-effects of printing to the console
 #'
 #' @keywords internal
+#' @noRd
 helper_print_pif_global_ensemble_class <- function(x, accuracy){
 
   # Printed text looks like:
@@ -136,11 +139,11 @@ S7::method(print, cases_class) <- function(x, ..., accuracy = 0.001) {
   print_cases_class(x, accuracy)
 }
 
-#' Print or show a covariance structure class
+#' Print an object
 #'
-#' Function to print or show a `covariance_structure_class`
+#' Function to print an object
 #'
-#' @param x A `covariance_structure_class`
+#' @param x A `covariance_structure_class`, a `pif_class` or a `cases_class`
 #'
 #' @param ... Additional arguments to pass to `print`
 #'
@@ -168,7 +171,11 @@ S7::method(print, cases_class) <- function(x, ..., accuracy = 0.001) {
 #' print(covariance_structure2(pif_lead_women, pif_lead_men))
 #' print(default_weight_covariance_structure2(pif_men, pif_women))
 #' print(default_parameter_covariance_structure(pif_tot, parameter = "beta"))
+#'
 #' @name print
+#'
+#' @returns NULL. Called for its side-effects.
+#'
 #' @export
 S7::method(print, covariance_structure_class) <- function(x, ..., quote = FALSE) {
   ndim <- length(x@cov_list)
@@ -203,6 +210,8 @@ S7::method(print, covariance_structure_class) <- function(x, ..., quote = FALSE)
 #' @examples
 #' my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1, var_beta = 0.2)
 #' coef(my_pif)
+#'
+#' @returns A `double` containing point-estimate of the object.
 #' @name coef
 NULL
 
@@ -218,11 +227,11 @@ S7::method(coef, cases_class) <- function(object, ...) {
   object@cases
 }
 
-#' Extract confidence intervals of a pif object
+#' Extract confidence intervals
 #'
-#' Gets the confidence interval for the potential impact fraction
+#' Gets the confidence interval for any fraction or cases.
 #'
-#' @param object A `pif_class` object.
+#' @param object A `pif_class` or a `cases_class`.
 #' @param level Level of confidence desired.
 #' @param ... Additional parameters to pass to `confint` (ignored)
 #'
@@ -233,7 +242,11 @@ S7::method(coef, cases_class) <- function(object, ...) {
 #'
 #' #Custom 90% ci:
 #' confint(my_pif, level = 0.90)
+#'
 #' @name confint
+#'
+#' @returns A vector containing the lower and upper bounds of the
+#' confidence interval for the object.
 NULL
 
 #' @name confint
@@ -268,22 +281,28 @@ S7::method(confint, cases_class) <- function(object, ..., level = object@conf_le
 #' weights(my_pif)
 #'
 #' @name weights
+#'
+#' @returns The `weights` used to construct a `pif_total` or `pif_ensemble`.
+#'
 #' @export
 S7::method(weights, pif_global_ensemble_class) <- function(object, ...) {
   return(object@weights)
 }
 
-#' Summary of a pif object
+#' Summary of an object
 #'
-#' Gets the potential impact fraction summary
+#' Gets the point-estimate and confidence interval of an object
 #'
-#' @param object A `pif_class` object.
+#' @param object A `pif_class` or `cases_class` object.
 #' @param ... Additional parameters to pass to `summary` (ignored)
 #'
 #' @examples
 #' my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1, var_beta = 0.2)
 #' summary(my_pif)
 #' @name summary
+#'
+#' @returns A named vector with the point-estimate, confidence interval and
+#' standard deviation of a `pif_class` or a `cases_class` estimate.
 NULL
 
 #' @name summary
@@ -320,12 +339,13 @@ S7::method(summary, cases_class) <- function(object, level = object@conf_level, 
   return(return_vec)
 }
 
-#' Transform a pif object into a data.frame
+#' Transform an object into a data.frame
 #'
-#' Gets the potential impact fraction value, the link_variance and the confidence
-#' interval values
+#' Gets the fraction (`pif()`/`paf()`) or the cases
+#' (`averted_cases()`/`attributable_cases()`) and transforms
+#' them into a `data.frame`.
 #'
-#' @param x A `pif_class` object.
+#' @param x A `pif_class` or `cases_class` object.
 #' @param ... Additional parameters (ignored)
 #'
 #' @examples
@@ -346,7 +366,12 @@ S7::method(summary, cases_class) <- function(object, level = object@conf_level, 
 #' #Transform multiple averted cases
 #' cases_2 <- averted_cases(87980, my_pif)
 #' as.data.frame(cases_1, cases_2)
+#'
 #' @name as.data.frame
+#'
+#' @returns A `data.frame` containing the fraction or cases (`value`), as well
+#' as `standard_deviation`, and confidence interval bounds `ci_low` and `ci_up`.
+#' The `label` is included to differentiate among different fractions or cases.
 NULL
 
 #' @name as.data.frame
@@ -427,6 +452,11 @@ S7::method(as.data.frame, cases_class) <- function(x, ..., level = 0.95) {
 #'                 label = "Parent")
 #' names(pif_tot)
 #'
+#' @returns The labels of a fraction or of the fractions that make it
+#'
+#' @note In the case of fractions, `names` cannot be used to assign names as in
+#' `names(pif_tot) <- c("a","b")`
+#'
 #' @name names
 NULL
 
@@ -450,6 +480,20 @@ S7::method(names, pif_global_ensemble_class) <- function(x, ...) {
 #' @param x A `covariance_structure`
 #'
 #' @name rowcol
+#'
+#' @returns The names of the rows or columns of a `covariance_structure`
+#'
+#' @examples
+#' #' #A pif composed of others
+#' my_pif1 <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1,
+#'                 var_beta = 0.2, label = "pif 1")
+#' my_pif2 <- pif(p = 0.4, p_cft = 0.1, beta = 1.3, var_p = 0.1,
+#'                 var_beta = 0.2, label = "pif 2")
+#' covst <- covariance_structure2(my_pif1, my_pif2)
+#' row_names(covst)
+#' col_names(covst)
+#'
+#'
 #' @export
 row_names <- function(x) {
   names(x@cov_list)
@@ -457,40 +501,53 @@ row_names <- function(x) {
 
 
 #' @rdname rowcol
+#' @export
 col_names <- function(x) {
   names(x@cov_list)
 }
 
-#' Length of a `covariance_structure`
+#' Length of an object
 #'
-#' Gets the length of a covariance structure
+#' Gets the length of a covariance structure or a `pif_class`
 #'
-#' @param x A `covariance_structure`
+#' @param x A `pif_class` or a `covariance_structure`
 #'
 #' @name length
+#'
+#' @returns The number of entries in a `covariance_structure_class` or in
+#' a `pif_class` (for example in an ensemble composed of multiple fractions)
+#'
+#' @examples
+#' #Calculate the length of a single fraction
+#' pif_lead_women <- paf(0.27, 2.2, quiet = TRUE, var_p = 0.001,
+#'   var_beta = 0.015, label = "Women lead")
+#' length(pif_lead_women)
+#'
+#' #Calculate the length of an ensemble
+#' pif_rad_women  <- paf(0.12, 1.2, quiet = TRUE, var_p = 0.001,
+#'   var_beta = 0.022, label = "Women radiation")
+#'
+#' pif_women      <- pif_ensemble(pif_lead_women, pif_rad_women,
+#'   label = "Women", weights = c(0.8, 0.72),
+#'   var_weights = matrix(c(0.3, 0.1, 0.1, 0.4), ncol = 2))
+#'
+#' length(pif_women) #= 2 as it contains 2 fractions
+#'
+#' #Calculate the length of a covariance structure (= # cols)
+#' length(covariance_structure2(pif_lead_women, pif_rad_women))
+#'
 #' @export
 S7::method(length, covariance_structure_class) <- function(x) {
   length(x@cov_list)
 }
 
-#' Length of a `pif` ensemble
-#'
-#' Gets the length of a `pif_ensemble_class`
-#'
-#' @param x A `pif_ensemble_class`
-#'
+
 #' @name length
 #' @export
 S7::method(length, pif_global_ensemble_class) <- function(x) {
   length(x@pif_list)
 }
 
-#' Length of a `pif` ensemble
-#'
-#' Gets the length of a `pif_atomic_class`
-#'
-#' @param x A `pif_atomic_class`
-#'
 #' @name length
 #' @export
 S7::method(length, pif_atomic_class) <- function(x) {
@@ -502,20 +559,53 @@ S7::method(length, pif_atomic_class) <- function(x) {
 #' Transforms a `covariance_structure` into a `matrix`.
 #'
 #' @param x A `covariance_structure`
+#' @param default How to fill the empty values (default = NA)
 #' @param ... Additional parameters (ignored)
 #'
 #' @name as.matrix
 #'
+#' @returns A matrix with the flattened covariance among all the involved
+#' fractions
+#'
+#' @details
+#' Because each entry of a covariance structure class can be a matrix
+#' containing the covariances of different fractions, the `as.matrix`
+#' command flattens that matrix into a single object.
+#'
+#'
 #' @examples
-#' as.matrix(covariance_structure_class(list(b = list(a = 1:3))))
+#' #Simple covariance structure to matrix
+#' my_cov <- covariance_structure_class(
+#'   list(
+#'     "pif1" = list("pif1" = 0.21, "pif2" = 0.12, "pif3" = 0.31),
+#'     "pif2" = list("pif1" = 0.12, "pif2" = 0.33, "pif3" = -0.01),
+#'     "pif3" = list("pif1" = 0.31, "pif2" = -0.01, "pif3" = 0.80)
+#'   )
+#' )
+#' as.matrix(my_cov)
+#'
+#' #More complicated example: the covariance matrix is flattened
+#' mat <- matrix(c(0.1, 0.21, 0.47, -0.3), ncol = 2)
+#' vec <- c(0.22, -0.9, 0.01)
+#'
+#' cov2 <- covariance_structure_class(
+#'   list(
+#'     "pif1" = list("pif1" = 0.21, "pif2" = mat, "pif3" = 0.31),
+#'     "pif2" = list("pif1" = mat, "pif2" = 0.33, "pif3" = vec),
+#'     "pif3" = list("pif1" = 0.31, "pif2" = vec, "pif3" = 0.80)
+#'   )
+#' )
+#' as.matrix(cov2)
 #'
 #'
 #' @export
-S7::method(as.matrix, covariance_structure_class) <- function(x, ...) {
+S7::method(as.matrix, covariance_structure_class) <- function(x, default = NA, ...) {
 
   #Get number of observations
   nrow <- length(x)
   ncol <- length(x@cov_list[[1]])
+
+  #Get
 
   #In case you have multiple matrices one needs to expand
   #Go through each of the columns and get the maximum column
@@ -543,26 +633,51 @@ S7::method(as.matrix, covariance_structure_class) <- function(x, ...) {
   }
 
   #Setup matrix
-  mat <- matrix(0, ncol = max_col*ncol, nrow = max_row*nrow)
+  max_val <- max(max_col, max_row)
+  mat     <- matrix(default, ncol = max_val*ncol, nrow = max_val*nrow)
+  name_rows <- rep(NA, max_val*nrow)
+  name_cols <- rep(NA, max_val*ncol)
   for (k in 1:ncol){
     for (j in 1:nrow){
-      init_row <- ((j - 1)*max_row + 1)
-      init_col <- ((k - 1)*max_col + 1)
+      init_row <- ((j - 1)*max_val + 1)
+      init_col <- ((k - 1)*max_val + 1)
+
+      #Add names
+      if (length(names(x@cov_list)) > 0){
+        name_cols[init_col:(init_col + max_val - 1)] <- names(x@cov_list)[k]
+        name_rows[init_row:(init_row + max_val - 1)] <- names(x@cov_list)[j]
+      }
+
       if (is.matrix(x@cov_list[[j]][[k]])){
+        #Add values
         mat[
           init_row:(init_row + nrow(x@cov_list[[j]][[k]]) - 1),
           init_col:(init_col + ncol(x@cov_list[[j]][[k]]) - 1)
         ] <- x@cov_list[[j]][[k]]
+
+
       } else if (is.vector(x@cov_list[[j]][[k]]) && length(x@cov_list[[j]][[k]]) > 1){
+        #Add values
         mat[
-          init_col:(init_col + length(x@cov_list[[j]][[k]]) - 1),
-          1
+          init_row,
+          init_col:(init_col + length(x@cov_list[[j]][[k]]) - 1)
         ] <- x@cov_list[[j]][[k]]
-      } else if (!is.matrix(x@cov_list[[j]][[k]]) && length(x@cov_list[[j]][[k]]) == 1){
-        mat[j,k] <- x@cov_list[[j]][[k]]
+
+
+      } else if (length(x@cov_list[[j]][[k]]) == 1){
+        #Add values
+        mat[init_row,init_col] <- x@cov_list[[j]][[k]]
+
       }
     }
   }
+
+  #Add names
+  if (length(names(x@cov_list)) > 0){
+    colnames(mat) <- name_cols
+    rownames(mat) <- name_rows
+  }
+
 
   return(mat)
 
@@ -594,6 +709,10 @@ S7::method(as.matrix, covariance_structure_class) <- function(x, ...) {
 #' subset(covstr, 1:2)
 #'
 #' @name subset
+#'
+#' @returns A `covariance_structure` with only the elements specified
+#' for the subset.
+#'
 #' @export
 S7::method(subset, covariance_structure_class) <- function(x, select = NULL, cols = NULL, rows = NULL, negate = FALSE, ...) {
 
@@ -700,6 +819,7 @@ S7::method(subset, covariance_structure_class) <- function(x, select = NULL, col
 
 #' Function to get the rows out of a `covariance_structure`
 #' @keywords internal
+#' @noRd
 subset_col <- function(x, select, ...) {
 
   if (!S7::S7_inherits(x, covariance_structure_class)){
@@ -772,6 +892,7 @@ subset_col <- function(x, select, ...) {
 
 #' Function to get the rows out of a `covariance_structure`
 #' @keywords internal
+#' @noRd
 subset_row <- function(x, select, ...) {
 
   if (!S7::S7_inherits(x, covariance_structure_class)){
@@ -966,6 +1087,11 @@ S7::method(children, pif_atomic_class) <- function(x, ...) {
 #' #As well as a data.frame
 #' data_mat <- as.data.frame(mat)
 #' as_covariance_structure(data_mat, row_names = c("r1","r2"))
+#'
+#' @return A `covariance_structure` object representing the given
+#' matrix, number, vector or `data.frame` as a covariance structure
+#' for using with [pif()], [paf()], [attributable_cases()], and
+#' [averted_cases()]
 #' @export
 
 #' @rdname as_covstr

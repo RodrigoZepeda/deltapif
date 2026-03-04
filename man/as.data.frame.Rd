@@ -2,15 +2,21 @@
 % Please edit documentation in R/02-generics.R
 \name{as.data.frame}
 \alias{as.data.frame}
-\title{Transform a pif object into a data.frame}
+\title{Transform an object into a data.frame}
 \arguments{
-\item{x}{A \code{pif_class} object.}
+\item{x}{A \code{pif_class} or \code{cases_class} object.}
 
 \item{...}{Additional parameters (ignored)}
 }
+\value{
+A \code{data.frame} containing the fraction or cases (\code{value}), as well
+as \code{standard_deviation}, and confidence interval bounds \code{ci_low} and \code{ci_up}.
+The \code{label} is included to differentiate among different fractions or cases.
+}
 \description{
-Gets the potential impact fraction value, the link_variance and the confidence
-interval values
+Gets the fraction (\code{pif()}/\code{paf()}) or the cases
+(\code{averted_cases()}/\code{attributable_cases()}) and transforms
+them into a \code{data.frame}.
 }
 \examples{
 #Transform one pif
@@ -30,4 +36,5 @@ as.data.frame(cases_1)
 #Transform multiple averted cases
 cases_2 <- averted_cases(87980, my_pif)
 as.data.frame(cases_1, cases_2)
+
 }

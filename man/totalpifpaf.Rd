@@ -107,6 +107,11 @@ to build it automatically from \code{link} using \code{\link[Deriv:Deriv]{Deriv:
 \item{weights_sum_to_1}{Boolean flag indicating if the weights sum to 1 (normalized weights)
 or if they are not (unnormalized).}
 }
+\value{
+A \code{pif_class} object containing the estimate for the total
+fraction or the ensemble fraction that aggregates several fractions
+(either potential impact or population attributable).
+}
 \description{
 Combine potential impact fractions or the population attributable fractions
 to either generate the total fraction from the fractions of
@@ -178,4 +183,5 @@ pif_rad_men    <- paf(0.10, 1.2, quiet = TRUE, var_p = 0.001)
 pif_men        <- pif_ensemble(pif_lead_men, pif_rad_men)
 
 pif_total(pif_men, pif_women, weights = c(0.49, 0.51))
+
 }

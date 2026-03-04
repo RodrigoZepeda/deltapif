@@ -9,7 +9,7 @@
 #' @name setters
 #'
 #' @keywords internal
-NULL
+#' @noRd
 set_conf_level <- function(self, value){
   if (!is.numeric(value) | length(value) != 1 | value <= 0 | value >= 1){
     cli::cli_abort(

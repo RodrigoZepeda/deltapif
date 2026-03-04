@@ -8,10 +8,14 @@
 
 \item{...}{Additional parameters to pass to \code{coef} (ignored)}
 }
+\value{
+A \code{double} containing point-estimate of the object.
+}
 \description{
 Gets the potential impact fraction value
 }
 \examples{
 my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1, var_beta = 0.2)
 coef(my_pif)
+
 }

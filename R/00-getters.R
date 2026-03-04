@@ -9,10 +9,12 @@
 #' @name getters
 #'
 #' @keywords internal
+#' @noRd
 NULL
 
 #' Get the relative risks
 #' @rdname getters
+#' @noRd
 get_rr <- function(self) {
   rrvals <- rep(NA_real_, length(self@beta))
   for (i in 1:length(self@beta)) {
@@ -23,24 +25,28 @@ get_rr <- function(self) {
 
 #' Get the mean of the relative risk under the observed prevalence
 #' @rdname getters
+#' @noRd
 get_mu_obs <- function(self) {
   mu_obs_fun(self@p, self@rr)
 }
 
 #' Get the mean of the relative risk under the counterfactual prevalence
 #' @rdname getters
+#' @noRd
 get_mu_cft <- function(self) {
   mu_cft_fun(self@p_cft, self@rr)
 }
 
 #' Get the potential impact fraction
 #' @rdname getters
+#' @noRd
 get_pif <- function(self) {
   pif_fun2(self@mu_obs, self@mu_cft)
 }
 
 #' Get the potential impact fraction transformed by the link function
 #' @rdname getters
+#' @noRd
 get_link_vals <- function(self) {
   pif_vals <- rep(NA_real_, length(self@pif))
   for (i in 1:length(self@pif)) {
@@ -51,24 +57,28 @@ get_link_vals <- function(self) {
 
 #' Get the cases transformed by the link function
 #' @rdname getters
+#' @noRd
 get_link_vals_cases <- function(self) {
   self@link(self@cases)
 }
 
 #' Get the derivative of the link function evaluated at the pif
 #' @rdname getters
+#' @noRd
 get_link_deriv_vals_cases <- function(self) {
   self@link_deriv(self@cases)
 }
 
 #' Get the cases = paf * overall_cases
 #' @rdname getters
+#' @noRd
 get_cases <- function(self){
   self@overall_cases * self@pif_obj@pif
 }
 
 #' Get the derivative of the link function evaluated at the pif
 #' @rdname getters
+#' @noRd
 get_link_deriv_vals <- function(self) {
   deriv_vals <- rep(NA_real_, length(self@pif))
   for (j in 1:length(deriv_vals)) {
@@ -79,6 +89,7 @@ get_link_deriv_vals <- function(self) {
 
 #' Get the derivative of the rr-link function evaluated at beta
 #' @rdname getters
+#' @noRd
 get_rr_link_deriv_vals <- function(self) {
   deriv_vals <- rep(NA_real_, length(self@beta))
   for (j in 1:length(deriv_vals)) {
@@ -89,12 +100,14 @@ get_rr_link_deriv_vals <- function(self) {
 
 #' Get the link_variance
 #' @rdname getters
+#' @noRd
 get_link_variance <- function(self){
   (self@link_deriv_vals)^2 * self@variance
 }
 
 #' Get the variance of the cases
 #' @rdname getters
+#' @noRd
 get_variance_cases <- function(self){
   var_prod(x = self@overall_cases, y = self@pif_obj@pif,
            var_x = self@variance_cases, var_y = self@pif_obj@variance)
@@ -102,6 +115,7 @@ get_variance_cases <- function(self){
 
 #' Get the link_variance
 #' @rdname getters
+#' @noRd
 get_variance_atomic <- function(self) {
   from_parameters_pif_variance(
     p = self@p, p_cft = self@p_cft, rr = self@rr,
@@ -115,6 +129,7 @@ get_variance_atomic <- function(self) {
 
 #' Get the confidence interval
 #' @rdname getters
+#' @noRd
 get_ci <- function(self) {
   pif_atomic_ci(
     link_vals = self@link_vals, link_variance = self@link_variance,
@@ -124,36 +139,42 @@ get_ci <- function(self) {
 
 #' Get each of the PIF_i
 #' @rdname getters
+#' @noRd
 get_ensemble_coefs <- function(self){
   sapply(self@pif_list, coef)
 }
 
 #' Get the sum of g(q_i PIF_i)
 #' @rdname getters
+#' @noRd
 get_sum_transformed_weighted_coefs <- function(self){
   sum(sapply(self@coefs*self@weights, self@pif_transform))
 }
 
 #' Get g^{-1} sum(g(q_i PIF_i))
 #' @rdname getters
+#' @noRd
 get_global_ensemble_pif <- function(self){
   self@pif_inverse_transform(self@sum_transformed_weighted_coefs)
 }
 
 #' Get the ensemble coefficients
 #' @rdname getters
+#' @noRd
 get_ensemble_pif <- function(self){
   1 - exp(sum(log(1 - self@weights*self@coefs)))
 }
 
 #' Get the coefficients
 #' @rdname getters
+#' @noRd
 get_total_pif <- function(self){
   as.numeric(t(self@weights) %*% self@coefs)
 }
 
 #' Get types
 #' @rdname getters
+#' @noRd
 get_ensemble_type <- function(self){
   pif_types <- sapply(self@pif_list, fraction_type)
   ifelse(any(pif_types == "PIF"), "PIF", "PAF")
@@ -161,6 +182,7 @@ get_ensemble_type <- function(self){
 
 #' Get the covariance of the summands of pif total
 #' @rdname getters
+#' @noRd
 get_covariance <- function(self){
   npifs <- length(self@pif_list)
   if (npifs > 1){
@@ -176,6 +198,7 @@ get_covariance <- function(self){
 
 #' Get the variance of pif total
 #' @rdname getters
+#' @noRd
 get_variance <- function(self){
   variance(self)
 }

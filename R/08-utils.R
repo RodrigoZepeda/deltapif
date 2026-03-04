@@ -21,6 +21,7 @@
 #' }
 #'
 #' @keywords internal
+#' @noRd
 #' @seealso [mu_cft_fun()]
 mu_obs_fun <- function(p, rr) {
   if (any(is.na(p)) || any(is.na(rr))){
@@ -83,6 +84,7 @@ mu_obs_fun <- function(p, rr) {
 #' }
 #'
 #' @keywords internal
+#' @noRd
 #' @seealso [mu_obs_fun()]
 mu_cft_fun <- function(p_cft, rr) {
   mu_obs_fun(p_cft, rr)
@@ -128,6 +130,7 @@ mu_cft_fun <- function(p_cft, rr) {
 #' pif_fun(p = p, p_cft = p_cft, rr = rr)
 #' }
 #' @keywords internal
+#' @noRd
 #' @seealso [mu_cft_fun()], [mu_obs_fun()], and [pif_fun2()] to calculate from
 #' the average relative risks. For the main function in the package see [pif()]
 pif_fun <- function(p, p_cft, rr) {
@@ -174,6 +177,7 @@ pif_fun <- function(p, p_cft, rr) {
 #' pif_fun2(mu_obs, mu_cft)
 #' }
 #' @keywords internal
+#' @noRd
 #' @seealso [mu_cft_fun()], [mu_obs_fun()], and [pif_fun()] to calculate from
 #' the prevalence and relative risks. For the main function in the package
 #' see [pif()]
@@ -206,6 +210,7 @@ pif_fun2 <- function(mu_obs, mu_cft) {
 #' @return A vector with the lower and upper bounds of the confidence interval
 #'
 #' @keywords internal
+#' @noRd
 #' @seealso [confint]
 pif_atomic_ci <- function(link_vals, link_variance, conf_level, link_inv) {
 
@@ -258,6 +263,7 @@ pif_atomic_ci <- function(link_vals, link_variance, conf_level, link_inv) {
 #'
 #'
 #' @keywords internal
+#' @noRd
 link_deriv_vals <- function(x){
   if (S7::S7_inherits(x, pif_class)){
     return(x@link_deriv_vals)

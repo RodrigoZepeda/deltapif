@@ -82,6 +82,11 @@ individuals for each of the \code{N} exposure levels.}
 \item{type}{Character either Potential Impact Fraction (\code{PIF}) or
 Population Attributable Fraction (\code{PAF})}
 }
+\value{
+A \code{pif_class} object with the estimate of the
+potential impact fraction (\code{\link[=pif]{pif()}}) or the population attributable
+fraction (\code{\link[=paf]{paf()}}).
+}
 \description{
 Calculates the potential impact fraction \code{pif} or the population
 attributable fraction \code{paf} for a categorical exposure considering
@@ -311,4 +316,6 @@ pif(p = p, p_cft = p_cft, beta = rr, link = "logit",
 }
 \seealso{
 \code{\link[=pif_total]{pif_total()}}, \code{\link[=pif_ensemble]{pif_ensemble()}}, \code{\link[=paf_total]{paf_total()}}, \code{\link[=paf_ensemble]{paf_ensemble()}},
+\code{\link[=weighted_adjusted_paf]{weighted_adjusted_paf()}}, \code{\link[=weighted_adjusted_pif]{weighted_adjusted_pif()}}, \code{\link[=averted_cases]{averted_cases()}},
+\code{\link[=attributable_cases]{attributable_cases()}}.
 }

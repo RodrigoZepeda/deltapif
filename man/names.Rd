@@ -8,9 +8,16 @@
 
 \item{...}{Additional parameters (ignored)}
 }
+\value{
+The labels of a fraction or of the fractions that make it
+}
 \description{
 Gets the label of a potential impact fraction or a population
 attributable fraction
+}
+\note{
+In the case of fractions, \code{names} cannot be used to assign names as in
+\code{names(pif_tot) <- c("a","b")}
 }
 \examples{
 #A simple example

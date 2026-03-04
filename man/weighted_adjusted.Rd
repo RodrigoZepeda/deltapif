@@ -4,7 +4,7 @@
 \alias{weighted_adjusted}
 \alias{weighted_adjusted_paf}
 \alias{weighted_adjusted_pif}
-\title{Weighted Adjusted PAF}
+\title{Weighted Adjusted Fractions}
 \usage{
 weighted_adjusted_paf(
   paf1,
@@ -41,7 +41,8 @@ weighted_adjusted_pif(
 )
 }
 \arguments{
-\item{paf1}{A population attributable fraction}
+\item{paf1}{A population attributable fraction (class \code{pif_class}). This is
+the first of the individual fractions to be adjusted.}
 
 \item{...}{The remaining potential impact fractions (class \code{pif_class}).
 All fractions must be of the same type (all \code{PIF} or all \code{PAF}).}
@@ -59,11 +60,11 @@ fractions and \code{weights}. Passed to \code{\link[=pif_ensemble]{pif_ensemble(
 \code{\link[=paf_ensemble]{paf_ensemble()}}. Defaults to \code{NULL}.}
 
 \item{var_p}{Covariance matrix for the prevalence parameters \code{p} across
-all fractions. Passed to \code{\link[=cov_total_pif]{cov_total_pif()}} when computing cross-covariances.
+all fractions. Passed to \code{\link[=covariance]{covariance()}} when computing cross-covariances.
 Defaults to \code{NULL}.}
 
 \item{var_beta}{Covariance matrix for the relative-risk parameters \code{beta}
-across all fractions. Passed to \code{\link[=cov_total_pif]{cov_total_pif()}} when computing
+across all fractions. Passed to \code{\link[=covariance]{covariance()}} when computing
 cross-covariances. Defaults to \code{NULL}.}
 
 \item{conf_level}{Confidence level for the confidence interval (default 0.95).}
@@ -76,7 +77,8 @@ ensemble fraction. Defaults to \code{NULL} (auto-generated).}
 
 \item{quiet}{Whether to show messages.}
 
-\item{pif1}{A potential impact fraction}
+\item{pif1}{A potential impact fraction (class \code{pif_class}). This is
+the first of the individual fractions to be adjusted.}
 
 \item{pif_total_link}{Link to pass to \code{pif_total} in the denominator
 of the adjustment}
@@ -101,9 +103,52 @@ A named list of \code{pif_class} objects, one per input
 fraction, each being the weighted adjusted PAF (or PIF, respectively).
 }
 \description{
-Convenience wrapper around \code{\link[=weighted_adjusted_fractions]{weighted_adjusted_fractions()}} for
-population attributable fractions (PAF).
+Calculates the weighted adjusted potential impact fractions (or population
+attributable fractions). Each individual fraction \eqn{\widehat{\text{PIF}}_i}
+is rescaled proportionally so that together they are consistent with
+the ensemble fraction.
 }
+\section{Formula}{
+
+
+The weighted adjusted fraction for the \eqn{i}-th exposure is:
+\deqn{
+  \widehat{\text{PIF}}_i^{\text{adj}} =
+    \frac{\widehat{\text{PIF}}_i}{\sum_{j=1}^{n} \widehat{\text{PIF}}_j}
+    \cdot \widehat{\text{PIF}}_{\text{Ensemble}}
+}
+
+Using the log-transform, the variance is:
+\deqn{
+\begin{aligned}
+  \operatorname{Var}\!\Big[\ln \widehat{\text{PIF}}_i^{\text{adj}}\Big]
+    &= \operatorname{Var}\!\left[\ln \widehat{\text{PIF}}_i\right]
+     + \operatorname{Var}\!\left[\ln \textstyle\sum_j \widehat{\text{PIF}}_j\right]
+     + \operatorname{Var}\!\left[\ln \widehat{\text{PIF}}_{\text{Ensemble}}\right] \\
+    &\quad + 2\Bigg[
+        \operatorname{Cov}\!\Big(\ln \widehat{\text{PIF}}_i,
+          \ln \widehat{\text{PIF}}_{\text{Ensemble}}\Big)
+      - \operatorname{Cov}\!\Big(\ln \widehat{\text{PIF}}_i,
+          \ln \textstyle\sum_j \widehat{\text{PIF}}_j\Big)
+      - \operatorname{Cov}\!\Big(\ln \widehat{\text{PIF}}_{\text{Ensemble}},
+          \ln \textstyle\sum_j \widehat{\text{PIF}}_j\Big)
+      \Bigg]
+\end{aligned}
+}
+
+where each log-covariance is approximated via the delta method:
+\deqn{
+  \operatorname{Cov}\!\big(\ln X, \ln Y\big) \approx
+    \frac{\operatorname{Cov}(X, Y)}{X \cdot Y}
+}
+
+The covariances \eqn{\operatorname{Cov}(\widehat{\text{PIF}}_i, \cdot)} are
+computed by the internal function \code{cov_total_pif()} applied to the
+individual fraction and the internally constructed sum/ensemble objects,
+which automatically propagates the full uncertainty structure already
+embedded in those objects.
+}
+
 \examples{
 paf_lead <- paf(0.2, 2.2, quiet = TRUE, var_p = 0.001, label = "Lead")
 paf_rad  <- paf(0.1, 1.2, quiet = TRUE, var_p = 0.0001, label = "Radiation")
@@ -119,7 +164,5 @@ weighted_adjusted_pif(pif_lead, pif_rad)
 
 }
 \seealso{
-\code{\link[=weighted_adjusted_fractions]{weighted_adjusted_fractions()}}, \code{\link[=paf_ensemble]{paf_ensemble()}} \code{\link[=pif]{pif()}}
-
-\code{\link[=weighted_adjusted_fractions]{weighted_adjusted_fractions()}}, \code{\link[=pif_ensemble]{pif_ensemble()}}
+\code{\link[=pif]{pif()}}, \code{\link[=paf]{paf()}}, \code{\link[=pif_ensemble]{pif_ensemble()}}, \code{\link[=paf_ensemble]{paf_ensemble()}}
 }

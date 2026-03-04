@@ -6,14 +6,17 @@
 \arguments{
 \item{accuracy}{The accuracy of the printed value}
 
-\item{x}{A \code{covariance_structure_class}}
+\item{x}{A \code{covariance_structure_class}, a \code{pif_class} or a \code{cases_class}}
 
 \item{...}{Additional arguments to pass to \code{print}}
+}
+\value{
+NULL. Called for its side-effects.
 }
 \description{
 Function to print or show a potential impact fraction object
 
-Function to print or show a \code{covariance_structure_class}
+Function to print an object
 }
 \examples{
 my_pif <- pif(p = 0.2, beta = 1.3, var_beta = 0.1)
@@ -44,4 +47,5 @@ print(covariance_structure(pif_lead_women))
 print(covariance_structure2(pif_lead_women, pif_lead_men))
 print(default_weight_covariance_structure2(pif_men, pif_women))
 print(default_parameter_covariance_structure(pif_tot, parameter = "beta"))
+
 }

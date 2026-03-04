@@ -8,6 +8,9 @@
 
 \item{...}{Additional parameters to pass to \code{weights} (ignored)}
 }
+\value{
+The \code{weights} used to construct a \code{pif_total} or \code{pif_ensemble}.
+}
 \description{
 Gets the weights of a \code{pif_global_ensemble} object
 }

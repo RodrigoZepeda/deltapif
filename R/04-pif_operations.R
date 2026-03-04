@@ -87,7 +87,12 @@
 #' pif_men        <- pif_ensemble(pif_lead_men, pif_rad_men)
 #'
 #' pif_total(pif_men, pif_women, weights = c(0.49, 0.51))
+#'
 #' @name totalpifpaf
+#'
+#' @returns A `pif_class` object containing the estimate for the total
+#' fraction or the ensemble fraction that aggregates several fractions
+#' (either potential impact or population attributable).
 NULL
 
 #' Prepare a global_ensemble
@@ -98,6 +103,7 @@ NULL
 #'
 #' @return A list of validated values for use in `pif_total` or `pif_ensemble`.
 #' @keywords internal
+#' @noRd
 pif_validate_ensemble <- function(pif1, ..., weights, var_weights,
                                   var_pif_weights, conf_level,
                                   link, link_inv, link_deriv, quiet,

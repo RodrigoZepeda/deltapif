@@ -5,10 +5,12 @@
 #'
 #' @name validators
 #' @keywords internal
+#' @noRd
 NULL
 
 #' Validate any generic ensemble including pif total
 #' @rdname validators
+#' @noRd
 validate_global_ensemble <- function(self) {
 
   #Check they are pif class

@@ -2,14 +2,18 @@
 % Please edit documentation in R/02-generics.R
 \name{summary}
 \alias{summary}
-\title{Summary of a pif object}
+\title{Summary of an object}
 \arguments{
-\item{object}{A \code{pif_class} object.}
+\item{object}{A \code{pif_class} or \code{cases_class} object.}
 
 \item{...}{Additional parameters to pass to \code{summary} (ignored)}
 }
+\value{
+A named vector with the point-estimate, confidence interval and
+standard deviation of a \code{pif_class} or a \code{cases_class} estimate.
+}
 \description{
-Gets the potential impact fraction summary
+Gets the point-estimate and confidence interval of an object
 }
 \examples{
 my_pif <- pif(p = 0.5, p_cft = 0.25, beta = 1.3, var_p = 0.1, var_beta = 0.2)

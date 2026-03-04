@@ -29,6 +29,7 @@
 #' var_prod(x = 100, y = 200, var_x = 25, var_y = 36)
 #' }
 #' @keywords internal
+#' @noRd
 var_prod <- function(x, y, var_x, var_y) {
 
   # Input validation

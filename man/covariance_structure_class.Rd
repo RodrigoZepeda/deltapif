@@ -11,6 +11,10 @@ covariance_structure_class(cov_list = list())
 covariance between elements of the i-th potential impact fraction
 and the j-th potential impact fraction.}
 }
+\value{
+An \code{S7}  \code{covariance_structure_class} where entry in row \code{i}
+and column \code{j} represents the covariance between fraction \code{i} and \code{j}.
+}
 \description{
 The covariance structure class represents a collection of
 matrices and 0's such that \code{cov[[i]][[j]]} contains the

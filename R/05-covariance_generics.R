@@ -65,6 +65,7 @@
 #' and another fraction.
 #'
 #' @keywords internal
+#' @noRd
 cov_atomic_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL) {
   # Check they are pif objects
   if (!S7::S7_inherits(pif1, pif_atomic_class) ||
@@ -83,7 +84,7 @@ cov_atomic_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL) {
   }
 
   #Check if is zero matrix
-  if (identical(var_p, matrix(0, ncol = 1, nrow = 1))){
+  if (identical(unname(var_p), matrix(0, ncol = 1, nrow = 1))){
     var_p <- matrix(0, ncol = length(pif2@p), nrow = length(pif1@p))
   }
 
@@ -113,7 +114,7 @@ cov_atomic_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL) {
     var_beta <- as.matrix(var_beta)
   }
 
-  if (identical(var_beta, matrix(0, ncol = 1, nrow = 1))){
+  if (identical(unname(var_beta), matrix(0, ncol = 1, nrow = 1))){
     var_beta <- matrix(0, ncol = length(pif2@beta), nrow = length(pif1@beta))
   }
 
@@ -153,11 +154,11 @@ cov_atomic_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL) {
   }
 
   #Double check if they are collapsed to 0 make them bigger
-  if (length(var_p) == 1 && (var_p == 0 || identical(var_p, matrix(0)))){
+  if (length(var_p) == 1 && (var_p == 0 || identical(unname(var_p), matrix(0)))){
     var_p <- matrix(0, nrow = length(pif1@p), ncol = length(pif2@p))
   }
 
-  if (length(var_beta) == 1 && (var_beta == 0 || identical(var_beta, matrix(0)))){
+  if (length(var_beta) == 1 && (var_beta == 0 || identical(unname(var_beta), matrix(0)))){
     var_beta <- matrix(0, nrow = length(pif1@beta), ncol = length(pif2@beta))
   }
 
@@ -300,6 +301,7 @@ cov_atomic_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL) {
 #'
 #' @seealso [cov_atomic_pif()], [cov_ensemble_atomic()] [cov_total_pif()]
 #' @keywords internal
+#' @noRd
 cov_ensemble_weights <- function(pif1, pif2, var_weights = NULL, var_pif_weights = NULL,
                                  recursive = !is.null(var_pif_weights)){
 
@@ -335,7 +337,7 @@ cov_ensemble_weights <- function(pif1, pif2, var_weights = NULL, var_pif_weights
     var_weights <- as.matrix(var_weights)
   }
 
-  if (identical(var_weights, matrix(0, ncol = 1, nrow = 1))){
+  if (identical(unname(var_weights), matrix(0, ncol = 1, nrow = 1))){
     var_weights <- matrix(0, ncol = length(pif2@weights), nrow = length(pif1@coefs))
   }
 
@@ -366,7 +368,7 @@ cov_ensemble_weights <- function(pif1, pif2, var_weights = NULL, var_pif_weights
     var_pif_weights <- as.matrix(var_pif_weights)
   }
 
-  if (identical(var_pif_weights, matrix(0, ncol = 1, nrow = 1))){
+  if (identical(unname(var_pif_weights), matrix(0, ncol = 1, nrow = 1))){
     var_pif_weights <- matrix(0, ncol = length(pif2@weights), nrow = length(pif1@coefs))
   }
 
@@ -537,6 +539,7 @@ cov_ensemble_weights <- function(pif1, pif2, var_weights = NULL, var_pif_weights
 #'
 #' @seealso [cov_ensemble_weights()], [cov_atomic_pif()], [cov_total_pif()].
 #' @keywords internal
+#' @noRd
 cov_ensemble_atomic <- function(pif_ensemble, pif_atomic,
                                 var_p = NULL, var_beta = NULL,
                                 var_pifs = NULL, var_pif_weights = NULL,
@@ -570,7 +573,7 @@ cov_ensemble_atomic <- function(pif_ensemble, pif_atomic,
     var_pif_weights <- as.matrix(var_pif_weights)
   }
 
-  if (identical(var_pif_weights, matrix(0, ncol = 1, nrow = 1))){
+  if (identical(unname(var_pif_weights), matrix(0, ncol = 1, nrow = 1))){
     var_pif_weights <- matrix(0, ncol = 1, nrow = length(pif_ensemble@pif_list))
   }
 
@@ -603,7 +606,7 @@ cov_ensemble_atomic <- function(pif_ensemble, pif_atomic,
     var_pifs <- as.matrix(var_pifs)
   }
 
-  if (identical(var_pifs, matrix(0, ncol = 1, nrow = 1))){
+  if (identical(unname(var_pifs), matrix(0, ncol = 1, nrow = 1))){
     var_pifs <- matrix(0, ncol = 1, nrow = length(pif_ensemble@pif_list))
   }
 
@@ -711,6 +714,7 @@ cov_ensemble_atomic <- function(pif_ensemble, pif_atomic,
 #' [cov_ensemble_atomic()], [cov_ensemble_weights()]
 #'
 #' @keywords internal
+#' @noRd
 cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
                           var_weights = NULL, var_pif_weights = NULL,
                           var_pifs = NULL, warning = TRUE) {
@@ -808,7 +812,7 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
       var_weights <- as.matrix(subset(var_weights, cols = pif1@label, rows = pif2@label))
     }
 
-    if (identical(var_weights, matrix(0, ncol = 1, nrow = 1))){
+    if (identical(unname(var_weights), matrix(0, ncol = 1, nrow = 1))){
       var_weights <- matrix(0, nrow = length(pif1), ncol = length(pif2))
     }
 
@@ -837,9 +841,23 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
 #'
 #' @param x A potential impact fraction
 #'
-#' @inheritParams cov_total_pif
-#' @inheritParams cov_ensemble_weights
-#' @inheritParams cov_ensemble_atomic
+#' @inheritParams pif
+#'
+#' @param var_weights covariance matrix for the weights when calculating the
+#' total PIF (respectively PAF) in `pif_total`.
+#'
+#' @param var_pifs Covariance vector between the potential
+#' impact fractions in `pif_ensemble` and `pif_atomic`. This refers to
+#' the term \eqn{\operatorname{Cov}\Big( \textrm{PIF}_{A,i}, \widehat{\textrm{PIF}}_{B,j}\Big)}
+#' in the equation below. If set to `NULL` its automatically calculated.
+#'
+#' @param var_pif_weights Covariance vector between the weights in  `pif_ensemble` and
+#' the `pif_atomic`. This refers to
+#' the term \eqn{\operatorname{Cov}\Big( \hat{q}_i,\widehat{\textrm{PIF}}_{B,j}\Big)}
+#' in the equation below. If set to `NULL` its automatically calculated.
+#'
+#' @param warning Boolean indicating whether to throw a warning if the labels on the
+#' fractions involved are not unique.
 #'
 #' @param ... Multiple additional potential impact fraction objects
 #' separated by commas.
@@ -883,6 +901,8 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
 #' # Compute the correlation
 #' correlation(pif1, pif2, pif3, var_beta = var_beta)
 #' @name covcor
+#'
+#' @returns A variance, covariance or correlation matrix.
 NULL
 
 #' @rdname covcor

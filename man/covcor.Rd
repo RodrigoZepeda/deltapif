@@ -32,14 +32,14 @@ correlation(x, ..., var_p = NULL, var_beta = NULL)
 \item{...}{Multiple additional potential impact fraction objects
 separated by commas.}
 
-\item{var_p}{covariance matrix for the prevalences in both \code{pif1} and \code{pif2}.
-Default \code{NULL} (no correlation).}
+\item{var_p}{Estimate of the link_covariance matrix of \code{p} where the entry
+\code{var_p[i,j]} represents the link_covariance between \code{p[i]} and \code{p[j]}.}
 
-\item{var_beta}{covariance matrix for the parameter \code{beta} in both \code{pif1}
-and \code{pif2}. Default \code{NULL} (no correlation).}
+\item{var_beta}{Estimate of the link_covariance matrix of \code{beta} where the entry
+\code{var_beta[i,j]} represents the link_covariance between \code{beta[i]} and \code{beta[j]}.}
 
-\item{var_weights}{Covariance between the weights of all the fractions
-contained in \code{pif1} and all the fractions contained in \code{pif2}.}
+\item{var_weights}{covariance matrix for the weights when calculating the
+total PIF (respectively PAF) in \code{pif_total}.}
 
 \item{var_pif_weights}{Covariance vector between the weights in  \code{pif_ensemble} and
 the \code{pif_atomic}. This refers to
@@ -53,6 +53,9 @@ in the equation below. If set to \code{NULL} its automatically calculated.}
 
 \item{warning}{Boolean indicating whether to throw a warning if the labels on the
 fractions involved are not unique.}
+}
+\value{
+A variance, covariance or correlation matrix.
 }
 \description{
 Computes the covariance (\code{covariance}) or correlation (\code{correlation}) for multiple
