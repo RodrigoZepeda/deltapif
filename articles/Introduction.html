@@ -153,7 +153,7 @@ formula</a>:</p>
 </h4>
 <p>To calculate confidence intervals, we need the variance of the
 log-relative risk. The variance can be derived from the confidence
-interval following the <a href="https://handbook-5-1.cochrane.org/chapter_7/7_7_3_2_obtaining_standard_deviations_from_standard_errors_and.htm" class="external-link">Cochrane
+interval following the <a href="https://www.cochrane.org/authors/handbooks-and-manuals/handbook/current/chapter-06#section-6-3-2" class="external-link">Cochrane
 Handbook</a>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">var_log_rr</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">2.20</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.15</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="fl">1.96</span><span class="op">)</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span></span>

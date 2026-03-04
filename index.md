@@ -65,7 +65,7 @@ library(deltapif)
 
 paf(p = 0.085, beta = log(1.59), quiet = TRUE)
 #> 
-#> ── Population Attributable Fraction: [deltapif-141979693923337] ──
+#> ── Population Attributable Fraction: [deltapif-121642715990569] ──
 #> 
 #> PAF = 4.776% [95% CI: 4.776% to 4.776%]
 #> standard_deviation(paf %) = 0.000
@@ -76,7 +76,7 @@ paf(p = 0.085, beta = log(1.59), quiet = TRUE)
 To calculate confidence intervals, we need the variance of the
 log-relative risk. The variance can be derived from the confidence
 interval following the [Cochrane
-Handbook](https://handbook-5-1.cochrane.org/chapter_7/7_7_3_2_obtaining_standard_deviations_from_standard_errors_and.htm):
+Handbook](https://www.cochrane.org/authors/handbooks-and-manuals/handbook/current/chapter-06#section-6-3-2):
 
 ``` r
 var_log_rr <- ((log(2.20) - log(1.15)) / (2 * 1.96))^2
@@ -99,7 +99,7 @@ paf_dementia <- paf(
 )
 paf_dementia
 #> 
-#> ── Population Attributable Fraction: [deltapif-0157965898816461] ──
+#> ── Population Attributable Fraction: [deltapif-0305065688938981] ──
 #> 
 #> PAF = 4.776% [95% CI: 0.717% to 8.669%]
 #> standard_deviation(paf %) = 2.028
@@ -124,7 +124,7 @@ lee_pif <- pif(
 )
 lee_pif
 #> 
-#> ── Potential Impact Fraction: [deltapif-104780633021809] ──
+#> ── Potential Impact Fraction: [deltapif-0201324401270228] ──
 #> 
 #> PIF = 0.716% [95% CI: 0.118% to 1.311%]
 #> standard_deviation(pif %) = 0.304
@@ -149,7 +149,7 @@ rest of the US is given by:
 ``` r
 averted_cases(426.5, lee_pif, variance = 2647.005)
 #> 
-#> ── Averted cases: [deltapif-104780633021809] ──
+#> ── Averted cases: [deltapif-0201324401270228] ──
 #> 
 #> Averted cases = 3.055 [95% CI: 0.394 to 5.716]
 #> standard_deviation(averted cases) = 135.779
@@ -161,7 +161,7 @@ as:
 ``` r
 attributable_cases(426.5, paf_dementia, variance = 2647.005)
 #> 
-#> ── Attributable cases: [deltapif-0157965898816461] ──
+#> ── Attributable cases: [deltapif-0305065688938981] ──
 #> 
 #> Attributable cases = 20.368 [95% CI: 2.626 to 38.109]
 #> standard_deviation(attributable cases) = 905.195
@@ -188,7 +188,7 @@ Assuming the distribution is 51% women and 49% men:
 ``` r
 paf_total(paf_men, paf_women, weights = c(0.49, 0.51))
 #> 
-#> ── Population Attributable Fraction: [deltapif-0567645527156959] ──
+#> ── Population Attributable Fraction: [deltapif-0997466165469617] ──
 #> 
 #> PAF = 13.201% [95% CI: 10.473% to 15.845%]
 #> standard_deviation(paf %) = 11.187
@@ -225,7 +225,7 @@ commonality correction (say of `c(0.1, 0.2)`):
 ``` r
 paf_ensemble(paf_lead, paf_absts, weights = c(0.1, 0.2))
 #> 
-#> ── Population Attributable Fraction: [deltapif-00616746785569084] ──
+#> ── Population Attributable Fraction: [deltapif-132925867320251] ──
 #> 
 #> PAF = 3.070% [95% CI: 3.033% to 3.108%]
 #> standard_deviation(paf %) = 0.625
