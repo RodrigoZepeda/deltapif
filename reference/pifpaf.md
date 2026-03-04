@@ -113,6 +113,11 @@ pif(
   Character either Potential Impact Fraction (`PIF`) or Population
   Attributable Fraction (`PAF`)
 
+## Value
+
+A `pif_class` object with the estimate of the potential impact fraction
+(`pif()`) or the population attributable fraction (`paf()`).
+
 ## Note
 
 This function assumes `p` and `beta` have been pre-computed from the
@@ -278,6 +283,10 @@ population attributable fraction.
 [`pif_ensemble()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md),
 [`paf_total()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md),
 [`paf_ensemble()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md),
+[`weighted_adjusted_paf()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted.md),
+[`weighted_adjusted_pif()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted.md),
+[`averted_cases()`](https://rodrigozepeda.github.io/deltapif/reference/casecalc.md),
+[`attributable_cases()`](https://rodrigozepeda.github.io/deltapif/reference/casecalc.md).
 
 ## Examples
 
@@ -292,7 +301,7 @@ paf(p = 0.499, beta = log(3.6))
 #> ! Assuming parameters `p` have no variance Use `var_p` to input their link_variances and/or covariance
 #> ! Assuming parameters `beta` have no variance Use `var_beta` to input their link_variances and/or covariance
 #> 
-#> ── Population Attributable Fraction: [deltapif-112383884326229] ──
+#> ── Population Attributable Fraction: [deltapif-0554185514898162] ──
 #> 
 #> PAF = 56.473% [95% CI: 56.473% to 56.473%]
 #> standard_deviation(paf %) = 0.000
@@ -300,7 +309,7 @@ paf(p = 0.499, beta = log(3.6))
 # Assuming that beta and p had a link_variance
 paf(p = 0.499, beta = log(3.6), var_p = 0.001, var_beta = 0.1)
 #> 
-#> ── Population Attributable Fraction: [deltapif-0397001493059625] ──
+#> ── Population Attributable Fraction: [deltapif-199311026486264] ──
 #> 
 #> PAF = 56.473% [95% CI: 28.972% to 73.326%]
 #> standard_deviation(paf %) = 10.875
@@ -309,7 +318,7 @@ paf(p = 0.499, beta = log(3.6), var_p = 0.001, var_beta = 0.1)
 # Generates incorrect values for the interval:
 paf(p = 0.499, beta = log(3.6), var_p = 0.1, var_beta = 0.3)
 #> 
-#> ── Population Attributable Fraction: [deltapif-0823261150567127] ──
+#> ── Population Attributable Fraction: [deltapif-0154120739556124] ──
 #> 
 #> PAF = 56.473% [95% CI: -29.969% to 85.422%]
 #> standard_deviation(paf %) = 24.294
@@ -318,7 +327,7 @@ paf(p = 0.499, beta = log(3.6), var_p = 0.1, var_beta = 0.3)
 paf(p = 0.499, beta = log(3.6), var_p = 0.1, var_beta = 0.3,
     link = "logit", quiet = TRUE)
 #> 
-#> ── Population Attributable Fraction: [deltapif-05788846247121] ──
+#> ── Population Attributable Fraction: [deltapif-256440833799741] ──
 #> 
 #> PAF = 56.473% [95% CI: 15.753% to 90.002%]
 #> standard_deviation(paf %) = 24.294
@@ -327,7 +336,7 @@ paf(p = 0.499, beta = log(3.6), var_p = 0.1, var_beta = 0.3,
 pif(p = 0.499, beta = log(3.6), p_cft = 0.499/2, var_p = 0.001,
     var_beta = 0.1, link = "logit", quiet = TRUE)
 #> 
-#> ── Potential Impact Fraction: [deltapif-17637893775715] ──
+#> ── Potential Impact Fraction: [deltapif-106199914454589] ──
 #> 
 #> PIF = 28.236% [95% CI: 18.101% to 41.192%]
 #> standard_deviation(pif %) = 5.963
@@ -354,7 +363,7 @@ var_log_rr <- c("<18.5" = 0.2653156, "25 to <30" =  0.1247604,
 paf(p = p, beta = rr, var_beta = var_log_rr, var_p = 0, quiet = TRUE,
     link = "logit")
 #> 
-#> ── Population Attributable Fraction: [deltapif-0132992146404077] ──
+#> ── Population Attributable Fraction: [deltapif-114269487842917] ──
 #> 
 #> PAF = 61.599% [95% CI: 50.274% to 71.792%]
 #> standard_deviation(paf %) = 5.571
@@ -368,7 +377,7 @@ p_cft <- c("<18.5" = 1.9, "25 to <30" = 34.8,
 pif(p = p, p_cft = p_cft, beta = rr, link = "logit",
   var_beta = var_log_rr, var_p = 0, quiet = TRUE)
 #> 
-#> ── Potential Impact Fraction: [deltapif-0376499328478288] ──
+#> ── Potential Impact Fraction: [deltapif-112383884326229] ──
 #> 
 #> PIF = 14.882% [95% CI: 13.702% to 16.144%]
 #> standard_deviation(pif %) = 0.623

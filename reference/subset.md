@@ -30,6 +30,11 @@ Obtains a smaller `covariance_structure` with the entries given by the
 
   Additional parameters (ignored)
 
+## Value
+
+A `covariance_structure` with only the elements specified for the
+subset.
+
 ## Examples
 
 ``` r

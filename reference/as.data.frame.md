@@ -1,17 +1,27 @@
-# Transform a pif object into a data.frame
+# Transform an object into a data.frame
 
-Gets the potential impact fraction value, the link_variance and the
-confidence interval values
+Gets the fraction
+([`pif()`](https://rodrigozepeda.github.io/deltapif/reference/pifpaf.md)/[`paf()`](https://rodrigozepeda.github.io/deltapif/reference/pifpaf.md))
+or the cases
+([`averted_cases()`](https://rodrigozepeda.github.io/deltapif/reference/casecalc.md)/[`attributable_cases()`](https://rodrigozepeda.github.io/deltapif/reference/casecalc.md))
+and transforms them into a `data.frame`.
 
 ## Arguments
 
 - x:
 
-  A `pif_class` object.
+  A `pif_class` or `cases_class` object.
 
 - ...:
 
   Additional parameters (ignored)
+
+## Value
+
+A `data.frame` containing the fraction or cases (`value`), as well as
+`standard_deviation`, and confidence interval bounds `ci_low` and
+`ci_up`. The `label` is included to differentiate among different
+fractions or cases.
 
 ## Examples
 

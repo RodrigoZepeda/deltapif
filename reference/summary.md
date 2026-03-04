@@ -1,16 +1,21 @@
-# Summary of a pif object
+# Summary of an object
 
-Gets the potential impact fraction summary
+Gets the point-estimate and confidence interval of an object
 
 ## Arguments
 
 - object:
 
-  A `pif_class` object.
+  A `pif_class` or `cases_class` object.
 
 - ...:
 
   Additional parameters to pass to `summary` (ignored)
+
+## Value
+
+A named vector with the point-estimate, confidence interval and standard
+deviation of a `pif_class` or a `cases_class` estimate.
 
 ## Examples
 

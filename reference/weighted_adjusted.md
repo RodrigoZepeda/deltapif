@@ -1,8 +1,9 @@
-# Weighted Adjusted PAF
+# Weighted Adjusted Fractions
 
-Convenience wrapper around
-[`weighted_adjusted_fractions()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted_fractions.md)
-for population attributable fractions (PAF).
+Calculates the weighted adjusted potential impact fractions (or
+population attributable fractions). Each individual fraction
+\\\widehat{\text{PIF}}\_i\\ is rescaled proportionally so that together
+they are consistent with the ensemble fraction.
 
 ## Usage
 
@@ -46,7 +47,8 @@ weighted_adjusted_pif(
 
 - paf1:
 
-  A population attributable fraction
+  A population attributable fraction (class `pif_class`). This is the
+  first of the individual fractions to be adjusted.
 
 - ...:
 
@@ -82,14 +84,14 @@ weighted_adjusted_pif(
 
   Covariance matrix for the prevalence parameters `p` across all
   fractions. Passed to
-  [`cov_total_pif()`](https://rodrigozepeda.github.io/deltapif/reference/cov_total_pif.md)
+  [`covariance()`](https://rodrigozepeda.github.io/deltapif/reference/covcor.md)
   when computing cross-covariances. Defaults to `NULL`.
 
 - var_beta:
 
   Covariance matrix for the relative-risk parameters `beta` across all
   fractions. Passed to
-  [`cov_total_pif()`](https://rodrigozepeda.github.io/deltapif/reference/cov_total_pif.md)
+  [`covariance()`](https://rodrigozepeda.github.io/deltapif/reference/covcor.md)
   when computing cross-covariances. Defaults to `NULL`.
 
 - conf_level:
@@ -112,7 +114,8 @@ weighted_adjusted_pif(
 
 - pif1:
 
-  A potential impact fraction
+  A potential impact fraction (class `pif_class`). This is the first of
+  the individual fractions to be adjusted.
 
 - pif_total_link:
 
@@ -147,14 +150,43 @@ weighted_adjusted_pif(
 A named list of `pif_class` objects, one per input fraction, each being
 the weighted adjusted PAF (or PIF, respectively).
 
+## Formula
+
+The weighted adjusted fraction for the \\i\\-th exposure is: \$\$
+\widehat{\text{PIF}}\_i^{\text{adj}} =
+\frac{\widehat{\text{PIF}}\_i}{\sum\_{j=1}^{n} \widehat{\text{PIF}}\_j}
+\cdot \widehat{\text{PIF}}\_{\text{Ensemble}} \$\$
+
+Using the log-transform, the variance is: \$\$ \begin{aligned}
+\operatorname{Var}\\\Big\[\ln \widehat{\text{PIF}}\_i^{\text{adj}}\Big\]
+&= \operatorname{Var}\\\left\[\ln \widehat{\text{PIF}}\_i\right\] +
+\operatorname{Var}\\\left\[\ln \textstyle\sum_j
+\widehat{\text{PIF}}\_j\right\] + \operatorname{Var}\\\left\[\ln
+\widehat{\text{PIF}}\_{\text{Ensemble}}\right\] \\ &\quad + 2\Bigg\[
+\operatorname{Cov}\\\Big(\ln \widehat{\text{PIF}}\_i, \ln
+\widehat{\text{PIF}}\_{\text{Ensemble}}\Big) -
+\operatorname{Cov}\\\Big(\ln \widehat{\text{PIF}}\_i, \ln
+\textstyle\sum_j \widehat{\text{PIF}}\_j\Big) -
+\operatorname{Cov}\\\Big(\ln \widehat{\text{PIF}}\_{\text{Ensemble}},
+\ln \textstyle\sum_j \widehat{\text{PIF}}\_j\Big) \Bigg\] \end{aligned}
+\$\$
+
+where each log-covariance is approximated via the delta method: \$\$
+\operatorname{Cov}\\\big(\ln X, \ln Y\big) \approx
+\frac{\operatorname{Cov}(X, Y)}{X \cdot Y} \$\$
+
+The covariances \\\operatorname{Cov}(\widehat{\text{PIF}}\_i, \cdot)\\
+are computed by the internal function `cov_total_pif()` applied to the
+individual fraction and the internally constructed sum/ensemble objects,
+which automatically propagates the full uncertainty structure already
+embedded in those objects.
+
 ## See also
 
-[`weighted_adjusted_fractions()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted_fractions.md),
+[`pif()`](https://rodrigozepeda.github.io/deltapif/reference/pifpaf.md),
+[`paf()`](https://rodrigozepeda.github.io/deltapif/reference/pifpaf.md),
+[`pif_ensemble()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md),
 [`paf_ensemble()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md)
-[`pif()`](https://rodrigozepeda.github.io/deltapif/reference/pifpaf.md)
-
-[`weighted_adjusted_fractions()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted_fractions.md),
-[`pif_ensemble()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md)
 
 ## Examples
 

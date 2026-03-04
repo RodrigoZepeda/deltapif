@@ -12,6 +12,10 @@ Gets the weights of a `pif_global_ensemble` object
 
   Additional parameters to pass to `weights` (ignored)
 
+## Value
+
+The `weights` used to construct a `pif_total` or `pif_ensemble`.
+
 ## Examples
 
 ``` r

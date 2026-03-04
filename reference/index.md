@@ -6,7 +6,7 @@
   : Alcohol consumption in Australia from Pandeya et al
 
 - [`as.data.frame`](https://rodrigozepeda.github.io/deltapif/reference/as.data.frame.md)
-  : Transform a pif object into a data.frame
+  : Transform an object into a data.frame
 
 - [`as.list`](https://rodrigozepeda.github.io/deltapif/reference/as.list.md)
   : Convert to list
@@ -46,7 +46,7 @@
   Extract coefficients of a pif object
 
 - [`confint`](https://rodrigozepeda.github.io/deltapif/reference/confint.md)
-  : Extract confidence intervals of a pif object
+  : Extract confidence intervals
 
 - [`covariance_structure_class()`](https://rodrigozepeda.github.io/deltapif/reference/covariance_structure_class.md)
   : Covariance structure class
@@ -76,12 +76,6 @@
 - [`dementiarisk`](https://rodrigozepeda.github.io/deltapif/reference/dementiarisk.md)
   : Exposure and Relative Risk data from Lee et Al
 
-- [`deriv_logit()`](https://rodrigozepeda.github.io/deltapif/reference/deriv_linkfuns.md)
-  [`deriv_log_complement()`](https://rodrigozepeda.github.io/deltapif/reference/deriv_linkfuns.md)
-  [`deriv_hawkins()`](https://rodrigozepeda.github.io/deltapif/reference/deriv_linkfuns.md)
-  [`deriv_identity()`](https://rodrigozepeda.github.io/deltapif/reference/deriv_linkfuns.md)
-  : Derivatives of link functions
-
 - [`deriv_pif_p()`](https://rodrigozepeda.github.io/deltapif/reference/derivatives.md)
   [`deriv_pif_beta()`](https://rodrigozepeda.github.io/deltapif/reference/derivatives.md)
   : Partial derivatives of PIF
@@ -92,26 +86,8 @@
 - [`fraction_type()`](https://rodrigozepeda.github.io/deltapif/reference/fraction_type.md)
   : Get the type of the fraction
 
-- [`inv_logit()`](https://rodrigozepeda.github.io/deltapif/reference/inv_linkfuns.md)
-  [`inv_log_complement()`](https://rodrigozepeda.github.io/deltapif/reference/inv_linkfuns.md)
-  [`inv_hawkins()`](https://rodrigozepeda.github.io/deltapif/reference/inv_linkfuns.md)
-  : Inverses of link functions
-
 - [`length`](https://rodrigozepeda.github.io/deltapif/reference/length.md)
-  :
-
-  Length of a `covariance_structure`
-
-- [`parse_link()`](https://rodrigozepeda.github.io/deltapif/reference/link_parsers.md)
-  [`parse_inv_link()`](https://rodrigozepeda.github.io/deltapif/reference/link_parsers.md)
-  [`parse_deriv_link()`](https://rodrigozepeda.github.io/deltapif/reference/link_parsers.md)
-  : Link parsers
-
-- [`logit()`](https://rodrigozepeda.github.io/deltapif/reference/linkfuns.md)
-  [`log_complement()`](https://rodrigozepeda.github.io/deltapif/reference/linkfuns.md)
-  [`hawkins()`](https://rodrigozepeda.github.io/deltapif/reference/linkfuns.md)
-  [`identity_link()`](https://rodrigozepeda.github.io/deltapif/reference/linkfuns.md)
-  : Link functions
+  : Length of an object
 
 - [`names`](https://rodrigozepeda.github.io/deltapif/reference/names.md)
   : Get the label of a PIF or PAF
@@ -133,7 +109,7 @@
   Subset a `covariance_structure`
 
 - [`summary`](https://rodrigozepeda.github.io/deltapif/reference/summary.md)
-  : Summary of a pif object
+  : Summary of an object
 
 - [`paf_total()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md)
   [`pif_total()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md)
@@ -144,7 +120,7 @@
 
 - [`weighted_adjusted_paf()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted.md)
   [`weighted_adjusted_pif()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted.md)
-  : Weighted Adjusted PAF
+  : Weighted Adjusted Fractions
 
 - [`weights`](https://rodrigozepeda.github.io/deltapif/reference/weights.md)
   : Extract weights of a pif_global_ensemble

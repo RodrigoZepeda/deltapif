@@ -13,6 +13,15 @@ attributable fraction
 
   Additional parameters (ignored)
 
+## Value
+
+The labels of a fraction or of the fractions that make it
+
+## Note
+
+In the case of fractions, `names` cannot be used to assign names as in
+`names(pif_tot) <- c("a","b")`
+
 ## Examples
 
 ``` r

@@ -17,7 +17,7 @@ standard_deviationfor a potential impact fractions."><meta property="og:image" c
 
     <a class="navbar-brand me-2" href="../index.html">deltapif</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,18 +86,18 @@ separated by commas.</p></dd>
 
 
 <dt id="arg-var-p">var_p<a class="anchor" aria-label="anchor" href="#arg-var-p"></a></dt>
-<dd><p>covariance matrix for the prevalences in both <code>pif1</code> and <code>pif2</code>.
-Default <code>NULL</code> (no correlation).</p></dd>
+<dd><p>Estimate of the link_covariance matrix of <code>p</code> where the entry
+<code>var_p[i,j]</code> represents the link_covariance between <code>p[i]</code> and <code>p[j]</code>.</p></dd>
 
 
 <dt id="arg-var-beta">var_beta<a class="anchor" aria-label="anchor" href="#arg-var-beta"></a></dt>
-<dd><p>covariance matrix for the parameter <code>beta</code> in both <code>pif1</code>
-and <code>pif2</code>. Default <code>NULL</code> (no correlation).</p></dd>
+<dd><p>Estimate of the link_covariance matrix of <code>beta</code> where the entry
+<code>var_beta[i,j]</code> represents the link_covariance between <code>beta[i]</code> and <code>beta[j]</code>.</p></dd>
 
 
 <dt id="arg-var-weights">var_weights<a class="anchor" aria-label="anchor" href="#arg-var-weights"></a></dt>
-<dd><p>Covariance between the weights of all the fractions
-contained in <code>pif1</code> and all the fractions contained in <code>pif2</code>.</p></dd>
+<dd><p>covariance matrix for the weights when calculating the
+total PIF (respectively PAF) in <code>pif_total</code>.</p></dd>
 
 
 <dt id="arg-var-pif-weights">var_pif_weights<a class="anchor" aria-label="anchor" href="#arg-var-pif-weights"></a></dt>
@@ -119,6 +119,10 @@ in the equation below. If set to <code>NULL</code> its automatically calculated.
 fractions involved are not unique.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A variance, covariance or correlation matrix.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>

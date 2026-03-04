@@ -13,7 +13,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">deltapif</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,18 +55,64 @@
 <dd><p>A <code>covariance_structure</code></p></dd>
 
 
+<dt id="arg-default">default<a class="anchor" aria-label="anchor" href="#arg-default"></a></dt>
+<dd><p>How to fill the empty values (default = NA)</p></dd>
+
+
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional parameters (ignored)</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A matrix with the flattened covariance among all the involved
+fractions</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Because each entry of a covariance structure class can be a matrix
+containing the covariances of different fractions, the <code>as.matrix</code>
+command flattens that matrix into a single object.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">as.matrix</span><span class="op">(</span><span class="fu"><a href="covariance_structure_class.html">covariance_structure_class</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>b <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]    3</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#Simple covariance structure to matrix</span></span></span>
+<span class="r-in"><span><span class="va">my_cov</span> <span class="op">&lt;-</span> <span class="fu"><a href="covariance_structure_class.html">covariance_structure_class</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"pif1"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"pif1"</span> <span class="op">=</span> <span class="fl">0.21</span>, <span class="st">"pif2"</span> <span class="op">=</span> <span class="fl">0.12</span>, <span class="st">"pif3"</span> <span class="op">=</span> <span class="fl">0.31</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"pif2"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"pif1"</span> <span class="op">=</span> <span class="fl">0.12</span>, <span class="st">"pif2"</span> <span class="op">=</span> <span class="fl">0.33</span>, <span class="st">"pif3"</span> <span class="op">=</span> <span class="op">-</span><span class="fl">0.01</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"pif3"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"pif1"</span> <span class="op">=</span> <span class="fl">0.31</span>, <span class="st">"pif2"</span> <span class="op">=</span> <span class="op">-</span><span class="fl">0.01</span>, <span class="st">"pif3"</span> <span class="op">=</span> <span class="fl">0.80</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">as.matrix</span><span class="op">(</span><span class="va">my_cov</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      pif1  pif2  pif3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pif1 0.21  0.12  0.31</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pif2 0.12  0.33 -0.01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pif3 0.31 -0.01  0.80</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#More complicated example: the covariance matrix is flattened</span></span></span>
+<span class="r-in"><span><span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.21</span>, <span class="fl">0.47</span>, <span class="op">-</span><span class="fl">0.3</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">vec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.22</span>, <span class="op">-</span><span class="fl">0.9</span>, <span class="fl">0.01</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">cov2</span> <span class="op">&lt;-</span> <span class="fu"><a href="covariance_structure_class.html">covariance_structure_class</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"pif1"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"pif1"</span> <span class="op">=</span> <span class="fl">0.21</span>, <span class="st">"pif2"</span> <span class="op">=</span> <span class="va">mat</span>, <span class="st">"pif3"</span> <span class="op">=</span> <span class="fl">0.31</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"pif2"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"pif1"</span> <span class="op">=</span> <span class="va">mat</span>, <span class="st">"pif2"</span> <span class="op">=</span> <span class="fl">0.33</span>, <span class="st">"pif3"</span> <span class="op">=</span> <span class="va">vec</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"pif3"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"pif1"</span> <span class="op">=</span> <span class="fl">0.31</span>, <span class="st">"pif2"</span> <span class="op">=</span> <span class="va">vec</span>, <span class="st">"pif3"</span> <span class="op">=</span> <span class="fl">0.80</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">as.matrix</span><span class="op">(</span><span class="va">cov2</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      pif1  pif1 pif1 pif2  pif2 pif2 pif3 pif3 pif3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pif1 0.21    NA   NA 0.10  0.47   NA 0.31   NA   NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pif1   NA    NA   NA 0.21 -0.30   NA   NA   NA   NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pif1   NA    NA   NA   NA    NA   NA   NA   NA   NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pif2 0.10  0.47   NA 0.33    NA   NA 0.22 -0.9 0.01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pif2 0.21 -0.30   NA   NA    NA   NA   NA   NA   NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pif2   NA    NA   NA   NA    NA   NA   NA   NA   NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pif3 0.31    NA   NA 0.22 -0.90 0.01 0.80   NA   NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pif3   NA    NA   NA   NA    NA   NA   NA   NA   NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pif3   NA    NA   NA   NA    NA   NA   NA   NA   NA</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

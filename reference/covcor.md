@@ -38,18 +38,19 @@ correlation(x, ..., var_p = NULL, var_beta = NULL)
 
 - var_p:
 
-  covariance matrix for the prevalences in both `pif1` and `pif2`.
-  Default `NULL` (no correlation).
+  Estimate of the link_covariance matrix of `p` where the entry
+  `var_p[i,j]` represents the link_covariance between `p[i]` and `p[j]`.
 
 - var_beta:
 
-  covariance matrix for the parameter `beta` in both `pif1` and `pif2`.
-  Default `NULL` (no correlation).
+  Estimate of the link_covariance matrix of `beta` where the entry
+  `var_beta[i,j]` represents the link_covariance between `beta[i]` and
+  `beta[j]`.
 
 - var_weights:
 
-  Covariance between the weights of all the fractions contained in
-  `pif1` and all the fractions contained in `pif2`.
+  covariance matrix for the weights when calculating the total PIF
+  (respectively PAF) in `pif_total`.
 
 - var_pif_weights:
 
@@ -70,6 +71,10 @@ correlation(x, ..., var_p = NULL, var_beta = NULL)
 
   Boolean indicating whether to throw a warning if the labels on the
   fractions involved are not unique.
+
+## Value
+
+A variance, covariance or correlation matrix.
 
 ## Examples
 

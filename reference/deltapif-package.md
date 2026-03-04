@@ -3,7 +3,9 @@
 Uses the delta-method to estimate the Potential Impact Fraction (PIF)
 and the Population Attributable Fraction (PAF) from summary data. It
 creates point-estimates, confidence intervals, and estimates of the
-variance.
+variance. Provides an extension to the aggregated data method in Chan,
+Zepeda-Tello et al (2025)
+[doi:10.1002/sim.70214](https://doi.org/10.1002/sim.70214) .
 
 ## See also
 

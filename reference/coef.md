@@ -12,6 +12,10 @@ Gets the potential impact fraction value
 
   Additional parameters to pass to `coef` (ignored)
 
+## Value
+
+A `double` containing point-estimate of the object.
+
 ## Examples
 
 ``` r

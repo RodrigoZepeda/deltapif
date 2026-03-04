@@ -18,6 +18,11 @@ covariance_structure_class(cov_list = list())
   between elements of the i-th potential impact fraction and the j-th
   potential impact fraction.
 
+## Value
+
+An `S7` `covariance_structure_class` where entry in row `i` and column
+`j` represents the covariance between fraction `i` and `j`.
+
 ## See also
 
 [`as_covariance_structure()`](https://rodrigozepeda.github.io/deltapif/reference/as_covstr.md)

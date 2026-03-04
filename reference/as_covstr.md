@@ -26,6 +26,16 @@ as_covariance_structure(x, col_names = NULL, row_names = NULL, ...)
 
   Additional arguments (currently ignored)
 
+## Value
+
+A `covariance_structure` object representing the given matrix, number,
+vector or `data.frame` as a covariance structure for using with
+[`pif()`](https://rodrigozepeda.github.io/deltapif/reference/pifpaf.md),
+[`paf()`](https://rodrigozepeda.github.io/deltapif/reference/pifpaf.md),
+[`attributable_cases()`](https://rodrigozepeda.github.io/deltapif/reference/casecalc.md),
+and
+[`averted_cases()`](https://rodrigozepeda.github.io/deltapif/reference/casecalc.md)
+
 ## Examples
 
 ``` r

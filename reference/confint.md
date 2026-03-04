@@ -1,12 +1,12 @@
-# Extract confidence intervals of a pif object
+# Extract confidence intervals
 
-Gets the confidence interval for the potential impact fraction
+Gets the confidence interval for any fraction or cases.
 
 ## Arguments
 
 - object:
 
-  A `pif_class` object.
+  A `pif_class` or a `cases_class`.
 
 - level:
 
@@ -15,6 +15,11 @@ Gets the confidence interval for the potential impact fraction
 - ...:
 
   Additional parameters to pass to `confint` (ignored)
+
+## Value
+
+A vector containing the lower and upper bounds of the confidence
+interval for the object.
 
 ## Examples
 

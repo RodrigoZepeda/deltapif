@@ -2,7 +2,7 @@
 
 Function to print or show a potential impact fraction object
 
-Function to print or show a `covariance_structure_class`
+Function to print an object
 
 ## Arguments
 
@@ -12,11 +12,15 @@ Function to print or show a `covariance_structure_class`
 
 - x:
 
-  A `covariance_structure_class`
+  A `covariance_structure_class`, a `pif_class` or a `cases_class`
 
 - ...:
 
   Additional arguments to pass to `print`
+
+## Value
+
+NULL. Called for its side-effects.
 
 ## Examples
 
@@ -25,7 +29,7 @@ my_pif <- pif(p = 0.2, beta = 1.3, var_beta = 0.1)
 #> ! Assuming parameters `p` have no variance Use `var_p` to input their link_variances and/or covariance
 print(my_pif)
 #> 
-#> ── Potential Impact Fraction: [deltapif-124126307530705] ──
+#> ── Potential Impact Fraction: [deltapif-0823261150567127] ──
 #> 
 #> PIF = 34.805% [95% CI: 12.300% to 51.535%]
 #> standard_deviation(pif %) = 9.864
@@ -33,7 +37,7 @@ print(my_pif)
 # Change the ammount of digits to show just 1
 print(my_pif, accuracy = 0.1)
 #> 
-#> ── Potential Impact Fraction: [deltapif-124126307530705] ──
+#> ── Potential Impact Fraction: [deltapif-0823261150567127] ──
 #> 
 #> PIF = 34.8% [95% CI: 12.3% to 51.5%]
 #> standard_deviation(pif %) = 9.9
