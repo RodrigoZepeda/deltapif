@@ -57,7 +57,7 @@ models).}
 \code{rr_link(beta)}.}
 
 \item{rr_link_deriv}{Derivative of the link function for the relative risk.
-The function tries to build it automatically from \code{rr_link} using
+The constructor tries to build it automatically from \code{rr_link} using
 \code{\link[Deriv:Deriv]{Deriv::Deriv()}}.}
 
 \item{link}{Link function such that the \code{pif} confidence intervals

@@ -295,7 +295,6 @@ weighted_adjusted_fractions <- function(
 #'   (total) fraction. Defaults to `NULL` (auto-generated).
 #'
 #' @inheritParams pifpaf
-#' @inheritParams classes
 #'
 #' @section Formula:
 #'

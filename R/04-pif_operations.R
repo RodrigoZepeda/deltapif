@@ -22,8 +22,12 @@
 #' @param weights_sum_to_1 Boolean flag indicating if the weights sum to 1 (normalized weights)
 #' or if they are not (unnormalized).
 #'
+#' @param var_pif_weights covariance matrix with row `i` and column `j`
+#' representing the covariance between the `i`-th potential impact
+#' fraction of the list and the `j`-th weight
+#'
 #' @inheritParams pifpaf
-#' @inheritParams classes
+#'
 #' @param is_paf Whether the computed quantity is a population attributable fraction or not
 #'
 #' @section Total potential impact fraction:

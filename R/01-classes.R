@@ -188,12 +188,16 @@
 #' hence it is a  `pif_global_ensemble_class` with `pif_transform = log_complement`.
 #'
 #' @name classes
+#' @keywords internal
+#' @noRd
 NULL
 
 
 
 
 #' @rdname classes
+#' @keywords internal
+#' @noRd
 #pif_class-----
 pif_class <- S7::new_class("pif_class",
    package = "deltapif",
@@ -283,6 +287,8 @@ pif_class <- S7::new_class("pif_class",
 #S7::S4_register(pif_class)
 
 #' @rdname classes
+#' @keywords internal
+#' @noRd
 #cases_class-----
 cases_class <- S7::new_class("cases_class",
    package = "deltapif",
@@ -342,6 +348,8 @@ cases_class <- S7::new_class("cases_class",
 )
 
 #' @rdname classes
+#' @keywords internal
+#' @noRd
 #pif_atomic_class-------
 pif_atomic_class <- S7::new_class("pif_atomic_class",
    package = "deltapif",
@@ -565,6 +573,8 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
 
 
 #' @rdname classes
+#' @keywords internal
+#' @noRd
 #pif_global_ensemble_class-------
 pif_global_ensemble_class <- S7::new_class(
   name = "pif_global_ensemble_class",
@@ -609,6 +619,8 @@ pif_global_ensemble_class <- S7::new_class(
 )
 
 #' @rdname classes
+#' @keywords internal
+#' @noRd
 #pif_total_class------------------
 pif_total_class <- S7::new_class(
   name      = "pif_total_class",

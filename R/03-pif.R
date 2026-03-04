@@ -5,15 +5,50 @@
 #' an observed prevalence of  `p` and a relative risk
 #' (or relative risk parameter) of `beta`.
 #'
-#' @inheritParams classes
+#' @param p Prevalence (proportion) of the exposed individuals for
+#' each of the `N` exposure levels.
+#'
+#' @param p_cft Counterfactual prevalence (proportion) of the exposed
+#' individuals for each of the `N` exposure levels.
+#'
+#' @param beta Relative risk parameter for which standard deviation is
+#' available (usually its either the relative risk directly or the log
+#' of the relative risk as most RRs, ORs and HRs come from exponential
+#' models).
+#'
+#' @param var_p Estimate of the link_covariance matrix of `p` where the entry
+#' `var_p[i,j]` represents the link_covariance between `p[i]` and `p[j]`.
+#'
+#' @param var_beta Estimate of the link_covariance matrix of `beta` where the entry
+#' `var_beta[i,j]` represents the link_covariance between `beta[i]` and `beta[j]`.
+#'
+#' @param rr_link Link function such that the relative risk is given by
+#' `rr_link(beta)`.
+#'
 #' @param rr_link_deriv Derivative of the link function for the relative risk.
-#' The function tries to build it automatically from `rr_link` using
+#' The constructor tries to build it automatically from `rr_link` using
 #' [Deriv::Deriv()].
 #'
 #' @param link_deriv Derivative of the `link` function. The function tries
 #' to build it automatically from `link` using [Deriv::Deriv()].
 #'
 #' @param quiet Whether to show messages.
+#'
+#'
+#' @param conf_level Confidence level for the confidence interval (default 0.95).
+#'
+#' @param link Link function such that the `pif` confidence intervals
+#' stays within the expected bounds.
+#'
+#' @param link_inv (Optional). If `link` is a function then
+#' yhe inverse of `link`. For example if `link` is `logit` this
+#' should be `inv_logit`.
+#'
+#' @param type Character either Potential Impact Fraction (`PIF`) or
+#' Population Attributable Fraction (`PAF`)
+#'
+#' @param label Character identifier for the impact fraction. This is for
+#  ease of the user.
 #'
 #' @note This function assumes `p` and `beta` have been pre-computed from
 #' the data and the individual-level data are not accessible to the
