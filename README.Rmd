@@ -76,7 +76,7 @@ paf(p = 0.085, beta = log(1.59), quiet = TRUE)
 
 #### Incorporating Uncertainty
 
-To calculate confidence intervals, we need the variance of the log-relative risk. The variance can be derived from the confidence interval following the [Cochrane Handbook](https://handbook-5-1.cochrane.org/chapter_7/7_7_3_2_obtaining_standard_deviations_from_standard_errors_and.htm):
+To calculate confidence intervals, we need the variance of the log-relative risk. The variance can be derived from the confidence interval following the [Cochrane Handbook](https://www.cochrane.org/authors/handbooks-and-manuals/handbook/current/chapter-06#section-6-3-2):
 
 ```{r}
 var_log_rr <- ((log(2.20) - log(1.15)) / (2 * 1.96))^2
