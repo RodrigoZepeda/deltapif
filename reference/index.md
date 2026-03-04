@@ -34,14 +34,6 @@
 
   Get the children labels from a `pif_class`
 
-- [`pif_class()`](https://rodrigozepeda.github.io/deltapif/reference/classes.md)
-  [`cases_class()`](https://rodrigozepeda.github.io/deltapif/reference/classes.md)
-  [`pif_atomic_class()`](https://rodrigozepeda.github.io/deltapif/reference/classes.md)
-  [`pif_global_ensemble_class()`](https://rodrigozepeda.github.io/deltapif/reference/classes.md)
-  [`pif_total_class()`](https://rodrigozepeda.github.io/deltapif/reference/classes.md)
-  [`pif_ensemble_class()`](https://rodrigozepeda.github.io/deltapif/reference/classes.md)
-  : Potential Impact Fraction related classes
-
 - [`coef`](https://rodrigozepeda.github.io/deltapif/reference/coef.md) :
   Extract coefficients of a pif object
 

@@ -71,7 +71,7 @@ pif(
 
 - rr_link_deriv:
 
-  Derivative of the link function for the relative risk. The function
+  Derivative of the link function for the relative risk. The constructor
   tries to build it automatically from `rr_link` using
   [`Deriv::Deriv()`](https://rdrr.io/pkg/Deriv/man/Deriv.html).
 
