@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">deltapif</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -197,7 +197,7 @@ number of people with Alzheimer’s Disease in New York, USA 426.5 (400.2,
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Attributable cases: </span><span style="font-weight: bold; font-style: italic;">[All]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Attributable cases = 19.887 [<span style="font-style: italic;">95% CI</span>: 2.572 to 37.203]</span></span>
-<span><span class="co">#&gt; standard_deviation(attributable cases) = 883.469</span></span></code></pre></div>
+<span><span class="co">#&gt; standard_deviation(attributable cases) = 8.835</span></span></code></pre></div>
 <!---
 ### Why are we using the log relative risk?
 
@@ -314,7 +314,7 @@ the <code>averted_cases</code> function:</p>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Averted cases: </span><span style="font-weight: bold; font-style: italic;">[All]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Averted cases = 2.983 [<span style="font-style: italic;">95% CI</span>: 0.386 to 5.580]</span></span>
-<span><span class="co">#&gt; standard_deviation(averted cases) = 132.520</span></span></code></pre></div>
+<span><span class="co">#&gt; standard_deviation(averted cases) = 1.325</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="example-4-a-categorical-population-attributable-fraction">Example 4: A categorical population attributable fraction<a class="anchor" aria-label="anchor" href="#example-4-a-categorical-population-attributable-fraction"></a>
@@ -620,7 +620,7 @@ positive.</p></li>
 function. For example <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10593099/#SD2" class="external-link"><span class="citation">Dhana et al. (2023)</span></a> estimates the number of
 people with Alzheimer’s Disease in New York, USA 426.5 (400.2, 452.7)
 thousand. This implies a variance of
-<code>((452.7 - 400.2) / 2*qnorm(0.975))^2 = 2647.005</code>.</p>
+<code>((452.7 - 400.2) / (2*qnorm(0.975))^2) = 179.3752</code>.</p>
 <p>To estimate cases we need to:</p>
 <ol style="list-style-type: decimal">
 <li>Estimate the corresponding potential impact fraction (averted) or
@@ -646,12 +646,12 @@ impact on dementia of reducing smoking prevalence by 15% (from 8.5% to
 <span><span class="co">#&gt; PIF = 0.716% [<span style="font-style: italic;">95% CI</span>: 0.118% to 1.311%]</span></span>
 <span><span class="co">#&gt; standard_deviation(pif %) = 0.304</span></span></code></pre></div>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/casecalc.html">averted_cases</a></span><span class="op">(</span><span class="fl">426.5</span>, <span class="va">pif_smoking</span>, variance <span class="op">=</span> <span class="fl">2647.005</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/casecalc.html">averted_cases</a></span><span class="op">(</span><span class="fl">426.5</span>, <span class="va">pif_smoking</span>, variance <span class="op">=</span> <span class="fl">179.3752</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Averted cases: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0698429449342544]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Averted cases = 3.055 [<span style="font-style: italic;">95% CI</span>: 0.394 to 5.716]</span></span>
-<span><span class="co">#&gt; standard_deviation(averted cases) = 135.779</span></span></code></pre></div>
+<span><span class="co">#&gt; Averted cases = 3.055 [<span style="font-style: italic;">95% CI</span>: 0.504 to 5.606]</span></span>
+<span><span class="co">#&gt; standard_deviation(averted cases) = 1.302</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="example-9-computing-averted-cases-strictly-positive">Example 9: Computing averted cases (strictly positive)<a class="anchor" aria-label="anchor" href="#example-9-computing-averted-cases-strictly-positive"></a>
@@ -666,7 +666,7 @@ includes negative values:</p>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Averted cases: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0698429449342544]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Averted cases = 3.055 [<span style="font-style: italic;">95% CI</span>: -2.398 to 8.508]</span></span>
-<span><span class="co">#&gt; standard_deviation(averted cases) = 278.207</span></span></code></pre></div>
+<span><span class="co">#&gt; standard_deviation(averted cases) = 2.782</span></span></code></pre></div>
 <p>When there is an epidemiological rationale on the interval being
 strictly positive (for example, the relative risk is known to be
 strictly greater than 1) we can change the link function to
@@ -677,7 +677,7 @@ strictly greater than 1) we can change the link function to
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Averted cases: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0698429449342544]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Averted cases = 3.055 [<span style="font-style: italic;">95% CI</span>: 0.513 to 18.203]</span></span>
-<span><span class="co">#&gt; standard_deviation(averted cases) = 278.207</span></span></code></pre></div>
+<span><span class="co">#&gt; standard_deviation(averted cases) = 2.782</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="example-10-using-hazard-ratios-hr-and-odds-ratios-or-instead-of-relative-risks-rr">Example 10: Using Hazard Ratios (HR) and Odds Ratios (OR) instead of

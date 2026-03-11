@@ -143,7 +143,7 @@ attributable_cases(426.5, paf_population, variance = 2647)
 #> ── Attributable cases: [All] ──
 #> 
 #> Attributable cases = 19.887 [95% CI: 2.572 to 37.203]
-#> standard_deviation(attributable cases) = 883.469
+#> standard_deviation(attributable cases) = 8.835
 ```
 
 ### Example 3: Estimating the PIF for the proportion of dementia reduced by a 15% reduction in smoking.
@@ -217,7 +217,7 @@ averted_cases(426.5, pif_population, variance = 2647)
 #> ── Averted cases: [All] ──
 #> 
 #> Averted cases = 2.983 [95% CI: 0.386 to 5.580]
-#> standard_deviation(averted cases) = 132.520
+#> standard_deviation(averted cases) = 1.325
 ```
 
 ### Example 4: A categorical population attributable fraction
@@ -551,7 +551,7 @@ Attributable and averted cases can be calculated with the
 (2023)](https://pmc.ncbi.nlm.nih.gov/articles/PMC10593099/#SD2)
 estimates the number of people with Alzheimer’s Disease in New York, USA
 426.5 (400.2, 452.7) thousand. This implies a variance of
-`((452.7 - 400.2) / 2*qnorm(0.975))^2 = 2647.005`.
+`((452.7 - 400.2) / (2*qnorm(0.975))^2) = 179.3752`.
 
 To estimate cases we need to:
 
@@ -581,12 +581,12 @@ pif_smoking
 ```
 
 ``` r
-averted_cases(426.5, pif_smoking, variance = 2647.005)
+averted_cases(426.5, pif_smoking, variance = 179.3752)
 #> 
 #> ── Averted cases: [deltapif-0698429449342544] ──
 #> 
-#> Averted cases = 3.055 [95% CI: 0.394 to 5.716]
-#> standard_deviation(averted cases) = 135.779
+#> Averted cases = 3.055 [95% CI: 0.504 to 5.606]
+#> standard_deviation(averted cases) = 1.302
 ```
 
 ### Example 9: Computing averted cases (strictly positive)
@@ -602,7 +602,7 @@ averted_cases(426.5, pif_smoking, variance = 100000)
 #> ── Averted cases: [deltapif-0698429449342544] ──
 #> 
 #> Averted cases = 3.055 [95% CI: -2.398 to 8.508]
-#> standard_deviation(averted cases) = 278.207
+#> standard_deviation(averted cases) = 2.782
 ```
 
 When there is an epidemiological rationale on the interval being
@@ -616,7 +616,7 @@ averted_cases(426.5, pif_smoking, variance = 100000, link = "log")
 #> ── Averted cases: [deltapif-0698429449342544] ──
 #> 
 #> Averted cases = 3.055 [95% CI: 0.513 to 18.203]
-#> standard_deviation(averted cases) = 278.207
+#> standard_deviation(averted cases) = 2.782
 ```
 
 ### Example 10: Using Hazard Ratios (HR) and Odds Ratios (OR) instead of Relative Risks (RR)

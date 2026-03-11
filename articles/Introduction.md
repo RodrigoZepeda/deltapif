@@ -161,7 +161,7 @@ averted_cases(426.5, lee_pif, variance = 2647.005)
 #> ── Averted cases: [deltapif-243726361121953] ──
 #> 
 #> Averted cases = 3.055 [95% CI: 0.394 to 5.716]
-#> standard_deviation(averted cases) = 135.779
+#> standard_deviation(averted cases) = 1.358
 ```
 
 Attributable cases can likewise be estimated using the previous `paf`
@@ -173,7 +173,7 @@ attributable_cases(426.5, paf_dementia, variance = 2647.005)
 #> ── Attributable cases: [deltapif-025531705484526] ──
 #> 
 #> Attributable cases = 20.368 [95% CI: 2.626 to 38.109]
-#> standard_deviation(attributable cases) = 905.195
+#> standard_deviation(attributable cases) = 9.052
 ```
 
 ### Combining fractions from subpopulations

@@ -184,13 +184,13 @@ pif_men <- pif(0.27, 0.1, 1.3, quiet = TRUE, var_p = 0.1)
 #Population potential impact fraction with 49% men and 51% women
 pif_total(pif_men, pif_women, weights = c(0.49, 0.51), link = "logit")
 #> 
-#> ── Potential Impact Fraction: [deltapif-264893202856241] ──
+#> ── Potential Impact Fraction: [deltapif-106199914454589] ──
 #> 
 #> PIF = 27.862% [95% CI: 22.944% to 33.377%]
 #> standard_deviation(pif %) = 23.319
 #> ────────────────────────────────── Components: ─────────────────────────────────
-#> • 26.372% (sd %: 36.119) --- [deltapif-206365445053881]
-#> • 29.294% (sd %: 29.772) --- [deltapif-063317817552485]
+#> • 26.372% (sd %: 36.119) --- [deltapif-256440833799741]
+#> • 29.294% (sd %: 29.772) --- [deltapif-0154120739556124]
 #> ────────────────────────────────────────────────────────────────────────────────
 
 #Population attributable  fraction for women
@@ -200,13 +200,13 @@ paf_women <- paf(0.32, 1.3, quiet = TRUE, var_p = 0.1)
 paf_men <- paf(0.27, 1.3, quiet = TRUE, var_p = 0.1)
 paf_total(paf_men, paf_women, weights = c(0.49, 0.51), link = "logit")
 #> 
-#> ── Population Attributable Fraction: [deltapif-0675244698081724] ──
+#> ── Population Attributable Fraction: [deltapif-0558514421664496] ──
 #> 
 #> PAF = 44.018% [95% CI: 38.601% to 49.581%]
 #> standard_deviation(paf %) = 18.760
 #> ────────────────────────────────── Components: ─────────────────────────────────
-#> • 41.884% (sd %: 28.509) --- [deltapif-0845195738551864]
-#> • 46.068% (sd %: 24.552) --- [deltapif-063953477020697]
+#> • 41.884% (sd %: 28.509) --- [deltapif-00751059001682063]
+#> • 46.068% (sd %: 24.552) --- [deltapif-0542141549441894]
 #> ────────────────────────────────────────────────────────────────────────────────
 
 # Calculate the ensemble from lead and radiation exposure
@@ -214,13 +214,13 @@ paf_lead <- paf(0.2, 2.2, quiet = TRUE, var_p = 0.001)
 paf_rad  <- paf(0.1, 1.2, quiet = TRUE, var_p = 0.0001)
 pif_ensemble(paf_lead, paf_rad)
 #> 
-#> ── Population Attributable Fraction: [deltapif-210215247889527] ──
+#> ── Population Attributable Fraction: [deltapif-143127077688999] ──
 #> 
 #> PAF = 68.841% [95% CI: 64.670% to 73.013%]
 #> standard_deviation(paf %) = 3.092
 #> ────────────────────────────────── Components: ─────────────────────────────────
-#> • 61.612% (sd %: 3.740) --- [deltapif-021223603483794]
-#> • 18.832% (sd %: 1.529) --- [deltapif-0906340178564226]
+#> • 61.612% (sd %: 3.740) --- [deltapif-110018974454478]
+#> • 18.832% (sd %: 1.529) --- [deltapif-120376783938691]
 #> ────────────────────────────────────────────────────────────────────────────────
 
 # Totals and ensembles can be combined
@@ -233,12 +233,12 @@ pif_men        <- pif_ensemble(pif_lead_men, pif_rad_men)
 
 pif_total(pif_men, pif_women, weights = c(0.49, 0.51))
 #> 
-#> ── Population Attributable Fraction: [deltapif-0876777326556075] ──
+#> ── Population Attributable Fraction: [deltapif-215875655364964] ──
 #> 
 #> PAF = 75.731% [95% CI: 74.815% to 76.612%]
 #> standard_deviation(paf %) = 1.668
 #> ────────────────────────────────── Components: ─────────────────────────────────
-#> • 76.180% (sd %: 2.271) --- [deltapif-141602391449351]
-#> • 75.299% (sd %: 2.435) --- [deltapif-0480725266268846]
+#> • 76.180% (sd %: 2.271) --- [deltapif-187774387154249]
+#> • 75.299% (sd %: 2.435) --- [deltapif-0117860143249397]
 #> ────────────────────────────────────────────────────────────────────────────────
 ```

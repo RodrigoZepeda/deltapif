@@ -101,17 +101,17 @@ The variance is estimated using the product-variance formula: \$\$
 frac <- paf(p = 0.499, beta = log(3.6), var_p = 0.002, var_beta = FALSE)
 attributable_cases(100, paf = frac)
 #> 
-#> ── Attributable cases: [deltapif-275541757533686] ──
+#> ── Attributable cases: [deltapif-00700348502966383] ──
 #> 
 #> Attributable cases = 56.473 [95% CI: 52.155 to 60.790]
-#> standard_deviation(attributable cases) = 220.300
+#> standard_deviation(attributable cases) = 2.203
 
 frac <- pif(p = 0.499, beta = log(3.6), p_cft = 0.1, var_p = 0.002, var_beta = FALSE)
 averted_cases(100, pif = frac)
 #> 
-#> ── Averted cases: [deltapif-00465313804441933] ──
+#> ── Averted cases: [deltapif-0639123323885664] ──
 #> 
 #> Averted cases = 45.155 [95% CI: 39.715 to 50.596]
-#> standard_deviation(averted cases) = 277.578
+#> standard_deviation(averted cases) = 2.776
 
 ```

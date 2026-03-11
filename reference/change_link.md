@@ -43,7 +43,7 @@ pif1 <- pif(p = 0.2, p_cft = 0.1, beta = 1.2, var_p = 0.01,
   var_beta = 0.2)
 pif1
 #> 
-#> ── Potential Impact Fraction: [deltapif-0118194874409683] ──
+#> ── Potential Impact Fraction: [deltapif-00499648990481453] ──
 #> 
 #> PIF = 15.848% [95% CI: -19.419% to 40.699%]
 #> standard_deviation(pif %) = 15.028
@@ -52,7 +52,7 @@ pif1
 pif1_logit <- change_link(pif1, link = "logit")
 pif1_logit
 #> 
-#> ── Potential Impact Fraction: [deltapif-0118194874409683] ──
+#> ── Potential Impact Fraction: [deltapif-00499648990481453] ──
 #> 
 #> PIF = 15.848% [95% CI: 2.027% to 63.158%]
 #> standard_deviation(pif %) = 15.028
