@@ -56,7 +56,7 @@ print_cases_class <- function(x, accuracy){
   case_val <- scales::comma(x@cases, accuracy = accuracy)
   cilow   <- scales::comma(x@ci[1], accuracy = accuracy)
   cihigh  <- scales::comma(x@ci[2], accuracy = accuracy)
-  sdval   <- scales::comma(100*sqrt(x@variance), accuracy = accuracy)
+  sdval   <- scales::comma(sqrt(x@variance), accuracy = accuracy)
   title   <- ifelse(x@pif_obj@type == "PIF", "Averted cases",
                     "Attributable cases")
 

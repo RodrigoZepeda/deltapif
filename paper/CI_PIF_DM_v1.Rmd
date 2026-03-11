@@ -1,0 +1,564 @@
+---
+title: Approximate confidence intervals for potential impact and population attributable fractions in the case of previously summarized data via the _deltapif_ package.
+author: "Rodrigo Zepeda-Tello"
+date: "`r Sys.Date()`"
+output:
+  bookdown::pdf_document2: default
+  bookdown::html_document2: default
+references: referencias.bib
+---
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+library(tibble)
+```
+
+# Introduction
+
+Quantifying the disease burden attributable to risk factors is a foundational task in epidemiology. The Population Attributable Fraction (PAF) answers the question: "What fraction of disease cases in a population would be prevented if we completely eliminated a risk factor?" The Potential Impact Fraction (PIF) generalizes this concept, asking: "What fraction of disease cases would be prevented if we changed exposure from its current distribution to a specific counterfactual scenario?" Due to their interpretational simplicity, PIF and PAF have been used across multiple scenarios including: XXX. 
+
+Ideally, the estimation of PIF and PAF requires cohort data such that both the proportion of individuals exposed to the risk factor and the factor's relative risk can be computed from the same data source. Multiple procedures for confidence intervals and variance estimation have been developed for this scenario including: XXX. However, in several modeling exercises, often the estimate of the relative risk comes from one source (e.g. a published meta-analysis), and the exposure prevalence comes from a separate, independent source (e.g. a national survey). In these scenarios it is often the case that data is not completely accessible to the researcher but only summary statistics.  
+
+
+
+<!-- Add escond paragraph discussing how uncertainty is estimated Greenland, in Monte Carlo, y el paper de muchas métricas and then that textbooks in general don't present it-->
+
+This paper outlines a mathematical framework for constructing CIs for the PIF and PAF using the delta method under the assumption of independent summary data sources. We provide textbook-style formulas for routine calculations and introduce the `deltapif` R package for computational implementation.
+
+# Motivation: The Binary Exposure Case
+
+Before delving into the generalized mathematics for multiple exposure categories, we demonstrate the construction of confidence intervals for the simplest scenario: a single, binary exposure (e.g., exposed vs. unexposed).
+
+##  The PIF for a binary exposure
+
+Let $p$ represent the proportion of individuals exposed to a risk factor in the population. We define a counterfactual scenario where the exposure prevalence is changed to $p_*$. We assume the relative risk ($\text{RR}$) follows an exponential function of a parameter $\beta$ (the log-relative risk), such that $\text{RR} = e^\beta$. 
+
+Following Chan et al, the Potential Impact Fraction (PIF) can be expressed as:
+\begin{equation}
+\text{PIF} = 1 - \frac{1 + p_*(e^\beta - 1)}{1 + p(e^\beta - 1)} (\#eq:pif)
+\end{equation}
+
+
+To simplify future calculations, we define the estimated average relative risk for the population under the observed ($\mu^{\text{obs}}$) and counterfactual ($\mu^{\text{cft}}$) distributions (i.e. the numerator and denominator of the right hand side of the fraction) for estimators $\hat{p}$ of $p$ and $\hat\beta$ of $\beta$:
+\begin{equation}
+\hat{\mu}^{\text{obs}} = 1 + \hat{p}\cdot (e^\beta - 1) \quad \text{and} \quad \hat{\mu}^{\text{cft}} = 1 + p^*\cdot (e^{\hat{\beta}} - 1) (\#eq:mu)
+\end{equation}
+
+
+
+## Isolating the Sources of Variance
+
+When relying on summary data, we rarely know $p$ and $\beta$ perfectly. Instead, we have independent estimates ($\hat{p}$ and $\hat{\beta}$) and their respective estimated variances ($\hat\sigma^2_p$ and $\hat\sigma^2_{\hat\beta}$). Using the delta method, we can approximate the base variance of the PIF by separating it into two components: one driven by the uncertainty in the prevalence estimate $\hat{p}$, and one driven by the uncertainty in the log-relative risk estimate $\hat\beta$.
+
+For a binary exposure, we collapse the two sources of uncertainty into two distinct components:
+
+**1. The Prevalence Component ($\text{VC}_{\hat{p}}$):**
+\begin{equation}
+\widehat{\text{VC}}_{\hat{p}} = \left( \frac{\mu^{\text{cft}}}{(\mu^{\text{obs}})^2} \right)^2 \cdot \hat{\sigma}^2_{\hat{p}} \cdot (e^{\hat{\beta}} - 1)^2 (\#eq:pvc)
+\end{equation}
+
+**2. The Relative Risk Component ($\text{VC}_{\hat{\beta}}$):**
+\begin{equation}
+\widehat{\text{VC}}_{\hat{\beta}} = \frac{1}{(\mu^{\text{obs}})^4} \cdot \hat{\sigma}^2_{\hat\beta} \cdot e^{2\hat{\beta}} \cdot \left[ \mu^{\text{obs}} p_* - \mu^{\text{cft}} \hat{p} \right]^2 (\#eq:betavc)
+\end{equation}
+
+The variance of $\widehat{\text{PIF}}$ can be approximated by the sum of these components:
+\begin{equation}
+\hat\sigma^2_{\text{PIF}}  =  \widehat{\text{VC}}_{\hat{p}} + \widehat{\text{VC}}_{\hat{\beta}} = \dfrac{ \left[ \mu^{\text{cft}} \cdot \hat{\sigma}_{\hat{p}} \cdot (e^{\hat{\beta}} - 1)\right]^2 +  \left[\hat{\sigma}_{\hat\beta} \cdot e^{\hat{\beta}} \cdot ( \mu^{\text{obs}} p_* - \mu^{\text{cft}} \hat{p} )\right]^2}{(\mu^{\text{obs}})^4}. (\#eq:varpif)
+\end{equation}
+
+A simple Wald-type confidence interval ($\widehat{\text{PIF}} \pm 1.96 \cdot \sigma$) might incorrectly cross $1$. To prevent this, we calculate the variance on a transformed scale using a link function, $f(\widehat{\text{PIF}})$, estimate the transformed interval's bounds, and then back-transform using the link's inverse. The variance of the transformed fraction is given by the sum of the prevalence and relative risk components time a scaling factor given by the derivative of the transform, $f'(\widehat{\text{PIF}})$:
+\begin{equation}
+\widehat{\text{Var}}\big(f(\widehat{\text{PIF}})\big) = [f'(\widehat{\text{PIF}})]^2 \cdot \hat\sigma^2_{\text{PIF}} (\#eq:fullvar)
+\end{equation}
+
+
+For the purpose of this example, we utilize the log-complement transform: 
+\begin{equation}
+f(\text{PIF}) = \log(1 - \text{PIF}) \quad \text{with} \quad f'(\text{PIF}) = \frac{1}{\text{PIF} - 1}  (\#eq:linkpif),
+\end{equation}
+
+Thus the variance of the log-complement transformed fraction is:
+\begin{align}
+\widehat{\text{Var}}\big(f(\widehat{\text{PIF}})\big) & = \left[\frac{1}{\text{PIF} - 1}\right]^2 \cdot \hat\sigma^2_{\text{PIF}}  (\#eq:binvar),
+\end{align}
+
+
+## Approximate Confidence Intervals
+
+Wald-type approximate confidence intervals can be constructed in the log-complement scale with this variance and the link-transformed fraction:
+\begin{equation}
+CI_{\pm}^{\text{link}} = \log(1 - \widehat{\text{PIF}}) \pm Z_{\alpha/2} \sqrt{\widehat{\text{Var}}\big[f(\widehat{PIF})\big]} (\#eq:cilog)
+\end{equation}
+and then back-transformed using the inverse function which in this case corresponds to:
+\begin{equation}
+CI_{\mp} = 1 - \exp(CI_{\pm}^{\text{link}}). (\#eq:ci)
+\end{equation}
+
+Intervals for $\widehat{\text{PAF}}$ can be constructed in the same way substituting $\widehat{\text{PAF}}$ instead of $\widehat{\text{PIF}}$ in \@ref(eq:cilog) and using $p_* = 0$ and $\mu^{\text{cft}} = 1$ in the previous equations.
+
+## Estimating Attributable and Averted Cases
+
+The number of attributable or averted cases ($\text{AC}$) is found by multiplying an estimate for the total number of cases of the disease $\hat{C}$ by the fraction ($\text{PIF}$):
+\begin{equation}
+\text{AC} = \hat{C} \cdot \widehat{\text{PIF}}.
+\end{equation}
+
+To approximate the variance, we use the product-variance formula, assuming the case estimates and fraction estimates are independent:
+\begin{equation}
+\hat{\sigma}^2_{\text{AC}} = \hat{C}^2 \cdot \hat\sigma^2_{\text{PIF}}+ [\widehat{\text{PIF}}]^2 \cdot \hat{\sigma}^2_{\hat{\text{C}}} +
+\hat{\sigma}^2_{\hat{\text{C}}} \cdot \hat\sigma^2_{\text{PIF}}.  (\#eq:varcases)
+\end{equation}
+where $\hat\sigma^2_{\text{PIF}}$ is as in \@ref(eq:varpif).
+
+
+Classical Wald-type confidence intervals can be constructed as:
+\begin{equation}
+\text{CI}_{\pm} = \hat{C} \pm Z_{\alpha/2} \cdot \sqrt{\hat{\sigma}^2_{\text{AC}}}.
+\end{equation}
+
+
+## Step-by-Step Computation by Hand
+
+To illustrate, we replicate the results by Lee et al who estimated the effect a policy that reduced smoking prevalence in the United States by 15% (from 8.5% to 7.225%). Specifically they wanted to calculate the effect on dementia incidence, given that the relative risk of smoking on dementia is estimated to be 1.59 (95% CI: 1.15, 2.20). 
+
+### Step 1: Define the Inputs
+
+Here we identify all of the inputs needed to estimate the fraction and the variance:
+
+| Variable | Meaning |
+|---|---|
+| $\hat{p} = 0.085$ | Initial estimated prevalence. |
+| $p^* = 0.07225$ | Counterfactual prevalence. |
+| $\hat\sigma^2_p = 0$ | Assumes no uncertainty around the prevalence estimates. |
+| $\hat{\beta} = 0.463734$ | Log relative risk. Computed as $\log(\text{RR}) = \log(1.59) = 0.463734$. |
+| $\hat\sigma_{\hat\beta} = 0.165$ | Standard error. Derived from the 95% CI on the log scale: $(\ln(2.20) - \ln(1.15)) / (2 \cdot 1.96) \approx 0.165$. |
+
+
+
+### Step 2: Calculate the potential impact fraction
+
+We substitute in \@ref(eq:pif):
+
+$$
+\widehat{\text{PIF}} = 1 - \frac{1 + 0.07225 \cdot (1.59 - 1)}{1 + 0.085 \cdot (1.59 - 1)} = 0.00716
+$$ 
+
+### Step 3: Calculate the variance
+
+We substitute the intermediate quantities used for the final formula:
+
+| Variable | Formula substitution | Result | Meaning | Reference |
+|---|---|---|---|---|
+| $\mu^{\text{cft}}$ | $1 + 0.07225 \cdot (1.59 - 1)$ | $1.04263$ | PIF numerator | \@ref(eq:mu) |
+| $\mu^{\text{obs}}$ | $1 + 0.085 \cdot (1.59 - 1)$ | $1.05015$ | PIF denominator | \@ref(eq:mu) |
+
+Thus the untransformed variance \@ref(eq:varpif) is:
+\begin{align}
+\hat\sigma^2_{\text{PIF}} & = \dfrac{ \left[ 1.04263 \cdot 0.0 \cdot (e^{0.463734} - 1)\right]^2 +  \left[0.165 \cdot e^{0.463734} \cdot ( 1.05015 \cdot 0.07225 - 1.04263 \cdot 0.085 )\right]^2}{ (1.05015)^4}
+\\ & \approx 0.0000092 (\#eq:numericvar)
+\end{align}
+
+And the variance from the log-complement transformation \@ref(eq:binvar) results in:
+\begin{equation}
+\widehat{\text{Var}}\big(f(\widehat{\text{PIF}})\big) = \left(\dfrac{1}{(0.00716 - 1)}\right)^2 \cdot 0.0000092 \approx 0.00000933
+\end{equation}
+
+### Step 4: Construct the confidence intervals in the log-complement scale:
+
+To construct the confidence interval we calculate the fraction in the log-complement scale:
+\begin{equation}
+f(\widehat{\text{PIF}}) = \log(1 - 0.00716) = -0.0071.
+\end{equation}
+
+The Wald-type 95\% confidence interval in the log-complement scale is \@ref(eq:cilog):
+\begin{align}
+CI_{+}^{\text{link}} & = -0.0071 + 1.96 \sqrt{0.00000933} =  -0.00111317 \\
+CI_{-}^{\text{link}} & = -0.0071 - 1.96 \sqrt{0.00000933} =  -0.01308683
+\end{align}
+
+where we substituted $Z_{\alpha/2} \approx 1.96$. 
+
+### Step 5:  Back-Transform to PIF Scale
+
+We finally back-transform the confidence intervals into the log-scale using the inverse transformation $f^{-1}(\text{CI}) = 1 - \exp(\text{CI})$:
+\begin{align}
+CI_{-} & = 1 - \exp(-0.00111317) = 0.00111255 \\
+CI_{+} & = 1 - \exp(-0.01308683) = 0.01300157
+\end{align}
+
+By walking through these steps, we arrive at a PIF of 0.716% (95% CI: 0.11% - 1.30%). This is consistent with the reported estimate from Lee et al: PIF = 0.7% (95% CI: 0.2–1.4) estimated via Monte Carlo. The advantage of the delta method is that it can be done by hand and does not require any simulation. 
+
+### Step 6: Calculating averted cases
+
+Dhana et al estimate the number of people with Alzheimer’s Disease (AD) in New York, USA as 426.5 [95% CI: 400.2-452.7] thousand individuals. Assuming (for the purpose of this example) that the smoking prevalence is the same as the national and that the relative risk for dementia (in general) applies specifically for AD, we can compute the number of averted cases resulting from the reduction of 15% in smoking. For this purpose, we multiply the previous potential impact fraction (0.716%) times the number of cases:
+\begin{equation}
+\widehat{\text{AC}} = 426.5 \cdot 0.00716 = 3.05374 (\#eq:ac)
+\end{equation}
+
+To estimate the variance we solve the confidence interval for the variance of the cases:
+$$
+\hat{\sigma}_{\hat{\text{C}}} = \frac{452.7 - 400.2}{2\cdot 1.96} = 13.39286
+$$
+
+Substituting in \@ref(eq:varcases) alongside the fraction's variance estimate from \@ref(eq:numericvar) yields:
+\begin{equation}
+\hat{\sigma}^2_{\text{AC}} = (426.5)^2 \cdot 0.0000092 + (0.00716)^2 \cdot 13.39286^2 + 0.0000092\cdot 13.39286^2 = 1.684346
+\end{equation}
+
+Which results in the confidence interval bounds:
+$$
+3.05374 \pm 1.96 \cdot \sqrt{1.684346}
+$$
+
+We arrive at a total of 3.05 (95% CI: 0.51 - 5.60) thousand averted cases.
+
+## Strictly positive intervals
+
+
+### Positive fractions
+
+In some scenarios, for example with protective exposures, the confidence interval might yield negative values, representing cases that are attributable to reducing the exposure. However, not all scenarios with negative fractions are epidemiologically plausible. In certain cases, the uncertainty around the prevalence estimate $\hat{p}$ and the log-relative risk $\hat{\beta}$ might leak into negative confidence intervals for the $\widehat{PIF}$ even for well documented risk factors. To guarantee positivity for the PIF (and PAF) estimates, a logit transformation can be used. 
+
+We remind the reader that the logit is defined as:
+\begin{equation}
+f(\text{PIF}) = \log\left(\frac{\text{PIF}}{1 - \text{PIF}}\right) \quad \text{with} \quad f'(\text{PIF}) = \frac{1}{\text{PIF} \cdot (1 - \text{PIF})}  (\#eq:linklogit),
+\end{equation}
+
+In this scenario, substituting in \@ref(eq:fullvar) results in a very similar expression to \@ref(eq:binvar):
+\begin{align}
+\widehat{\text{Var}}\big(f(\widehat{\text{PIF}})\big) & = \left[\frac{1}{\text{PIF}\cdot(1 - \text{PIF})}\right]^2 \cdot \hat\sigma^2_{\text{PIF}}  ,
+\end{align}
+
+
+Confidence intervals are constructed as in \@ref(eq:cilog) in this case using the logit transform and its corresponding inverse:
+$f^{-1}(\text{CI}) = \dfrac{\exp(\text{CI})}{\exp(\text{CI}) + 1}$. This results in the interval bounds for the transform:
+\begin{equation}
+CI_{\pm}^{\text{logit}} = \text{logit}(\widehat{\text{PIF}}) \pm Z_{\alpha/2} \sqrt{\widehat{\text{Var}}\big[f(\widehat{PIF})\big]} 
+\end{equation}
+which consequently can be transformed into the bounds for the fraction:
+\begin{equation}
+CI_{\mp} = \frac{\exp(CI_{\pm}^{\text{logit}})}{1 + \exp(CI_{\pm}^{\text{logit}})}
+\end{equation}
+
+### Positive cases
+
+Strictly positive cases can also be computed in the case of a strictly positive fraction. This can be achieved via the log transform of the estimates such that the variance of the log transformed attributable case estimate, $\log(\widehat{\text{AC}})$, is:
+\begin{equation}
+\text{Var}\left[\log(\widehat{\text{AC}})\right] \approx \dfrac{1}{\widehat{\text{AC}}^2} \cdot \hat{\sigma}^2_{\text{AC}}, (\#eq:varlogac)
+\end{equation}
+where $\hat{\sigma}^2_{\text{AC}}$ is as in \@ref(eq:varcases). 
+
+Wald-type intervals can be constructed in the log scale:
+\begin{equation}
+\text{CI}_{\pm}^{\text{log}} = \log(\widehat{\text{AC}}) \pm \sqrt{\text{Var}\left[\log(\widehat{\text{AC}})\right]}
+\end{equation}
+and then back-transformed by exponentiating:
+\begin{equation}
+\text{CI}_{\pm} = \exp(\text{CI}_{\pm}^{\text{log}})
+\end{equation}
+
+### Computation by Hand
+
+#### Strictly positive fractions
+
+Here we replicate the same example as before with the assumption that the standard deviation of the prevalence estimate $\hat{p}$ is $\hat\sigma_{\hat{p}} = 0.01$ (instead of $0.0$ considered by Lee et al and utilized in the previous section). In this case,
+calculating as before via the log-complement transform yields: PIF = 0.716% [95% CI: -2.854% - 4.163%]. We will show how the logit transform yields a strictly positive interval. 
+
+Taking the same variables as before, we calculate the variance of the fraction in this case:
+\begin{align}
+\hat\sigma^2_{\text{PIF}} & = \dfrac{ \left[ 1.04263 \cdot 0.01 \cdot (e^{0.463734} - 1)\right]^2 +  \left[0.165 \cdot e^{0.463734} \cdot ( 1.05015 \cdot 0.07225 - 1.04263 \cdot 0.085 )\right]^2}{ (1.05015)^4} 
+\\ & \approx 0.00004031 (\#eq:positivepif)
+\end{align}
+
+Which adjusting for the logit transform  results in:
+\begin{equation}
+\widehat{\text{Var}}\big(f(\widehat{\text{PIF}})\big) = \dfrac{1}{\left[0.00716 \cdot (1 - 0.00716)\right]^2}  \cdot 0.00004031
+\approx 0.7977643
+\end{equation}
+
+We can calculate the logit transform of the PIF as $\text{logit}(\widehat{\text{PIF}}) = \text{logit}(0.00716) = -4.93206$ and use it to
+compute the 95% confidence intervals:
+\begin{align}
+CI_{+}^{\text{link}} & = -4.93206 + 1.96 \sqrt{0.7977643} = -3.181434 \\
+CI_{-}^{\text{link}} & = -4.93206 - 1.96 \sqrt{0.7977643} = -6.682686
+\end{align}
+which can be then back-transformed via the inverse logit function: 
+\begin{align}
+CI_{+} & = \frac{\exp(-3.178983)}{1 + \exp(-3.178983)} \approx 0.03987\\
+CI_{-} & = \frac{\exp(-6.685137)}{1 + \exp(-6.685137)} \approx 0.00125
+\end{align}
+
+This results in the estimate of 0.716% (95% CI: 0.125% - 3.987%) which yields strictly positive interval bounds. 
+
+#### Strictly positive cases
+
+In this case the variance is:
+\begin{equation}
+\hat{\sigma}^2_{\text{AC}} = (426.5)^2 \cdot 0.00004031 + (0.00716)^2 \cdot 13.39286 + 0.00004031\cdot 13.39286 \approx 7.334
+\end{equation}
+where we used the variance estimate from \@ref(eq:positivepif).
+
+This, combined with \@ref(eq:varlogac), results in:
+\begin{equation}
+\text{Var}\left[\log(\widehat{\text{AC}})\right] \approx \dfrac{1}{3.05374^2} \cdot 7.334 \approx 0.786
+\end{equation}
+where we used that $\widehat{AC} = 3.05374$ from \@ref(eq:ac). 
+
+The confidence interval bounds in the log scale are given by:
+\begin{align}
+CI_{+}^{\text{log}} & = \log(3.05374) + 1.96 \sqrt{0.786} =  2.854037 \\
+CI_{-}^{\text{log}} & = \log(3.05374) - 1.96 \sqrt{0.786} = -0.6213031 
+\end{align}
+which back-transformed result in the interval bounds for the averted cases:
+\begin{align}
+CI_{+}^{\text{AC}} & = \exp(2.854037) \approx 17.36 \\
+CI_{-}^{\text{AC}} & = \exp(-0.6213031) \approx 0.538 
+\end{align}
+
+Hence the averted cases estimate is given by 3.054 with 95%CI [0.538 - 17.36] thousand. 
+
+
+The following sections will derive the formula for computing multiple exposure categories. Combining multiple exposures, adjusting for risk overlap, and obtaining the total from subpopulations can also be done via the delta method with increased algebraic complexity.  To handle these real-world scenarios, we formalize the generalized mathematics in Section 3 and utilize the `deltapif` package for computation.
+
+
+# The mathematical framework for multiple exposures
+
+## Defining the Potential Impact Fraction
+
+Consider an exposure with $k$ different non-reference categories and a baseline (reference) category. Let $p_1, p_2, \dots, p_k$ denote the proportion of individuals in each exposure level. Let $p_{*1}, p_{*2}, \dots, p_{*k}$ represent a counterfactual distribution of individuals within the categories. Let
+$\text{RR}(\beta_1), \text{RR}(\beta_2), \dots, \text{RR}(\beta_k)$ denote the relative risk for each level where the reference level - corresponding to the theoretical minimum risk exposure - has a relative risk of $1$.  We assume all relative risks are a function of a parameter $\beta$, such as $\text{RR}(\beta) = e^{\beta}$. 
+
+The PIF for $k$ categories can be written as:
+\begin{equation}
+\text{PIF} = 1 - \frac{1 + \sum_{i=1}^{k} p_{*i} (\text{RR}(\beta_i) - 1)}{1 + \sum_{i=1}^{k} p_i (\text{RR}(\beta_i) - 1)}.
+\end{equation}
+
+In the case of the PAF the numerator of the fraction collapses to $1$ as it corresponds with no exposure in any non-reference category ($p_i^* = 0$):
+\begin{equation}
+\text{PAF} = 1 - \frac{1}{1 + \sum_{i=1}^{k} p_i (\text{RR}(\beta_i) - 1)}.
+\end{equation}
+
+These expressions are mathematically equivalent to the fractions proposed by Levin REF and Meittinen REF as discussed in REF. We also note that the $\text{PAF}$ is a specific case of the $\text{PIF}$. In the sections that follow we will focus on intervals for the $\text{PIF}$ noting that intervals for the $\text{PAF}$ can be constructed substituting $\text{PIF}$ for $\text{PAF}$. 
+
+## The Delta Method for Confidence Intervals
+
+When modeling the $\text{PIF}$ with survey data, we usually only have independent estimates for the risk-category prevalences ($\hat{p}_1, \dots, \hat{p}_k$) as well as for the relative risks $\text{RR}(\hat{\beta}_1), \dots, \text{RR}(\hat{\beta}_k)$ along with their variances. To approximate the variance of the fraction we incorporate the variance of both estimates through a link-function, $f(\text{PIF})$ and apply the delta method. In it, the variance of the linked estimator $f(\widehat{\text{PIF}})$ is decomposed into a scaling factor $[f'(PIF)]^2$ and two distinct components: one associated with the uncertainty in prevalence ($\hat{p}$) and one with the relative risk ($\hat{\beta}$):
+\begin{equation}
+\text{Var}[f(\widehat{\text{PIF}})] \approx \big[f'(\widehat{\text{PIF}})\big]^2\cdot \big(\widehat{\text{VC}}_{\hat{p}} + \widehat{\text{VC}}_{\hat{\beta}}\big).
+\end{equation}
+
+
+### The Prevalence Component ($\widehat{\text{VC}}_p$)
+
+The variance component associated with prevalence uncertainty relies on the covariance matrix of $\hat{p}$ with entries denoted $\sigma_{ij}^{\hat{p}}$ representing the covariance between $\hat{p}_i$ and $\hat{p}_j$:
+\begin{equation}
+\widehat{\text{VC}}_{\hat{p}} = \left(\dfrac{\hat\mu^{\text{cft}}}{\big(\hat\mu^{\text{obs}}\big)^2} \right)^2 \sum\limits_{i=1}^k \sum\limits_{j=1}^k \hat\sigma_{ij}^{\hat{p}}\cdot\big(\text{RR}(\hat\beta_i) - 1\big)\cdot\big(\text{RR}(\hat\beta_j) - 1\big), 
+\end{equation}
+
+where $\hat\mu^{\text{cft}} = 1 + \sum_{i=1}^{k} p_{*i} (\text{RR}(\hat{\beta}_i) - 1)$ represents an estimate of the numerator of the $\text{PIF}$ (with $\hat\mu^{\text{cft}} = 1$ in the case of $\text{PAF}$), and $\hat\mu^{\text{obs}} = 1 + \sum_{i=1}^{k} \hat{p}_i (\text{RR}(\hat{\beta}_i) - 1)$ an estimate of the denominator. 
+
+### The Relative Risk Component ($\widehat{\text{VC}}_{\beta}$)
+
+Similarly, the variance component associated with relative risk uncertainty utilizes the covariance matrix of $\hat{\beta}$, with entries denoted $\sigma_{ij}^{\hat{\beta}}$ representing the covariance between $\hat{\beta}_i$ and $\hat{\beta}_j$:
+\begin{equation}
+\widehat{\text{VC}}_{\hat{\beta}} = \frac{1}{\big(\hat\mu^{\text{obs}}\big)^4}  \cdot \sum\limits_{i=1}^{k}\sum\limits_{j=1}^{k} \hat\sigma_{ij}^{\hat\beta} \cdot \text{RR}'(\hat\beta_i) \cdot \text{RR}'(\hat\beta_j) \cdot \left[ \big(\hat\mu^{\text{obs}}  p_{*i} - \hat\mu^{\text{cft}}  \hat{p}_{j}\big) \cdot \big(\hat\mu^{\text{obs}}  p_{*j} - \hat\mu^{\text{cft}}  \hat{p}_{i}\big) \right],
+\end{equation}
+where $p_{*i} = p_{*j} = 0$ in the case of $\text{PAF}$. 
+
+## Link Functions and Constructing the Interval
+
+To ensure confidence intervals behave properly (e.g., remaining within the appropriate bounds for the fractions), we can apply different link functions ($f$). Standard Wald-type confidence intervals are calculated on the linked scale:
+\begin{equation}
+CI_{\pm}^{\text{link}} = f(\widehat{\text{PIF}}) \pm Z_{\alpha/2} \sqrt{\text{Var}\big[f(\widehat{PIF})\big]}
+\end{equation}
+and then back-transformed using the inverse function $f^{-1}$:
+\begin{equation}
+CI_{\pm} = f^{-1}(CI_{\pm}^{\text{link}}).
+\end{equation}
+
+
+Suggested link functions include:
+
+| Name           | Function $f(\text{PIF})$ |  Inverse $f^{-1}(\text{CI})$ | Derivative $f'(\text{PIF})$ | Notes                                                                                                      |
+|----------------|--------------------------|------------------------------|-----------------------------|------------------------------------------------------------------------------------------------------------|
+| Log complement | $\log(1 - \text{PIF})$ |  $1 - \exp(\text{CI})$ | $\frac{1}{\text{PIF} - 1}$ | Recommended *in general* for any fractions. |
+| Logit          | $\log\left(\frac{\text{PIF}}{1 - \text{PIF}}\right)$ | $\frac{\exp(\text{CI})}{\exp(\text{CI}) + 1}$ | $\frac{1}{(1 - \text{PIF}) \cdot \text{PIF}}$ | Recommended *only* for strictly positive fractions.                                                       |
+
+We remark that Chan et al works with the identity function $f(\text{PIF}) = \text{PIF}$ which can generate intervals outside the possible range of values (i.e. $> 1$). 
+
+## Complex Formulations: Ensembles and Adjustments
+
+Public health scenarios often require combining multiple fractions. While calculating point estimates is simple algebraically, manually calculating the variances and covariances across subpopulations or disjointed risks is mathematically tedious. Some of these fractions include:
+
+* **Total PIF:** Combines subpopulations $i$ via weighted sums (for example, to generate the population-level fraction from fractions across different age groups):
+    $$\textrm{PIF}_{\textrm{Total}} = \sum_i \pi_i \cdot \textrm{PIF}_i$$
+    where $\pi_i \geq 0$ represent the weight of the subpopulation $i$ with their sum being equal to $1$: $\sum_i \pi_i = 1$.
+
+* **Ensemble PIF:** Combines different independent risk factors into a unique fraction:
+    $$\textrm{PIF}_{\textrm{Ensemble}} = 1 - \prod\limits_{i} \big(1 - \pi_i \cdot \textrm{PIF}_i\big)$$
+
+* **Weighted Adjusted PIF:** Given several fractions of concurrent risks that share common pathways, individual fractions can be adjusted for their commonality (shared variance) as:
+    $$\widehat{\textrm{PIF}}_i^{\text{adj}} = \dfrac{\widehat{\textrm{PIF}}_i}{\sum\limits_{k=1}^{n} \widehat{\textrm{PIF}}_k} \cdot \widehat{\textrm{PIF}}_{\text{Combined}}$$
+
+To construct confidence intervals for these complex aggregations, we must approximate their variances. Because these combined fractions involve non-linear transformations and products of multiple random variables (the individual PIFs and their respective weights), we utilize a generalized delta method approach. The variance of any linked combined fraction depends heavily on the covariance structure between the individual fractions ($\widehat{\text{PIF}}_i$), their weights ($\hat{\pi}_i$), and cross-terms between different ensembles.
+
+The table below outlines the mathematical formulas required to compute the variance for the Total, Ensemble, and Weighted Adjusted fractions. It also includes the necessary covariance components—such as the covariance of the weights, of fractions and weights, and of fractions with themselves—that act as building blocks for these calculations. The mathematics behind these covariance calculations and their derivations are explained in the Supplmentary Appendix. 
+
+
+```{r, echo = FALSE}
+table_pif <- tribble(
+  ~`Target Expression`, ~`Approximation Formula`,
+
+  "Variance of Total PIF",
+  "$\\text{Var}[f(\\widehat{\\text{PIF}}_{\\text{Total}})] \\approx [f'(\\widehat{\\text{PIF}}_{\\text{Total}})]^2 \\sum_{i=1}^{M} \\sum_{j=1}^{M} \\left[ \\hat{\\pi}_i \\text{Cov}(\\widehat{\\text{PIF}}_i,\\widehat{\\text{PIF}}_j) \\hat{\\pi}_j + \\widehat{\\text{PIF}}_i \\text{Cov}(\\hat{\\pi}_i,\\hat{\\pi}_j) \\widehat{\\text{PIF}}_j \\right]$",
+
+  "Variance of Ensemble PIF",
+  "$\\text{Var}[f(\\widehat{\\text{PIF}}_{\\text{Ensemble}})] \\approx \\left[(\\widehat{\\text{PIF}}_{\\text{Ensemble}}-1) f'(\\widehat{\\text{PIF}}_{\\text{Ensemble}})\\right]^2 \\sum_{i=1}^{M} \\sum_{j=1}^{M} \\left[ \\frac{\\pi_i \\text{Cov}(\\widehat{\\text{PIF}}_i,\\widehat{\\text{PIF}}_j) \\pi_j + \\widehat{\\text{PIF}}_i \\text{Cov}(\\hat{\\pi}_i,\\hat{\\pi}_j) \\widehat{\\text{PIF}}_j}{(1-\\pi_i\\widehat{\\text{PIF}}_i)(1-\\pi_j\\widehat{\\text{PIF}}_j)} \\right]$",
+
+  "Variance of Weighted Adj. PIF (Log-transformed)",
+  "$\\text{Var}\\!\\left[\\ln \\widehat{\\text{PIF}}_i^{\\text{adj}}\\right] \\approx \\frac{\\text{Var}(\\widehat{\\text{PIF}}_i)}{\\widehat{\\text{PIF}}_i^2} + \\frac{1}{\\left(\\sum_{k=1}^{n}\\widehat{\\text{PIF}}_k\\right)^2}\\sum_{k=1}^{n}\\sum_{l=1}^{n}\\text{Cov}(\\widehat{\\text{PIF}}_k,\\widehat{\\text{PIF}}_l) + \\frac{\\text{Var}(\\widehat{\\text{PIF}}_{\\text{Comb}})}{\\widehat{\\text{PIF}}_{\\text{Comb}}^2} + 2\\Bigg[ \\frac{\\text{Cov}(\\widehat{\\text{PIF}}_i,\\widehat{\\text{PIF}}_{\\text{Comb}})}{\\widehat{\\text{PIF}}_i\\widehat{\\text{PIF}}_{\\text{Comb}}} - \\frac{1}{\\widehat{\\text{PIF}}_i\\sum_{k=1}^{n}\\widehat{\\text{PIF}}_k}\\sum_{k=1}^{n}\\text{Cov}(\\widehat{\\text{PIF}}_i,\\widehat{\\text{PIF}}_k) - \\frac{1}{\\widehat{\\text{PIF}}_{\\text{Comb}}\\sum_{k=1}^{n}\\widehat{\\text{PIF}}_k}\\sum_{k=1}^{n}\\text{Cov}(\\widehat{\\text{PIF}}_{\\text{Comb}},\\widehat{\\text{PIF}}_k) \\Bigg]$",
+
+  "Covariance (Fraction A, Weight $w_j$)",
+  "$\\widehat{\\text{Cov}}(\\widehat{\\text{PIF}}_A,\\hat{w}_j) \\approx \\frac{1}{g'(\\widehat{\\text{PIF}}_A)}\\sum_{i=1}^{M_1} g'(\\hat{\\pi}_i \\widehat{\\text{PIF}}_{A,i}) \\left[ \\hat{\\pi}_i \\widehat{\\text{Cov}}(\\widehat{\\text{PIF}}_{A,i},\\hat{w}_j) + \\widehat{\\text{PIF}}_{A,i} \\widehat{\\text{Cov}}(\\hat{\\pi}_i,\\hat{w}_j) \\right]$",
+
+  "Covariance (Fraction A, Element $\\text{PIF}_{B,j}$)",
+  "$\\widehat{\\text{Cov}}(\\widehat{\\text{PIF}}_A,\\widehat{\\text{PIF}}_{B,j}) \\approx \\frac{1}{g'(\\widehat{\\text{PIF}}_A)}\\sum_{i=1}^{M_1} g'(\\hat{\\pi}_i \\widehat{\\text{PIF}}_{A,i}) \\left[ \\hat{\\pi}_i \\text{Cov}(\\widehat{\\text{PIF}}_{A,i},\\widehat{\\text{PIF}}_{B,j}) + \\widehat{\\text{PIF}}_{A,i} \\widehat{\\text{Cov}}(\\hat{\\pi}_i,\\widehat{\\text{PIF}}_{B,j}) \\right]$",
+
+  "Covariance (Fraction A, Fraction B)",
+  "$\\widehat{\\text{Cov}}(\\widehat{\\text{PIF}}_A,\\widehat{\\text{PIF}}_B) \\approx \\frac{1}{g'(\\widehat{\\text{PIF}}_A)h'(\\widehat{\\text{PIF}}_B)}\\sum_{i=1}^{M_1}\\sum_{j=1}^{M_2} g'(\\hat{\\pi}_i \\widehat{\\text{PIF}}_{A,i}) h'(\\hat{w}_j \\widehat{\\text{PIF}}_{B,j}) \\widehat{\\text{Cov}}(\\hat{\\pi}_i \\widehat{\\text{PIF}}_{A,i},\\hat{w}_j \\widehat{\\text{PIF}}_{B,j})$",
+
+  "Covariance of Products (General)",
+  "$\\widehat{\\text{Cov}}(\\hat{\\pi}_i \\widehat{\\text{PIF}}_{A,i},\\hat{w}_j \\widehat{\\text{PIF}}_{B,j}) = \\hat{\\pi}_i \\widehat{\\text{PIF}}_{B,j} \\widehat{\\text{Cov}}(\\hat{w}_j,\\widehat{\\text{PIF}}_{A,i}) + \\hat{w}_j \\widehat{\\text{PIF}}_{A,i} \\widehat{\\text{Cov}}(\\hat{\\pi}_i,\\widehat{\\text{PIF}}_{B,j}) + \\hat{\\pi}_i \\hat{w}_j \\widehat{\\text{Cov}}(\\widehat{\\text{PIF}}_{A,i},\\widehat{\\text{PIF}}_{B,j}) + \\widehat{\\text{PIF}}_{A,i} \\widehat{\\text{PIF}}_{B,j} \\widehat{\\text{Cov}}(\\hat{\\pi}_i,\\hat{w}_j)$"
+)
+
+knitr::kable(table_pif, escape = FALSE, booktabs = TRUE) |>
+  kableExtra::kable_styling(latex_options = c("scale_down", "striped"), 
+                            full_width = FALSE)
+```
+
+> **Note:** In the covariance formulas, $g$ and $h$ represent the transformation functions used for the specific combinations (e.g., identity for total PIF or log-transform for ensembles).
+
+These complex derivations are pre-programmed into the `deltapif` package, allowing researchers to focus on epidemiological interpretation rather than algebraic manual derivation.
+
+
+
+
+# Software Implementation and Examples
+
+The `deltapif` package provides a comprehensive suite of functions to estimate health impacts from summary data. In this section, we demonstrate its capabilities using published epidemiological scenarios, progressing from basic fraction estimation to complex, multi-risk adjustments.
+
+## Population Attributable Fraction (PAF)
+
+As discussed before, Lee et al. estimated the fraction of dementia cases attributable to smoking in the US. The log relative risk of smoking on dementia is 0.463734 (sd: 0.165). he  smoking prevalence was 8.5%. To calculate the PAF and its confidence interval, we utilize the `paf()` function with the log relative risk `beta = 0.463734` and the exposure prevalence of `p = 0.085`, and the variance of the log relative risk given by the square of the standard deviation: `var_beta = 0.165^2`. 
+
+```{r}
+library(deltapif)
+
+paf_smk_dementia <- paf(
+  p         = 0.085,     #Exposure prevalence
+  beta      = 0.463734,  #Log relative risk
+  var_beta  = 0.165^2,   #Variance of log relative risk
+  var_p     = 0,         #Variance of prevalence
+  label     = "Smoking"  #(Optional) Label to show when displaying the fraction
+)
+paf_smk_dementia
+```
+
+We remark that multiple exposures can be handled by the `paf()` function by passing a vector of exposure prevalence to `p`, a vector of log relative risks to `beta` and a covariance matrix to `var_beta` and `var_p`. An example for this case is presented in the Supplement. 
+
+## Potential Impact Fraction (PIF) 
+
+Lee et al. also modeled a scenario where smoking prevalence was reduced by 15% (from 8.5% to 7.225%). We estimate this using the `pif()` function by specifying the counterfactual prevalence (`p_cft`):
+
+```{r}
+pif_smk_dementia <- pif(
+  p         = 0.085,     #Exposure prevalence
+  p_cft     = 0.07225,   #Counterfactual exposure prevalence
+  beta      = 0.463734,  #Log relative risk
+  var_beta  = 0.165^2,   #Variance of log relative risk
+  var_p     = 0          #Variance of prevalence
+)
+pif_smk_dementia
+```
+
+Note that if no `label` is assigned, a random is given. In the previous example represented by `r  pif_smk_dementia@label`.
+
+## Case Estimation
+
+We can translate these fractions into absolute health impacts. As previously discussed, Dhana et al. (2023) estimated 426.5 thousand people (sd: 13.39286) living with Alzheimer's Disease in New York. Using the `averted_cases()` function, we calculate the thousands of cases prevented under the 15% reduction scenario:
+
+```{r}
+averted_cases(426.5, pif_smk_dementia, variance = 13.39286^2)
+```
+
+The `attributable_cases()` function works the same way but with a `paf` object:
+
+```{r}
+attributable_cases(426.5, paf_smk_dementia, variance = 13.39286^2)
+```
+
+## Combining Fractions from Subpopulations (Total PAF)
+
+Lee et al also calculated the population attributable fractions for different subgroups which can then be combined to form the population-level fraction. Using the `label` we can keep track of what each fraction represents:
+
+```{r}
+paf_hispanic <- paf(p = 0.069, beta = 0.463734, var_beta = 0.165^2, 
+                    var_p = 0, label = "Hispanic")
+paf_asian    <- paf(p = 0.049, beta = 0.4637340, var_beta = 0.0273858, 
+                    var_p = 0, label = "Asian")
+paf_black    <- paf(p = 0.117, beta = 0.4637340, var_beta = 0.0273858, 
+                    var_p = 0, label = "Black")
+paf_white    <- paf(p = 0.084, beta = 0.4637340, var_beta = 0.0273858, 
+                    var_p = 0, label = "White")
+```
+
+Information on each fraction can be accessed with the `coef()`, `confint()`, `standard_deviation()`, and `summary()` generics:
+
+```{r, results = FALSE}
+coef(paf_hispanic)             #PAF estimate for Hispanics
+confint(paf_asian)             #Confidence interval for PAF's estimate for Asians
+standard_deviation(paf_black)  #Standard deviation for PAF's estimate for Blacks
+summary(paf_white)             #Summary of the PAF for Whites
+```
+
+Finally, the subpopulation's fractions can be combined into a population total by using the `paf_total()` function by using the population's distribution:
+
+```{r}
+#Population weights given in the order that they are used in paf_total:
+pop_weights <- c(hispanic = 0.20, asian = 0.06, black = 0.13, white = 0.61)
+
+#Calculate the population paf
+paf_total(paf_hispanic, paf_asian, paf_black, paf_white, weights = pop_weights)
+```
+
+## Combining Fractions from Multiple Risks (Ensemble and Adjusted PAF)
+
+When evaluating multiple disjointed risks, such as the relative risk of smoking and excessive alcohol on dementia, we can compute an ensemble fraction to aggregate them. Lee et al also calculate the PAF for excesive alcohol consumption (prevalence 3.6%) with log relative risk 0.165 (sd: 0.054).
+
+```{r}
+paf_alc_dementia <- paf(
+  p         = 0.036, 
+  beta      = 0.165, 
+  var_p     = 0.0, 
+  var_beta  = 0.054^2,
+  label     = "Excesive Alcohol"
+)
+```
+
+By supplying commonality correction weights (e.g., 0.3 and 0.2), we estimate the combined  burden using `paf_ensemble()`:
+
+```{r}
+paf_ensemble(paf_smk_dementia, paf_alc_dementia, weights = c(0.3, 0.2),
+             label = "Smoking & Excesive alcohol")
+```
+
+Mukadam et al. (2019) proposed calculating weighted, adjusted individual fractions to isolate the burden of each factor while accounting for shared variance. We calculate these adjusted fractions using `weighted_adjusted_paf()` with specified commonality correction weights:
+
+```{r}
+weighted_adjusted_paf(paf_smk_dementia, paf_alc_dementia, weights = c(0.3, 0.2))
+```
+
+This returns a named list containing the properly adjusted fractions, ensuring the disease burden is not artificially inflated by overlapping risks.
+

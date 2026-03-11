@@ -10,6 +10,7 @@ oldstuff
 logo
 ^_pkgdown\.yml$
 ^docs$
+^paper$
 ^pkgdown$
 ^data-raw$
 ^codecov\.yml$

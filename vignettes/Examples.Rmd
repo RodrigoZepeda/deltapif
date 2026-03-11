@@ -412,7 +412,7 @@ We remark that this option is not turned on by default as the **positivity** of 
 ## Example 8: Computing averted and attributable cases
 
 Attributable and averted cases can be calculated with the `attributable_cases` (resp. `averted_cases`) function. For
-example [@dhana2023prevalence](https://pmc.ncbi.nlm.nih.gov/articles/PMC10593099/#SD2) estimates the number of people with Alzheimer's Disease in New York, USA 426.5 (400.2, 452.7) thousand. This implies a variance of `((452.7 - 400.2) / 2*qnorm(0.975))^2 = 2647.005`. 
+example [@dhana2023prevalence](https://pmc.ncbi.nlm.nih.gov/articles/PMC10593099/#SD2) estimates the number of people with Alzheimer's Disease in New York, USA 426.5 (400.2, 452.7) thousand. This implies a variance of `((452.7 - 400.2) / (2*qnorm(0.975))^2) = 179.3752`. 
 
 To estimate cases we need to:
 
@@ -433,7 +433,7 @@ pif_smoking
 ```
 
 ```{r}
-averted_cases(426.5, pif_smoking, variance = 2647.005)
+averted_cases(426.5, pif_smoking, variance = 179.3752)
 ```
 
 ## Example 9: Computing averted cases (strictly positive)
