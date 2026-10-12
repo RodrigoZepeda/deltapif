@@ -15,7 +15,8 @@ Imports:
     cli,
     Deriv,
     S7,
-    scales
+    scales,
+    stats
 URL: https://rodrigozepeda.github.io/deltapif/
 Suggests: 
     EValue,

@@ -1,3 +1,7 @@
+# deltapif (development version)
+
+* `pif()`, `pif_total()`, and `pif_ensemble()` now construct their parent objects with development S7.
+
 # deltapif 0.4.6
 
 * Fixes bug in printing standard deviation of `attributable_cases()` and

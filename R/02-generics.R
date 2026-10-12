@@ -216,6 +216,7 @@ S7::method(print, covariance_structure_class) <- function(x, ..., quote = FALSE)
 NULL
 
 #' @name coef
+#' @importFrom stats coef
 #' @export
 S7::method(coef, pif_class) <- function(object, ...) {
   object@pif
