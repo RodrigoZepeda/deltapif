@@ -1,6 +1,6 @@
 # deltapif (development version)
 
-* `pif()`, `pif_total()`, and `pif_ensemble()` now construct their parent objects with development S7.
+* Updates for compatibility with S7 > 0.2.2.
 
 # deltapif 0.4.6
 
