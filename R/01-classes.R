@@ -545,12 +545,17 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
                           type, label, upper_bound_p, upper_bound_beta) {
 
 
-     S7::new_object(
-       pif_class(
-         pif = 0, variance = 0, conf_level = conf_level, type = type,
-         label = label, link = link, link_inv = link_inv,
-         link_deriv = link_deriv
-       ),
+     S7::new_object(pif_class(
+
+                    #Elements of pif_class
+                    conf_level = conf_level,
+                    type       = type,
+                    label      = label,
+                    link       = link,
+                    link_inv   = link_inv,
+                    link_deriv = link_deriv,
+                    pif        = 0,
+                    variance   = 0),
 
                     #New added elements of pif_atomic
                     p             = p,
@@ -598,11 +603,14 @@ pif_global_ensemble_class <- S7::new_class(
                          pif_deriv_transform, pif_inverse_transform,
                          link, link_inv, link_deriv, conf_level = 0.95,  label){
 
-    S7::new_object(
-      pif_class(
-        pif = 0, variance = 0, conf_level = conf_level, label = label,
-        link = link, link_inv = link_inv, link_deriv = link_deriv
-      ),
+    S7::new_object(pif_class(
+                   conf_level = conf_level,
+                   label      = label,
+                   link = link,
+                   link_inv = link_inv,
+                   link_deriv = link_deriv,
+                   pif = 0,
+                   variance = 0),
                    pif_transform = pif_transform,
                    pif_inverse_transform = pif_inverse_transform,
                    pif_deriv_transform = pif_deriv_transform,
@@ -627,15 +635,24 @@ pif_total_class <- S7::new_class(
                          conf_level = 0.95, label){
 
     S7::new_object(pif_global_ensemble_class(
-      pif_list = pif_list, weights = weights, var_weights = var_weights,
-      var_pif_weights = var_pif_weights,
-      pif_transform = identity, pif_inverse_transform = identity,
-      pif_deriv_transform = function(x) rep(1, length(x)),
-      link = link, link_inv = link_inv, link_deriv = link_deriv,
-      conf_level = conf_level, label = label
-    ))
+                   conf_level = conf_level,
+                   label      = label,
+                   link = link,
+                   link_inv = link_inv,
+                   link_deriv = link_deriv,
+                   pif_list = pif_list,
+                   weights = weights,
+                   var_weights = var_weights,
+                   var_pif_weights = var_pif_weights,
+                   pif_transform = identity,
+                   pif_deriv_transform = function(x) rep(1, length(x)),
+                   pif_inverse_transform = identity
+                   ))
+
+
   }
 )
+
 #' @rdname classes
 #pif_ensemble_class------------------
 pif_ensemble_class <- S7::new_class(
@@ -654,12 +671,20 @@ pif_ensemble_class <- S7::new_class(
                          label){
 
     S7::new_object(pif_global_ensemble_class(
-      pif_list = pif_list, weights = weights, var_weights = var_weights,
-      var_pif_weights = var_pif_weights,
-      pif_transform = log_complement, pif_inverse_transform = inv_log_complement,
-      pif_deriv_transform = deriv_log_complement,
-      link = link, link_inv = link_inv, link_deriv = link_deriv,
-      conf_level = conf_level, label = label
+                   conf_level = conf_level,
+                   label = label,
+                   link = link,
+                   link_inv = link_inv,
+                   link_deriv = link_deriv,
+                   weights = weights,
+                   var_weights = var_weights,
+                   var_pif_weights = var_pif_weights,
+                   pif_list = pif_list,
+                   pif_transform = log_complement,
+                   pif_inverse_transform = inv_log_complement,
+                   pif_deriv_transform = deriv_log_complement
     ))
+
+
   }
 )
