@@ -3,7 +3,11 @@
 NULL
 
 .onLoad <- function(...) {
-  S7::methods_register()
+  if ("S7_on_load" %in% getNamespaceExports("S7")) {
+    S7::S7_on_load()
+  } else {
+    S7::methods_register()
+  }
 
   S7::method(`[[`, covariance_structure_class) <- function(x, i, ...) {
     x@cov_list[[i]]
@@ -27,4 +31,10 @@ NULL
 
 
 
+}
+
+.onUnload <- function(libpath) {
+  if ("S7_on_unload" %in% getNamespaceExports("S7")) {
+    S7::S7_on_unload()
+  }
 }
