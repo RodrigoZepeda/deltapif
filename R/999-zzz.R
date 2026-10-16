@@ -4,7 +4,7 @@ NULL
 
 .onLoad <- function(...) {
   if ("S7_on_load" %in% getNamespaceExports("S7")) {
-    S7::S7_on_load()
+    getExportedValue("S7", "S7_on_load")()
   } else {
     S7::methods_register()
   }
@@ -35,6 +35,6 @@ NULL
 
 .onUnload <- function(libpath) {
   if ("S7_on_unload" %in% getNamespaceExports("S7")) {
-    S7::S7_on_unload()
+    getExportedValue("S7", "S7_on_unload")()
   }
 }
