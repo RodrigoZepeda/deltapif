@@ -10,7 +10,7 @@
 #'   \item{RR}{The relative risk of dementia associated to the risk factor}
 #'   \item{lower_CI, upper_CI}{Lower and upper bounds for the 95% confidence interval}
 #'   \item{logrr}{The logarithm of the relative risk `log(RR)`}
-#'   \item{sdlog}{The variance of the logarithm of the relative risk `variance(log(RR))`}
+#'   \item{sdlog}{The standard deviation (standard error) of the logarithm of the relative risk `sd(log(RR))`}
 #'   \item{total}{The proportion of individuals exposed in the overall population}
 #'   \item{hispanic}{The proportion of hispanic individuals exposed}
 #'   \item{asian}{The proportion of non-hispanic asian individuals exposed}

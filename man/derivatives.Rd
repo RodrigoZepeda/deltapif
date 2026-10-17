@@ -6,7 +6,7 @@
 \alias{deriv_pif_beta}
 \title{Partial derivatives of PIF}
 \usage{
-deriv_pif_p(p, p_cft, rr, mu_obs = NULL, mu_cft = NULL)
+deriv_pif_p(p, p_cft, rr, mu_obs = NULL, mu_cft = NULL, p_cft_jacobian = NULL)
 
 deriv_pif_beta(p, p_cft, rr, rr_link_deriv_vals, mu_obs = NULL, mu_cft = NULL)
 }
@@ -15,13 +15,25 @@ deriv_pif_beta(p, p_cft, rr, rr_link_deriv_vals, mu_obs = NULL, mu_cft = NULL)
 each of the \code{N} exposure levels.}
 
 \item{p_cft}{Counterfactual prevalence (proportion) of the exposed
-individuals for each of the \code{N} exposure levels.}
+individuals for each of the \code{N} exposure levels. Either a numeric vector,
+for a fixed target that does not depend on the observed prevalence, or a
+function of \code{p} returning the counterfactual prevalence, for scenarios
+defined relative to the current exposure (e.g. \code{function(p) 0.85 * p} for
+a 15\% reduction). In the latter case the uncertainty in \code{p} is also
+propagated through the counterfactual. See the section
+\emph{Fixed and relative counterfactuals}.}
 
 \item{rr}{The relative risk for each of the exposure levels.}
 
 \item{mu_obs}{The average value of the relative risk in the observed population.}
 
 \item{mu_cft}{The average value of the counterfactual relative risk in the population.}
+
+\item{p_cft_jacobian}{(Optional) Jacobian of the counterfactual prevalence
+\code{p_cft} with respect to \code{p} when the counterfactual is a function of the
+observed prevalence (for example a relative reduction \code{p_cft = 0.85 * p}).
+Entry \verb{[j, i]} is the derivative of \code{p_cft[j]} with respect to \code{p[i]}.
+\code{NULL} (default) assumes \code{p_cft} is a fixed target.}
 
 \item{rr_link_deriv_vals}{The derivative of the relative risk function \code{g}
 with respect to the parameter \code{beta} evaluated at \code{beta}.}
@@ -44,6 +56,10 @@ The partial derivative of \code{PIF} with respect to \code{p} is:
 \dfrac{\partial \textrm{PIF}}{\partial p} =
 \dfrac{\mu^{\text{cft}}}{\big(\mu^{\text{obs}}\big)^2} \cdot \big( \text{RR}(\beta) - 1\big)
 }
+If the counterfactual is a function of the prevalence, \eqn{p_{*} = g(p)},
+the total derivative adds the term
+\eqn{- J_g^{\top} \big( \text{RR}(\beta) - 1\big) / \mu^{\text{obs}}}
+where \eqn{J_g} is the Jacobian of \eqn{g} evaluated at \eqn{p}.
 The partial derivative of \code{PIF} with respect to \code{beta} is:
 \deqn{
 \dfrac{\partial \textrm{PIF}}{\partial \beta} =

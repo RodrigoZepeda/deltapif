@@ -1,5 +1,27 @@
 # deltapif 0.4.6
 
+* `pif()` accepts the counterfactual prevalence `p_cft` as a function of `p`
+(e.g. `function(p) 0.85 * p`) for scenarios defined relative to the current
+exposure. The uncertainty in `p` is then propagated through the counterfactual
+(numerically or with the new argument `p_cft_deriv`). Numeric `p_cft` values
+keep being treated as fixed targets.
+
+* New `variance_components()` splits the variance of a fraction into the parts
+due to the prevalences (`p`), the relative risks (`beta`) and the weights.
+
+* `weighted_adjusted_paf()` and `weighted_adjusted_pif()` build their confidence
+intervals on the log scale by default (new argument `link`), consistent with the
+log-scale variance of the adjusted fractions; use `link = "identity"` for the
+previous symmetric intervals. `weighted_adjusted_pif()` and `weighted_adjusted_paf()`
+now pass `pif_total_link` and `pif_ensemble_link` (and their inverses and
+derivatives) instead of ignoring them.
+
+* Fixes the vignettes and README: the variance of the number of cases derived
+from its confidence interval, the alcohol example (which passed relative risks
+instead of log relative risks), and the ensemble and adjusted examples (which used
+communalities instead of `1 - communality` as weights, in the wrong order). Fixes
+the description of `sdlog` in `dementiarisk`.
+
 * Fixes bug in `pif_total()`, `paf_total()`, `pif_ensemble()`, `paf_ensemble()`
 (and hence `weighted_adjusted_pif()` and `weighted_adjusted_paf()`) where the
 inverse of the link was used instead of its derivative, producing confidence

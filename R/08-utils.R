@@ -429,3 +429,36 @@ flatten_names <- function(pif){
     )
   }
 }
+
+#' Numerical jacobian
+#'
+#' Approximates the jacobian of a vector-valued function via central
+#' differences. Entry `[j, i]` is the derivative of the `j`th output with
+#' respect to the `i`th input.
+#'
+#' @param fun A function taking a numeric vector and returning a numeric vector.
+#' @param x Point at which the jacobian is evaluated.
+#' @param h Relative step for the finite differences.
+#'
+#' @return A matrix with `length(fun(x))` rows and `length(x)` columns.
+#'
+#' @examples
+#' \dontrun{
+#' numerical_jacobian(function(p) 0.85 * p, c(0.2, 0.1))
+#' }
+#'
+#' @keywords internal
+#' @noRd
+numerical_jacobian <- function(fun, x, h = 1e-6) {
+  fx  <- as.numeric(fun(x))
+  jac <- matrix(NA_real_, nrow = length(fx), ncol = length(x))
+  for (i in seq_along(x)) {
+    step    <- h * max(abs(x[i]), 1)
+    x_plus  <- x
+    x_minus <- x
+    x_plus[i]  <- x[i] + step
+    x_minus[i] <- x[i] - step
+    jac[, i] <- (as.numeric(fun(x_plus)) - as.numeric(fun(x_minus))) / (2 * step)
+  }
+  jac
+}

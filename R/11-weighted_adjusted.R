@@ -60,10 +60,26 @@ weighted_adjusted_fractions <- function(
     conf_level               = 0.95,
     label_ensemble           = NULL,
     label_sum                = NULL,
-    quiet                    = FALSE
+    quiet                    = FALSE,
+    link                     = "log",
+    link_inv                 = NULL,
+    link_deriv               = NULL
 ) {
 
   # ── 1. Collect and validate inputs ──────────────────────────────────────────
+
+  # Link for the confidence intervals of the adjusted fractions
+  check_links(link = link, link_inv = link_inv, link_deriv = link_deriv)
+  if (is.null(link_inv) & is.character(link)) {
+    link_inv <- parse_inv_link(link)
+  }
+  if (is.null(link_deriv) & is.character(link)) {
+    link_deriv <- parse_deriv_link(link)
+  }
+  link <- parse_link(link)
+  if (is.null(link_deriv)) {
+    link_deriv <- Deriv::Deriv(link)
+  }
 
   pif_list <- c(list(pif1), list(...))
   n        <- length(pif_list)
@@ -217,15 +233,24 @@ weighted_adjusted_fractions <- function(
       )
     }
 
+    if (identical(link, log) && pif_adj <= 0) {
+      cli::cli_abort(
+        c(
+          "Adjusted fraction {.val {labels[i]}} is {.val {pif_adj}} so its interval cannot be built on the log scale.",
+          "i" = "Use {.code link = \"identity\"} for fractions that are not strictly positive."
+        )
+      )
+    }
+
     adjusted_list[[i]] <- pif_class(
       pif        = pif_adj,
       variance   = var_adj,
       conf_level = conf_level,
       label      = paste0(labels[i], "_adj"),
       type       = types[1L],
-      link       = identity,
-      link_inv   = identity,
-      link_deriv = function(x) 1
+      link       = link,
+      link_inv   = link_inv,
+      link_deriv = link_deriv
     )
   }
 
@@ -270,7 +295,19 @@ weighted_adjusted_fractions <- function(
 #'
 #' @param weights Weights for the ensemble (`pif_ensemble`).
 #'   Passed directly to [pif_ensemble()] / [paf_ensemble()].
-#'   Defaults to `NULL` (equal weights of 1 for each fraction).
+#'   Defaults to `NULL` (equal weights of 1 for each fraction). When
+#'   adjusting for communality (Mukadam et al. 2019) the weights are
+#'   `1 - communality`.
+#'
+#' @param link Link used to build the confidence intervals of the adjusted
+#'   fractions. Defaults to `"log"`, the scale on which their variance is
+#'   derived (see *Formula*), which guarantees strictly positive intervals.
+#'   Use `"identity"` for symmetric Wald intervals (required if an adjusted
+#'   fraction is not strictly positive) or a function together with
+#'   `link_inv` and `link_deriv`.
+#'
+#' @param link_inv,link_deriv (Optional) Inverse and derivative of `link`
+#'   when `link` is a function.
 #'
 #' @param var_weights Covariance structure for `weights`.
 #'   Passed directly to [pif_ensemble()] / [paf_ensemble()].
@@ -329,6 +366,13 @@ weighted_adjusted_fractions <- function(
 #'     \frac{\operatorname{Cov}(X, Y)}{X \cdot Y}
 #' }
 #'
+#' The confidence interval is built on the scale of `link` (the log scale by
+#' default):
+#' \deqn{
+#'   \exp\Big( \ln \widehat{\text{PIF}}_i^{\text{adj}} \pm Z_{\alpha/2}
+#'   \sqrt{\operatorname{Var}\big[\ln \widehat{\text{PIF}}_i^{\text{adj}}\big]}\Big).
+#' }
+#'
 #' The covariances \eqn{\operatorname{Cov}(\widehat{\text{PIF}}_i, \cdot)} are
 #' computed by the internal function `cov_total_pif()` applied to the
 #' individual fraction and the internally constructed sum/ensemble objects,
@@ -362,10 +406,19 @@ weighted_adjusted_paf <- function(
     var_pif_weights = NULL,
     var_p           = NULL,
     var_beta        = NULL,
+    pif_total_link           = "log-complement",
+    pif_total_link_inv       = NULL,
+    pif_total_link_deriv     = NULL,
+    pif_ensemble_link        = "identity",
+    pif_ensemble_link_inv    = NULL,
+    pif_ensemble_link_deriv  = NULL,
     conf_level      = 0.95,
     label_ensemble  = NULL,
     label_sum       = NULL,
-    quiet           = FALSE
+    quiet           = FALSE,
+    link            = "log",
+    link_inv        = NULL,
+    link_deriv      = NULL
 ) {
 
   if (paf1@type != "PAF"){
@@ -382,10 +435,19 @@ weighted_adjusted_paf <- function(
     var_pif_weights = var_pif_weights,
     var_p           = var_p,
     var_beta        = var_beta,
+    pif_total_link           = pif_total_link,
+    pif_total_link_inv       = pif_total_link_inv,
+    pif_total_link_deriv     = pif_total_link_deriv,
+    pif_ensemble_link        = pif_ensemble_link,
+    pif_ensemble_link_inv    = pif_ensemble_link_inv,
+    pif_ensemble_link_deriv  = pif_ensemble_link_deriv,
     conf_level      = conf_level,
     label_ensemble  = label_ensemble,
     label_sum       = label_sum,
-    quiet           = quiet
+    quiet           = quiet,
+    link            = link,
+    link_inv        = link_inv,
+    link_deriv      = link_deriv
   )
 }
 
@@ -409,7 +471,10 @@ weighted_adjusted_pif <- function(
     conf_level               = 0.95,
     label_ensemble           = NULL,
     label_sum                = NULL,
-    quiet                    = FALSE
+    quiet                    = FALSE,
+    link                     = "log",
+    link_inv                 = NULL,
+    link_deriv               = NULL
 ) {
   weighted_adjusted_fractions(
     pif1,
@@ -419,15 +484,18 @@ weighted_adjusted_pif <- function(
     var_pif_weights          = var_pif_weights,
     var_p                    = var_p,
     var_beta                 = var_beta,
-    pif_total_link           = "log-complement",
-    pif_total_link_inv       = NULL,
-    pif_total_link_deriv     = NULL,
-    pif_ensemble_link        = "identity",
-    pif_ensemble_link_inv    = NULL,
-    pif_ensemble_link_deriv  = NULL,
+    pif_total_link           = pif_total_link,
+    pif_total_link_inv       = pif_total_link_inv,
+    pif_total_link_deriv     = pif_total_link_deriv,
+    pif_ensemble_link        = pif_ensemble_link,
+    pif_ensemble_link_inv    = pif_ensemble_link_inv,
+    pif_ensemble_link_deriv  = pif_ensemble_link_deriv,
     conf_level               = conf_level,
     label_ensemble           = label_ensemble,
     label_sum                = label_sum,
-    quiet                    = quiet
+    quiet                    = quiet,
+    link                     = link,
+    link_inv                 = link_inv,
+    link_deriv               = link_deriv
   )
 }

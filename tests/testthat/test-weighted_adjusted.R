@@ -374,3 +374,37 @@ test_that("weighted_adjusted_fractions handles zero variance fractions", {
   expect_equal(adj[["Zv1"]]@variance, 0)
   expect_equal(adj[["Zv2"]]@variance, 0)
 })
+
+test_that("Weighted adjusted intervals are built on the log scale by default", {
+  paf_a <- paf(0.3, beta = log(1.8), var_p = 0.001, var_beta = 0.02, label = "a", quiet = TRUE)
+  paf_b <- paf(0.2, beta = log(1.4), var_p = 0.001, var_beta = 0.03, label = "b", quiet = TRUE)
+
+  adj_log <- weighted_adjusted_paf(paf_a, paf_b, weights = c(0.9, 0.8), quiet = TRUE)
+  adj_id  <- weighted_adjusted_paf(paf_a, paf_b, weights = c(0.9, 0.8), quiet = TRUE,
+                                   link = "identity")
+
+  for (k in seq_along(adj_log)) {
+    est <- coef(adj_log[[k]])
+    se  <- sqrt(variance(adj_log[[k]]))
+
+    #Same point estimate and variance regardless of the link
+    expect_equal(est, coef(adj_id[[k]]))
+    expect_equal(variance(adj_log[[k]]), variance(adj_id[[k]]))
+
+    expect_equal(as.numeric(confint(adj_log[[k]])),
+                 exp(log(est) + c(-1, 1) * qnorm(0.975) * se / est))
+    expect_equal(as.numeric(confint(adj_id[[k]])),
+                 est + c(-1, 1) * qnorm(0.975) * se)
+  }
+})
+
+test_that("weighted_adjusted_pif passes the total and ensemble links", {
+  pif_a <- pif(0.3, p_cft = 0.1, beta = log(1.8), var_p = 0.001, var_beta = 0.02,
+               label = "a", quiet = TRUE)
+  pif_b <- pif(0.2, p_cft = 0.1, beta = log(1.4), var_p = 0.001, var_beta = 0.03,
+               label = "b", quiet = TRUE)
+  expect_no_error(
+    weighted_adjusted_pif(pif_a, pif_b, pif_total_link = "identity",
+                          pif_ensemble_link = "log-complement", quiet = TRUE)
+  )
+})

@@ -35,7 +35,8 @@ pif(
   conf_level = 0.95,
   type = "PIF",
   quiet = FALSE,
-  label = NULL
+  label = NULL,
+  p_cft_deriv = NULL
 )
 }
 \arguments{
@@ -77,10 +78,22 @@ to build it automatically from \code{link} using \code{\link[Deriv:Deriv]{Deriv:
 \item{label}{Character identifier for the impact fraction. This is for}
 
 \item{p_cft}{Counterfactual prevalence (proportion) of the exposed
-individuals for each of the \code{N} exposure levels.}
+individuals for each of the \code{N} exposure levels. Either a numeric vector,
+for a fixed target that does not depend on the observed prevalence, or a
+function of \code{p} returning the counterfactual prevalence, for scenarios
+defined relative to the current exposure (e.g. \code{function(p) 0.85 * p} for
+a 15\% reduction). In the latter case the uncertainty in \code{p} is also
+propagated through the counterfactual. See the section
+\emph{Fixed and relative counterfactuals}.}
 
 \item{type}{Character either Potential Impact Fraction (\code{PIF}) or
 Population Attributable Fraction (\code{PAF})}
+
+\item{p_cft_deriv}{(Optional) Only used when \code{p_cft} is a function. Either
+a function of \code{p} returning the jacobian of \code{p_cft} (a \verb{N x N} matrix whose
+entry \verb{[j, i]} is the derivative of \code{p_cft(p)[j]} with respect to \code{p[i]}) or
+that matrix evaluated at \code{p}. If \code{NULL} (default) the jacobian is
+approximated numerically.}
 }
 \value{
 A \code{pif_class} object with the estimate of the
@@ -155,6 +168,25 @@ and the intervals are constructed as:
 
 the function \eqn{f} is called the link function for the PIF, \eqn{f^{-1}}
 represents its inverse, and \eqn{f'} its derivative.
+}
+
+\section{Fixed and relative counterfactuals}{
+
+When \code{p_cft} is a number (or vector) it is treated as a fixed target, for
+example "reduce smoking prevalence to 5\%". When the scenario is defined
+relative to the current exposure, for example "reduce smoking prevalence by
+15\%", the counterfactual inherits the sampling error of \code{p} and should be
+given as a function: \code{p_cft = function(p) 0.85 * p}. The variance then
+uses the total derivative
+\deqn{
+\dfrac{d\, \textrm{PIF}}{d p} =
+\dfrac{\mu^{\text{cft}}}{\big(\mu^{\text{obs}}\big)^2}
+\big( \text{RR}(\beta) - 1\big) -
+\dfrac{1}{\mu^{\text{obs}}} J^{\top} \big( \text{RR}(\beta) - 1\big)
+}
+where \eqn{J} is the jacobian of \code{p_cft} with respect to \code{p}. Treating a
+relative scenario as a fixed target overestimates the variance, while
+treating a fixed target as relative underestimates it.
 }
 
 \section{Link functions for the PIF}{
@@ -278,8 +310,13 @@ paf(p = 0.499, beta = log(3.6), var_p = 0.1, var_beta = 0.3)
 paf(p = 0.499, beta = log(3.6), var_p = 0.1, var_beta = 0.3,
     link = "logit", quiet = TRUE)
 
+# If the counterfactual was a fixed target of 25\% smoking prevalence
+pif(p = 0.499, beta = log(3.6), p_cft = 0.25, var_p = 0.001,
+    var_beta = 0.1, link = "logit", quiet = TRUE)
+
 # If the counterfactual was reducing the smoking population by 1/2
-pif(p = 0.499, beta = log(3.6), p_cft = 0.499/2, var_p = 0.001,
+# (relative to whatever the current prevalence is)
+pif(p = 0.499, beta = log(3.6), p_cft = function(p) p / 2, var_p = 0.001,
     var_beta = 0.1, link = "logit", quiet = TRUE)
 
 #EXAMPLE 2: MULTIPLE EXPOSURE CATEGORIES

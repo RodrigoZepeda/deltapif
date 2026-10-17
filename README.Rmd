@@ -117,18 +117,18 @@ This result is consistent with the reported estimate: **PIF = 0.7% (95% CI: 0.2â
 ### Attributable and averted cases
 
 Attributable and averted cases can be calculated with the `attributable_cases` function. For
-example [Dhana et al](https://pmc.ncbi.nlm.nih.gov/articles/PMC10593099/#SD2) estimate the number of people with Alzheimer's Disease in New York, USA 426.5 (400.2, 452.7) thousand. This implies a variance of `((452.7 - 400.2) / 2*qnorm(0.975))^2 = 2647.005`. 
+example [Dhana et al](https://pmc.ncbi.nlm.nih.gov/articles/PMC10593099/#SD2) estimate the number of people with Alzheimer's Disease in New York, USA 426.5 (400.2, 452.7) thousand. This implies a variance of `((452.7 - 400.2) / (2*qnorm(0.975)))^2 = 179.3752`. 
 
 The number of cases (in thousands) that would be averted if we reduced smoking by 15% assuming the prevalence of smoking is identical to the rest of the US is given by:
 
 ```{r}
-averted_cases(426.5, lee_pif, variance = 2647.005)
+averted_cases(426.5, lee_pif, variance = 179.3752)
 ```
 
 Attributable cases can likewise be estimated using the previous `paf` as:
 
 ```{r}
-attributable_cases(426.5, paf_dementia, variance = 2647.005)
+attributable_cases(426.5, paf_dementia, variance = 179.3752)
 ```
 
 ### Combining fractions from subpopulations
@@ -168,16 +168,16 @@ paf_absts <- paf(p = 0.61, beta = 0.15, var_p = 0.001,
                  label = "Asbestus")
 ```
 
-A fraction of **environmental** exposure considering both can be calculated by multiplying the inverse of the fractions, assuming a commonality correction (say of `c(0.1, 0.2)`):
+A fraction of **environmental** exposure considering both can be calculated by multiplying the complements of the weighted fractions. Here we use (illustrative) weights of `c(0.9, 0.8)`, which correspond to commonalities of `0.1` and `0.2` (see below):
 
 ```{r}
-paf_ensemble(paf_lead, paf_absts, weights = c(0.1, 0.2))
+paf_ensemble(paf_lead, paf_absts, weights = c(0.9, 0.8))
 ```
 
 where this quantity estimates:
 
 $$
-\textrm{PAF}_{\text{Ensemble}} = 1 - (1 - 0.1 \cdot \textrm{PAF}_{\text{Lead}}) \cdot (1 - 0.2 \cdot \textrm{PAF}_{\text{Asbestus}})
+\textrm{PAF}_{\text{Ensemble}} = 1 - (1 - 0.9 \cdot \textrm{PAF}_{\text{Lead}}) \cdot (1 - 0.8 \cdot \textrm{PAF}_{\text{Asbestus}})
 $$
 
 ## Adjusting fractions for commonality
@@ -202,7 +202,8 @@ $$
 The adjusted fractions can be calculated with the `weighted_adjusted` as:
 
 ```{r}
-weighted_adjusted_paf(paf_lead, paf_absts, weights = c(0.2, 0.3))
+commonality <- c(0.1, 0.2)
+weighted_adjusted_paf(paf_lead, paf_absts, weights = 1 - commonality)
 ```
 which returns a named list of the adjusted fractions. 
 

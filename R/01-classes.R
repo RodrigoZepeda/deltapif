@@ -40,6 +40,10 @@
 #' @param p_cft Counterfactual prevalence (proportion) of the exposed
 #' individuals for each of the `N` exposure levels.
 #'
+#' @param p_cft_jacobian Jacobian of `p_cft` with respect to `p` where entry
+#' `[j, i]` is the derivative of `p_cft[j]` with respect to `p[i]`. Use `NULL`
+#' (zero matrix) when `p_cft` is a fixed target that does not depend on `p`.
+#'
 #' @param beta Relative risk parameter for which standard deviation is
 #' available (usually its either the relative risk directly or the log
 #' of the relative risk as most RRs, ORs and HRs come from exponential
@@ -363,6 +367,10 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
      # Proportion of individuals exposed under counterfactual (vector or number)
      p_cft         = S7::class_numeric,
 
+     # Jacobian of p_cft with respect to p (zero when p_cft is a fixed target)
+     # entry [j, i] is the derivative of p_cft[j] with respect to p[i]
+     p_cft_jacobian = S7::class_numeric,
+
      # Relative risk parameter
      beta          = S7::class_numeric,
 
@@ -456,6 +464,19 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
        )
      }
 
+     # Validate the dimensions of the counterfactual's jacobian
+     if (!is.matrix(self@p_cft_jacobian) ||
+         nrow(self@p_cft_jacobian) != length(self@p_cft) ||
+         ncol(self@p_cft_jacobian) != length(self@p)) {
+       cli::cli_abort(
+         paste0(
+           "The jacobian of the counterfactual prevalence ",
+           "{.code p_cft_jacobian} must be a {length(self@p_cft)} x ",
+           "{length(self@p)} matrix."
+         )
+       )
+     }
+
      # Validate the length of p vs relative risks (rr_link(beta))
      if (length(self@p) != length(self@rr_link(self@beta))) {
        cli::cli_abort(
@@ -542,8 +563,13 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
    },
    constructor = function(p, p_cft, beta, var_p, var_beta, rr_link,
                           rr_link_deriv, link, link_deriv, link_inv, conf_level,
-                          type, label, upper_bound_p, upper_bound_beta) {
+                          type, label, upper_bound_p, upper_bound_beta,
+                          p_cft_jacobian = NULL) {
 
+     #Fixed counterfactuals do not depend on p
+     if (is.null(p_cft_jacobian)){
+       p_cft_jacobian <- matrix(0, nrow = length(p_cft), ncol = length(p))
+     }
 
      S7::new_object(S7::S7_object(),
 
@@ -558,6 +584,7 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
                     #New added elements of pif_atomic
                     p             = p,
                     p_cft         = p_cft,
+                    p_cft_jacobian = as.matrix(p_cft_jacobian),
                     beta          = beta,
                     var_p         = var_p,
                     var_beta      = var_beta,
