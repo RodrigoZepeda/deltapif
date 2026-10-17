@@ -264,7 +264,7 @@ pif_validate_ensemble <- function(pif1, ..., weights, var_weights,
       conf_level = conf_level,
       link = link,
       link_inv = link_inv,
-      link_deriv = link_inv,
+      link_deriv = link_deriv,
       label = label
     )
   )

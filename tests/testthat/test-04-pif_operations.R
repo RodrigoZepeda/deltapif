@@ -468,3 +468,29 @@ test_that("non-pif objects are rejected", {
     "is not of.*pif_atomic_class.*or.*pif_global_ensemble_class"
   )
 })
+
+test_that("pif_total and pif_ensemble intervals use the derivative of the link", {
+  a <- paf(p = 0.085, beta = log(1.59), var_beta = 0.165^2, var_p = 0.01^2,
+           label = "a", quiet = TRUE)
+  b <- paf(p = 0.12, beta = log(1.59), var_beta = 0.165^2, var_p = 0.01^2,
+           label = "b", quiet = TRUE)
+
+  expected_ci <- function(obj, link) {
+    est <- as.numeric(coef(obj))
+    se  <- sqrt(as.numeric(variance(obj)))
+    if (link == "log-complement") {
+      s <- se / (1 - est)
+      sort(1 - (1 - est) * exp(c(1, -1) * qnorm(0.975) * s))
+    } else {
+      s <- se / (est * (1 - est))
+      plogis(qlogis(est) + c(-1, 1) * qnorm(0.975) * s)
+    }
+  }
+
+  for (link in c("log-complement", "logit")) {
+    total    <- paf_total(a, b, weights = c(0.4, 0.6), link = link, quiet = TRUE)
+    ensemble <- paf_ensemble(a, b, weights = c(1, 1), link = link, quiet = TRUE)
+    expect_equal(sort(as.numeric(confint(total))), expected_ci(total, link))
+    expect_equal(sort(as.numeric(confint(ensemble))), expected_ci(ensemble, link))
+  }
+})
