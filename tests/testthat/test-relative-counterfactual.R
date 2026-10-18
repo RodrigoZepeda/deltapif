@@ -65,10 +65,10 @@ test_that("The covariance of relative counterfactuals sharing parameters matches
   g1    <- function(p) 0.5 * p
   g2    <- function(p) c(p[1] + p[2], 0)
 
-  pif1 <- pif(p = p_obs, p_cft = g1, beta = beta, var_p = var_p, var_beta = var_b,
-              quiet = TRUE, label = "half")
-  pif2 <- pif(p = p_obs, p_cft = g2, beta = beta, var_p = var_p, var_beta = var_b,
-              quiet = TRUE, label = "shift")
+  pif1 <- pif(p = list("survey" = p_obs), p_cft = g1, beta = list("rr" = beta),
+              var_p = var_p, var_beta = var_b, quiet = TRUE, label = "half")
+  pif2 <- pif(p = list("survey" = p_obs), p_cft = g2, beta = list("rr" = beta),
+              var_p = var_p, var_beta = var_b, quiet = TRUE, label = "shift")
 
   grad <- function(g) {
     list(p = num_grad(function(p) pif_fun(p, g(p), exp(beta)), p_obs),

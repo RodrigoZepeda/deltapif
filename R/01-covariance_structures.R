@@ -111,17 +111,17 @@ covariance_structure_class <- S7::new_class(
 #' the covariance between elements `i` and `j`.
 #'
 #' @examples
-#' pif_lead_women <- paf(0.27, 2.2, quiet = TRUE, var_p = 0.001, var_beta = 0.015,
+#' pif_lead_women <- paf(0.27, list("lead" = 2.2), quiet = TRUE, var_p = 0.001, var_beta = 0.015,
 #'                       label = "Women lead")
-#' pif_rad_women  <- paf(0.12, 1.2, quiet = TRUE, var_p = 0.001, var_beta = 0.022,
+#' pif_rad_women  <- paf(0.12, list("radiation" = 1.2), quiet = TRUE, var_p = 0.001, var_beta = 0.022,
 #'                       label = "Women radiation")
 #' pif_women      <- pif_ensemble(pif_lead_women, pif_rad_women, label = "Women",
 #'                                weights = c(0.8, 0.72),
 #'                                var_weights = matrix(c(0.3, 0.1, 0.1, 0.4), ncol = 2))
 #'
-#' pif_lead_men   <- paf(0.30, 2.2, quiet = TRUE, var_p = 0.001, var_beta = 0.015,
+#' pif_lead_men   <- paf(0.30, list("lead" = 2.2), quiet = TRUE, var_p = 0.001, var_beta = 0.015,
 #'                        label = "Men lead")
-#' pif_rad_men    <- paf(0.10, 1.2, quiet = TRUE, var_p = 0.001, var_beta = 0.022,
+#' pif_rad_men    <- paf(0.10, list("radiation" = 1.2), quiet = TRUE, var_p = 0.001, var_beta = 0.022,
 #'                         label = "Men radiation")
 #' pif_men        <- pif_ensemble(pif_lead_men, pif_rad_men, label = "Men",
 #'                         weights = c(0.65, 0.68),
@@ -310,73 +310,62 @@ default_parameter_covariance_structure <- function(pif, parameter = "p", is_vari
 
   #Get the default covariance structure
   cov_str  <- covariance_structure(pif,  is_variance = is_variance, warning = warning)
-  npifs    <- length(cov_str)
 
-  #Get the flattened impact fractions
-  flat_pif <- as.list(pif)
+  #Get the atomic fractions (only they have parameters)
+  atomic   <- atomic_fractions(pif)
+  natomic  <- length(atomic)
 
+  #Covariances between different identifiers given to totals and ensembles
+  id_matrices <- collect_id_covariances(pif, parameter)
 
-  if (length(flat_pif) == 1){
-    flat_pif <- list(flat_pif)
-  }
+  for (k in seq_len(natomic)){
+    for (j in k:natomic){
 
+      pif_k  <- atomic[[k]]
+      pif_j  <- atomic[[j]]
+      name_k <- pif_k@label
+      name_j <- pif_j@label
 
-  for (k in 1:npifs){
-    for (j in k:npifs){
+      #Variance of the parameter of the fraction itself
+      if (j == k){
+        cov_str[[name_k]][[name_k]] <- parameter_variance(pif_k, parameter)
+        next
+      }
 
-      name_k <- flat_pif[[k]]@label
-      name_j <- flat_pif[[j]]@label
+      #Parameters without identifier are independent
+      id_k <- parameter_id(pif_k, parameter)
+      id_j <- parameter_id(pif_j, parameter)
+      if (is.na(id_k) || is.na(id_j)){
+        next
+      }
 
-      #By default we don't need those that have the beta's elsewhere
-      if (j == k && S7::S7_inherits(flat_pif[[k]], pif_atomic_class) && S7::S7_inherits(flat_pif[[j]], pif_atomic_class)){
+      if (id_k == id_j){
 
-        if (parameter == "beta"){
-          cov_str[[name_k]][[name_k]] <- flat_pif[[j]]@var_beta
-        } else {
-          cov_str[[name_k]][[name_k]] <- flat_pif[[j]]@var_p
-        }
+        #Same identifier = same estimate
+        check_shared_ids(list(pif_k, pif_j))
+        cov_kj <- parameter_variance(pif_k, parameter)
 
-      } else if (S7::S7_inherits(flat_pif[[k]], pif_atomic_class) && S7::S7_inherits(flat_pif[[j]], pif_atomic_class)) {
+      } else {
 
-        #Compare the variances of the weights and the weights such that if they are the same they add to covariance:
-        if (parameter == "beta"){
-
-          if (!is.null(flat_pif[[j]]@var_beta) && !is.null(flat_pif[[k]]@var_beta) &&
-              !is.null(flat_pif[[j]]@beta) && !is.null(flat_pif[[k]]@beta) &&
-              length(flat_pif[[j]]@var_beta) == length(flat_pif[[k]]@var_beta) &&
-              length(flat_pif[[j]]@beta) == length(flat_pif[[k]]@beta) &&
-              all(flat_pif[[j]]@var_beta == flat_pif[[k]]@var_beta) &&
-              all(flat_pif[[j]]@beta == flat_pif[[k]]@beta)){
-
-            cov_str[[name_k]][[name_j]] <- flat_pif[[j]]@var_beta
-            cov_str[[name_j]][[name_k]] <- flat_pif[[j]]@var_beta
-
-          }
-
-        } else if (parameter == "p") {
-
-          if (!is.null(flat_pif[[j]]@var_p) && !is.null(flat_pif[[k]]@var_p) &&
-              !is.null(flat_pif[[j]]@p) && !is.null(flat_pif[[k]]@p) &&
-              length(flat_pif[[j]]@var_p) == length(flat_pif[[k]]@var_p) &&
-              length(flat_pif[[j]]@p) == length(flat_pif[[k]]@p) &&
-              all(flat_pif[[j]]@var_p == flat_pif[[k]]@var_p) &&
-              all(flat_pif[[j]]@p == flat_pif[[k]]@p)){
-
-            cov_str[[name_k]][[name_j]] <- flat_pif[[j]]@var_p
-            cov_str[[name_j]][[name_k]] <- flat_pif[[j]]@var_p
-          }
+        #Different identifiers are only correlated if a covariance was given
+        cov_kj <- id_covariance_block(
+          id_matrices, id_k, id_j,
+          length(parameter_value(pif_k, parameter)),
+          length(parameter_value(pif_j, parameter))
+        )
+        if (is.null(cov_kj)){
+          next
         }
       }
+
+      cov_str[[name_k]][[name_j]] <- cov_kj
+      cov_str[[name_j]][[name_k]] <- t(cov_kj)
     }
   }
 
-
-  #covariance_structure_class(cov_str)
   cov_str
 }
 
-#' @rdname covariance_structures
-#' @export
 default_parameter_covariance_structure2 <- function(pif1, pif2, parameter = "p", warning = TRUE){
 
   #Create a fake parent name

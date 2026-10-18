@@ -41,12 +41,18 @@ pif(
 }
 \arguments{
 \item{p}{Prevalence (proportion) of the exposed individuals for
-each of the \code{N} exposure levels.}
+each of the \code{N} exposure levels. Either a numeric vector or a named list
+with one element, \code{list("id" = c(...))}, whose name identifies the
+estimate. Fractions that share the identifier use the same prevalence
+estimate (see \emph{Shared parameters}).}
 
 \item{beta}{Relative risk parameter for which standard deviation is
 available (usually its either the relative risk directly or the log
 of the relative risk as most RRs, ORs and HRs come from exponential
-models).}
+models). Either a numeric vector or a named list with one element,
+\code{list("id" = c(...))}, whose name identifies the estimate. Fractions that
+share the identifier use the same relative risk estimate (see
+\emph{Shared parameters}).}
 
 \item{var_p}{Estimate of the link_covariance matrix of \code{p} where the entry
 \code{var_p[i,j]} represents the link_covariance between \code{p[i]} and \code{p[j]}.}
@@ -187,6 +193,22 @@ uses the total derivative
 where \eqn{J} is the jacobian of \code{p_cft} with respect to \code{p}. Treating a
 relative scenario as a fixed target overestimates the variance, while
 treating a fixed target as relative underestimates it.
+}
+
+\section{Shared parameters}{
+
+When several fractions are combined (with \code{\link[=pif_total]{pif_total()}}, \code{\link[=pif_ensemble]{pif_ensemble()}}
+or \code{\link[=weighted_adjusted_pif]{weighted_adjusted_pif()}}) or their covariance is computed, fractions
+that use the same estimate of \code{p} or of \code{beta} are correlated. To declare
+that two fractions share an estimate give the parameter as a named list
+with the same name (identifier) in both, e.g.
+\code{beta = list("smoking_dementia" = 0.46)}. The same identifier must always
+be used with the same values and variances. Parameters given as plain
+numbers, or with different identifiers, are treated as independent.
+Correlations between different estimates (for example relative risks
+from the same meta-analysis) can be given to \code{\link[=pif_total]{pif_total()}} and
+\code{\link[=pif_ensemble]{pif_ensemble()}} with a covariance matrix whose row and column names are
+the identifiers.
 }
 
 \section{Link functions for the PIF}{

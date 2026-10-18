@@ -26,6 +26,15 @@
 #' representing the covariance between the `i`-th potential impact
 #' fraction of the list and the `j`-th weight
 #'
+#' @param var_p,var_beta (Optional) Covariance matrices between the estimates
+#' of `p` (respectively `beta`) of different fractions. Row and column names
+#' are the identifiers given to the parameters as named lists in [pif()] or
+#' [paf()]; a vector-valued parameter repeats its identifier once per
+#' element. The diagonal blocks must equal the variances given to each
+#' fraction. Fractions that share an identifier are always correlated, so
+#' these matrices are only needed for correlations between different
+#' estimates (e.g. relative risks from the same meta-analysis).
+#'
 #' @inheritParams pifpaf
 #'
 #' @param is_paf Whether the computed quantity is a population attributable fraction or not
@@ -82,6 +91,23 @@
 #' paf_rad  <- paf(0.1, 1.2, quiet = TRUE, var_p = 0.0001)
 #' pif_ensemble(paf_lead, paf_rad)
 #'
+#' # Fractions that use the same relative risk are correlated. Declare it
+#' # by giving `beta` the same identifier (name) in a list:
+#' paf_women <- paf(0.32, beta = list("rr_meta" = log(1.3)), var_beta = 0.01,
+#'                  var_p = 0.001, label = "Women")
+#' paf_men   <- paf(0.27, beta = list("rr_meta" = log(1.3)), var_beta = 0.01,
+#'                  var_p = 0.001, label = "Men")
+#' paf_total(paf_men, paf_women, weights = c(0.49, 0.51))
+#'
+#' # Correlations between different estimates are given by identifier
+#' paf_lead <- paf(0.2, beta = list("lead" = log(2.2)), var_beta = 0.04,
+#'                 var_p = 0.001, label = "Lead")
+#' paf_rad  <- paf(0.1, beta = list("radiation" = log(1.2)), var_beta = 0.02,
+#'                 var_p = 0.0001, label = "Radiation")
+#' cov_rr <- matrix(c(0.04, 0.01, 0.01, 0.02), ncol = 2,
+#'                  dimnames = list(c("lead", "radiation"), c("lead", "radiation")))
+#' paf_ensemble(paf_lead, paf_rad, var_beta = cov_rr)
+#'
 #' # Totals and ensembles can be combined
 #' pif_lead_women <- paf(0.27, 2.2, quiet = TRUE, var_p = 0.001)
 #' pif_rad_women  <- paf(0.12, 1.2, quiet = TRUE, var_p = 0.001)
@@ -112,7 +138,7 @@ pif_validate_ensemble <- function(pif1, ..., weights, var_weights,
                                   var_pif_weights, conf_level,
                                   link, link_inv, link_deriv, quiet,
                                   is_paf = FALSE, weights_sum_to_1 = FALSE,
-                                  label){
+                                  label, var_p = NULL, var_beta = NULL){
 
   #Get the fractions in list form
   pif_list <- append(list(pif1), list(...))
@@ -254,6 +280,12 @@ pif_validate_ensemble <- function(pif1, ..., weights, var_weights,
   labels <- sapply(pif_list, function(x) x@label)
   names(pif_list) <- labels
 
+  #Fractions sharing an identifier should share the estimate and
+  #covariances between identifiers should match the fractions
+  check_shared_ids(pif_list)
+  var_p    <- check_id_covariance(var_p, pif_list, "p")
+  var_beta <- check_id_covariance(var_beta, pif_list, "beta")
+
 
   return(
     list(
@@ -265,7 +297,9 @@ pif_validate_ensemble <- function(pif1, ..., weights, var_weights,
       link = link,
       link_inv = link_inv,
       link_deriv = link_deriv,
-      label = label
+      label = label,
+      var_p_ids = var_p,
+      var_beta_ids = var_beta
     )
   )
 
@@ -275,6 +309,8 @@ pif_validate_ensemble <- function(pif1, ..., weights, var_weights,
 #' @export
 paf_total <- function(paf1, ..., weights, var_weights = 0,
                       var_pif_weights = NULL,
+                      var_p = NULL,
+                      var_beta = NULL,
                       conf_level = 0.95,
                       link = "log-complement",
                       link_inv = NULL,
@@ -285,6 +321,7 @@ paf_total <- function(paf1, ..., weights, var_weights = 0,
 
   pif_total(paf1, ..., weights = weights, var_weights = var_weights,
             var_pif_weights = var_pif_weights,
+            var_p = var_p, var_beta = var_beta,
             conf_level = conf_level, link = link, link_inv = link_inv,
             link_deriv = link_deriv, quiet = quiet, is_paf = TRUE, label = label)
 
@@ -295,6 +332,8 @@ paf_total <- function(paf1, ..., weights, var_weights = 0,
 pif_total <- function(pif1, ..., weights,
                       var_weights = 0,
                       var_pif_weights = NULL,
+                      var_p = NULL,
+                      var_beta = NULL,
                       conf_level = 0.95,
                       link = "log-complement",
                       link_inv = NULL,
@@ -314,7 +353,9 @@ pif_total <- function(pif1, ..., weights,
                                       quiet = quiet,
                                       label = label,
                                       is_paf = is_paf,
-                                      weights_sum_to_1 = weights_sum_to_1)
+                                      weights_sum_to_1 = weights_sum_to_1,
+                                      var_p = var_p,
+                                      var_beta = var_beta)
 
 
   pif <- do.call(pif_total_class, pif_params)
@@ -335,6 +376,8 @@ pif_total <- function(pif1, ..., weights,
 #' @export
 paf_ensemble <- function(paf1, ..., weights = NULL, var_weights = 0,
                          var_pif_weights = NULL,
+                         var_p = NULL,
+                         var_beta = NULL,
                       link = "identity",
                       link_inv = NULL,
                       link_deriv = NULL,
@@ -345,6 +388,7 @@ paf_ensemble <- function(paf1, ..., weights = NULL, var_weights = 0,
 
   pif_ensemble(paf1, ..., weights = weights, var_weights = var_weights,
             var_pif_weights = var_pif_weights,
+            var_p = var_p, var_beta = var_beta,
             conf_level = conf_level, link = link, link_inv = link_inv,
             link_deriv = link_deriv, quiet = quiet, is_paf = TRUE,
             label = label)
@@ -357,6 +401,8 @@ pif_ensemble <- function(pif1, ...,
                          weights = NULL,
                          var_weights = 0,
                          var_pif_weights = NULL,
+                         var_p = NULL,
+                         var_beta = NULL,
                          link = "identity",
                          link_inv = NULL,
                          link_deriv = NULL,
@@ -374,7 +420,8 @@ pif_ensemble <- function(pif1, ...,
                                       link_deriv = link_deriv,
                                       quiet = quiet,
                                       label = label,
-                                      is_paf = is_paf, weights_sum_to_1 = FALSE)
+                                      is_paf = is_paf, weights_sum_to_1 = FALSE,
+                                      var_p = var_p, var_beta = var_beta)
 
   pif <- do.call(pif_ensemble_class, pif_params)
 

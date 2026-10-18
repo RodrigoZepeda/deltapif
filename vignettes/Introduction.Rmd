@@ -175,6 +175,46 @@ $$
 \textrm{PAF}_{\text{All}} = 0.49 \cdot \text{PAF}_{\text{Men}} + 0.51 \cdot \text{PAF}_{\text{Women}} 
 $$
 
+#### Fractions that share an estimate
+
+In the previous example men and women had different relative risks, so their fractions are independent. Often, however, subgroups use the **same** estimate, for example a single relative risk from a meta-analysis, which makes their fractions correlated. To declare it, give the parameter as a named list: the name identifies the estimate and fractions with the same name share it.
+
+```{r}
+paf_men_shared   <- paf(p = 0.41, beta = list("rr_meta" = 0.31), var_p = 0.001,
+                        var_beta = 0.14, label = "Men")
+paf_women_shared <- paf(p = 0.37, beta = list("rr_meta" = 0.31), var_p = 0.001,
+                        var_beta = 0.14, label = "Women")
+
+paf_total(paf_men_shared, paf_women_shared, weights = c(0.49, 0.51))
+```
+
+Without the identifier the same numbers are treated as two independent estimates, and the interval is too narrow:
+
+```{r}
+paf_total(
+  paf(p = 0.41, beta = 0.31, var_p = 0.001, var_beta = 0.14, label = "Men"),
+  paf(p = 0.37, beta = 0.31, var_p = 0.001, var_beta = 0.14, label = "Women"),
+  weights = c(0.49, 0.51)
+)
+```
+
+The same applies to `p` (e.g. `p = list("survey_2020" = c(0.12, 0.30))` for a categorical exposure). Using one identifier with different values or variances is an error.
+
+When different estimates are correlated (but not identical) their covariance can be given to `pif_total`, `pif_ensemble` (and their `paf` versions) with a matrix whose row and column names are the identifiers:
+
+```{r}
+cov_beta <- matrix(c(0.14, 0.05,
+                     0.05, 0.16), ncol = 2,
+                   dimnames = list(c("rr_men", "rr_women"), c("rr_men", "rr_women")))
+
+paf_total(
+  paf(p = 0.41, beta = list("rr_men" = 0.31), var_p = 0.001, var_beta = 0.14, label = "Men"),
+  paf(p = 0.37, beta = list("rr_women" = 0.35), var_p = 0.001, var_beta = 0.16, label = "Women"),
+  weights  = c(0.49, 0.51),
+  var_beta = cov_beta
+)
+```
+
 ### Combining fractions from multiple risks
 
 Fractions from disjointed risks can be calculated as an ensemble. For example the fraction of exposure to lead and the fraction of exposure to asbestus:

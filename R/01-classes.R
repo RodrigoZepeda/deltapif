@@ -40,6 +40,10 @@
 #' @param p_cft Counterfactual prevalence (proportion) of the exposed
 #' individuals for each of the `N` exposure levels.
 #'
+#' @param p_id,beta_id Identifiers of the estimates of `p` and `beta`.
+#' Fractions sharing an identifier use the same estimate. `NA` if the
+#' estimate is not shared.
+#'
 #' @param p_cft_jacobian Jacobian of `p_cft` with respect to `p` where entry
 #' `[j, i]` is the derivative of `p_cft[j]` with respect to `p[i]`. Use `NULL`
 #' (zero matrix) when `p_cft` is a fixed target that does not depend on `p`.
@@ -374,6 +378,11 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
      # Relative risk parameter
      beta          = S7::class_numeric,
 
+     # Identifiers of the estimates of p and beta (NA if not shared)
+     p_id          = S7::class_character,
+
+     beta_id       = S7::class_character,
+
      # link_covariance matrix for p
      var_p       = S7::class_numeric,
 
@@ -564,7 +573,8 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
    constructor = function(p, p_cft, beta, var_p, var_beta, rr_link,
                           rr_link_deriv, link, link_deriv, link_inv, conf_level,
                           type, label, upper_bound_p, upper_bound_beta,
-                          p_cft_jacobian = NULL) {
+                          p_cft_jacobian = NULL, p_id = NA_character_,
+                          beta_id = NA_character_) {
 
      #Fixed counterfactuals do not depend on p
      if (is.null(p_cft_jacobian)){
@@ -586,6 +596,8 @@ pif_atomic_class <- S7::new_class("pif_atomic_class",
                     p_cft         = p_cft,
                     p_cft_jacobian = as.matrix(p_cft_jacobian),
                     beta          = beta,
+                    p_id          = as.character(p_id),
+                    beta_id       = as.character(beta_id),
                     var_p         = var_p,
                     var_beta      = var_beta,
                     rr_link       = rr_link,
@@ -612,6 +624,8 @@ pif_global_ensemble_class <- S7::new_class(
     weights                 = S7::class_numeric,
     var_weights             = S7::class_any,
     var_pif_weights         = S7::class_any,
+    var_p_ids               = S7::class_any,
+    var_beta_ids            = S7::class_any,
     pif_transform           = S7::class_function,
     pif_deriv_transform     = S7::class_function,
     pif_inverse_transform   = S7::class_function,
@@ -626,7 +640,8 @@ pif_global_ensemble_class <- S7::new_class(
   constructor = function(pif_list, weights, var_weights, var_pif_weights,
                          pif_transform,
                          pif_deriv_transform, pif_inverse_transform,
-                         link, link_inv, link_deriv, conf_level = 0.95,  label){
+                         link, link_inv, link_deriv, conf_level = 0.95,  label,
+                         var_p_ids = NULL, var_beta_ids = NULL){
 
     S7::new_object(S7::S7_object(),
                    conf_level = conf_level,
@@ -641,6 +656,8 @@ pif_global_ensemble_class <- S7::new_class(
                    weights = weights,
                    var_weights = var_weights,
                    var_pif_weights = var_pif_weights,
+                   var_p_ids = var_p_ids,
+                   var_beta_ids = var_beta_ids,
                    variance = 0
     )}
 )
@@ -656,7 +673,8 @@ pif_total_class <- S7::new_class(
   validator = validate_global_ensemble,
   constructor = function(pif_list, weights, var_weights, var_pif_weights,
                          link, link_inv, link_deriv,
-                         conf_level = 0.95, label){
+                         conf_level = 0.95, label,
+                         var_p_ids = NULL, var_beta_ids = NULL){
 
     S7::new_object(S7::S7_object(),
                    conf_level = conf_level,
@@ -668,6 +686,8 @@ pif_total_class <- S7::new_class(
                    weights = weights,
                    var_weights = var_weights,
                    var_pif_weights = var_pif_weights,
+                   var_p_ids = var_p_ids,
+                   var_beta_ids = var_beta_ids,
                    pif_transform = identity,
                    pif_deriv_transform = function(x) rep(1, length(x)),
                    pif_inverse_transform = identity,
@@ -693,7 +713,9 @@ pif_ensemble_class <- S7::new_class(
                          link_inv,
                          link_deriv,
                          conf_level = 0.95,
-                         label){
+                         label,
+                         var_p_ids = NULL,
+                         var_beta_ids = NULL){
 
     S7::new_object(S7::S7_object(),
                    conf_level = conf_level,
@@ -704,6 +726,8 @@ pif_ensemble_class <- S7::new_class(
                    weights = weights,
                    var_weights = var_weights,
                    var_pif_weights = var_pif_weights,
+                   var_p_ids = var_p_ids,
+                   var_beta_ids = var_beta_ids,
                    pif_list = pif_list,
                    pif_transform = log_complement,
                    pif_inverse_transform = inv_log_complement,

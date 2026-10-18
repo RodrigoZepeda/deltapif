@@ -1,6 +1,7 @@
 # Helper function to create consistent mock PIF objects
 create_mock_pif <- function(p = 0.5, p_cft = 0.25, beta = 1.5,
-                            var_p = 0.01, var_beta = 0.02, label = paste0("mock", rnorm(1))) {
+                            var_p = 0.01, var_beta = 0.02, label = paste0("mock", rnorm(1)),
+                            p_id = NA_character_, beta_id = NA_character_) {
   pif_atomic_class(
     p = p,
     p_cft = p_cft,
@@ -16,7 +17,9 @@ create_mock_pif <- function(p = 0.5, p_cft = 0.25, beta = 1.5,
     type = "PIF",
     upper_bound_p = FALSE,
     upper_bound_beta = FALSE,
-    label = label
+    label = label,
+    p_id = p_id,
+    beta_id = beta_id
   )
 }
 
@@ -190,10 +193,15 @@ test_that("correlation generic works correctly", {
   expect_true(all(diag(cor_mat) == 1))
   expect_true(all(cor_mat >= -1 & cor_mat <= 1))
 
-  # Test with shared parameters
-  pif_shared_beta <- create_mock_pif(p = 0.3, p_cft = 0.1, beta = pif1@beta)
-  cor_mat <- correlation(pif1, pif_shared_beta)
+  # Test with shared parameters (declared with the same identifier)
+  pif_with_id     <- create_mock_pif(beta = pif1@beta, beta_id = "shared")
+  pif_shared_beta <- create_mock_pif(p = 0.3, p_cft = 0.1, beta = pif1@beta, beta_id = "shared")
+  cor_mat <- correlation(pif_with_id, pif_shared_beta)
   expect_true(cor_mat[1,2] != 0) # Should be correlated
+
+  # Equal values without an identifier are independent
+  pif_no_id <- create_mock_pif(p = 0.3, p_cft = 0.1, beta = pif1@beta)
+  expect_equal(correlation(pif1, pif_no_id)[1,2], 0)
 })
 
 test_that("edge cases are handled properly", {

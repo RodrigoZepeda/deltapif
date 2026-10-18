@@ -17,10 +17,10 @@ test_that("variance_components splits the variance of an atomic fraction", {
 })
 
 test_that("variance_components of a total separates parameters and weights", {
-  a <- paf(p = 0.085, beta = log(1.59), var_beta = 0.165^2, var_p = 0.01^2,
-           label = "a", quiet = TRUE)
-  b <- paf(p = 0.12, beta = log(1.59), var_beta = 0.165^2, var_p = 0.01^2,
-           label = "b", quiet = TRUE)
+  a <- paf(p = 0.085, beta = list("rr" = log(1.59)), var_beta = 0.165^2,
+           var_p = 0.01^2, label = "a", quiet = TRUE)
+  b <- paf(p = 0.12, beta = list("rr" = log(1.59)), var_beta = 0.165^2,
+           var_p = 0.01^2, label = "b", quiet = TRUE)
   total <- paf_total(a, b, weights = c(0.4, 0.6), var_weights = diag(c(0.001, 0.002)),
                      quiet = TRUE)
 

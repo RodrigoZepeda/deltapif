@@ -6,7 +6,10 @@
 #' (or relative risk parameter) of `beta`.
 #'
 #' @param p Prevalence (proportion) of the exposed individuals for
-#' each of the `N` exposure levels.
+#' each of the `N` exposure levels. Either a numeric vector or a named list
+#' with one element, `list("id" = c(...))`, whose name identifies the
+#' estimate. Fractions that share the identifier use the same prevalence
+#' estimate (see *Shared parameters*).
 #'
 #' @param p_cft Counterfactual prevalence (proportion) of the exposed
 #' individuals for each of the `N` exposure levels. Either a numeric vector,
@@ -26,7 +29,10 @@
 #' @param beta Relative risk parameter for which standard deviation is
 #' available (usually its either the relative risk directly or the log
 #' of the relative risk as most RRs, ORs and HRs come from exponential
-#' models).
+#' models). Either a numeric vector or a named list with one element,
+#' `list("id" = c(...))`, whose name identifies the estimate. Fractions that
+#' share the identifier use the same relative risk estimate (see
+#' *Shared parameters*).
 #'
 #' @param var_p Estimate of the link_covariance matrix of `p` where the entry
 #' `var_p[i,j]` represents the link_covariance between `p[i]` and `p[j]`.
@@ -139,6 +145,20 @@
 #' where \eqn{J} is the jacobian of `p_cft` with respect to `p`. Treating a
 #' relative scenario as a fixed target overestimates the variance, while
 #' treating a fixed target as relative underestimates it.
+#'
+#' @section Shared parameters:
+#' When several fractions are combined (with [pif_total()], [pif_ensemble()]
+#' or [weighted_adjusted_pif()]) or their covariance is computed, fractions
+#' that use the same estimate of `p` or of `beta` are correlated. To declare
+#' that two fractions share an estimate give the parameter as a named list
+#' with the same name (identifier) in both, e.g.
+#' `beta = list("smoking_dementia" = 0.46)`. The same identifier must always
+#' be used with the same values and variances. Parameters given as plain
+#' numbers, or with different identifiers, are treated as independent.
+#' Correlations between different estimates (for example relative risks
+#' from the same meta-analysis) can be given to [pif_total()] and
+#' [pif_ensemble()] with a covariance matrix whose row and column names are
+#' the identifiers.
 #'
 #' @section Link functions for the PIF:
 #'
@@ -322,7 +342,8 @@ paf <- function(p, beta,
                 quiet = FALSE,
                 label = NULL) {
   pif(
-    p = p, p_cft = rep(0, length(p)), beta = beta, var_p = var_p,
+    p = p, p_cft = rep(0, length(parse_parameter_id(p, "p")$value)),
+    beta = beta, var_p = var_p,
     var_beta = var_beta, rr_link = rr_link,
     rr_link_deriv = rr_link_deriv, link = link, link_inv = link_inv,
     link_deriv = link_deriv, conf_level = conf_level, quiet = quiet,
@@ -348,6 +369,12 @@ pif <- function(p,
                 quiet         = FALSE,
                 label         = NULL,
                 p_cft_deriv   = NULL) {
+
+  #Get the identifiers of the parameters if given as named lists
+  p_parsed    <- parse_parameter_id(p, "p")
+  beta_parsed <- parse_parameter_id(beta, "beta")
+  p           <- p_parsed$value
+  beta        <- beta_parsed$value
 
   #Evaluate the counterfactual if it is a function of the prevalence
   p_cft_jacobian <- NULL
@@ -513,6 +540,8 @@ pif <- function(p,
      p_cft      = p_cft,
      p_cft_jacobian = p_cft_jacobian,
      beta       = beta,
+     p_id       = p_parsed$id,
+     beta_id    = beta_parsed$id,
      var_p      = var_p,
      var_beta   = var_beta,
      link       = link,

@@ -73,13 +73,12 @@ Defaults to \code{0}.}
 fractions and \code{weights}. Passed to \code{\link[=pif_ensemble]{pif_ensemble()}} /
 \code{\link[=paf_ensemble]{paf_ensemble()}}. Defaults to \code{NULL}.}
 
-\item{var_p}{Covariance matrix for the prevalence parameters \code{p} across
-all fractions. Passed to \code{\link[=covariance]{covariance()}} when computing cross-covariances.
-Defaults to \code{NULL}.}
-
-\item{var_beta}{Covariance matrix for the relative-risk parameters \code{beta}
-across all fractions. Passed to \code{\link[=covariance]{covariance()}} when computing
-cross-covariances. Defaults to \code{NULL}.}
+\item{var_p, var_beta}{(Optional) Covariance matrices between the estimates
+of \code{p} (respectively \code{beta}) of different fractions, with row and column
+names given by the identifiers of the parameters (see the section
+\emph{Shared parameters} in \code{\link[=pif]{pif()}}). Passed to \code{\link[=pif_total]{pif_total()}} and
+\code{\link[=pif_ensemble]{pif_ensemble()}}. Defaults to \code{NULL} (fractions are correlated only
+through shared identifiers).}
 
 \item{pif_total_link}{Link to pass to \code{pif_total} in the denominator
 of the adjustment}

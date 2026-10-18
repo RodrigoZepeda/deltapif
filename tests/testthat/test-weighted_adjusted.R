@@ -160,26 +160,32 @@ test_that("weights with var_weights runs without error", {
 # Correlated prevalences / betas -----------------------------------------------
 
 test_that("var_p argument is accepted and changes variance estimates", {
-  p1 <- make_paf2(label = "vp1")
-  p2 <- make_paf2(label = "vp2")
+  p1 <- make_paf2(p = list("survey_1" = 0.2), label = "vp1")
+  p2 <- make_paf2(p = list("survey_2" = 0.2), label = "vp2")
+
+  var_p_ids <- matrix(c(0.001, 0.0005, 0.0005, 0.001), ncol = 2,
+                      dimnames = list(c("survey_1", "survey_2"), c("survey_1", "survey_2")))
 
   adj_indep <- weighted_adjusted_fractions(p1, p2, quiet = TRUE)
-  adj_corr  <- weighted_adjusted_fractions(p1, p2, var_p = 0.0005, quiet = TRUE)
+  adj_corr  <- weighted_adjusted_fractions(p1, p2, var_p = var_p_ids, quiet = TRUE)
 
   # Point estimates are unaffected by var_p
   expect_equal(adj_indep[["vp1"]]@pif, adj_corr[["vp1"]]@pif, tolerance = 1e-10)
 
-  # But variances may differ
-  # (we just check they are both non-negative)
+  # But variances differ
   expect_true(adj_corr[["vp1"]]@variance >= 0)
   expect_true(adj_corr[["vp2"]]@variance >= 0)
+  expect_false(isTRUE(all.equal(adj_indep[["vp1"]]@variance, adj_corr[["vp1"]]@variance)))
 })
 
 test_that("var_beta argument is accepted and changes variance estimates", {
-  p1 <- make_paf2(label = "vb1")
-  p2 <- make_paf2(label = "vb2")
+  p1 <- make_paf2(beta = list("rr_1" = 2.2), label = "vb1")
+  p2 <- make_paf2(beta = list("rr_2" = 2.2), label = "vb2")
 
-  adj <- weighted_adjusted_fractions(p1, p2, var_beta = 0.005, quiet = TRUE)
+  var_beta_ids <- matrix(c(0.01, 0.005, 0.005, 0.01), ncol = 2,
+                         dimnames = list(c("rr_1", "rr_2"), c("rr_1", "rr_2")))
+
+  adj <- weighted_adjusted_fractions(p1, p2, var_beta = var_beta_ids, quiet = TRUE)
   expect_true(adj[["vb1"]]@variance >= 0)
   expect_true(adj[["vb2"]]@variance >= 0)
 })

@@ -72,7 +72,8 @@ variance(my_pif)
 covariance(my_pif)
 
 # Calculate the link_covariance between 3 fractions with shared relative risk
-beta <- 0.3
+# (declared by giving beta the same identifier)
+beta <- list("rr" = 0.3)
 var_beta <- 0.1
 pif1 <- pif(0.5, 0.2, beta, var_p = 0.5 * (1 - 0.5) / 100, var_beta = var_beta)
 pif2 <- pif(0.3, 0.1, beta, var_p = 0.3 * (1 - 0.3) / 100, var_beta = var_beta)

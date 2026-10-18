@@ -34,10 +34,10 @@
 #'
 #' @examples
 #' \dontrun{
-#' p1 <- pif(p = 0.5, p_cft = 0.1, beta = 0.2, 0.003, 0.04, label = "Population 1")
-#' p2 <- pif(p = 0.4, p_cft = 0.1, beta = 0.2, 0.003, 0.04, label = "Population 2")
+#' p1 <- pif(p = 0.5, p_cft = 0.1, beta = list("rr" = 0.2), 0.003, 0.04, label = "Population 1")
+#' p2 <- pif(p = 0.4, p_cft = 0.1, beta = list("rr" = 0.2), 0.003, 0.04, label = "Population 2")
 #'
-#' #Positive covariance as program automatically detects same beta and p
+#' #Positive covariance as both fractions use the same relative risk (identifier "rr")
 #' cov_atomic_pif(p1, p2)
 #'
 #' #Zero covariance as they have no covariates in common
@@ -875,7 +875,8 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
 #' covariance(my_pif)
 #'
 #' # Calculate the link_covariance between 3 fractions with shared relative risk
-#' beta <- 0.3
+#' # (declared by giving beta the same identifier)
+#' beta <- list("rr" = 0.3)
 #' var_beta <- 0.1
 #' pif1 <- pif(0.5, 0.2, beta, var_p = 0.5 * (1 - 0.5) / 100, var_beta = var_beta)
 #' pif2 <- pif(0.3, 0.1, beta, var_p = 0.3 * (1 - 0.3) / 100, var_beta = var_beta)
@@ -1149,6 +1150,9 @@ S7::method(variance_components, S7::new_union(pif_global_ensemble_class, pif_ato
     weights_component <- 0
   } else {
     weights_component <- no_p + no_beta - total
+    if (abs(weights_component) < sqrt(.Machine$double.eps) * abs(total)){
+      weights_component <- 0
+    }
   }
 
   c(p = p_component, beta = beta_component, weights = weights_component)

@@ -4,6 +4,8 @@
 #' with respect to the parameters `p` or `beta`.
 #'
 #' @inheritParams pifpaf
+#' @param p Prevalence (proportion) of the exposed individuals for
+#' each of the `N` exposure levels.
 #' @param rr The relative risk for each of the exposure levels.
 #' @param rr_link_deriv_vals The derivative of the relative risk function `g`
 #' with respect to the parameter `beta` evaluated at `beta`.

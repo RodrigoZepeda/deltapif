@@ -38,12 +38,17 @@ test_that("cov_atomic_pif with same pif equals variance", {
   )
 })
 
-test_that("cov_atomic_pif auto-detects shared beta and p", {
-  p1 <- make_paf(label = "shared1")
-  p2 <- make_paf(label = "shared2")   # same p/beta values as p1
+test_that("cov_atomic_pif detects shared beta and p by identifier", {
+  p1 <- make_paf(p = list("survey" = 0.3), beta = list("rr" = 1.5), label = "shared1")
+  p2 <- make_paf(p = list("survey" = 0.3), beta = list("rr" = 1.5), label = "shared2")
   result <- cov_atomic_pif(p1, p2)
   expect_type(result, "double")
-  expect_true(result > 0)             # correlated because parameters match
+  expect_equal(result, variance(p1))  # same estimates so fully correlated
+
+  # Same values without identifiers are independent
+  p3 <- make_paf(label = "indep1")
+  p4 <- make_paf(label = "indep2")
+  expect_equal(cov_atomic_pif(p3, p4), 0)
 })
 
 test_that("cov_atomic_pif errors on non-pif_atomic inputs", {

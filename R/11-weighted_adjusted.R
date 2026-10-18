@@ -134,6 +134,8 @@ weighted_adjusted_fractions <- function(
     weights         = rep(1, n),
     var_weights     = 0,
     var_pif_weights = NULL,
+    var_p           = var_p,
+    var_beta        = var_beta,
     link            = pif_total_link,
     link_inv        = pif_total_link_inv,
     link_deriv      = pif_total_link_deriv,
@@ -152,6 +154,8 @@ weighted_adjusted_fractions <- function(
       weights         = weights,
       var_weights     = var_weights,
       var_pif_weights = var_pif_weights,
+      var_p           = var_p,
+      var_beta        = var_beta,
       conf_level      = conf_level,
       label           = ens_label,
       quiet           = quiet,
@@ -177,7 +181,7 @@ weighted_adjusted_fractions <- function(
   var_log_ens <- var_ens / ens_pif^2
 
   # ── 8. Cov(sum, ensemble) ────────────────────────────────────────────────────
-  cov_sum_ens     <- cov_total_pif(pif_sum, pif_ens_obj, var_p = var_p, var_beta = var_beta, warning = FALSE)
+  cov_sum_ens     <- cov_total_pif(pif_sum, pif_ens_obj, warning = FALSE)
   cov_log_sum_ens <- cov_sum_ens / (sum_pif * ens_pif)
 
   # ── 9. Build each adjusted fraction ─────────────────────────────────────────
@@ -198,14 +202,14 @@ weighted_adjusted_fractions <- function(
     # ── Cov(PIF_i, sum)  via cov_total_pif ──────────────────────────────────
     #   pif_list[[i]] is a child of pif_sum, so cov_total_pif correctly
     #   returns the covariance of PIF_i with Σ_j PIF_j.
-    cov_i_sum     <- cov_total_pif(pif_list[[i]], pif_sum, var_p = var_p, var_beta = var_beta, warning = FALSE)
+    cov_i_sum     <- cov_total_pif(pif_list[[i]], pif_sum, warning = FALSE)
     cov_log_i_sum <- cov_i_sum / (pif_i * sum_pif)
     #cov_ensemble_atomic(pif_ensemble = pif_sum, pif_atomic = pif_list[[i]], var_p = var_p, var_beta = var_beta)
 
     # ── Cov(PIF_i, ensemble) via cov_total_pif ──────────────────────────────
     #   pif_list[[i]] is also a child of pif_ens_obj, so cov_total_pif
     #   propagates uncertainty through the ensemble transform correctly.
-    cov_i_ens     <- cov_total_pif(pif_list[[i]], pif_ens_obj, var_p = var_p, var_beta = var_beta, warning = FALSE)
+    cov_i_ens     <- cov_total_pif(pif_list[[i]], pif_ens_obj, warning = FALSE)
     cov_log_i_ens <- cov_i_ens / (pif_i * ens_pif)
 
     # ── Var[ln PIF_adj] (delta method on log scale) ─────────────────────────
@@ -317,13 +321,12 @@ weighted_adjusted_fractions <- function(
 #'   fractions and `weights`. Passed to [pif_ensemble()] /
 #'   [paf_ensemble()]. Defaults to `NULL`.
 #'
-#' @param var_p Covariance matrix for the prevalence parameters `p` across
-#'   all fractions. Passed to [covariance()] when computing cross-covariances.
-#'   Defaults to `NULL`.
-#'
-#' @param var_beta Covariance matrix for the relative-risk parameters `beta`
-#'   across all fractions. Passed to [covariance()] when computing
-#'   cross-covariances. Defaults to `NULL`.
+#' @param var_p,var_beta (Optional) Covariance matrices between the estimates
+#'   of `p` (respectively `beta`) of different fractions, with row and column
+#'   names given by the identifiers of the parameters (see the section
+#'   *Shared parameters* in [pif()]). Passed to [pif_total()] and
+#'   [pif_ensemble()]. Defaults to `NULL` (fractions are correlated only
+#'   through shared identifiers).
 #'
 #' @param label_ensemble Character label for the internally constructed
 #'   ensemble fraction. Defaults to `NULL` (auto-generated).

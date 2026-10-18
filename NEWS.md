@@ -1,5 +1,22 @@
 # deltapif 0.4.6
 
+* **Shared parameters are now declared explicitly (behaviour change).** `p` and
+`beta` in `pif()`/`paf()` can be given as a named list with one element, e.g.
+`beta = list("smoking_dementia" = 0.46)` or `p = list("447" = c(0.12, 0.87))`.
+Fractions using the same name (identifier) share the estimate and are
+correlated; using one identifier with different values or variances is an
+error. Parameters given as plain numbers are now treated as independent:
+previously, fractions whose `beta` and `var_beta` (or `p` and `var_p`) were
+numerically identical were silently assumed to share the estimate, which
+missed shared estimates that were rounded differently and invented sharing
+between independent estimates that happened to coincide. Code that relied on
+this should give the shared parameters a common identifier.
+
+* `pif_total()`, `pif_ensemble()`, their `paf` versions and the weighted adjusted
+fractions accept `var_p` and `var_beta`: covariance matrices between different
+estimates whose row and column names are the identifiers (e.g. relative risks
+from the same meta-analysis).
+
 * `pif()` accepts the counterfactual prevalence `p_cft` as a function of `p`
 (e.g. `function(p) 0.85 * p`) for scenarios defined relative to the current
 exposure. The uncertainty in `p` is then propagated through the counterfactual

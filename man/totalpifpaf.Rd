@@ -14,6 +14,8 @@ paf_total(
   weights,
   var_weights = 0,
   var_pif_weights = NULL,
+  var_p = NULL,
+  var_beta = NULL,
   conf_level = 0.95,
   link = "log-complement",
   link_inv = NULL,
@@ -28,6 +30,8 @@ pif_total(
   weights,
   var_weights = 0,
   var_pif_weights = NULL,
+  var_p = NULL,
+  var_beta = NULL,
   conf_level = 0.95,
   link = "log-complement",
   link_inv = NULL,
@@ -44,6 +48,8 @@ paf_ensemble(
   weights = NULL,
   var_weights = 0,
   var_pif_weights = NULL,
+  var_p = NULL,
+  var_beta = NULL,
   link = "identity",
   link_inv = NULL,
   link_deriv = NULL,
@@ -58,6 +64,8 @@ pif_ensemble(
   weights = NULL,
   var_weights = 0,
   var_pif_weights = NULL,
+  var_p = NULL,
+  var_beta = NULL,
   link = "identity",
   link_inv = NULL,
   link_deriv = NULL,
@@ -83,6 +91,15 @@ are available or a link_covariance matrix.}
 \item{var_pif_weights}{covariance matrix with row \code{i} and column \code{j}
 representing the covariance between the \code{i}-th potential impact
 fraction of the list and the \code{j}-th weight}
+
+\item{var_p, var_beta}{(Optional) Covariance matrices between the estimates
+of \code{p} (respectively \code{beta}) of different fractions. Row and column names
+are the identifiers given to the parameters as named lists in \code{\link[=pif]{pif()}} or
+\code{\link[=paf]{paf()}}; a vector-valued parameter repeats its identifier once per
+element. The diagonal blocks must equal the variances given to each
+fraction. Fractions that share an identifier are always correlated, so
+these matrices are only needed for correlations between different
+estimates (e.g. relative risks from the same meta-analysis).}
 
 \item{conf_level}{Confidence level for the confidence interval (default 0.95).}
 
@@ -173,6 +190,23 @@ paf_total(paf_men, paf_women, weights = c(0.49, 0.51), link = "logit")
 paf_lead <- paf(0.2, 2.2, quiet = TRUE, var_p = 0.001)
 paf_rad  <- paf(0.1, 1.2, quiet = TRUE, var_p = 0.0001)
 pif_ensemble(paf_lead, paf_rad)
+
+# Fractions that use the same relative risk are correlated. Declare it
+# by giving `beta` the same identifier (name) in a list:
+paf_women <- paf(0.32, beta = list("rr_meta" = log(1.3)), var_beta = 0.01,
+                 var_p = 0.001, label = "Women")
+paf_men   <- paf(0.27, beta = list("rr_meta" = log(1.3)), var_beta = 0.01,
+                 var_p = 0.001, label = "Men")
+paf_total(paf_men, paf_women, weights = c(0.49, 0.51))
+
+# Correlations between different estimates are given by identifier
+paf_lead <- paf(0.2, beta = list("lead" = log(2.2)), var_beta = 0.04,
+                var_p = 0.001, label = "Lead")
+paf_rad  <- paf(0.1, beta = list("radiation" = log(1.2)), var_beta = 0.02,
+                var_p = 0.0001, label = "Radiation")
+cov_rr <- matrix(c(0.04, 0.01, 0.01, 0.02), ncol = 2,
+                 dimnames = list(c("lead", "radiation"), c("lead", "radiation")))
+paf_ensemble(paf_lead, paf_rad, var_beta = cov_rr)
 
 # Totals and ensembles can be combined
 pif_lead_women <- paf(0.27, 2.2, quiet = TRUE, var_p = 0.001)
