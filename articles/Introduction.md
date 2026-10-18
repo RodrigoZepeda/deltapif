@@ -118,8 +118,13 @@ paf_dementia
 #> standard_deviation(paf %) = 2.028
 ```
 
-The results match those reported by Lee et al.: **PAF = 4.9% (95% CI:
-1.3–9.3)**.
+Lee et al. report **PAF = 4.9% (95% CI: 1.3–9.3)**. Their interval was
+obtained by plugging the confidence limits of the relative risk into the
+formula (the substitution method), which ignores the uncertainty of the
+prevalence and, when several fractions are combined, implicitly assumes
+their relative risks are perfectly correlated. The delta-method interval
+above is built on the log-complement scale and is therefore slightly
+different.
 
 ### Potential Impact Fraction (PIF)
 
@@ -144,8 +149,63 @@ lee_pif
 #> standard_deviation(pif %) = 0.304
 ```
 
-This result is consistent with the reported estimate: **PIF = 0.7% (95%
-CI: 0.2–1.4)**.
+This result is close to the estimate reported by Lee et al. with the
+substitution method: **PIF = 0.7% (95% CI: 0.2–1.4)**.
+
+#### Fixed targets and relative reductions
+
+A numeric `p_cft` is treated as a **fixed target** (e.g. “reduce smoking
+prevalence to 7.225%”). Scenarios such as Lee et al.’s are instead
+**relative** to the current prevalence (“reduce smoking by 15%”), so the
+counterfactual inherits the uncertainty of `p`. In that case, pass
+`p_cft` as a function of `p`:
+
+``` r
+
+pif_relative <- pif(
+  p        = 0.085,
+  p_cft    = function(p) 0.85 * p, # 15% reduction of the current prevalence
+  beta     = log(1.59),
+  var_beta = var_log_rr,
+  var_p    = 0.01^2
+)
+pif_relative
+#> 
+#> ── Potential Impact Fraction: [deltapif-000557128674616073] ──
+#> 
+#> PIF = 0.716% [95% CI: 0.098% to 1.331%]
+#> standard_deviation(pif %) = 0.315
+```
+
+When `var_p = 0` both forms give the same result. When the prevalence is
+uncertain, treating a relative reduction as a fixed target overstates
+the variance:
+
+``` r
+
+pif_fixed <- pif(p = 0.085, p_cft = 0.85 * 0.085, beta = log(1.59),
+                 var_beta = var_log_rr, var_p = 0.01^2)
+pif_fixed
+#> 
+#> ── Potential Impact Fraction: [deltapif-0621552721415214] ──
+#> 
+#> PIF = 0.716% [95% CI: -0.537% to 1.954%]
+#> standard_deviation(pif %) = 0.635
+```
+
+The `variance_components` function shows how much of the variance comes
+from the uncertainty in the prevalence (`p`) and in the relative risk
+(`beta`):
+
+``` r
+
+variance_components(pif_relative)
+#>            p         beta      weights 
+#> 6.439931e-07 9.253772e-06 0.000000e+00
+variance_components(pif_fixed)
+#>            p         beta      weights 
+#> 3.111408e-05 9.253772e-06 0.000000e+00
+```
 
 ### Attributable and averted cases
 
@@ -154,7 +214,7 @@ Attributable and averted cases can be calculated with the
 (2023)](https://pmc.ncbi.nlm.nih.gov/articles/PMC10593099/#SD2) estimate
 the number of people with Alzheimer’s Disease in New York, USA 426.5
 (400.2, 452.7) thousand. This implies a variance of
-`((452.7 - 400.2) / 2*qnorm(0.975))^2 = 2647.005`.
+`((452.7 - 400.2) / (2*qnorm(0.975)))^2 = 179.3752`.
 
 The number of cases (in thousands) that would be averted if we reduced
 smoking by 15% assuming the prevalence of smoking is identical to the
@@ -162,12 +222,12 @@ rest of the US is given by:
 
 ``` r
 
-averted_cases(426.5, lee_pif, variance = 2647.005)
+averted_cases(426.5, lee_pif, variance = 179.3752)
 #> 
 #> ── Averted cases: [deltapif-243726361121953] ──
 #> 
-#> Averted cases = 3.055 [95% CI: 0.394 to 5.716]
-#> standard_deviation(averted cases) = 1.358
+#> Averted cases = 3.055 [95% CI: 0.504 to 5.606]
+#> standard_deviation(averted cases) = 1.302
 ```
 
 Attributable cases can likewise be estimated using the previous `paf`
@@ -175,12 +235,12 @@ as:
 
 ``` r
 
-attributable_cases(426.5, paf_dementia, variance = 2647.005)
+attributable_cases(426.5, paf_dementia, variance = 179.3752)
 #> 
 #> ── Attributable cases: [deltapif-025531705484526] ──
 #> 
-#> Attributable cases = 20.368 [95% CI: 2.626 to 38.109]
-#> standard_deviation(attributable cases) = 9.052
+#> Attributable cases = 20.368 [95% CI: 3.360 to 37.375]
+#> standard_deviation(attributable cases) = 8.677
 ```
 
 ### Combining fractions from subpopulations
@@ -206,9 +266,9 @@ Assuming the distribution is 51% women and 49% men:
 
 paf_total(paf_men, paf_women, weights = c(0.49, 0.51))
 #> 
-#> ── Population Attributable Fraction: [deltapif-000557128674616073] ──
+#> ── Population Attributable Fraction: [deltapif-16235488834436] ──
 #> 
-#> PAF = 13.201% [95% CI: 10.473% to 15.845%]
+#> PAF = 13.201% [95% CI: -11.745% to 32.577%]
 #> standard_deviation(paf %) = 11.187
 #> ────────────────────────────────── Components: ─────────────────────────────────
 #> • 12.968% (sd %: 15.867) --- [Men]
@@ -220,6 +280,86 @@ This is equivalent to calculating:
 
 \\ \textrm{PAF}\_{\text{All}} = 0.49 \cdot \text{PAF}\_{\text{Men}} +
 0.51 \cdot \text{PAF}\_{\text{Women}} \\
+
+#### Fractions that share an estimate
+
+In the previous example men and women had different relative risks, so
+their fractions are independent. Often, however, subgroups use the
+**same** estimate, for example a single relative risk from a
+meta-analysis, which makes their fractions correlated. To declare it,
+give the parameter as a named list: the name identifies the estimate and
+fractions with the same name share it.
+
+``` r
+
+paf_men_shared   <- paf(p = 0.41, beta = list("rr_meta" = 0.31), var_p = 0.001,
+                        var_beta = 0.14, label = "Men")
+paf_women_shared <- paf(p = 0.37, beta = list("rr_meta" = 0.31), var_p = 0.001,
+                        var_beta = 0.14, label = "Women")
+
+paf_total(paf_men_shared, paf_women_shared, weights = c(0.49, 0.51))
+#> 
+#> ── Population Attributable Fraction: [deltapif-021335574971003] ──
+#> 
+#> PAF = 12.399% [95% CI: -23.237% to 37.731%]
+#> standard_deviation(paf %) = 15.255
+#> ────────────────────────────────── Components: ─────────────────────────────────
+#> • 12.968% (sd %: 15.867) --- [Men]
+#> • 11.853% (sd %: 14.693) --- [Women]
+#> ────────────────────────────────────────────────────────────────────────────────
+```
+
+Without the identifier the same numbers are treated as two independent
+estimates, and the interval is too narrow:
+
+``` r
+
+paf_total(
+  paf(p = 0.41, beta = 0.31, var_p = 0.001, var_beta = 0.14, label = "Men"),
+  paf(p = 0.37, beta = 0.31, var_p = 0.001, var_beta = 0.14, label = "Women"),
+  weights = c(0.49, 0.51)
+)
+#> 
+#> ── Population Attributable Fraction: [deltapif-111053489258185] ──
+#> 
+#> PAF = 12.399% [95% CI: -11.540% to 31.201%]
+#> standard_deviation(paf %) = 10.798
+#> ────────────────────────────────── Components: ─────────────────────────────────
+#> • 12.968% (sd %: 15.867) --- [Men]
+#> • 11.853% (sd %: 14.693) --- [Women]
+#> ────────────────────────────────────────────────────────────────────────────────
+```
+
+The same applies to `p` (e.g. `p = list("survey_2020" = c(0.12, 0.30))`
+for a categorical exposure). Using one identifier with different values
+or variances is an error.
+
+When different estimates are correlated (but not identical) their
+covariance can be given to `pif_total`, `pif_ensemble` (and their `paf`
+versions) with a matrix whose row and column names are the identifiers:
+
+``` r
+
+cov_beta <- matrix(c(0.14, 0.05,
+                     0.05, 0.16), ncol = 2,
+                   dimnames = list(c("rr_men", "rr_women"), c("rr_men", "rr_women")))
+
+paf_total(
+  paf(p = 0.41, beta = list("rr_men" = 0.31), var_p = 0.001, var_beta = 0.14, label = "Men"),
+  paf(p = 0.37, beta = list("rr_women" = 0.35), var_p = 0.001, var_beta = 0.16, label = "Women"),
+  weights  = c(0.49, 0.51),
+  var_beta = cov_beta
+)
+#> 
+#> ── Population Attributable Fraction: [deltapif-139941046001177] ──
+#> 
+#> PAF = 13.201% [95% CI: -16.190% to 35.157%]
+#> standard_deviation(paf %) = 12.915
+#> ────────────────────────────────── Components: ─────────────────────────────────
+#> • 12.968% (sd %: 15.867) --- [Men]
+#> • 13.424% (sd %: 15.773) --- [Women]
+#> ────────────────────────────────────────────────────────────────────────────────
+```
 
 ### Combining fractions from multiple risks
 
@@ -238,17 +378,18 @@ paf_absts <- paf(p = 0.61, beta = 0.15, var_p = 0.001,
 ```
 
 A fraction of **environmental** exposure considering both can be
-calculated by multiplying the inverse of the fractions, assuming a
-commonality correction (say of `c(0.1, 0.2)`):
+calculated by multiplying the complements of the weighted fractions.
+Here we use (illustrative) weights of `c(0.9, 0.8)`, which correspond to
+commonalities of `0.1` and `0.2` (see below):
 
 ``` r
 
-paf_ensemble(paf_lead, paf_absts, weights = c(0.1, 0.2))
+paf_ensemble(paf_lead, paf_absts, weights = c(0.9, 0.8))
 #> 
-#> ── Population Attributable Fraction: [deltapif-15123996512628] ──
+#> ── Population Attributable Fraction: [deltapif-0286895218789768] ──
 #> 
-#> PAF = 3.070% [95% CI: 3.033% to 3.108%]
-#> standard_deviation(paf %) = 0.625
+#> PAF = 18.020% [95% CI: 9.287% to 26.753%]
+#> standard_deviation(paf %) = 4.456
 #> ────────────────────────────────── Components: ─────────────────────────────────
 #> • 12.968% (sd %: 5.085) --- [Lead]
 #> • 8.985% (sd %: 1.904) --- [Asbestus]
@@ -257,8 +398,8 @@ paf_ensemble(paf_lead, paf_absts, weights = c(0.1, 0.2))
 
 where this quantity estimates:
 
-\\ \textrm{PAF}\_{\text{Ensemble}} = 1 - (1 - 0.1 \cdot
-\textrm{PAF}\_{\text{Lead}}) \cdot (1 - 0.2 \cdot
+\\ \textrm{PAF}\_{\text{Ensemble}} = 1 - (1 - 0.9 \cdot
+\textrm{PAF}\_{\text{Lead}}) \cdot (1 - 0.8 \cdot
 \textrm{PAF}\_{\text{Asbestus}}) \\
 
 ### Adjusting fractions for commonality
@@ -284,20 +425,21 @@ as:
 
 ``` r
 
-weighted_adjusted_paf(paf_lead, paf_absts, weights = c(0.2, 0.3))
+commonality <- c(0.1, 0.2)
+weighted_adjusted_paf(paf_lead, paf_absts, weights = 1 - commonality)
 #> $Lead
 #> 
 #> ── Population Attributable Fraction: [Lead_adj] ──
 #> 
-#> PAF = 3.083% [95% CI: 0.964% to 5.202%]
-#> standard_deviation(paf %) = 1.081
+#> PAF = 10.645% [95% CI: 4.895% to 23.150%]
+#> standard_deviation(paf %) = 4.219
 #> 
 #> $Asbestus
 #> 
 #> ── Population Attributable Fraction: [Asbestus_adj] ──
 #> 
-#> PAF = 2.136% [95% CI: 1.294% to 2.978%]
-#> standard_deviation(paf %) = 0.429
+#> PAF = 7.375% [95% CI: 4.850% to 11.215%]
+#> standard_deviation(paf %) = 1.577
 ```
 
 which returns a named list of the adjusted fractions.

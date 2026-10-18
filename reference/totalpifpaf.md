@@ -14,6 +14,8 @@ paf_total(
   weights,
   var_weights = 0,
   var_pif_weights = NULL,
+  var_p = NULL,
+  var_beta = NULL,
   conf_level = 0.95,
   link = "log-complement",
   link_inv = NULL,
@@ -28,6 +30,8 @@ pif_total(
   weights,
   var_weights = 0,
   var_pif_weights = NULL,
+  var_p = NULL,
+  var_beta = NULL,
   conf_level = 0.95,
   link = "log-complement",
   link_inv = NULL,
@@ -44,6 +48,8 @@ paf_ensemble(
   weights = NULL,
   var_weights = 0,
   var_pif_weights = NULL,
+  var_p = NULL,
+  var_beta = NULL,
   link = "identity",
   link_inv = NULL,
   link_deriv = NULL,
@@ -58,6 +64,8 @@ pif_ensemble(
   weights = NULL,
   var_weights = 0,
   var_pif_weights = NULL,
+  var_p = NULL,
+  var_beta = NULL,
   link = "identity",
   link_inv = NULL,
   link_deriv = NULL,
@@ -95,6 +103,20 @@ pif_ensemble(
   covariance matrix with row `i` and column `j` representing the
   covariance between the `i`-th potential impact fraction of the list
   and the `j`-th weight
+
+- var_p, var_beta:
+
+  (Optional) Covariance matrices between the estimates of `p`
+  (respectively `beta`) of different fractions. Row and column names are
+  the identifiers given to the parameters as named lists in
+  [`pif()`](https://rodrigozepeda.github.io/deltapif/reference/pifpaf.md)
+  or
+  [`paf()`](https://rodrigozepeda.github.io/deltapif/reference/pifpaf.md);
+  a vector-valued parameter repeats its identifier once per element. The
+  diagonal blocks must equal the variances given to each fraction.
+  Fractions that share an identifier are always correlated, so these
+  matrices are only needed for correlations between different estimates
+  (e.g. relative risks from the same meta-analysis).
 
 - conf_level:
 
@@ -184,13 +206,13 @@ pif_men <- pif(0.27, 0.1, 1.3, quiet = TRUE, var_p = 0.1)
 #Population potential impact fraction with 49% men and 51% women
 pif_total(pif_men, pif_women, weights = c(0.49, 0.51), link = "logit")
 #> 
-#> ── Potential Impact Fraction: [deltapif-106199914454589] ──
+#> ── Potential Impact Fraction: [deltapif-114269487842917] ──
 #> 
-#> PIF = 27.862% [95% CI: 22.944% to 33.377%]
+#> PIF = 27.862% [95% CI: 3.823% to 78.962%]
 #> standard_deviation(pif %) = 23.319
 #> ────────────────────────────────── Components: ─────────────────────────────────
-#> • 26.372% (sd %: 36.119) --- [deltapif-256440833799741]
-#> • 29.294% (sd %: 29.772) --- [deltapif-0154120739556124]
+#> • 26.372% (sd %: 36.119) --- [deltapif-106199914454589]
+#> • 29.294% (sd %: 29.772) --- [deltapif-256440833799741]
 #> ────────────────────────────────────────────────────────────────────────────────
 
 #Population attributable  fraction for women
@@ -200,13 +222,13 @@ paf_women <- paf(0.32, 1.3, quiet = TRUE, var_p = 0.1)
 paf_men <- paf(0.27, 1.3, quiet = TRUE, var_p = 0.1)
 paf_total(paf_men, paf_women, weights = c(0.49, 0.51), link = "logit")
 #> 
-#> ── Population Attributable Fraction: [deltapif-0558514421664496] ──
+#> ── Population Attributable Fraction: [deltapif-0415406398921884] ──
 #> 
-#> PAF = 44.018% [95% CI: 38.601% to 49.581%]
+#> PAF = 44.018% [95% CI: 15.026% to 77.759%]
 #> standard_deviation(paf %) = 18.760
 #> ────────────────────────────────── Components: ─────────────────────────────────
-#> • 41.884% (sd %: 28.509) --- [deltapif-00751059001682063]
-#> • 46.068% (sd %: 24.552) --- [deltapif-0542141549441894]
+#> • 41.884% (sd %: 28.509) --- [deltapif-0558514421664496]
+#> • 46.068% (sd %: 24.552) --- [deltapif-00751059001682063]
 #> ────────────────────────────────────────────────────────────────────────────────
 
 # Calculate the ensemble from lead and radiation exposure
@@ -214,13 +236,48 @@ paf_lead <- paf(0.2, 2.2, quiet = TRUE, var_p = 0.001)
 paf_rad  <- paf(0.1, 1.2, quiet = TRUE, var_p = 0.0001)
 pif_ensemble(paf_lead, paf_rad)
 #> 
-#> ── Population Attributable Fraction: [deltapif-143127077688999] ──
+#> ── Population Attributable Fraction: [deltapif-138291086057034] ──
 #> 
-#> PAF = 68.841% [95% CI: 64.670% to 73.013%]
+#> PAF = 68.841% [95% CI: 62.782% to 74.901%]
 #> standard_deviation(paf %) = 3.092
 #> ────────────────────────────────── Components: ─────────────────────────────────
-#> • 61.612% (sd %: 3.740) --- [deltapif-110018974454478]
-#> • 18.832% (sd %: 1.529) --- [deltapif-120376783938691]
+#> • 61.612% (sd %: 3.740) --- [deltapif-120376783938691]
+#> • 18.832% (sd %: 1.529) --- [deltapif-143127077688999]
+#> ────────────────────────────────────────────────────────────────────────────────
+
+# Fractions that use the same relative risk are correlated. Declare it
+# by giving `beta` the same identifier (name) in a list:
+paf_women <- paf(0.32, beta = list("rr_meta" = log(1.3)), var_beta = 0.01,
+                 var_p = 0.001, label = "Women")
+paf_men   <- paf(0.27, beta = list("rr_meta" = log(1.3)), var_beta = 0.01,
+                 var_p = 0.001, label = "Men")
+paf_total(paf_men, paf_women, weights = c(0.49, 0.51))
+#> 
+#> ── Population Attributable Fraction: [deltapif-217757602827549] ──
+#> 
+#> PAF = 8.139% [95% CI: 1.465% to 14.361%]
+#> standard_deviation(paf %) = 3.287
+#> ────────────────────────────────── Components: ─────────────────────────────────
+#> • 7.493% (sd %: 3.111) --- [Men]
+#> • 8.759% (sd %: 3.552) --- [Women]
+#> ────────────────────────────────────────────────────────────────────────────────
+
+# Correlations between different estimates are given by identifier
+paf_lead <- paf(0.2, beta = list("lead" = log(2.2)), var_beta = 0.04,
+                var_p = 0.001, label = "Lead")
+paf_rad  <- paf(0.1, beta = list("radiation" = log(1.2)), var_beta = 0.02,
+                var_p = 0.0001, label = "Radiation")
+cov_rr <- matrix(c(0.04, 0.01, 0.01, 0.02), ncol = 2,
+                 dimnames = list(c("lead", "radiation"), c("lead", "radiation")))
+paf_ensemble(paf_lead, paf_rad, var_beta = cov_rr)
+#> 
+#> ── Population Attributable Fraction: [deltapif-0876777326556075] ──
+#> 
+#> PAF = 20.936% [95% CI: 7.889% to 33.983%]
+#> standard_deviation(paf %) = 6.657
+#> ────────────────────────────────── Components: ─────────────────────────────────
+#> • 19.355% (sd %: 6.233) --- [Lead]
+#> • 1.961% (sd %: 1.642) --- [Radiation]
 #> ────────────────────────────────────────────────────────────────────────────────
 
 # Totals and ensembles can be combined
@@ -233,12 +290,12 @@ pif_men        <- pif_ensemble(pif_lead_men, pif_rad_men)
 
 pif_total(pif_men, pif_women, weights = c(0.49, 0.51))
 #> 
-#> ── Population Attributable Fraction: [deltapif-215875655364964] ──
+#> ── Population Attributable Fraction: [deltapif-0654550251367236] ──
 #> 
-#> PAF = 75.731% [95% CI: 74.815% to 76.612%]
+#> PAF = 75.731% [95% CI: 72.232% to 78.788%]
 #> standard_deviation(paf %) = 1.668
 #> ────────────────────────────────── Components: ─────────────────────────────────
-#> • 76.180% (sd %: 2.271) --- [deltapif-187774387154249]
-#> • 75.299% (sd %: 2.435) --- [deltapif-0117860143249397]
+#> • 76.180% (sd %: 2.271) --- [deltapif-0360278296382459]
+#> • 75.299% (sd %: 2.435) --- [deltapif-147619690566501]
 #> ────────────────────────────────────────────────────────────────────────────────
 ```

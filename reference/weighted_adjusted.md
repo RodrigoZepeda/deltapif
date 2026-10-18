@@ -16,10 +16,19 @@ weighted_adjusted_paf(
   var_pif_weights = NULL,
   var_p = NULL,
   var_beta = NULL,
+  pif_total_link = "log-complement",
+  pif_total_link_inv = NULL,
+  pif_total_link_deriv = NULL,
+  pif_ensemble_link = "identity",
+  pif_ensemble_link_inv = NULL,
+  pif_ensemble_link_deriv = NULL,
   conf_level = 0.95,
   label_ensemble = NULL,
   label_sum = NULL,
-  quiet = FALSE
+  quiet = FALSE,
+  link = "log",
+  link_inv = NULL,
+  link_deriv = NULL
 )
 
 weighted_adjusted_pif(
@@ -39,7 +48,10 @@ weighted_adjusted_pif(
   conf_level = 0.95,
   label_ensemble = NULL,
   label_sum = NULL,
-  quiet = FALSE
+  quiet = FALSE,
+  link = "log",
+  link_inv = NULL,
+  link_deriv = NULL
 )
 ```
 
@@ -61,7 +73,9 @@ weighted_adjusted_pif(
   [`pif_ensemble()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md)
   /
   [`paf_ensemble()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md).
-  Defaults to `NULL` (equal weights of 1 for each fraction).
+  Defaults to `NULL` (equal weights of 1 for each fraction). When
+  adjusting for communality (Mukadam et al. 2019) the weights are
+  `1 - communality`.
 
 - var_weights:
 
@@ -80,42 +94,19 @@ weighted_adjusted_pif(
   [`paf_ensemble()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md).
   Defaults to `NULL`.
 
-- var_p:
+- var_p, var_beta:
 
-  Covariance matrix for the prevalence parameters `p` across all
-  fractions. Passed to
-  [`covariance()`](https://rodrigozepeda.github.io/deltapif/reference/covcor.md)
-  when computing cross-covariances. Defaults to `NULL`.
-
-- var_beta:
-
-  Covariance matrix for the relative-risk parameters `beta` across all
-  fractions. Passed to
-  [`covariance()`](https://rodrigozepeda.github.io/deltapif/reference/covcor.md)
-  when computing cross-covariances. Defaults to `NULL`.
-
-- conf_level:
-
-  Confidence level for the confidence interval (default 0.95).
-
-- label_ensemble:
-
-  Character label for the internally constructed ensemble fraction.
-  Defaults to `NULL` (auto-generated).
-
-- label_sum:
-
-  Character label for the internally constructed sum (total) fraction.
-  Defaults to `NULL` (auto-generated).
-
-- quiet:
-
-  Whether to show messages.
-
-- pif1:
-
-  A potential impact fraction (class `pif_class`). This is the first of
-  the individual fractions to be adjusted.
+  (Optional) Covariance matrices between the estimates of `p`
+  (respectively `beta`) of different fractions, with row and column
+  names given by the identifiers of the parameters (see the section
+  *Shared parameters* in
+  [`pif()`](https://rodrigozepeda.github.io/deltapif/reference/pifpaf.md)).
+  Passed to
+  [`pif_total()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md)
+  and
+  [`pif_ensemble()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md).
+  Defaults to `NULL` (fractions are correlated only through shared
+  identifiers).
 
 - pif_total_link:
 
@@ -144,6 +135,42 @@ weighted_adjusted_pif(
 
   Derivative of the link to pass to `pif_ensemble` in the numerator of
   the adjustment
+
+- conf_level:
+
+  Confidence level for the confidence interval (default 0.95).
+
+- label_ensemble:
+
+  Character label for the internally constructed ensemble fraction.
+  Defaults to `NULL` (auto-generated).
+
+- label_sum:
+
+  Character label for the internally constructed sum (total) fraction.
+  Defaults to `NULL` (auto-generated).
+
+- quiet:
+
+  Whether to show messages.
+
+- link:
+
+  Link used to build the confidence intervals of the adjusted fractions.
+  Defaults to `"log"`, the scale on which their variance is derived (see
+  *Formula*), which guarantees strictly positive intervals. Use
+  `"identity"` for symmetric Wald intervals (required if an adjusted
+  fraction is not strictly positive) or a function together with
+  `link_inv` and `link_deriv`.
+
+- link_inv, link_deriv:
+
+  (Optional) Inverse and derivative of `link` when `link` is a function.
+
+- pif1:
+
+  A potential impact fraction (class `pif_class`). This is the first of
+  the individual fractions to be adjusted.
 
 ## Value
 
@@ -175,6 +202,11 @@ where each log-covariance is approximated via the delta method: \$\$
 \operatorname{Cov}\\\big(\ln X, \ln Y\big) \approx
 \frac{\operatorname{Cov}(X, Y)}{X \cdot Y} \$\$
 
+The confidence interval is built on the scale of `link` (the log scale
+by default): \$\$ \exp\Big( \ln \widehat{\text{PIF}}\_i^{\text{adj}} \pm
+Z\_{\alpha/2} \sqrt{\operatorname{Var}\big\[\ln
+\widehat{\text{PIF}}\_i^{\text{adj}}\big\]}\Big). \$\$
+
 The covariances \\\operatorname{Cov}(\widehat{\text{PIF}}\_i, \cdot)\\
 are computed by the internal function `cov_total_pif()` applied to the
 individual fraction and the internally constructed sum/ensemble objects,
@@ -199,14 +231,14 @@ weighted_adjusted_paf(paf_lead, paf_rad)
 #> 
 #> ── Population Attributable Fraction: [Lead_adj] ──
 #> 
-#> PAF = 52.726% [95% CI: 46.604% to 58.847%]
+#> PAF = 52.726% [95% CI: 46.946% to 59.217%]
 #> standard_deviation(paf %) = 3.123
 #> 
 #> $Radiation
 #> 
 #> ── Population Attributable Fraction: [Radiation_adj] ──
 #> 
-#> PAF = 16.116% [95% CI: 13.560% to 18.671%]
+#> PAF = 16.116% [95% CI: 13.753% to 18.885%]
 #> standard_deviation(paf %) = 1.304
 #> 
 
@@ -220,14 +252,14 @@ weighted_adjusted_pif(pif_lead, pif_rad)
 #> 
 #> ── Potential Impact Fraction: [Lead_adj] ──
 #> 
-#> PIF = 9.591% [95% CI: 4.226% to 14.956%]
+#> PIF = 9.591% [95% CI: 5.482% to 16.780%]
 #> standard_deviation(pif %) = 2.737
 #> 
 #> $Radiation
 #> 
 #> ── Potential Impact Fraction: [Radiation_adj] ──
 #> 
-#> PIF = 0.972% [95% CI: 0.595% to 1.349%]
+#> PIF = 0.972% [95% CI: 0.659% to 1.432%]
 #> standard_deviation(pif %) = 0.192
 #> 
 ```

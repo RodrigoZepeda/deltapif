@@ -13,7 +13,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">deltapif</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,9 +42,37 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="deltapif-development-version">deltapif (development version)<a class="anchor" aria-label="anchor" href="#deltapif-development-version"></a></h2>
-<ul><li>Updates for compatibility with S7 &gt; 0.2.2.</li>
+<h2 class="pkg-version" data-toc-text="0.5.0" id="deltapif-050">deltapif 0.5.0<a class="anchor" aria-label="anchor" href="#deltapif-050"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-0-5-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-5-0"></a></h3>
+<ul><li><p><strong>Shared parameters are declared explicitly.</strong> <code>p</code> and <code>beta</code> in <code><a href="../reference/pifpaf.html">pif()</a></code> and <code><a href="../reference/pifpaf.html">paf()</a></code> can be given as a named list with one element, e.g. <code>beta = list("smoking_dementia" = 0.46)</code> or <code>p = list("447" = c(0.12, 0.87))</code>. Fractions using the same name (identifier) share the estimate and are correlated; using one identifier with different values or variances is an error. Parameters given as plain numbers are now treated as independent. Previously, fractions whose <code>beta</code> and <code>var_beta</code> (or <code>p</code> and <code>var_p</code>) were numerically identical were silently assumed to share the estimate, which missed shared estimates that were rounded differently and invented sharing between independent estimates that happened to coincide. Code that relied on this should give the shared parameters a common identifier.</p></li>
+<li><p><code><a href="../reference/weighted_adjusted.html">weighted_adjusted_paf()</a></code> and <code><a href="../reference/weighted_adjusted.html">weighted_adjusted_pif()</a></code> build their confidence intervals on the log scale by default (new argument <code>link</code>), consistent with the log-scale variance of the adjusted fractions; use <code>link = "identity"</code> for the previous symmetric intervals.</p></li>
+<li><p>The <code>dementiacov</code> dataset is replaced by <code>dementiacor</code>. <code>dementiacov</code> was built from the pairwise tetrachoric correlations between the dementia risk factors (exposures) in ARIC (eTable 2 of Lee et al.) multiplied by the standard errors of the log relative risks, so it was not a covariance between relative-risk estimates. <code>dementiacor</code> contains the published correlations themselves, documented as correlations between exposures.</p></li>
 </ul></div>
+<div class="section level3">
+<h3 id="new-features-0-5-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-5-0"></a></h3>
+<ul><li><p><code><a href="../reference/pifpaf.html">pif()</a></code> accepts the counterfactual prevalence <code>p_cft</code> as a function of <code>p</code> (e.g. <code>function(p) 0.85 * p</code>) for scenarios defined relative to the current exposure. The uncertainty in <code>p</code> is then propagated through the counterfactual (numerically or with the new argument <code>p_cft_deriv</code>). Numeric <code>p_cft</code> values are still treated as fixed targets.</p></li>
+<li><p><code><a href="../reference/totalpifpaf.html">pif_total()</a></code>, <code><a href="../reference/totalpifpaf.html">pif_ensemble()</a></code>, their <code>paf</code> versions and the weighted adjusted fractions accept <code>var_p</code> and <code>var_beta</code>: covariance matrices between different estimates whose row and column names are the identifiers of the parameters (e.g. relative risks from the same meta-analysis).</p></li>
+<li><p>New <code><a href="../reference/variance_components.html">variance_components()</a></code> splits the variance of a fraction into the parts due to the prevalences (<code>p</code>), the relative risks (<code>beta</code>) and the weights.</p></li>
+<li><p>Compatibility with the development version of S7 (&gt; 0.2.2): constructors of the fraction classes build their parent instances, and the package uses S7’s load, unload and build hooks when available (@t-kalinowski, #2).</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-5-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-5-0"></a></h3>
+<ul><li><p><code><a href="../reference/totalpifpaf.html">pif_total()</a></code>, <code><a href="../reference/totalpifpaf.html">paf_total()</a></code>, <code><a href="../reference/totalpifpaf.html">pif_ensemble()</a></code>, <code><a href="../reference/totalpifpaf.html">paf_ensemble()</a></code> (and hence <code><a href="../reference/weighted_adjusted.html">weighted_adjusted_pif()</a></code> and <code><a href="../reference/weighted_adjusted.html">weighted_adjusted_paf()</a></code>) used the inverse of the link instead of its derivative, producing confidence intervals that were too narrow. Point estimates and variances were not affected.</p></li>
+<li><p><code><a href="../reference/weighted_adjusted.html">weighted_adjusted_pif()</a></code> and <code><a href="../reference/weighted_adjusted.html">weighted_adjusted_paf()</a></code> now pass <code>pif_total_link</code> and <code>pif_ensemble_link</code> (and their inverses and derivatives) instead of ignoring them.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="data-0-5-0">Data<a class="anchor" aria-label="anchor" href="#data-0-5-0"></a></h3>
+<ul><li>
+<code>dementiarisk</code> gains a <code>communality</code> column (%, Table 2 of Lee et al.). Its documentation now states that the prevalence columns are percentages and that <code>sdlog</code> is the standard error of the log relative risk.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-0-5-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-5-0"></a></h3>
+<ul><li><p>The vignettes used the ARIC exposure prevalences of smoking, excessive alcohol and physical inactivity (5.9%, 3.8% and 31.1%) as if they were communalities; they now use the published communalities from <code>dementiarisk$communality</code>, with weights <code>1 - communality</code> in the same order as the fractions.</p></li>
+<li><p>Fixes the variance of the number of cases derived from its confidence interval and the alcohol example, which passed relative risks instead of log relative risks.</p></li>
+<li><p>The README and the Introduction vignette now state that Lee et al. obtained their intervals by substituting the confidence limits of the relative risk, and the vignettes show relative counterfactuals, <code><a href="../reference/variance_components.html">variance_components()</a></code> and shared identifiers.</p></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.6" id="deltapif-046">deltapif 0.4.6<a class="anchor" aria-label="anchor" href="#deltapif-046"></a></h2>
 <ul><li>Fixes bug in printing standard deviation of <code><a href="../reference/casecalc.html">attributable_cases()</a></code> and <code><a href="../reference/casecalc.html">averted_cases()</a></code> that multiplied by 100.</li>

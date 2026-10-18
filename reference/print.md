@@ -29,7 +29,7 @@ my_pif <- pif(p = 0.2, beta = 1.3, var_beta = 0.1)
 #> ! Assuming parameters `p` have no variance Use `var_p` to input their link_variances and/or covariance
 print(my_pif)
 #> 
-#> ── Potential Impact Fraction: [deltapif-103593077108096] ──
+#> ── Potential Impact Fraction: [deltapif-0473887074273069] ──
 #> 
 #> PIF = 34.805% [95% CI: 12.300% to 51.535%]
 #> standard_deviation(pif %) = 9.864
@@ -37,7 +37,7 @@ print(my_pif)
 # Change the ammount of digits to show just 1
 print(my_pif, accuracy = 0.1)
 #> 
-#> ── Potential Impact Fraction: [deltapif-103593077108096] ──
+#> ── Potential Impact Fraction: [deltapif-0473887074273069] ──
 #> 
 #> PIF = 34.8% [95% CI: 12.3% to 51.5%]
 #> standard_deviation(pif %) = 9.9
@@ -79,16 +79,16 @@ print(default_parameter_covariance_structure(pif_tot, parameter = "beta"))
 #>                 Population Men Men lead Men radiation Women Women lead
 #> Population      .          .   .        .             .     .         
 #> Men             .          .   .        .             .     .         
-#> Men lead        .          .   0.015    .             .     0.015     
+#> Men lead        .          .   0.015    .             .     .         
 #> Men radiation   .          .   .        0.022         .     .         
 #> Women           .          .   .        .             .     .         
-#> Women lead      .          .   0.015    .             .     0.015     
-#> Women radiation .          .   .        0.022         .     .         
+#> Women lead      .          .   .        .             .     0.015     
+#> Women radiation .          .   .        .             .     .         
 #>                 Women radiation
 #> Population      .              
 #> Men             .              
 #> Men lead        .              
-#> Men radiation   0.022          
+#> Men radiation   .              
 #> Women           .              
 #> Women lead      .              
 #> Women radiation 0.022          

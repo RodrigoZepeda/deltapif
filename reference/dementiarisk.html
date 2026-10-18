@@ -13,7 +13,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">deltapif</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,7 +53,7 @@
 
     <div class="section level2">
     <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
-    <p>A data frame with 12 rows and 11 columns:</p>
+    <p>A data frame with 12 rows and 12 columns:</p>
 <dl><dt>risk_factor</dt>
 <dd><p>The risk factor for dementia</p></dd>
 
@@ -67,22 +67,27 @@
 <dd><p>The logarithm of the relative risk <code>log(RR)</code></p></dd>
 
 <dt>sdlog</dt>
-<dd><p>The variance of the logarithm of the relative risk <code>variance(log(RR))</code></p></dd>
+<dd><p>The standard deviation (standard error) of the logarithm of the relative risk <code>sd(log(RR))</code></p></dd>
 
 <dt>total</dt>
-<dd><p>The proportion of individuals exposed in the overall population</p></dd>
+<dd><p>The percentage (%) of individuals exposed in the overall population</p></dd>
 
 <dt>hispanic</dt>
-<dd><p>The proportion of hispanic individuals exposed</p></dd>
+<dd><p>The percentage (%) of hispanic individuals exposed</p></dd>
 
 <dt>asian</dt>
-<dd><p>The proportion of non-hispanic asian individuals exposed</p></dd>
+<dd><p>The percentage (%) of non-hispanic asian individuals exposed</p></dd>
 
 <dt>black</dt>
-<dd><p>The proportion of non-hispanic black individuals exposed</p></dd>
+<dd><p>The percentage (%) of non-hispanic black individuals exposed</p></dd>
 
 <dt>white</dt>
-<dd><p>The proportion of non-hispanic white individuals exposed</p></dd>
+<dd><p>The percentage (%) of non-hispanic white individuals exposed</p></dd>
+
+<dt>communality</dt>
+<dd><p>Communality (%) of the risk factor with the other risk
+factors (Table 2 of Lee et al.). The communality weight used to combine
+fractions is <code>1 - communality / 100</code>.</p></dd>
 
 
 </dl></div>
@@ -94,7 +99,7 @@ and ethnicity in the US." JAMA network open 5.7 (2022): e2219672-e2219672.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><a href="dementiacov.html">dementiacov</a> for the covariance between the risk factors</p></div>
+    <div class="dont-index"><p><a href="dementiacor.html">dementiacor</a> for the correlation between the risk factors</p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

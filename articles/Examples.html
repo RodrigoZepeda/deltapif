@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">deltapif</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -113,10 +113,17 @@ Fraction</strong> of the overall population.</p>
 <code>var_beta = 0.0273858</code>
 (<code>= 0.165486566^2</code>).</li>
 </ul>
+<p>The same relative risk (from the same meta-analysis) is used for
+every race group. To tell the package that the fractions share this
+estimate, and hence are correlated, we give <code>beta</code> as a named
+list. The name (here <code>"smoking_dementia"</code>) identifies the
+estimate:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">beta_smoking</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"smoking_dementia"</span> <span class="op">=</span> <span class="fl">0.4637340</span><span class="op">)</span></span></code></pre></div>
 <p>Among hispanic individuals 6.9% (<code>p = 0.069</code>) smoke. Hence
 their PAF is:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">paf_hispanic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.069</span>, beta <span class="op">=</span> <span class="fl">0.4637340</span>, var_beta <span class="op">=</span> <span class="fl">0.0273858</span>, var_p <span class="op">=</span> <span class="fl">0</span>,</span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">paf_hispanic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.069</span>, beta <span class="op">=</span> <span class="va">beta_smoking</span>, var_beta <span class="op">=</span> <span class="fl">0.0273858</span>, var_p <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>                    rr_link <span class="op">=</span> <span class="va">exp</span>, label <span class="op">=</span> <span class="st">"Hispanic"</span><span class="op">)</span></span>
 <span><span class="va">paf_hispanic</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -127,13 +134,17 @@ their PAF is:</p>
 <p>The other fractions can be computed in the same way noting that 4.9%
 of non-hispanic asians, 11.7% of non-hispanic blacks and 8.4% of
 non-hispanic whites smoke:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">paf_asian</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.049</span>, beta <span class="op">=</span> <span class="fl">0.4637340</span>, var_beta <span class="op">=</span> <span class="fl">0.0273858</span>, </span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">paf_asian</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.049</span>, beta <span class="op">=</span> <span class="va">beta_smoking</span>, var_beta <span class="op">=</span> <span class="fl">0.0273858</span>, </span>
 <span>                    var_p <span class="op">=</span> <span class="fl">0</span>, rr_link <span class="op">=</span> <span class="va">exp</span>, label <span class="op">=</span> <span class="st">"Asian"</span><span class="op">)</span></span>
-<span><span class="va">paf_black</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.117</span>, beta <span class="op">=</span> <span class="fl">0.4637340</span>, var_beta <span class="op">=</span> <span class="fl">0.0273858</span>, </span>
+<span><span class="va">paf_black</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.117</span>, beta <span class="op">=</span> <span class="va">beta_smoking</span>, var_beta <span class="op">=</span> <span class="fl">0.0273858</span>, </span>
 <span>                    var_p <span class="op">=</span> <span class="fl">0</span>, rr_link <span class="op">=</span> <span class="va">exp</span>, label <span class="op">=</span> <span class="st">"Black"</span><span class="op">)</span></span>
-<span><span class="va">paf_white</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.084</span>, beta <span class="op">=</span> <span class="fl">0.4637340</span>, var_beta <span class="op">=</span> <span class="fl">0.0273858</span>, </span>
+<span><span class="va">paf_white</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.084</span>, beta <span class="op">=</span> <span class="va">beta_smoking</span>, var_beta <span class="op">=</span> <span class="fl">0.0273858</span>, </span>
 <span>                    var_p <span class="op">=</span> <span class="fl">0</span>, rr_link <span class="op">=</span> <span class="va">exp</span>, label <span class="op">=</span> <span class="st">"White"</span><span class="op">)</span></span></code></pre></div>
+<p>Using the same identifier with a different value or variance is an
+error, which protects against typos. Fractions whose parameters are
+given as plain numbers (or with different identifiers) are treated as
+independent.</p>
 </div>
 <div class="section level3">
 <h3 id="example-2-combining-subpopulations-into-a-total">Example 2: Combining subpopulations into a total<a class="anchor" aria-label="anchor" href="#example-2-combining-subpopulations-into-a-total"></a>
@@ -142,7 +153,7 @@ non-hispanic whites smoke:</p>
 fraction</strong> by combining the fractions of the subpopulations
 weighted by the proportion of the population. According to Wikipedia the
 distribution in 2020 of the US population by race was as follows:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">weights</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span> <span class="op">=</span> <span class="fl">0.5784</span>, <span class="st">"hispanic"</span> <span class="op">=</span> <span class="fl">0.1873</span>, </span>
 <span>             <span class="st">"black"</span> <span class="op">=</span> <span class="fl">0.1205</span>, <span class="st">"asian"</span> <span class="op">=</span> <span class="fl">0.0592</span><span class="op">)</span></span>
 <span></span>
@@ -150,7 +161,7 @@ distribution in 2020 of the US population by race was as follows:</p>
 <span><span class="va">weights</span> <span class="op">&lt;-</span> <span class="va">weights</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">weights</span><span class="op">)</span></span></code></pre></div>
 <p>The <code>paf_total</code> function computes the aggregated
 <code>paf</code> of the whole population:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paf_population</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/totalpifpaf.html">paf_total</a></span><span class="op">(</span><span class="va">paf_white</span>, <span class="va">paf_hispanic</span>, <span class="va">paf_black</span>, </span>
 <span>                            <span class="va">paf_asian</span>, weights <span class="op">=</span> <span class="va">weights</span>, var_weights <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>                            label <span class="op">=</span> <span class="st">"All"</span><span class="op">)</span></span>
@@ -158,7 +169,7 @@ distribution in 2020 of the US population by race was as follows:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[All]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PAF = 4.663% [<span style="font-style: italic;">95% CI</span>: 4.486% to 4.839%]</span></span>
+<span><span class="co">#&gt; PAF = 4.663% [<span style="font-style: italic;">95% CI</span>: 0.704% to 8.464%]</span></span>
 <span><span class="co">#&gt; standard_deviation(paf %) = 1.979</span></span>
 <span><span class="co">#&gt; ────────────────────────────────── Components: ─────────────────────────────────</span></span>
 <span><span class="co">#&gt; • 4.722% (sd %: 2.006) --- <span style="font-style: italic;">[White]</span></span></span>
@@ -182,22 +193,22 @@ subgroup.</p>
 and <code>as.data.frame</code> functions have been extended to allow the
 user to extract information from a <code>paf</code> (or
 <code>pif</code>):</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">paf_population</span><span class="op">)</span></span>
-<span><span class="co">#&gt;        value standard_deviation     ci_low      ci_up confidence type label</span></span>
-<span><span class="co">#&gt; 1 0.04662895         0.01979259 0.04486196 0.04839268       0.95  PAF   All</span></span></code></pre></div>
+<span><span class="co">#&gt;        value standard_deviation      ci_low      ci_up confidence type label</span></span>
+<span><span class="co">#&gt; 1 0.04662895         0.01979259 0.007036139 0.08464307       0.95  PAF   All</span></span></code></pre></div>
 <p>Attributable cases can be calculated for example using the estimates
 from <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10593099/#SD2" class="external-link"><span class="citation">Dhana et al. (2023)</span></a>. They estimate the
 number of people with Alzheimer’s Disease in New York, USA 426.5 (400.2,
 452.7) thousand. This implies a variance of
-<code>((452.7 - 400.2) / 2*qnorm(0.975))^2 = 2647.005</code>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/casecalc.html">attributable_cases</a></span><span class="op">(</span><span class="fl">426.5</span>, <span class="va">paf_population</span>, variance <span class="op">=</span> <span class="fl">2647</span><span class="op">)</span></span>
+<code>((452.7 - 400.2) / (2*qnorm(0.975)))^2 = 179.3752</code>.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/casecalc.html">attributable_cases</a></span><span class="op">(</span><span class="fl">426.5</span>, <span class="va">paf_population</span>, variance <span class="op">=</span> <span class="fl">179.3752</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Attributable cases: </span><span style="font-weight: bold; font-style: italic;">[All]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attributable cases = 19.887 [<span style="font-style: italic;">95% CI</span>: 2.572 to 37.203]</span></span>
-<span><span class="co">#&gt; standard_deviation(attributable cases) = 8.835</span></span></code></pre></div>
+<span><span class="co">#&gt; Attributable cases = 19.887 [<span style="font-style: italic;">95% CI</span>: 3.289 to 36.486]</span></span>
+<span><span class="co">#&gt; standard_deviation(attributable cases) = 8.469</span></span></code></pre></div>
 <!---
 ### Why are we using the log relative risk?
 
@@ -259,21 +270,24 @@ by a 15% reduction in smoking.<a class="anchor" aria-label="anchor" href="#examp
 <p><a href="https://doi.org/10.1001/jamanetworkopen.2022.19672" class="external-link"><span class="citation">Lee et al. (2022)</span></a> also estimates the
 proportion of dementia cases that would be reduced by a 15% decrease in
 smoking prevalence. This 15% reduction corresponds to multiplying the
-current smoking prevalence by <code>1 - 0.15 = 0.85</code> specified
-with the prevalence under the counterfactual (<code>p_cft</code>)
-variable:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pif_hispanic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">pif</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.069</span>, p_cft <span class="op">=</span> <span class="fl">0.069</span><span class="op">*</span><span class="fl">0.85</span>, beta <span class="op">=</span> <span class="fl">0.4637340</span>, var_beta <span class="op">=</span> <span class="fl">0.0273858</span>, </span>
+current smoking prevalence by <code>1 - 0.15 = 0.85</code>. As the
+reduction is relative to the current prevalence (and not a fixed target)
+we specify the prevalence under the counterfactual (<code>p_cft</code>)
+as a function of <code>p</code>. This propagates the uncertainty of
+<code>p</code> into the counterfactual (here <code>var_p = 0</code> so
+the result is the same as a fixed <code>p_cft</code>):</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pif_hispanic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">pif</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.069</span>, p_cft <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="fl">0.85</span> <span class="op">*</span> <span class="va">p</span>, beta <span class="op">=</span> <span class="va">beta_smoking</span>, var_beta <span class="op">=</span> <span class="fl">0.0273858</span>, </span>
 <span>                    var_p <span class="op">=</span> <span class="fl">0</span>, rr_link <span class="op">=</span> <span class="va">exp</span>, label <span class="op">=</span> <span class="st">"Hispanic"</span><span class="op">)</span></span>
-<span><span class="va">pif_asian</span>    <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">pif</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.049</span>, p_cft <span class="op">=</span> <span class="fl">0.049</span><span class="op">*</span><span class="fl">0.85</span>, beta <span class="op">=</span> <span class="fl">0.4637340</span>, var_beta <span class="op">=</span> <span class="fl">0.0273858</span>, </span>
+<span><span class="va">pif_asian</span>    <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">pif</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.049</span>, p_cft <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="fl">0.85</span> <span class="op">*</span> <span class="va">p</span>, beta <span class="op">=</span> <span class="va">beta_smoking</span>, var_beta <span class="op">=</span> <span class="fl">0.0273858</span>, </span>
 <span>                    var_p <span class="op">=</span> <span class="fl">0</span>, rr_link <span class="op">=</span> <span class="va">exp</span>, label <span class="op">=</span> <span class="st">"Asian"</span><span class="op">)</span></span>
-<span><span class="va">pif_black</span>    <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">pif</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.117</span>, p_cft <span class="op">=</span> <span class="fl">0.117</span><span class="op">*</span><span class="fl">0.85</span>, beta <span class="op">=</span> <span class="fl">0.4637340</span>, var_beta <span class="op">=</span> <span class="fl">0.0273858</span>, </span>
+<span><span class="va">pif_black</span>    <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">pif</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.117</span>, p_cft <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="fl">0.85</span> <span class="op">*</span> <span class="va">p</span>, beta <span class="op">=</span> <span class="va">beta_smoking</span>, var_beta <span class="op">=</span> <span class="fl">0.0273858</span>, </span>
 <span>                    var_p <span class="op">=</span> <span class="fl">0</span>, rr_link <span class="op">=</span> <span class="va">exp</span>, label <span class="op">=</span> <span class="st">"Black"</span><span class="op">)</span></span>
-<span><span class="va">pif_white</span>    <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">pif</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.084</span>, p_cft <span class="op">=</span> <span class="fl">0.084</span><span class="op">*</span><span class="fl">0.85</span>, beta <span class="op">=</span> <span class="fl">0.4637340</span>, var_beta <span class="op">=</span> <span class="fl">0.0273858</span>, </span>
+<span><span class="va">pif_white</span>    <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">pif</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.084</span>, p_cft <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="fl">0.85</span> <span class="op">*</span> <span class="va">p</span>, beta <span class="op">=</span> <span class="va">beta_smoking</span>, var_beta <span class="op">=</span> <span class="fl">0.0273858</span>, </span>
 <span>                    var_p <span class="op">=</span> <span class="fl">0</span>, rr_link <span class="op">=</span> <span class="va">exp</span>, label <span class="op">=</span> <span class="st">"White"</span><span class="op">)</span></span></code></pre></div>
 <p>The total fraction of the overall population can be aggregated with
 <code>pif_total</code>:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pif_population</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/totalpifpaf.html">pif_total</a></span><span class="op">(</span><span class="va">pif_white</span>, <span class="va">pif_hispanic</span>, <span class="va">pif_black</span>, </span>
 <span>                            <span class="va">pif_asian</span>, weights <span class="op">=</span> <span class="va">weights</span>, var_weights <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>                            label <span class="op">=</span> <span class="st">"All"</span><span class="op">)</span></span>
@@ -281,7 +295,7 @@ variable:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Potential Impact Fraction: </span><span style="font-weight: bold; font-style: italic;">[All]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PIF = 0.699% [<span style="font-style: italic;">95% CI</span>: 0.695% to 0.703%]</span></span>
+<span><span class="co">#&gt; PIF = 0.699% [<span style="font-style: italic;">95% CI</span>: 0.116% to 1.280%]</span></span>
 <span><span class="co">#&gt; standard_deviation(pif %) = 0.297</span></span>
 <span><span class="co">#&gt; ────────────────────────────────── Components: ─────────────────────────────────</span></span>
 <span><span class="co">#&gt; • 0.708% (sd %: 0.301) --- <span style="font-style: italic;">[White]</span></span></span>
@@ -291,11 +305,11 @@ variable:</p>
 <span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span></code></pre></div>
 <p>We can use the <code>as.data.frame</code> function to create a
 <code>data.frame</code> with all of the results:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">pif_population</span>, <span class="va">pif_white</span>, <span class="va">pif_black</span>, <span class="va">pif_hispanic</span>, <span class="va">pif_asian</span><span class="op">)</span></span>
 <span><span class="va">df</span></span>
 <span><span class="co">#&gt;         value standard_deviation       ci_low       ci_up confidence type</span></span>
-<span><span class="co">#&gt; 1 0.006994343        0.002968888 0.0069537857 0.007034899       0.95  PIF</span></span>
+<span><span class="co">#&gt; 1 0.006994343        0.002968888 0.0011583467 0.012796241       0.95  PIF</span></span>
 <span><span class="co">#&gt; 2 0.007082968        0.003009649 0.0011666075 0.012964284       0.95  PIF</span></span>
 <span><span class="co">#&gt; 3 0.009685883        0.004040705 0.0017344947 0.017573937       0.95  PIF</span></span>
 <span><span class="co">#&gt; 4 0.005867629        0.002514437 0.0009271875 0.010783639       0.95  PIF</span></span>
@@ -308,13 +322,13 @@ variable:</p>
 <span><span class="co">#&gt; 5    Asian</span></span></code></pre></div>
 <p>Averted cases can be calculated with the same number as before with
 the <code>averted_cases</code> function:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/casecalc.html">averted_cases</a></span><span class="op">(</span><span class="fl">426.5</span>, <span class="va">pif_population</span>, variance <span class="op">=</span> <span class="fl">2647</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/casecalc.html">averted_cases</a></span><span class="op">(</span><span class="fl">426.5</span>, <span class="va">pif_population</span>, variance <span class="op">=</span> <span class="fl">179.3752</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Averted cases: </span><span style="font-weight: bold; font-style: italic;">[All]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Averted cases = 2.983 [<span style="font-style: italic;">95% CI</span>: 0.386 to 5.580]</span></span>
-<span><span class="co">#&gt; standard_deviation(averted cases) = 1.325</span></span></code></pre></div>
+<span><span class="co">#&gt; Averted cases = 2.983 [<span style="font-style: italic;">95% CI</span>: 0.493 to 5.473]</span></span>
+<span><span class="co">#&gt; standard_deviation(averted cases) = 1.270</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="example-4-a-categorical-population-attributable-fraction">Example 4: A categorical population attributable fraction<a class="anchor" aria-label="anchor" href="#example-4-a-categorical-population-attributable-fraction"></a>
@@ -325,7 +339,7 @@ levels of alcohol consumption for the Australian population.</p>
 <p>The <code>alcohol</code> dataframe included in the package contains
 an estimate of the intake of alcohol by sex as well as the proportion of
 individuals in each of the intake-categories:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">alcohol</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt;     sex alcohol_g median_intake age_18_plus</span></span>
 <span><span class="co">#&gt; 1  MALE      None           0.0        47.2</span></span>
@@ -342,33 +356,37 @@ individuals in each of the intake-categories:</p>
 <span><span class="co">#&gt; 12 MALE      ≥60g          85.2         4.8</span></span></code></pre>
 <p>The relative risk of alcohol varies by consumption level
 (<code>alcohol_g</code>). For example in the case of rectal cancer the
-estimated relative risk is 1.10 (1.07–1.12) per 10g/day. We will need to
-compute the relative risk for each of the consumption level groups using
-their median intake as follows:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+estimated relative risk is 1.10 (1.07–1.12) per 10g/day. As the relative
+risk is log-linear in the dose, the log relative risk of each
+consumption group is <code>log(1.10)</code> times its median intake (in
+units of 10g/day):</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Get alcohol intake for men divided by 10 cause RR is per 10g/day</span></span>
 <span><span class="va">alcohol_men_intake</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.8</span>, <span class="fl">1.6</span>, <span class="fl">3.2</span>, <span class="fl">7.1</span>, <span class="fl">12.6</span>, <span class="fl">17.4</span>, <span class="fl">24.5</span>, <span class="fl">34.7</span>, </span>
 <span>                        <span class="fl">44.2</span>, <span class="fl">54.4</span>, <span class="fl">85.2</span><span class="op">)</span> <span class="op">/</span> <span class="fl">10</span> </span>
 <span></span>
-<span><span class="co">#Divided by 10 cause risk is per 10 g/day</span></span>
-<span><span class="va">relative_risk</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.10</span><span class="op">)</span><span class="op">*</span><span class="va">alcohol_men_intake</span><span class="op">)</span></span>
+<span><span class="co">#Log relative risk of each group (risk is per 10 g/day)</span></span>
+<span><span class="va">log_relative_risk</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.10</span><span class="op">)</span><span class="op">*</span><span class="va">alcohol_men_intake</span></span>
 <span></span>
 <span><span class="co">#Divide by 100 to get the prevalence in decimals</span></span>
 <span><span class="va">prevalence</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.472</span>, <span class="fl">0.014</span>, <span class="fl">0.022</span>, <span class="fl">0.081</span>, <span class="fl">0.081</span>, <span class="fl">0.069</span>, <span class="fl">0.046</span>, </span>
 <span>                   <span class="fl">0.073</span>, <span class="fl">0.042</span>, <span class="fl">0.032</span>, <span class="fl">0.02</span>, <span class="fl">0.048</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#Calculate the paf</span></span>
-<span><span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span><span class="va">prevalence</span>, beta <span class="op">=</span> <span class="va">relative_risk</span>, var_p <span class="op">=</span> <span class="fl">0</span>, var_b <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span><span class="va">prevalence</span>, beta <span class="op">=</span> <span class="va">log_relative_risk</span>, var_p <span class="op">=</span> <span class="fl">0</span>, var_beta <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0102908670119104]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PAF = 70.114% [<span style="font-style: italic;">95% CI</span>: 70.114% to 70.114%]</span></span>
+<span><span class="co">#&gt; PAF = 13.184% [<span style="font-style: italic;">95% CI</span>: 13.184% to 13.184%]</span></span>
 <span><span class="co">#&gt; standard_deviation(paf %) = 0.000</span></span></code></pre></div>
-<p>If we want to add uncertainty we can approximate the covariance of
-the relative risk as follows:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<p>If we want to add uncertainty we compute the standard error of the
+log relative risk per 10 g/day from its confidence interval. As every
+group shares the same slope, the covariance between the log relative
+risks of groups <code>k</code> and <code>j</code> is the slope’s
+variance times <code>intake_k * intake_j</code>:</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Calculate covariance of the betas given by variance*intake_i*intake_j</span></span>
-<span><span class="va">beta_sd</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fl">1.12</span> <span class="op">-</span> <span class="fl">1.07</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fl">0.975</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">beta_sd</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.12</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.07</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fl">0.975</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">beta_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="cn">NA</span>, ncol <span class="op">=</span> <span class="fu"><a href="../reference/length.html">length</a></span><span class="op">(</span><span class="va">prevalence</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fu"><a href="../reference/length.html">length</a></span><span class="op">(</span><span class="va">prevalence</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">k</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="../reference/length.html">length</a></span><span class="op">(</span><span class="va">prevalence</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="../reference/length.html">length</a></span><span class="op">(</span><span class="va">prevalence</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
@@ -377,29 +395,29 @@ the relative risk as follows:</p>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="co">#Calculate the paf</span></span>
-<span><span class="va">paf_males</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span><span class="va">prevalence</span>, beta <span class="op">=</span> <span class="va">relative_risk</span>, var_p <span class="op">=</span> <span class="fl">0</span>, var_b <span class="op">=</span> <span class="va">beta_var</span>, </span>
+<span><span class="va">paf_males</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span><span class="va">prevalence</span>, beta <span class="op">=</span> <span class="va">log_relative_risk</span>, var_p <span class="op">=</span> <span class="fl">0</span>, var_beta <span class="op">=</span> <span class="va">beta_var</span>, </span>
 <span>               label <span class="op">=</span> <span class="st">"Males"</span><span class="op">)</span></span>
 <span><span class="va">paf_males</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[Males]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PAF = 70.114% [<span style="font-style: italic;">95% CI</span>: 68.480% to 71.663%]</span></span>
-<span><span class="co">#&gt; standard_deviation(paf %) = 0.812</span></span></code></pre></div>
+<span><span class="co">#&gt; PAF = 13.184% [<span style="font-style: italic;">95% CI</span>: 9.613% to 16.615%]</span></span>
+<span><span class="co">#&gt; standard_deviation(paf %) = 1.786</span></span></code></pre></div>
 <p>We can repeat the same process for females:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Get alcohol intake for women divided by 10 cause RR is per 10g/day</span></span>
 <span><span class="va">alcohol_female_intake</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.8</span>, <span class="fl">1.6</span>, <span class="fl">3.9</span>, <span class="fl">7.1</span>, <span class="fl">12.6</span>, <span class="fl">17.4</span>, </span>
 <span>                           <span class="fl">24.5</span>, <span class="fl">34.7</span>, <span class="fl">44.2</span>, <span class="fl">54.4</span>, <span class="fl">78.1</span><span class="op">)</span> <span class="op">/</span> <span class="fl">10</span></span>
 <span></span>
-<span><span class="co">#Divided by 10 cause risk is per 10 g/day</span></span>
-<span><span class="va">relative_risk</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.10</span><span class="op">)</span><span class="op">*</span><span class="va">alcohol_female_intake</span><span class="op">)</span></span>
+<span><span class="co">#Log relative risk of each group (risk is per 10 g/day)</span></span>
+<span><span class="va">log_relative_risk</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.10</span><span class="op">)</span><span class="op">*</span><span class="va">alcohol_female_intake</span></span>
 <span></span>
 <span><span class="co">#Divide by 100 to get the prevalence in decimals</span></span>
 <span><span class="va">prevalence</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.603</span>, <span class="fl">0.02</span>, <span class="fl">0.054</span>, <span class="fl">0.091</span>, <span class="fl">0.081</span>, <span class="fl">0.061</span>, <span class="fl">0.026</span>, </span>
 <span>                   <span class="fl">0.034</span>, <span class="fl">0.015</span>, <span class="fl">0.007</span>, <span class="fl">0.003</span>, <span class="fl">0.005</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#Calculate covariance of the betas given by variance*intake_i*intake_j</span></span>
-<span><span class="va">beta_sd</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fl">1.12</span> <span class="op">-</span> <span class="fl">1.07</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fl">0.975</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">beta_sd</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.12</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.07</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fl">0.975</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">beta_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="cn">NA</span>, ncol <span class="op">=</span> <span class="fu"><a href="../reference/length.html">length</a></span><span class="op">(</span><span class="va">prevalence</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fu"><a href="../reference/length.html">length</a></span><span class="op">(</span><span class="va">prevalence</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">k</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="../reference/length.html">length</a></span><span class="op">(</span><span class="va">prevalence</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="../reference/length.html">length</a></span><span class="op">(</span><span class="va">prevalence</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
@@ -408,27 +426,27 @@ the relative risk as follows:</p>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="co">#Calculate the paf</span></span>
-<span><span class="va">paf_females</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span><span class="va">prevalence</span>, beta <span class="op">=</span> <span class="va">relative_risk</span>, var_p <span class="op">=</span> <span class="fl">0</span>, var_b <span class="op">=</span> <span class="va">beta_var</span>, </span>
+<span><span class="va">paf_females</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span><span class="va">prevalence</span>, beta <span class="op">=</span> <span class="va">log_relative_risk</span>, var_p <span class="op">=</span> <span class="fl">0</span>, var_beta <span class="op">=</span> <span class="va">beta_var</span>, </span>
 <span>                   label <span class="op">=</span> <span class="st">"Females"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">paf_females</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[Females]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PAF = 65.264% [<span style="font-style: italic;">95% CI</span>: 64.737% to 65.784%]</span></span>
-<span><span class="co">#&gt; standard_deviation(paf %) = 0.267</span></span></code></pre></div>
+<span><span class="co">#&gt; PAF = 4.637% [<span style="font-style: italic;">95% CI</span>: 3.418% to 5.841%]</span></span>
+<span><span class="co">#&gt; standard_deviation(paf %) = 0.618</span></span></code></pre></div>
 <p>The total fraction can be computed with <code>paf_total</code>
 assuming both males and females are 50% each of the population:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/totalpifpaf.html">paf_total</a></span><span class="op">(</span><span class="va">paf_males</span>, <span class="va">paf_females</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0974069593265456]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PAF = 67.689% [<span style="font-style: italic;">95% CI</span>: 67.426% to 67.950%]</span></span>
-<span><span class="co">#&gt; standard_deviation(paf %) = 0.427</span></span>
+<span><span class="co">#&gt; PAF = 8.911% [<span style="font-style: italic;">95% CI</span>: 7.040% to 10.744%]</span></span>
+<span><span class="co">#&gt; standard_deviation(paf %) = 0.945</span></span>
 <span><span class="co">#&gt; ────────────────────────────────── Components: ─────────────────────────────────</span></span>
-<span><span class="co">#&gt; • 70.114% (sd %: 0.812) --- <span style="font-style: italic;">[Males]</span></span></span>
-<span><span class="co">#&gt; • 65.264% (sd %: 0.267) --- <span style="font-style: italic;">[Females]</span></span></span>
+<span><span class="co">#&gt; • 13.184% (sd %: 1.786) --- <span style="font-style: italic;">[Males]</span></span></span>
+<span><span class="co">#&gt; • 4.637% (sd %: 0.618) --- <span style="font-style: italic;">[Females]</span></span></span>
 <span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -448,14 +466,14 @@ then use the <code>paf_ensemble</code> function to join them. We first
 obtain the log-relative risk, its standard deviation, and the total
 proportion of individuals exposed (here we highlight the part of the
 table):</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">dementiarisk</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt;            risk_factor     logrr      sdlog total</span></span>
 <span><span class="co">#&gt; 5    Excessive alcohol 0.1655144 0.05402095   3.6</span></span>
 <span><span class="co">#&gt; 7              Smoking 0.4637340 0.16548657   8.5</span></span>
 <span><span class="co">#&gt; 10 Physical inactivity 0.3293037 0.09296182  62.8</span></span></code></pre>
 <p>We then calculate the population attributable fraction for each:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paf_alcohol</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.036</span>, beta <span class="op">=</span> <span class="fl">0.1655144</span>, var_beta <span class="op">=</span> <span class="fl">0.05402095</span><span class="op">^</span><span class="fl">2</span>, </span>
 <span>                    var_p <span class="op">=</span> <span class="fl">0</span>, label <span class="op">=</span> <span class="st">"Alcohol"</span><span class="op">)</span></span>
 <span><span class="va">paf_smoking</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.085</span>, beta <span class="op">=</span> <span class="fl">0.4637340</span>, var_beta <span class="op">=</span> <span class="fl">0.16548657</span><span class="op">^</span><span class="fl">2</span>, </span>
@@ -470,35 +488,42 @@ ensemble <code>paf</code> by estimating the product:</p>
 \cdot\textrm{PAF}_{\text{Smoking}})\cdot (1 - w_3\cdot
 \textrm{PAF}_{\text{Physical}})
 \]</span></p>
-<p>where the weights are oftentimes calculated via a communality
-correction or are set to 1 for disjointed risks. In the case of this
-paper the communality estimates were:</p>
+<p>where the weights are set to 1 for independent risks or are
+calculated via a communality correction as
+<code>w = 1 - communality</code>. In the case of this paper the
+communality estimates (Table 2 of <span class="citation">Lee et al.
+(2022)</span>, available in the <code>communality</code> column of
+<code>dementiarisk</code>) were:</p>
 <ul>
-<li><p><strong>Physical inactivity:</strong> 31.1</p></li>
-<li><p><strong>Smoking:</strong> 5.9</p></li>
-<li><p><strong>Excessive alcohol:</strong> 3.8</p></li>
+<li><p><strong>Physical inactivity:</strong> 30.0%</p></li>
+<li><p><strong>Smoking:</strong> 63.5%</p></li>
+<li><p><strong>Excessive alcohol:</strong> 59.8%</p></li>
 </ul>
-<p>hence we can use them as the <code>weights</code> argument:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/totalpifpaf.html">paf_ensemble</a></span><span class="op">(</span><span class="va">paf_alcohol</span>, <span class="va">paf_physical</span>, <span class="va">paf_smoking</span>, </span>
-<span>             weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.038</span>, <span class="fl">0.311</span>, <span class="fl">0.059</span><span class="op">)</span>,</span>
+<p>hence the <code>weights</code> argument is
+<code>1 - communality</code> (in the same order as the fractions):</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">risk_factors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Excessive alcohol"</span>, <span class="st">"Physical inactivity"</span>, <span class="st">"Smoking"</span><span class="op">)</span></span>
+<span><span class="va">communality</span>  <span class="op">&lt;-</span> <span class="va">dementiarisk</span><span class="op">$</span><span class="va">communality</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">risk_factors</span>, <span class="va">dementiarisk</span><span class="op">$</span><span class="va">risk_factor</span><span class="op">)</span><span class="op">]</span> <span class="op">/</span> <span class="fl">100</span></span>
+<span><span class="fu"><a href="../reference/totalpifpaf.html">paf_ensemble</a></span><span class="op">(</span><span class="va">paf_alcohol</span>, <span class="va">paf_physical</span>, <span class="va">paf_smoking</span>, </span>
+<span>             weights <span class="op">=</span> <span class="fl">1</span> <span class="op">-</span> <span class="va">communality</span>,</span>
 <span>             label <span class="op">=</span> <span class="st">"Behavioural factors"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[Behavioural factors]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PAF = 6.406% [<span style="font-style: italic;">95% CI</span>: 6.202% to 6.610%]</span></span>
-<span><span class="co">#&gt; standard_deviation(paf %) = 1.627</span></span>
+<span><span class="co">#&gt; PAF = 15.494% [<span style="font-style: italic;">95% CI</span>: 8.342% to 22.645%]</span></span>
+<span><span class="co">#&gt; standard_deviation(paf %) = 3.649</span></span>
 <span><span class="co">#&gt; ────────────────────────────────── Components: ─────────────────────────────────</span></span>
 <span><span class="co">#&gt; • 0.644% (sd %: 0.227) --- <span style="font-style: italic;">[Alcohol]</span></span></span>
 <span><span class="co">#&gt; • 19.674% (sd %: 5.236) --- <span style="font-style: italic;">[Physical Activity]</span></span></span>
 <span><span class="co">#&gt; • 4.776% (sd %: 2.028) --- <span style="font-style: italic;">[Smoking]</span></span></span>
 <span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span></code></pre></div>
-<p>Finally, variance among the weights can be implemented with the
-<code>var_weights</code> argument providing a variance-covariance
-matrix:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Variance covariance matrix</span></span>
-<span><span class="va">weight_variance</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span>
+<p>Finally, uncertainty in the weights can be included with the
+<code>var_weights</code> argument providing their variance-covariance
+matrix. For illustration we assume each weight has a standard error of
+<code>0.02</code> and the following correlations:</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#Variance covariance matrix (standard error of 0.02 times the correlations)</span></span>
+<span><span class="va">weight_variance</span> <span class="op">&lt;-</span> <span class="fl">0.02</span><span class="op">^</span><span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="fl">1.00</span>, <span class="fl">0.21</span>, <span class="op">-</span><span class="fl">0.02</span>, </span>
 <span>     <span class="fl">0.21</span>, <span class="fl">1.00</span>,  <span class="fl">0.09</span>,</span>
 <span>    <span class="op">-</span><span class="fl">0.02</span>, <span class="fl">0.09</span>,  <span class="fl">1.00</span><span class="op">)</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span>, ncol <span class="op">=</span> <span class="fl">3</span></span>
@@ -507,14 +532,14 @@ matrix:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">weight_variance</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Alcohol"</span>, <span class="st">"Physical inactivity"</span>, <span class="st">"Smoking"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/totalpifpaf.html">paf_ensemble</a></span><span class="op">(</span><span class="va">paf_alcohol</span>, <span class="va">paf_physical</span>, <span class="va">paf_smoking</span>, </span>
-<span>             weights     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.038</span>, <span class="fl">0.311</span>, <span class="fl">0.059</span><span class="op">)</span>,</span>
+<span>             weights     <span class="op">=</span> <span class="fl">1</span> <span class="op">-</span> <span class="va">communality</span>,</span>
 <span>             var_weights <span class="op">=</span> <span class="va">weight_variance</span>,</span>
 <span>             label       <span class="op">=</span> <span class="st">"Behavioural factors"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[Behavioural factors]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PAF = 6.406% [<span style="font-style: italic;">95% CI</span>: 3.807% to 9.005%]</span></span>
-<span><span class="co">#&gt; standard_deviation(paf %) = 20.699</span></span>
+<span><span class="co">#&gt; PAF = 15.494% [<span style="font-style: italic;">95% CI</span>: 8.299% to 22.689%]</span></span>
+<span><span class="co">#&gt; standard_deviation(paf %) = 3.671</span></span>
 <span><span class="co">#&gt; ────────────────────────────────── Components: ─────────────────────────────────</span></span>
 <span><span class="co">#&gt; • 0.644% (sd %: 0.227) --- <span style="font-style: italic;">[Alcohol]</span></span></span>
 <span><span class="co">#&gt; • 19.674% (sd %: 5.236) --- <span style="font-style: italic;">[Physical Activity]</span></span></span>
@@ -544,7 +569,7 @@ ensemble. For example with alcohol:</p>
 \]</span> The same process is repeated for adjusting smoking and
 physical by just changing the numerator of the fraction. This can be
 computed in the package as:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Calculate each of the fractions</span></span>
 <span><span class="va">paf_alcohol</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.036</span>, beta <span class="op">=</span> <span class="fl">0.1655144</span>, var_beta <span class="op">=</span> <span class="fl">0.05402095</span><span class="op">^</span><span class="fl">2</span>, </span>
 <span>                    var_p <span class="op">=</span> <span class="fl">0</span>, label <span class="op">=</span> <span class="st">"Alcohol"</span><span class="op">)</span></span>
@@ -553,31 +578,32 @@ computed in the package as:</p>
 <span><span class="va">paf_physical</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.628</span>, beta <span class="op">=</span> <span class="fl">0.3293037</span>, var_beta <span class="op">=</span> <span class="fl">0.09296182</span><span class="op">^</span><span class="fl">2</span>, </span>
 <span>                    var_p <span class="op">=</span> <span class="fl">0</span>, label <span class="op">=</span> <span class="st">"Physical Activity"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#Get the communality weights</span></span>
-<span><span class="va">cweights</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.038</span>, <span class="fl">0.311</span>, <span class="fl">0.059</span><span class="op">)</span></span>
+<span><span class="co">#Get the communality weights in the same order as the fractions</span></span>
+<span><span class="va">risk_factors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Excessive alcohol"</span>, <span class="st">"Smoking"</span>, <span class="st">"Physical inactivity"</span><span class="op">)</span></span>
+<span><span class="va">communality</span>  <span class="op">&lt;-</span> <span class="va">dementiarisk</span><span class="op">$</span><span class="va">communality</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">risk_factors</span>, <span class="va">dementiarisk</span><span class="op">$</span><span class="va">risk_factor</span><span class="op">)</span><span class="op">]</span> <span class="op">/</span> <span class="fl">100</span></span>
 <span></span>
 <span><span class="co">#Calculate the adjusted versions</span></span>
-<span><span class="fu"><a href="../reference/weighted_adjusted.html">weighted_adjusted_paf</a></span><span class="op">(</span><span class="va">paf_alcohol</span>, <span class="va">paf_smoking</span>, <span class="va">paf_physical</span>, weights <span class="op">=</span> <span class="va">cweights</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/weighted_adjusted.html">weighted_adjusted_paf</a></span><span class="op">(</span><span class="va">paf_alcohol</span>, <span class="va">paf_smoking</span>, <span class="va">paf_physical</span>, weights <span class="op">=</span> <span class="fl">1</span> <span class="op">-</span> <span class="va">communality</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $Alcohol</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[Alcohol_adj]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PAF = 0.068% [<span style="font-style: italic;">95% CI</span>: 0.016% to 0.120%]</span></span>
-<span><span class="co">#&gt; standard_deviation(paf %) = 0.027</span></span>
+<span><span class="co">#&gt; PAF = 0.398% [<span style="font-style: italic;">95% CI</span>: 0.200% to 0.791%]</span></span>
+<span><span class="co">#&gt; standard_deviation(paf %) = 0.139</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $Smoking</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[Smoking_adj]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PAF = 0.505% [<span style="font-style: italic;">95% CI</span>: 0.099% to 0.911%]</span></span>
-<span><span class="co">#&gt; standard_deviation(paf %) = 0.207</span></span>
+<span><span class="co">#&gt; PAF = 2.949% [<span style="font-style: italic;">95% CI</span>: 1.374% to 6.326%]</span></span>
+<span><span class="co">#&gt; standard_deviation(paf %) = 1.148</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $`Physical Activity`</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[Physical Activity_adj]</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; PAF = 2.080% [<span style="font-style: italic;">95% CI</span>: 1.359% to 2.800%]</span></span>
-<span><span class="co">#&gt; standard_deviation(paf %) = 0.368</span></span></code></pre></div>
+<span><span class="co">#&gt; PAF = 12.148% [<span style="font-style: italic;">95% CI</span>: 9.015% to 16.369%]</span></span>
+<span><span class="co">#&gt; standard_deviation(paf %) = 1.849</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="example-7-ensuring-non-negative-fractions">Example 7: Ensuring non-negative fractions<a class="anchor" aria-label="anchor" href="#example-7-ensuring-non-negative-fractions"></a>
@@ -587,7 +613,7 @@ a relative risk of <code>rr = 7.0</code> (log relative risk
 <code>1.94591</code>) and a log-variance of <code>0.35.</code> that
 results in a negative confidence interval when applying directly the
 delta method:</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.05</span>, beta <span class="op">=</span> <span class="fl">1.94</span>, var_beta <span class="op">=</span> <span class="fl">0.591</span><span class="op">^</span><span class="fl">2</span>, var_p <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0173820105906731]</span> ──</span></span>
@@ -597,7 +623,7 @@ delta method:</p>
 <p>The <code>pif</code> and <code>paf</code> functions contain the
 <code>logit</code> link option for guaranteeing positivity in the
 fraction’s intervals:</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pifpaf.html">paf</a></span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.05</span>, beta <span class="op">=</span> <span class="fl">1.94</span>, var_beta <span class="op">=</span> <span class="fl">0.591</span><span class="op">^</span><span class="fl">2</span>, var_p <span class="op">=</span> <span class="fl">0</span>, link <span class="op">=</span> <span class="st">"logit"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0178812018276085]</span> ──</span></span>
@@ -620,7 +646,7 @@ positive.</p></li>
 function. For example <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10593099/#SD2" class="external-link"><span class="citation">Dhana et al. (2023)</span></a> estimates the number of
 people with Alzheimer’s Disease in New York, USA 426.5 (400.2, 452.7)
 thousand. This implies a variance of
-<code>((452.7 - 400.2) / (2*qnorm(0.975))^2) = 179.3752</code>.</p>
+<code>((452.7 - 400.2) / (2*qnorm(0.975)))^2 = 179.3752</code>.</p>
 <p>To estimate cases we need to:</p>
 <ol style="list-style-type: decimal">
 <li>Estimate the corresponding potential impact fraction (averted) or
@@ -631,7 +657,7 @@ population attributable fraction (attributable)</li>
 <p>We start by calcualting the same fraction as before from <a href="https://doi.org/10.1001/jamanetworkopen.2022.19672" class="external-link"><span class="citation">Lee et al. (2022)</span></a>. This considers the impact
 on dementia of reducing smoking prevalence by 15% (from 8.5% to 7.225%).
 The PIF for this intervention is:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pif_smoking</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pifpaf.html">pif</a></span><span class="op">(</span></span>
 <span>  p        <span class="op">=</span> <span class="fl">0.085</span>, </span>
 <span>  p_cft    <span class="op">=</span> <span class="fl">0.085</span> <span class="op">*</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="fl">0.15</span><span class="op">)</span>, <span class="co"># 15% reduction</span></span>
@@ -645,7 +671,7 @@ The PIF for this intervention is:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; PIF = 0.716% [<span style="font-style: italic;">95% CI</span>: 0.118% to 1.311%]</span></span>
 <span><span class="co">#&gt; standard_deviation(pif %) = 0.304</span></span></code></pre></div>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/casecalc.html">averted_cases</a></span><span class="op">(</span><span class="fl">426.5</span>, <span class="va">pif_smoking</span>, variance <span class="op">=</span> <span class="fl">179.3752</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Averted cases: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0698429449342544]</span> ──</span></span>
@@ -660,7 +686,7 @@ The PIF for this intervention is:</p>
 the averted cases. Following the previous example, a higher
 (hypothetical) variance might result in a confidence interval that
 includes negative values:</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/casecalc.html">averted_cases</a></span><span class="op">(</span><span class="fl">426.5</span>, <span class="va">pif_smoking</span>, variance <span class="op">=</span> <span class="fl">100000</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Averted cases: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0698429449342544]</span> ──</span></span>
@@ -670,8 +696,8 @@ includes negative values:</p>
 <p>When there is an epidemiological rationale on the interval being
 strictly positive (for example, the relative risk is known to be
 strictly greater than 1) we can change the link function to
-<code>logit</code> to guarantee the interval is always positive:</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code>log</code> to guarantee the interval is always positive:</p>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/casecalc.html">averted_cases</a></span><span class="op">(</span><span class="fl">426.5</span>, <span class="va">pif_smoking</span>, variance <span class="op">=</span> <span class="fl">100000</span>, link <span class="op">=</span> <span class="st">"log"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Averted cases: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0698429449342544]</span> ──</span></span>
@@ -691,7 +717,7 @@ described in <a href="https://doi.org/10.1080/01621459.2018.1529598" class="exte
 (2019)</span></a>.</p>
 <p>In the following example we used the Hazard Ratio of shingles
 vaccination on dementia by Wu et al:</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">EValue</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">upper_rr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/EValue/man/effect_measures.html" class="external-link">HR</a></span><span class="op">(</span><span class="fl">0.72</span>, rare <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/pkg/EValue/man/convert_measures.html" class="external-link">toRR</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -701,7 +727,7 @@ vaccination on dementia by Wu et al:</p>
 here one can calculate the potential impact fraction of doubling
 vaccination coverage from the baseline of <code>p =  0.438</code> to
 <code>p_cft = 0.876</code>:</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pifpaf.html">pif</a></span><span class="op">(</span></span>
 <span>  p     <span class="op">=</span> <span class="fl">0.438</span>,</span>
 <span>  beta  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">rr_value</span><span class="op">)</span>,</span>

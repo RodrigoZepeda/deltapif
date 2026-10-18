@@ -36,7 +36,7 @@ as.list(paf_women)
 #> 
 #> ── Population Attributable Fraction: [Women] ──
 #> 
-#> PAF = 75.299% [95% CI: 71.706% to 78.892%]
+#> PAF = 75.299% [95% CI: 70.527% to 80.071%]
 #> standard_deviation(paf %) = 2.435
 #> ────────────────────────────────── Components: ─────────────────────────────────
 #> • 68.422% (sd %: 2.531) --- [Lead women]

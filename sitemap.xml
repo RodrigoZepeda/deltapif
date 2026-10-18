@@ -23,7 +23,7 @@
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/covariance_structures.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/covcor.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/deltapif-package.html</loc></url>
-<url><loc>https://rodrigozepeda.github.io/deltapif/reference/dementiacov.html</loc></url>
+<url><loc>https://rodrigozepeda.github.io/deltapif/reference/dementiacor.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/dementiarisk.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/derivatives.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/flatten_names.html</loc></url>
@@ -37,6 +37,7 @@
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/subset.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/summary.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.html</loc></url>
+<url><loc>https://rodrigozepeda.github.io/deltapif/reference/variance_components.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted.html</loc></url>
 <url><loc>https://rodrigozepeda.github.io/deltapif/reference/weights.html</loc></url>
 </urlset>

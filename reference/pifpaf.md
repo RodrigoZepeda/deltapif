@@ -37,7 +37,8 @@ pif(
   conf_level = 0.95,
   type = "PIF",
   quiet = FALSE,
-  label = NULL
+  label = NULL,
+  p_cft_deriv = NULL
 )
 ```
 
@@ -46,13 +47,20 @@ pif(
 - p:
 
   Prevalence (proportion) of the exposed individuals for each of the `N`
-  exposure levels.
+  exposure levels. Either a numeric vector or a named list with one
+  element, `list("id" = c(...))`, whose name identifies the estimate.
+  Fractions that share the identifier use the same prevalence estimate
+  (see *Shared parameters*).
 
 - beta:
 
   Relative risk parameter for which standard deviation is available
   (usually its either the relative risk directly or the log of the
   relative risk as most RRs, ORs and HRs come from exponential models).
+  Either a numeric vector or a named list with one element,
+  `list("id" = c(...))`, whose name identifies the estimate. Fractions
+  that share the identifier use the same relative risk estimate (see
+  *Shared parameters*).
 
 - var_p:
 
@@ -106,12 +114,26 @@ pif(
 - p_cft:
 
   Counterfactual prevalence (proportion) of the exposed individuals for
-  each of the `N` exposure levels.
+  each of the `N` exposure levels. Either a numeric vector, for a fixed
+  target that does not depend on the observed prevalence, or a function
+  of `p` returning the counterfactual prevalence, for scenarios defined
+  relative to the current exposure (e.g. `function(p) 0.85 * p` for a
+  15% reduction). In the latter case the uncertainty in `p` is also
+  propagated through the counterfactual. See the section *Fixed and
+  relative counterfactuals*.
 
 - type:
 
   Character either Potential Impact Fraction (`PIF`) or Population
   Attributable Fraction (`PAF`)
+
+- p_cft_deriv:
+
+  (Optional) Only used when `p_cft` is a function. Either a function of
+  `p` returning the jacobian of `p_cft` (a `N x N` matrix whose entry
+  `[j, i]` is the derivative of `p_cft(p)[j]` with respect to `p[i]`) or
+  that matrix evaluated at `p`. If `NULL` (default) the jacobian is
+  approximated numerically.
 
 ## Value
 
@@ -155,6 +177,42 @@ f(\textrm{PIF}) \pm Z\_{\alpha/2} \cdot \sigma_f \Big) \$\$
 
 the function \\f\\ is called the link function for the PIF, \\f^{-1}\\
 represents its inverse, and \\f'\\ its derivative.
+
+## Fixed and relative counterfactuals
+
+When `p_cft` is a number (or vector) it is treated as a fixed target,
+for example "reduce smoking prevalence to 5%". When the scenario is
+defined relative to the current exposure, for example "reduce smoking
+prevalence by 15%", the counterfactual inherits the sampling error of
+`p` and should be given as a function: `p_cft = function(p) 0.85 * p`.
+The variance then uses the total derivative \$\$ \dfrac{d\\
+\textrm{PIF}}{d p} =
+\dfrac{\mu^{\text{cft}}}{\big(\mu^{\text{obs}}\big)^2} \big(
+\text{RR}(\beta) - 1\big) - \dfrac{1}{\mu^{\text{obs}}} J^{\top} \big(
+\text{RR}(\beta) - 1\big) \$\$ where \\J\\ is the jacobian of `p_cft`
+with respect to `p`. Treating a relative scenario as a fixed target
+overestimates the variance, while treating a fixed target as relative
+underestimates it.
+
+## Shared parameters
+
+When several fractions are combined (with
+[`pif_total()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md),
+[`pif_ensemble()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md)
+or
+[`weighted_adjusted_pif()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted.md))
+or their covariance is computed, fractions that use the same estimate of
+`p` or of `beta` are correlated. To declare that two fractions share an
+estimate give the parameter as a named list with the same name
+(identifier) in both, e.g. `beta = list("smoking_dementia" = 0.46)`. The
+same identifier must always be used with the same values and variances.
+Parameters given as plain numbers, or with different identifiers, are
+treated as independent. Correlations between different estimates (for
+example relative risks from the same meta-analysis) can be given to
+[`pif_total()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md)
+and
+[`pif_ensemble()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md)
+with a covariance matrix whose row and column names are the identifiers.
 
 ## Link functions for the PIF
 
@@ -332,14 +390,24 @@ paf(p = 0.499, beta = log(3.6), var_p = 0.1, var_beta = 0.3,
 #> PAF = 56.473% [95% CI: 15.753% to 90.002%]
 #> standard_deviation(paf %) = 24.294
 
-# If the counterfactual was reducing the smoking population by 1/2
-pif(p = 0.499, beta = log(3.6), p_cft = 0.499/2, var_p = 0.001,
+# If the counterfactual was a fixed target of 25% smoking prevalence
+pif(p = 0.499, beta = log(3.6), p_cft = 0.25, var_p = 0.001,
     var_beta = 0.1, link = "logit", quiet = TRUE)
 #> 
 #> ── Potential Impact Fraction: [deltapif-127067230079593] ──
 #> 
-#> PIF = 28.236% [95% CI: 18.101% to 41.192%]
-#> standard_deviation(pif %) = 5.963
+#> PIF = 28.180% [95% CI: 18.062% to 41.121%]
+#> standard_deviation(pif %) = 5.954
+
+# If the counterfactual was reducing the smoking population by 1/2
+# (relative to whatever the current prevalence is)
+pif(p = 0.499, beta = log(3.6), p_cft = function(p) p / 2, var_p = 0.001,
+    var_beta = 0.1, link = "logit", quiet = TRUE)
+#> 
+#> ── Potential Impact Fraction: [deltapif-0960864787077774] ──
+#> 
+#> PIF = 28.236% [95% CI: 18.866% to 39.967%]
+#> standard_deviation(pif %) = 5.438
 
 #EXAMPLE 2: MULTIPLE EXPOSURE CATEGORIES
 #---------------------------------------------------------------------------
@@ -363,7 +431,7 @@ var_log_rr <- c("<18.5" = 0.2653156, "25 to <30" =  0.1247604,
 paf(p = p, beta = rr, var_beta = var_log_rr, var_p = 0, quiet = TRUE,
     link = "logit")
 #> 
-#> ── Population Attributable Fraction: [deltapif-0960864787077774] ──
+#> ── Population Attributable Fraction: [deltapif-0768721369594144] ──
 #> 
 #> PAF = 61.599% [95% CI: 50.274% to 71.792%]
 #> standard_deviation(paf %) = 5.571
@@ -377,7 +445,7 @@ p_cft <- c("<18.5" = 1.9, "25 to <30" = 34.8,
 pif(p = p, p_cft = p_cft, beta = rr, link = "logit",
   var_beta = var_log_rr, var_p = 0, quiet = TRUE)
 #> 
-#> ── Potential Impact Fraction: [deltapif-0768721369594144] ──
+#> ── Potential Impact Fraction: [deltapif-103593077108096] ──
 #> 
 #> PIF = 14.882% [95% CI: 13.702% to 16.144%]
 #> standard_deviation(pif %) = 0.623

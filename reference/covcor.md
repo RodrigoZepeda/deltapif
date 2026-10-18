@@ -91,7 +91,8 @@ covariance(my_pif)
 #> [1,] 0.07233754
 
 # Calculate the link_covariance between 3 fractions with shared relative risk
-beta <- 0.3
+# (declared by giving beta the same identifier)
+beta <- list("rr" = 0.3)
 var_beta <- 0.1
 pif1 <- pif(0.5, 0.2, beta, var_p = 0.5 * (1 - 0.5) / 100, var_beta = var_beta)
 pif2 <- pif(0.3, 0.1, beta, var_p = 0.3 * (1 - 0.3) / 100, var_beta = var_beta)
@@ -122,15 +123,15 @@ pif1 <- pif(0.5, 0.2, betas[1], var_p = 0.5 * (1 - 0.5) / 100, var_beta = var_be
 pif2 <- pif(0.3, 0.1, betas[2], var_p = 0.3 * (1 - 0.3) / 100, var_beta = var_beta[2, 2])
 pif3 <- pif(0.3, 0.1, betas[3], var_p = 0.3 * (1 - 0.3) / 100, var_beta = var_beta[3, 3])
 covariance(pif1, pif2, pif3, var_beta = var_beta)
-#>              [,1]          [,2]          [,3]
-#> [1,]  0.042197697 -5.651801e-03  1.629740e-02
-#> [2,] -0.005651801  5.536138e-02 -9.642887e-05
-#> [3,]  0.016297402 -9.642887e-05  5.410105e-02
+#>              [,1]         [,2]        [,3]
+#> [1,]  0.042197697 -0.005651801  0.01629740
+#> [2,] -0.005651801  0.055361376 -0.00224321
+#> [3,]  0.016297402 -0.002243210  0.05410105
 
 # Compute the correlation
 correlation(pif1, pif2, pif3, var_beta = var_beta)
-#>            [,1]         [,2]         [,3]
-#> [1,]  1.0000000 -0.116933525  0.341091700
-#> [2,] -0.1169335  1.000000000 -0.001761979
-#> [3,]  0.3410917 -0.001761979  1.000000000
+#>            [,1]        [,2]        [,3]
+#> [1,]  1.0000000 -0.11693352  0.34109170
+#> [2,] -0.1169335  1.00000000 -0.04098866
+#> [3,]  0.3410917 -0.04098866  1.00000000
 ```

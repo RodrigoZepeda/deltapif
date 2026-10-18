@@ -10,7 +10,7 @@ dementiarisk
 
 ## Format
 
-A data frame with 12 rows and 11 columns:
+A data frame with 12 rows and 12 columns:
 
 - risk_factor:
 
@@ -30,27 +30,34 @@ A data frame with 12 rows and 11 columns:
 
 - sdlog:
 
-  The variance of the logarithm of the relative risk `variance(log(RR))`
+  The standard deviation (standard error) of the logarithm of the
+  relative risk `sd(log(RR))`
 
 - total:
 
-  The proportion of individuals exposed in the overall population
+  The percentage (%) of individuals exposed in the overall population
 
 - hispanic:
 
-  The proportion of hispanic individuals exposed
+  The percentage (%) of hispanic individuals exposed
 
 - asian:
 
-  The proportion of non-hispanic asian individuals exposed
+  The percentage (%) of non-hispanic asian individuals exposed
 
 - black:
 
-  The proportion of non-hispanic black individuals exposed
+  The percentage (%) of non-hispanic black individuals exposed
 
 - white:
 
-  The proportion of non-hispanic white individuals exposed
+  The percentage (%) of non-hispanic white individuals exposed
+
+- communality:
+
+  Communality (%) of the risk factor with the other risk factors (Table
+  2 of Lee et al.). The communality weight used to combine fractions is
+  `1 - communality / 100`.
 
 ## References
 
@@ -60,5 +67,5 @@ ethnicity in the US." JAMA network open 5.7 (2022): e2219672-e2219672.
 
 ## See also
 
-[dementiacov](https://rodrigozepeda.github.io/deltapif/reference/dementiacov.md)
-for the covariance between the risk factors
+[dementiacor](https://rodrigozepeda.github.io/deltapif/reference/dementiacor.md)
+for the correlation between the risk factors

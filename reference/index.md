@@ -62,8 +62,8 @@
   : Covariance matrix, correlation matrix, variance and standard
   deviation for potential impact fractions
 
-- [`dementiacov`](https://rodrigozepeda.github.io/deltapif/reference/dementiacov.md)
-  : Relative risk covariance from Lee et al
+- [`dementiacor`](https://rodrigozepeda.github.io/deltapif/reference/dementiacor.md)
+  : Correlation between dementia risk factors from Lee et al
 
 - [`dementiarisk`](https://rodrigozepeda.github.io/deltapif/reference/dementiarisk.md)
   : Exposure and Relative Risk data from Lee et Al
@@ -109,6 +109,9 @@
   [`pif_ensemble()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md)
   : Combine Potential Impact Fractions and Population Attributable
   Fractions
+
+- [`variance_components()`](https://rodrigozepeda.github.io/deltapif/reference/variance_components.md)
+  : Components of the variance of a potential impact fraction
 
 - [`weighted_adjusted_paf()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted.md)
   [`weighted_adjusted_pif()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted.md)

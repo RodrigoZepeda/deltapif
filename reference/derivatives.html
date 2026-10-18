@@ -15,7 +15,7 @@ with respect to the parameters p or beta."><meta property="og:image" content="ht
 
     <a class="navbar-brand me-2" href="../index.html">deltapif</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,7 +51,7 @@ with respect to the parameters <code>p</code> or <code>beta</code>.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">deriv_pif_p</span><span class="op">(</span><span class="va">p</span>, <span class="va">p_cft</span>, <span class="va">rr</span>, mu_obs <span class="op">=</span> <span class="cn">NULL</span>, mu_cft <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">deriv_pif_p</span><span class="op">(</span><span class="va">p</span>, <span class="va">p_cft</span>, <span class="va">rr</span>, mu_obs <span class="op">=</span> <span class="cn">NULL</span>, mu_cft <span class="op">=</span> <span class="cn">NULL</span>, p_cft_jacobian <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">deriv_pif_beta</span><span class="op">(</span><span class="va">p</span>, <span class="va">p_cft</span>, <span class="va">rr</span>, <span class="va">rr_link_deriv_vals</span>, mu_obs <span class="op">=</span> <span class="cn">NULL</span>, mu_cft <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -67,7 +67,13 @@ each of the <code>N</code> exposure levels.</p></dd>
 
 <dt id="arg-p-cft">p_cft<a class="anchor" aria-label="anchor" href="#arg-p-cft"></a></dt>
 <dd><p>Counterfactual prevalence (proportion) of the exposed
-individuals for each of the <code>N</code> exposure levels.</p></dd>
+individuals for each of the <code>N</code> exposure levels. Either a numeric vector,
+for a fixed target that does not depend on the observed prevalence, or a
+function of <code>p</code> returning the counterfactual prevalence, for scenarios
+defined relative to the current exposure (e.g. <code>function(p) 0.85 * p</code> for
+a 15% reduction). In the latter case the uncertainty in <code>p</code> is also
+propagated through the counterfactual. See the section
+<em>Fixed and relative counterfactuals</em>.</p></dd>
 
 
 <dt id="arg-rr">rr<a class="anchor" aria-label="anchor" href="#arg-rr"></a></dt>
@@ -80,6 +86,14 @@ individuals for each of the <code>N</code> exposure levels.</p></dd>
 
 <dt id="arg-mu-cft">mu_cft<a class="anchor" aria-label="anchor" href="#arg-mu-cft"></a></dt>
 <dd><p>The average value of the counterfactual relative risk in the population.</p></dd>
+
+
+<dt id="arg-p-cft-jacobian">p_cft_jacobian<a class="anchor" aria-label="anchor" href="#arg-p-cft-jacobian"></a></dt>
+<dd><p>(Optional) Jacobian of the counterfactual prevalence
+<code>p_cft</code> with respect to <code>p</code> when the counterfactual is a function of the
+observed prevalence (for example a relative reduction <code>p_cft = 0.85 * p</code>).
+Entry <code>[j, i]</code> is the derivative of <code>p_cft[j]</code> with respect to <code>p[i]</code>.
+<code>NULL</code> (default) assumes <code>p_cft</code> is a fixed target.</p></dd>
 
 
 <dt id="arg-rr-link-deriv-vals">rr_link_deriv_vals<a class="anchor" aria-label="anchor" href="#arg-rr-link-deriv-vals"></a></dt>
@@ -105,6 +119,10 @@ $$
 \dfrac{\partial \textrm{PIF}}{\partial p} =
 \dfrac{\mu^{\text{cft}}}{\big(\mu^{\text{obs}}\big)^2} \cdot \big( \text{RR}(\beta) - 1\big)
 $$
+If the counterfactual is a function of the prevalence, \(p_{*} = g(p)\),
+the total derivative adds the term
+\(- J_g^{\top} \big( \text{RR}(\beta) - 1\big) / \mu^{\text{obs}}\)
+where \(J_g\) is the Jacobian of \(g\) evaluated at \(p\).
 The partial derivative of <code>PIF</code> with respect to <code>beta</code> is:
 $$
 \dfrac{\partial \textrm{PIF}}{\partial \beta} =

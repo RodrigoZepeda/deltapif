@@ -19,7 +19,7 @@ an observed prevalence of  p and a relative risk
 
     <a class="navbar-brand me-2" href="../index.html">deltapif</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,7 +86,8 @@ an observed prevalence of  <code>p</code> and a relative risk
 <span>  conf_level <span class="op">=</span> <span class="fl">0.95</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"PIF"</span>,</span>
 <span>  quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  label <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  label <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  p_cft_deriv <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -96,14 +97,20 @@ an observed prevalence of  <code>p</code> and a relative risk
 
 <dl><dt id="arg-p">p<a class="anchor" aria-label="anchor" href="#arg-p"></a></dt>
 <dd><p>Prevalence (proportion) of the exposed individuals for
-each of the <code>N</code> exposure levels.</p></dd>
+each of the <code>N</code> exposure levels. Either a numeric vector or a named list
+with one element, <code>list("id" = c(...))</code>, whose name identifies the
+estimate. Fractions that share the identifier use the same prevalence
+estimate (see <em>Shared parameters</em>).</p></dd>
 
 
 <dt id="arg-beta">beta<a class="anchor" aria-label="anchor" href="#arg-beta"></a></dt>
 <dd><p>Relative risk parameter for which standard deviation is
 available (usually its either the relative risk directly or the log
 of the relative risk as most RRs, ORs and HRs come from exponential
-models).</p></dd>
+models). Either a numeric vector or a named list with one element,
+<code>list("id" = c(...))</code>, whose name identifies the estimate. Fractions that
+share the identifier use the same relative risk estimate (see
+<em>Shared parameters</em>).</p></dd>
 
 
 <dt id="arg-var-p">var_p<a class="anchor" aria-label="anchor" href="#arg-var-p"></a></dt>
@@ -157,12 +164,26 @@ to build it automatically from <code>link</code> using <code><a href="https://rd
 
 <dt id="arg-p-cft">p_cft<a class="anchor" aria-label="anchor" href="#arg-p-cft"></a></dt>
 <dd><p>Counterfactual prevalence (proportion) of the exposed
-individuals for each of the <code>N</code> exposure levels.</p></dd>
+individuals for each of the <code>N</code> exposure levels. Either a numeric vector,
+for a fixed target that does not depend on the observed prevalence, or a
+function of <code>p</code> returning the counterfactual prevalence, for scenarios
+defined relative to the current exposure (e.g. <code>function(p) 0.85 * p</code> for
+a 15% reduction). In the latter case the uncertainty in <code>p</code> is also
+propagated through the counterfactual. See the section
+<em>Fixed and relative counterfactuals</em>.</p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
 <dd><p>Character either Potential Impact Fraction (<code>PIF</code>) or
 Population Attributable Fraction (<code>PAF</code>)</p></dd>
+
+
+<dt id="arg-p-cft-deriv">p_cft_deriv<a class="anchor" aria-label="anchor" href="#arg-p-cft-deriv"></a></dt>
+<dd><p>(Optional) Only used when <code>p_cft</code> is a function. Either
+a function of <code>p</code> returning the jacobian of <code>p_cft</code> (a <code>N x N</code> matrix whose
+entry <code>[j, i]</code> is the derivative of <code>p_cft(p)[j]</code> with respect to <code>p[i]</code>) or
+that matrix evaluated at <code>p</code>. If <code>NULL</code> (default) the jacobian is
+approximated numerically.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -230,6 +251,43 @@ $$
 $$</p>
 <p>the function \(f\) is called the link function for the PIF, \(f^{-1}\)
 represents its inverse, and \(f'\) its derivative.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="fixed-and-relative-counterfactuals">Fixed and relative counterfactuals<a class="anchor" aria-label="anchor" href="#fixed-and-relative-counterfactuals"></a></h2>
+
+
+<p>When <code>p_cft</code> is a number (or vector) it is treated as a fixed target, for
+example "reduce smoking prevalence to 5%". When the scenario is defined
+relative to the current exposure, for example "reduce smoking prevalence by
+15%", the counterfactual inherits the sampling error of <code>p</code> and should be
+given as a function: <code>p_cft = function(p) 0.85 * p</code>. The variance then
+uses the total derivative
+$$
+\dfrac{d\, \textrm{PIF}}{d p} =
+\dfrac{\mu^{\text{cft}}}{\big(\mu^{\text{obs}}\big)^2}
+\big( \text{RR}(\beta) - 1\big) -
+\dfrac{1}{\mu^{\text{obs}}} J^{\top} \big( \text{RR}(\beta) - 1\big)
+$$
+where \(J\) is the jacobian of <code>p_cft</code> with respect to <code>p</code>. Treating a
+relative scenario as a fixed target overestimates the variance, while
+treating a fixed target as relative underestimates it.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="shared-parameters">Shared parameters<a class="anchor" aria-label="anchor" href="#shared-parameters"></a></h2>
+
+
+<p>When several fractions are combined (with <code><a href="totalpifpaf.html">pif_total()</a></code>, <code><a href="totalpifpaf.html">pif_ensemble()</a></code>
+or <code><a href="weighted_adjusted.html">weighted_adjusted_pif()</a></code>) or their covariance is computed, fractions
+that use the same estimate of <code>p</code> or of <code>beta</code> are correlated. To declare
+that two fractions share an estimate give the parameter as a named list
+with the same name (identifier) in both, e.g.
+<code>beta = list("smoking_dementia" = 0.46)</code>. The same identifier must always
+be used with the same values and variances. Parameters given as plain
+numbers, or with different identifiers, are treated as independent.
+Correlations between different estimates (for example relative risks
+from the same meta-analysis) can be given to <code><a href="totalpifpaf.html">pif_total()</a></code> and
+<code><a href="totalpifpaf.html">pif_ensemble()</a></code> with a covariance matrix whose row and column names are
+the identifiers.</p>
     </div>
     <div class="section level2">
     <h2 id="link-functions-for-the-pif">Link functions for the PIF<a class="anchor" aria-label="anchor" href="#link-functions-for-the-pif"></a></h2>
@@ -393,14 +451,24 @@ the population attributable fraction.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 56.473% [<span style="font-style: italic;">95% CI</span>: 15.753% to 90.002%]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(paf %) = 24.294</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># If the counterfactual was reducing the smoking population by 1/2</span></span></span>
-<span class="r-in"><span><span class="fu">pif</span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.499</span>, beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">3.6</span><span class="op">)</span>, p_cft <span class="op">=</span> <span class="fl">0.499</span><span class="op">/</span><span class="fl">2</span>, var_p <span class="op">=</span> <span class="fl">0.001</span>,</span></span>
+<span class="r-in"><span><span class="co"># If the counterfactual was a fixed target of 25% smoking prevalence</span></span></span>
+<span class="r-in"><span><span class="fu">pif</span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.499</span>, beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">3.6</span><span class="op">)</span>, p_cft <span class="op">=</span> <span class="fl">0.25</span>, var_p <span class="op">=</span> <span class="fl">0.001</span>,</span></span>
 <span class="r-in"><span>    var_beta <span class="op">=</span> <span class="fl">0.1</span>, link <span class="op">=</span> <span class="st">"logit"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Potential Impact Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-127067230079593]</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> PIF = 28.236% [<span style="font-style: italic;">95% CI</span>: 18.101% to 41.192%]</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(pif %) = 5.963</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> PIF = 28.180% [<span style="font-style: italic;">95% CI</span>: 18.062% to 41.121%]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(pif %) = 5.954</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># If the counterfactual was reducing the smoking population by 1/2</span></span></span>
+<span class="r-in"><span><span class="co"># (relative to whatever the current prevalence is)</span></span></span>
+<span class="r-in"><span><span class="fu">pif</span><span class="op">(</span>p <span class="op">=</span> <span class="fl">0.499</span>, beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">3.6</span><span class="op">)</span>, p_cft <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="va">p</span> <span class="op">/</span> <span class="fl">2</span>, var_p <span class="op">=</span> <span class="fl">0.001</span>,</span></span>
+<span class="r-in"><span>    var_beta <span class="op">=</span> <span class="fl">0.1</span>, link <span class="op">=</span> <span class="st">"logit"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Potential Impact Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0960864787077774]</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> PIF = 28.236% [<span style="font-style: italic;">95% CI</span>: 18.866% to 39.967%]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(pif %) = 5.438</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#EXAMPLE 2: MULTIPLE EXPOSURE CATEGORIES</span></span></span>
 <span class="r-in"><span><span class="co">#---------------------------------------------------------------------------</span></span></span>
@@ -424,7 +492,7 @@ the population attributable fraction.</p>
 <span class="r-in"><span><span class="fu">paf</span><span class="op">(</span>p <span class="op">=</span> <span class="va">p</span>, beta <span class="op">=</span> <span class="va">rr</span>, var_beta <span class="op">=</span> <span class="va">var_log_rr</span>, var_p <span class="op">=</span> <span class="fl">0</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>    link <span class="op">=</span> <span class="st">"logit"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0960864787077774]</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0768721369594144]</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 61.599% [<span style="font-style: italic;">95% CI</span>: 50.274% to 71.792%]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(paf %) = 5.571</span>
@@ -438,7 +506,7 @@ the population attributable fraction.</p>
 <span class="r-in"><span><span class="fu">pif</span><span class="op">(</span>p <span class="op">=</span> <span class="va">p</span>, p_cft <span class="op">=</span> <span class="va">p_cft</span>, beta <span class="op">=</span> <span class="va">rr</span>, link <span class="op">=</span> <span class="st">"logit"</span>,</span></span>
 <span class="r-in"><span>  var_beta <span class="op">=</span> <span class="va">var_log_rr</span>, var_p <span class="op">=</span> <span class="fl">0</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Potential Impact Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-0768721369594144]</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Potential Impact Fraction: </span><span style="font-weight: bold; font-style: italic;">[deltapif-103593077108096]</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> PIF = 14.882% [<span style="font-style: italic;">95% CI</span>: 13.702% to 16.144%]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(pif %) = 0.623</span>

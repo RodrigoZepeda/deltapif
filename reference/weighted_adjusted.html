@@ -19,7 +19,7 @@ the ensemble fraction."><meta property="og:image" content="https://rodrigozepeda
 
     <a class="navbar-brand me-2" href="../index.html">deltapif</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,10 +65,19 @@ the ensemble fraction.</p>
 <span>  var_pif_weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  var_p <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  var_beta <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  pif_total_link <span class="op">=</span> <span class="st">"log-complement"</span>,</span>
+<span>  pif_total_link_inv <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  pif_total_link_deriv <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  pif_ensemble_link <span class="op">=</span> <span class="st">"identity"</span>,</span>
+<span>  pif_ensemble_link_inv <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  pif_ensemble_link_deriv <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  conf_level <span class="op">=</span> <span class="fl">0.95</span>,</span>
 <span>  label_ensemble <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  label_sum <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  link <span class="op">=</span> <span class="st">"log"</span>,</span>
+<span>  link_inv <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  link_deriv <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">weighted_adjusted_pif</span><span class="op">(</span></span>
@@ -88,7 +97,10 @@ the ensemble fraction.</p>
 <span>  conf_level <span class="op">=</span> <span class="fl">0.95</span>,</span>
 <span>  label_ensemble <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  label_sum <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  link <span class="op">=</span> <span class="st">"log"</span>,</span>
+<span>  link_inv <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  link_deriv <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -109,7 +121,9 @@ All fractions must be of the same type (all <code>PIF</code> or all <code>PAF</c
 <dt id="arg-weights">weights<a class="anchor" aria-label="anchor" href="#arg-weights"></a></dt>
 <dd><p>Weights for the ensemble (<code>pif_ensemble</code>).
 Passed directly to <code><a href="totalpifpaf.html">pif_ensemble()</a></code> / <code><a href="totalpifpaf.html">paf_ensemble()</a></code>.
-Defaults to <code>NULL</code> (equal weights of 1 for each fraction).</p></dd>
+Defaults to <code>NULL</code> (equal weights of 1 for each fraction). When
+adjusting for communality (Mukadam et al. 2019) the weights are
+<code>1 - communality</code>.</p></dd>
 
 
 <dt id="arg-var-weights">var_weights<a class="anchor" aria-label="anchor" href="#arg-var-weights"></a></dt>
@@ -124,39 +138,13 @@ fractions and <code>weights</code>. Passed to <code><a href="totalpifpaf.html">p
 <code><a href="totalpifpaf.html">paf_ensemble()</a></code>. Defaults to <code>NULL</code>.</p></dd>
 
 
-<dt id="arg-var-p">var_p<a class="anchor" aria-label="anchor" href="#arg-var-p"></a></dt>
-<dd><p>Covariance matrix for the prevalence parameters <code>p</code> across
-all fractions. Passed to <code><a href="covcor.html">covariance()</a></code> when computing cross-covariances.
-Defaults to <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-var-beta">var_beta<a class="anchor" aria-label="anchor" href="#arg-var-beta"></a></dt>
-<dd><p>Covariance matrix for the relative-risk parameters <code>beta</code>
-across all fractions. Passed to <code><a href="covcor.html">covariance()</a></code> when computing
-cross-covariances. Defaults to <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-conf-level">conf_level<a class="anchor" aria-label="anchor" href="#arg-conf-level"></a></dt>
-<dd><p>Confidence level for the confidence interval (default 0.95).</p></dd>
-
-
-<dt id="arg-label-ensemble">label_ensemble<a class="anchor" aria-label="anchor" href="#arg-label-ensemble"></a></dt>
-<dd><p>Character label for the internally constructed
-ensemble fraction. Defaults to <code>NULL</code> (auto-generated).</p></dd>
-
-
-<dt id="arg-label-sum">label_sum<a class="anchor" aria-label="anchor" href="#arg-label-sum"></a></dt>
-<dd><p>Character label for the internally constructed sum
-(total) fraction. Defaults to <code>NULL</code> (auto-generated).</p></dd>
-
-
-<dt id="arg-quiet">quiet<a class="anchor" aria-label="anchor" href="#arg-quiet"></a></dt>
-<dd><p>Whether to show messages.</p></dd>
-
-
-<dt id="arg-pif-">pif1<a class="anchor" aria-label="anchor" href="#arg-pif-"></a></dt>
-<dd><p>A potential impact fraction (class <code>pif_class</code>). This is
-the first of the individual fractions to be adjusted.</p></dd>
+<dt id="arg-var-p-var-beta">var_p, var_beta<a class="anchor" aria-label="anchor" href="#arg-var-p-var-beta"></a></dt>
+<dd><p>(Optional) Covariance matrices between the estimates
+of <code>p</code> (respectively <code>beta</code>) of different fractions, with row and column
+names given by the identifiers of the parameters (see the section
+<em>Shared parameters</em> in <code><a href="pifpaf.html">pif()</a></code>). Passed to <code><a href="totalpifpaf.html">pif_total()</a></code> and
+<code><a href="totalpifpaf.html">pif_ensemble()</a></code>. Defaults to <code>NULL</code> (fractions are correlated only
+through shared identifiers).</p></dd>
 
 
 <dt id="arg-pif-total-link">pif_total_link<a class="anchor" aria-label="anchor" href="#arg-pif-total-link"></a></dt>
@@ -187,6 +175,43 @@ of the adjustment</p></dd>
 <dt id="arg-pif-ensemble-link-deriv">pif_ensemble_link_deriv<a class="anchor" aria-label="anchor" href="#arg-pif-ensemble-link-deriv"></a></dt>
 <dd><p>Derivative of the link to pass to <code>pif_ensemble</code> in the numerator
 of the adjustment</p></dd>
+
+
+<dt id="arg-conf-level">conf_level<a class="anchor" aria-label="anchor" href="#arg-conf-level"></a></dt>
+<dd><p>Confidence level for the confidence interval (default 0.95).</p></dd>
+
+
+<dt id="arg-label-ensemble">label_ensemble<a class="anchor" aria-label="anchor" href="#arg-label-ensemble"></a></dt>
+<dd><p>Character label for the internally constructed
+ensemble fraction. Defaults to <code>NULL</code> (auto-generated).</p></dd>
+
+
+<dt id="arg-label-sum">label_sum<a class="anchor" aria-label="anchor" href="#arg-label-sum"></a></dt>
+<dd><p>Character label for the internally constructed sum
+(total) fraction. Defaults to <code>NULL</code> (auto-generated).</p></dd>
+
+
+<dt id="arg-quiet">quiet<a class="anchor" aria-label="anchor" href="#arg-quiet"></a></dt>
+<dd><p>Whether to show messages.</p></dd>
+
+
+<dt id="arg-link">link<a class="anchor" aria-label="anchor" href="#arg-link"></a></dt>
+<dd><p>Link used to build the confidence intervals of the adjusted
+fractions. Defaults to <code>"log"</code>, the scale on which their variance is
+derived (see <em>Formula</em>), which guarantees strictly positive intervals.
+Use <code>"identity"</code> for symmetric Wald intervals (required if an adjusted
+fraction is not strictly positive) or a function together with
+<code>link_inv</code> and <code>link_deriv</code>.</p></dd>
+
+
+<dt id="arg-link-inv-link-deriv">link_inv, link_deriv<a class="anchor" aria-label="anchor" href="#arg-link-inv-link-deriv"></a></dt>
+<dd><p>(Optional) Inverse and derivative of <code>link</code>
+when <code>link</code> is a function.</p></dd>
+
+
+<dt id="arg-pif-">pif1<a class="anchor" aria-label="anchor" href="#arg-pif-"></a></dt>
+<dd><p>A potential impact fraction (class <code>pif_class</code>). This is
+the first of the individual fractions to be adjusted.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -227,6 +252,12 @@ $$
   \operatorname{Cov}\!\big(\ln X, \ln Y\big) \approx
     \frac{\operatorname{Cov}(X, Y)}{X \cdot Y}
 $$</p>
+<p>The confidence interval is built on the scale of <code>link</code> (the log scale by
+default):
+$$
+  \exp\Big( \ln \widehat{\text{PIF}}_i^{\text{adj}} \pm Z_{\alpha/2}
+  \sqrt{\operatorname{Var}\big[\ln \widehat{\text{PIF}}_i^{\text{adj}}\big]}\Big).
+$$</p>
 <p>The covariances \(\operatorname{Cov}(\widehat{\text{PIF}}_i, \cdot)\) are
 computed by the internal function <code>cov_total_pif()</code> applied to the
 individual fraction and the internally constructed sum/ensemble objects,
@@ -248,14 +279,14 @@ embedded in those objects.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[Lead_adj]</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 52.726% [<span style="font-style: italic;">95% CI</span>: 46.604% to 58.847%]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 52.726% [<span style="font-style: italic;">95% CI</span>: 46.946% to 59.217%]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(paf %) = 3.123</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Radiation</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Population Attributable Fraction: </span><span style="font-weight: bold; font-style: italic;">[Radiation_adj]</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 16.116% [<span style="font-style: italic;">95% CI</span>: 13.560% to 18.671%]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> PAF = 16.116% [<span style="font-style: italic;">95% CI</span>: 13.753% to 18.885%]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(paf %) = 1.304</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
@@ -269,14 +300,14 @@ embedded in those objects.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Potential Impact Fraction: </span><span style="font-weight: bold; font-style: italic;">[Lead_adj]</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> PIF = 9.591% [<span style="font-style: italic;">95% CI</span>: 4.226% to 14.956%]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> PIF = 9.591% [<span style="font-style: italic;">95% CI</span>: 5.482% to 16.780%]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(pif %) = 2.737</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Radiation</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Potential Impact Fraction: </span><span style="font-weight: bold; font-style: italic;">[Radiation_adj]</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> PIF = 0.972% [<span style="font-style: italic;">95% CI</span>: 0.595% to 1.349%]</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> PIF = 0.972% [<span style="font-style: italic;">95% CI</span>: 0.659% to 1.432%]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> standard_deviation(pif %) = 0.192</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
