@@ -251,6 +251,7 @@ S7::method(coef, cases_class) <- function(object, ...) {
 NULL
 
 #' @name confint
+#' @importFrom stats confint
 #' @export
 S7::method(confint, pif_class) <- function(object, ..., level = object@conf_level) {
   #Set the level
@@ -285,6 +286,7 @@ S7::method(confint, cases_class) <- function(object, ..., level = object@conf_le
 #'
 #' @returns The `weights` used to construct a `pif_total` or `pif_ensemble`.
 #'
+#' @importFrom stats weights
 #' @export
 S7::method(weights, pif_global_ensemble_class) <- function(object, ...) {
   return(object@weights)
