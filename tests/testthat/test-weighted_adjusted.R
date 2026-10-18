@@ -160,26 +160,32 @@ test_that("weights with var_weights runs without error", {
 # Correlated prevalences / betas -----------------------------------------------
 
 test_that("var_p argument is accepted and changes variance estimates", {
-  p1 <- make_paf2(label = "vp1")
-  p2 <- make_paf2(label = "vp2")
+  p1 <- make_paf2(p = list("survey_1" = 0.2), label = "vp1")
+  p2 <- make_paf2(p = list("survey_2" = 0.2), label = "vp2")
+
+  var_p_ids <- matrix(c(0.001, 0.0005, 0.0005, 0.001), ncol = 2,
+                      dimnames = list(c("survey_1", "survey_2"), c("survey_1", "survey_2")))
 
   adj_indep <- weighted_adjusted_fractions(p1, p2, quiet = TRUE)
-  adj_corr  <- weighted_adjusted_fractions(p1, p2, var_p = 0.0005, quiet = TRUE)
+  adj_corr  <- weighted_adjusted_fractions(p1, p2, var_p = var_p_ids, quiet = TRUE)
 
   # Point estimates are unaffected by var_p
   expect_equal(adj_indep[["vp1"]]@pif, adj_corr[["vp1"]]@pif, tolerance = 1e-10)
 
-  # But variances may differ
-  # (we just check they are both non-negative)
+  # But variances differ
   expect_true(adj_corr[["vp1"]]@variance >= 0)
   expect_true(adj_corr[["vp2"]]@variance >= 0)
+  expect_false(isTRUE(all.equal(adj_indep[["vp1"]]@variance, adj_corr[["vp1"]]@variance)))
 })
 
 test_that("var_beta argument is accepted and changes variance estimates", {
-  p1 <- make_paf2(label = "vb1")
-  p2 <- make_paf2(label = "vb2")
+  p1 <- make_paf2(beta = list("rr_1" = 2.2), label = "vb1")
+  p2 <- make_paf2(beta = list("rr_2" = 2.2), label = "vb2")
 
-  adj <- weighted_adjusted_fractions(p1, p2, var_beta = 0.005, quiet = TRUE)
+  var_beta_ids <- matrix(c(0.01, 0.005, 0.005, 0.01), ncol = 2,
+                         dimnames = list(c("rr_1", "rr_2"), c("rr_1", "rr_2")))
+
+  adj <- weighted_adjusted_fractions(p1, p2, var_beta = var_beta_ids, quiet = TRUE)
   expect_true(adj[["vb1"]]@variance >= 0)
   expect_true(adj[["vb2"]]@variance >= 0)
 })
@@ -373,4 +379,38 @@ test_that("weighted_adjusted_fractions handles zero variance fractions", {
   adj <- weighted_adjusted_fractions(p1, p2, quiet = TRUE)
   expect_equal(adj[["Zv1"]]@variance, 0)
   expect_equal(adj[["Zv2"]]@variance, 0)
+})
+
+test_that("Weighted adjusted intervals are built on the log scale by default", {
+  paf_a <- paf(0.3, beta = log(1.8), var_p = 0.001, var_beta = 0.02, label = "a", quiet = TRUE)
+  paf_b <- paf(0.2, beta = log(1.4), var_p = 0.001, var_beta = 0.03, label = "b", quiet = TRUE)
+
+  adj_log <- weighted_adjusted_paf(paf_a, paf_b, weights = c(0.9, 0.8), quiet = TRUE)
+  adj_id  <- weighted_adjusted_paf(paf_a, paf_b, weights = c(0.9, 0.8), quiet = TRUE,
+                                   link = "identity")
+
+  for (k in seq_along(adj_log)) {
+    est <- coef(adj_log[[k]])
+    se  <- sqrt(variance(adj_log[[k]]))
+
+    #Same point estimate and variance regardless of the link
+    expect_equal(est, coef(adj_id[[k]]))
+    expect_equal(variance(adj_log[[k]]), variance(adj_id[[k]]))
+
+    expect_equal(as.numeric(confint(adj_log[[k]])),
+                 exp(log(est) + c(-1, 1) * qnorm(0.975) * se / est))
+    expect_equal(as.numeric(confint(adj_id[[k]])),
+                 est + c(-1, 1) * qnorm(0.975) * se)
+  }
+})
+
+test_that("weighted_adjusted_pif passes the total and ensemble links", {
+  pif_a <- pif(0.3, p_cft = 0.1, beta = log(1.8), var_p = 0.001, var_beta = 0.02,
+               label = "a", quiet = TRUE)
+  pif_b <- pif(0.2, p_cft = 0.1, beta = log(1.4), var_p = 0.001, var_beta = 0.03,
+               label = "b", quiet = TRUE)
+  expect_no_error(
+    weighted_adjusted_pif(pif_a, pif_b, pif_total_link = "identity",
+                          pif_ensemble_link = "log-complement", quiet = TRUE)
+  )
 })

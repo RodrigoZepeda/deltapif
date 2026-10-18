@@ -20,5 +20,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Rodrigo Zepeda-Tello \email{rzepeda17@gmail.com}
 
+Other contributors:
+\itemize{
+  \item Tomasz Kalinowski [contributor]
+}
+
 }
 \keyword{internal}

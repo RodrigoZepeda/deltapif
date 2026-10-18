@@ -20,6 +20,9 @@
 #' risk function evaluated at `theta` (the relative risk parameter).
 #' @param rr_link_deriv_vals2 Values for the derivative of the relative
 #' risk function evaluated at `theta` (the relative risk parameter).
+#' @param p1_cft_jacobian,p2_cft_jacobian Jacobians of the counterfactual
+#' prevalences with respect to the observed prevalences of the first and
+#' second fractions (`NULL` for fixed counterfactuals).
 #'
 #' @inheritParams derivatives
 #' @inheritParams pifpaf
@@ -69,14 +72,14 @@ NULL
 #' @noRd
 from_parameters_covariance_p_component <- function(
     p1, p2, p1_cft, p2_cft, rr1, rr2,
-    var_p, upper_bound) {
+    var_p, upper_bound, p1_cft_jacobian = NULL, p2_cft_jacobian = NULL) {
 
   # Get the derivatives
   vcp_deriv1 <- deriv_pif_p(
-    p = p1, p_cft = p1_cft, rr = rr1
+    p = p1, p_cft = p1_cft, rr = rr1, p_cft_jacobian = p1_cft_jacobian
   )
   vcp_deriv2 <- deriv_pif_p(
-    p = p2, p_cft = p2_cft, rr = rr2,
+    p = p2, p_cft = p2_cft, rr = rr2, p_cft_jacobian = p2_cft_jacobian
   )
 
   # Whether we are working with an upper bound for the link_variance
@@ -118,7 +121,8 @@ from_parameters_covariance_beta_component <- function(
 from_parameters_pif_covariance <- function(
     p1, p2, p1_cft, p2_cft, rr1, rr2, rr_link_deriv_vals1, rr_link_deriv_vals2,
     var_p, var_beta,
-    upper_bound_p = FALSE, upper_bound_beta = FALSE) {
+    upper_bound_p = FALSE, upper_bound_beta = FALSE,
+    p1_cft_jacobian = NULL, p2_cft_jacobian = NULL) {
 
   p_component <- from_parameters_covariance_p_component(
     p1 = p1,
@@ -127,7 +131,9 @@ from_parameters_pif_covariance <- function(
     p2_cft = p2_cft,
     rr1 = rr1, rr2 = rr2,
     var_p = var_p,
-    upper_bound = upper_bound_p
+    upper_bound = upper_bound_p,
+    p1_cft_jacobian = p1_cft_jacobian,
+    p2_cft_jacobian = p2_cft_jacobian
   )
 
   beta_component <- from_parameters_covariance_beta_component(
@@ -150,13 +156,16 @@ from_parameters_pif_covariance <- function(
 #' @noRd
 from_parameters_pif_variance <- function(
     p, p_cft, rr, rr_link_deriv_vals, var_p,
-    var_beta, upper_bound_p = FALSE, upper_bound_beta = FALSE) {
+    var_beta, upper_bound_p = FALSE, upper_bound_beta = FALSE,
+    p_cft_jacobian = NULL) {
 
   from_parameters_pif_covariance(
     p1 = p,
     p2 = p,
     p1_cft = p_cft,
     p2_cft = p_cft,
+    p1_cft_jacobian = p_cft_jacobian,
+    p2_cft_jacobian = p_cft_jacobian,
     rr1 = rr,
     rr2 = rr,
     rr_link_deriv_vals1 = rr_link_deriv_vals,

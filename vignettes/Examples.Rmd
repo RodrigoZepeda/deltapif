@@ -45,10 +45,16 @@ with variance of
 
 + `var_beta = 0.0273858` (`= 0.165486566^2`). 
 
+The same relative risk (from the same meta-analysis) is used for every race group. To tell the package that the fractions share this estimate, and hence are correlated, we give `beta` as a named list. The name (here `"smoking_dementia"`) identifies the estimate:
+
+```{r}
+beta_smoking <- list("smoking_dementia" = 0.4637340)
+```
+
 Among hispanic individuals 6.9% (`p = 0.069`) smoke. Hence their PAF is:
 
 ```{r}
-paf_hispanic <- paf(p = 0.069, beta = 0.4637340, var_beta = 0.0273858, var_p = 0,
+paf_hispanic <- paf(p = 0.069, beta = beta_smoking, var_beta = 0.0273858, var_p = 0,
                     rr_link = exp, label = "Hispanic")
 paf_hispanic
 ```
@@ -56,13 +62,15 @@ paf_hispanic
 The other fractions can be computed in the same way noting that 4.9%	of non-hispanic asians, 11.7% of non-hispanic blacks and	8.4% of non-hispanic whites smoke:
 
 ```{r}
-paf_asian <- paf(p = 0.049, beta = 0.4637340, var_beta = 0.0273858, 
+paf_asian <- paf(p = 0.049, beta = beta_smoking, var_beta = 0.0273858, 
                     var_p = 0, rr_link = exp, label = "Asian")
-paf_black <- paf(p = 0.117, beta = 0.4637340, var_beta = 0.0273858, 
+paf_black <- paf(p = 0.117, beta = beta_smoking, var_beta = 0.0273858, 
                     var_p = 0, rr_link = exp, label = "Black")
-paf_white <- paf(p = 0.084, beta = 0.4637340, var_beta = 0.0273858, 
+paf_white <- paf(p = 0.084, beta = beta_smoking, var_beta = 0.0273858, 
                     var_p = 0, rr_link = exp, label = "White")
 ```
+
+Using the same identifier with a different value or variance is an error, which protects against typos. Fractions whose parameters are given as plain numbers (or with different identifiers) are treated as independent.
 
 
 ## Example 2: Combining subpopulations into a total
@@ -107,10 +115,10 @@ as.data.frame(paf_population)
 ```
 
 Attributable cases can be calculated for example using the estimates from 
-[@dhana2023prevalence](https://pmc.ncbi.nlm.nih.gov/articles/PMC10593099/#SD2). They estimate the number of people with Alzheimer's Disease in New York, USA 426.5 (400.2, 452.7) thousand. This implies a variance of `((452.7 - 400.2) / 2*qnorm(0.975))^2 = 2647.005`. 
+[@dhana2023prevalence](https://pmc.ncbi.nlm.nih.gov/articles/PMC10593099/#SD2). They estimate the number of people with Alzheimer's Disease in New York, USA 426.5 (400.2, 452.7) thousand. This implies a variance of `((452.7 - 400.2) / (2*qnorm(0.975)))^2 = 179.3752`. 
 
 ```{r}
-attributable_cases(426.5, paf_population, variance = 2647)
+attributable_cases(426.5, paf_population, variance = 179.3752)
 ```
 
 <!---
@@ -161,16 +169,16 @@ and for the [odds ratios](https://en.wikipedia.org/wiki/Odds_ratio#Statistical_i
 
 ## Example 3: Estimating the PIF for the proportion of dementia reduced by a 15% reduction in smoking. 
 
-[@lee](https://doi.org/10.1001/jamanetworkopen.2022.19672) also estimates the proportion of dementia cases that would be reduced by a 15% decrease in smoking prevalence. This 15% reduction corresponds to multiplying the current smoking prevalence by `1 - 0.15 = 0.85`  specified with the prevalence under the counterfactual (`p_cft`) variable: 
+[@lee](https://doi.org/10.1001/jamanetworkopen.2022.19672) also estimates the proportion of dementia cases that would be reduced by a 15% decrease in smoking prevalence. This 15% reduction corresponds to multiplying the current smoking prevalence by `1 - 0.15 = 0.85`. As the reduction is relative to the current prevalence (and not a fixed target) we specify the prevalence under the counterfactual (`p_cft`) as a function of `p`. This propagates the uncertainty of `p` into the counterfactual (here `var_p = 0` so the result is the same as a fixed `p_cft`):
 
 ```{r}
-pif_hispanic <- pif(p = 0.069, p_cft = 0.069*0.85, beta = 0.4637340, var_beta = 0.0273858, 
+pif_hispanic <- pif(p = 0.069, p_cft = function(p) 0.85 * p, beta = beta_smoking, var_beta = 0.0273858, 
                     var_p = 0, rr_link = exp, label = "Hispanic")
-pif_asian    <- pif(p = 0.049, p_cft = 0.049*0.85, beta = 0.4637340, var_beta = 0.0273858, 
+pif_asian    <- pif(p = 0.049, p_cft = function(p) 0.85 * p, beta = beta_smoking, var_beta = 0.0273858, 
                     var_p = 0, rr_link = exp, label = "Asian")
-pif_black    <- pif(p = 0.117, p_cft = 0.117*0.85, beta = 0.4637340, var_beta = 0.0273858, 
+pif_black    <- pif(p = 0.117, p_cft = function(p) 0.85 * p, beta = beta_smoking, var_beta = 0.0273858, 
                     var_p = 0, rr_link = exp, label = "Black")
-pif_white    <- pif(p = 0.084, p_cft = 0.084*0.85, beta = 0.4637340, var_beta = 0.0273858, 
+pif_white    <- pif(p = 0.084, p_cft = function(p) 0.85 * p, beta = beta_smoking, var_beta = 0.0273858, 
                     var_p = 0, rr_link = exp, label = "White")
 ```
 
@@ -194,7 +202,7 @@ df
 Averted cases can be calculated with the same number as before with the `averted_cases` function:
 
 ```{r}
-averted_cases(426.5, pif_population, variance = 2647)
+averted_cases(426.5, pif_population, variance = 179.3752)
 ```
 
 ## Example 4: A categorical population attributable fraction
@@ -216,29 +224,29 @@ alcohol[1:12,c("sex", "alcohol_g", "median_intake", "age_18_plus")]
 ```
 
 The relative risk of alcohol varies by consumption level (`alcohol_g`). For example
-in the case of rectal cancer the estimated relative risk is 1.10 (1.07–1.12) per 10g/day. We will need to compute the relative risk for each of the consumption level groups using their median intake as follows:
+in the case of rectal cancer the estimated relative risk is 1.10 (1.07–1.12) per 10g/day. As the relative risk is log-linear in the dose, the log relative risk of each consumption group is `log(1.10)` times its median intake (in units of 10g/day):
 
 ```{r}
 #Get alcohol intake for men divided by 10 cause RR is per 10g/day
 alcohol_men_intake <- c(0, 0.8, 1.6, 3.2, 7.1, 12.6, 17.4, 24.5, 34.7, 
                         44.2, 54.4, 85.2) / 10 
 
-#Divided by 10 cause risk is per 10 g/day
-relative_risk <- exp(log(1.10)*alcohol_men_intake)
+#Log relative risk of each group (risk is per 10 g/day)
+log_relative_risk <- log(1.10)*alcohol_men_intake
 
 #Divide by 100 to get the prevalence in decimals
 prevalence    <- c(0.472, 0.014, 0.022, 0.081, 0.081, 0.069, 0.046, 
                    0.073, 0.042, 0.032, 0.02, 0.048)
 
 #Calculate the paf
-paf(prevalence, beta = relative_risk, var_p = 0, var_b = 0)
+paf(prevalence, beta = log_relative_risk, var_p = 0, var_beta = 0)
 ```
 
-If we want to add uncertainty we can approximate the covariance of the relative risk as follows:
+If we want to add uncertainty we compute the standard error of the log relative risk per 10 g/day from its confidence interval. As every group shares the same slope, the covariance between the log relative risks of groups `k` and `j` is the slope's variance times `intake_k * intake_j`:
 
 ```{r}
 #Calculate covariance of the betas given by variance*intake_i*intake_j
-beta_sd <- (1.12 - 1.07) / (2*qnorm(0.975))
+beta_sd <- (log(1.12) - log(1.07)) / (2*qnorm(0.975))
 beta_var <- matrix(NA, ncol = length(prevalence), nrow = length(prevalence))
 for (k in 1:length(prevalence)){
   for (j in 1:length(prevalence)){
@@ -247,7 +255,7 @@ for (k in 1:length(prevalence)){
 }
 
 #Calculate the paf
-paf_males <- paf(prevalence, beta = relative_risk, var_p = 0, var_b = beta_var, 
+paf_males <- paf(prevalence, beta = log_relative_risk, var_p = 0, var_beta = beta_var, 
                label = "Males")
 paf_males
 ```
@@ -259,15 +267,15 @@ We can repeat the same process for females:
 alcohol_female_intake <- c(0, 0.8, 1.6, 3.9, 7.1, 12.6, 17.4, 
                            24.5, 34.7, 44.2, 54.4, 78.1) / 10
 
-#Divided by 10 cause risk is per 10 g/day
-relative_risk <- exp(log(1.10)*alcohol_female_intake)
+#Log relative risk of each group (risk is per 10 g/day)
+log_relative_risk <- log(1.10)*alcohol_female_intake
 
 #Divide by 100 to get the prevalence in decimals
 prevalence    <- c(0.603, 0.02, 0.054, 0.091, 0.081, 0.061, 0.026, 
                    0.034, 0.015, 0.007, 0.003, 0.005)
 
 #Calculate covariance of the betas given by variance*intake_i*intake_j
-beta_sd <- (1.12 - 1.07) / (2*qnorm(0.975))
+beta_sd <- (log(1.12) - log(1.07)) / (2*qnorm(0.975))
 beta_var <- matrix(NA, ncol = length(prevalence), nrow = length(prevalence))
 for (k in 1:length(prevalence)){
   for (j in 1:length(prevalence)){
@@ -276,7 +284,7 @@ for (k in 1:length(prevalence)){
 }
 
 #Calculate the paf
-paf_females <- paf(prevalence, beta = relative_risk, var_p = 0, var_b = beta_var, 
+paf_females <- paf(prevalence, beta = log_relative_risk, var_p = 0, var_beta = beta_var, 
                    label = "Females")
 
 paf_females
@@ -321,28 +329,30 @@ $$
 \textrm{PAF}_{\text{Ensemble}} = 1 - (1 - w_1 \cdot\textrm{PAF}_{\text{Alcohol}})\cdot (1 - w_2 \cdot\textrm{PAF}_{\text{Smoking}})\cdot (1 - w_3\cdot \textrm{PAF}_{\text{Physical}})
 $$
 
-where the weights are oftentimes calculated via a communality correction or are set to 1 for disjointed risks. In the case of this paper the communality estimates were:
+where the weights are set to 1 for independent risks or are calculated via a communality correction as `w = 1 - communality`. In the case of this paper the communality estimates (Table 2 of @lee, available in the `communality` column of `dementiarisk`) were:
 
-+ **Physical inactivity:** 31.1
++ **Physical inactivity:** 30.0%
 
-+ **Smoking:** 5.9
++ **Smoking:** 63.5%
 
-+ **Excessive alcohol:** 3.8
++ **Excessive alcohol:** 59.8%
 
-hence we can use them as the `weights` argument:
+hence the `weights` argument is `1 - communality` (in the same order as the fractions):
 
 ```{r}
+risk_factors <- c("Excessive alcohol", "Physical inactivity", "Smoking")
+communality  <- dementiarisk$communality[match(risk_factors, dementiarisk$risk_factor)] / 100
 paf_ensemble(paf_alcohol, paf_physical, paf_smoking, 
-             weights = c(0.038, 0.311, 0.059),
+             weights = 1 - communality,
              label = "Behavioural factors")
 ```
 
-Finally, variance among the weights can be implemented with the `var_weights` argument providing a variance-covariance matrix:
+Finally, uncertainty in the weights can be included with the `var_weights` argument providing their variance-covariance matrix. For illustration we assume each weight has a standard error of `0.02` and the following correlations:
 
 
 ```{r}
-#Variance covariance matrix
-weight_variance <- matrix(
+#Variance covariance matrix (standard error of 0.02 times the correlations)
+weight_variance <- 0.02^2 * matrix(
   c( 1.00, 0.21, -0.02, 
      0.21, 1.00,  0.09,
     -0.02, 0.09,  1.00), byrow = TRUE, ncol = 3
@@ -351,7 +361,7 @@ colnames(weight_variance) <- c("Alcohol", "Physical inactivity", "Smoking")
 rownames(weight_variance) <- c("Alcohol", "Physical inactivity", "Smoking")
 
 paf_ensemble(paf_alcohol, paf_physical, paf_smoking, 
-             weights     = c(0.038, 0.311, 0.059),
+             weights     = 1 - communality,
              var_weights = weight_variance,
              label       = "Behavioural factors")
 ```
@@ -380,11 +390,12 @@ paf_smoking  <- paf(p = 0.085, beta = 0.4637340, var_beta = 0.16548657^2,
 paf_physical <- paf(p = 0.628, beta = 0.3293037, var_beta = 0.09296182^2, 
                     var_p = 0, label = "Physical Activity")
 
-#Get the communality weights
-cweights <- c(0.038, 0.311, 0.059)
+#Get the communality weights in the same order as the fractions
+risk_factors <- c("Excessive alcohol", "Smoking", "Physical inactivity")
+communality  <- dementiarisk$communality[match(risk_factors, dementiarisk$risk_factor)] / 100
 
 #Calculate the adjusted versions
-weighted_adjusted_paf(paf_alcohol, paf_smoking, paf_physical, weights = cweights)
+weighted_adjusted_paf(paf_alcohol, paf_smoking, paf_physical, weights = 1 - communality)
 ```
 
 
@@ -412,7 +423,7 @@ We remark that this option is not turned on by default as the **positivity** of 
 ## Example 8: Computing averted and attributable cases
 
 Attributable and averted cases can be calculated with the `attributable_cases` (resp. `averted_cases`) function. For
-example [@dhana2023prevalence](https://pmc.ncbi.nlm.nih.gov/articles/PMC10593099/#SD2) estimates the number of people with Alzheimer's Disease in New York, USA 426.5 (400.2, 452.7) thousand. This implies a variance of `((452.7 - 400.2) / (2*qnorm(0.975))^2) = 179.3752`. 
+example [@dhana2023prevalence](https://pmc.ncbi.nlm.nih.gov/articles/PMC10593099/#SD2) estimates the number of people with Alzheimer's Disease in New York, USA 426.5 (400.2, 452.7) thousand. This implies a variance of `((452.7 - 400.2) / (2*qnorm(0.975)))^2 = 179.3752`. 
 
 To estimate cases we need to:
 
@@ -444,7 +455,7 @@ a higher (hypothetical) variance might result in a confidence interval that incl
 ```{r}
 averted_cases(426.5, pif_smoking, variance = 100000)
 ```
-When there is an epidemiological rationale on the interval being strictly positive (for example, the relative risk is known to be strictly greater than 1) we can change the link function to `logit` to guarantee the interval is always positive:
+When there is an epidemiological rationale on the interval being strictly positive (for example, the relative risk is known to be strictly greater than 1) we can change the link function to `log` to guarantee the interval is always positive:
 
 ```{r}
 averted_cases(426.5, pif_smoking, variance = 100000, link = "log")

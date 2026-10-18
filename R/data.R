@@ -3,42 +3,54 @@
 #' Relative risk and exposure data for dementia risk-factors
 #'
 #' @format
-#' A data frame with 12 rows and 11 columns:
+#' A data frame with 12 rows and 12 columns:
 #'
 #' \describe{
 #'   \item{risk_factor}{The risk factor for dementia}
 #'   \item{RR}{The relative risk of dementia associated to the risk factor}
 #'   \item{lower_CI, upper_CI}{Lower and upper bounds for the 95% confidence interval}
 #'   \item{logrr}{The logarithm of the relative risk `log(RR)`}
-#'   \item{sdlog}{The variance of the logarithm of the relative risk `variance(log(RR))`}
-#'   \item{total}{The proportion of individuals exposed in the overall population}
-#'   \item{hispanic}{The proportion of hispanic individuals exposed}
-#'   \item{asian}{The proportion of non-hispanic asian individuals exposed}
-#'   \item{black}{The proportion of non-hispanic black individuals exposed}
-#'   \item{white}{The proportion of non-hispanic white individuals exposed}
+#'   \item{sdlog}{The standard deviation (standard error) of the logarithm of the relative risk `sd(log(RR))`}
+#'   \item{total}{The percentage (%) of individuals exposed in the overall population}
+#'   \item{hispanic}{The percentage (%) of hispanic individuals exposed}
+#'   \item{asian}{The percentage (%) of non-hispanic asian individuals exposed}
+#'   \item{black}{The percentage (%) of non-hispanic black individuals exposed}
+#'   \item{white}{The percentage (%) of non-hispanic white individuals exposed}
+#'   \item{communality}{Communality (%) of the risk factor with the other risk
+#'   factors (Table 2 of Lee et al.). The communality weight used to combine
+#'   fractions is `1 - communality / 100`.}
 #' }
 #'
 #' @references Lee, Mark, et al. "Variation in population attributable fraction
 #' of dementia associated with potentially modifiable risk factors by race
 #' and ethnicity in the US." JAMA network open 5.7 (2022): e2219672-e2219672.
 #'
-#' @seealso [dementiacov] for the covariance between the risk factors
+#' @seealso [dementiacor] for the correlation between the risk factors
 "dementiarisk"
 
-#' Relative risk covariance from Lee et al
+#' Correlation between dementia risk factors from Lee et al
 #'
-#' Covariances between the relative risks of Lee et al
+#' Pairwise tetrachoric correlations between the 12 dementia risk factors
+#' (exposures) in the Atherosclerosis Risk in Communities (ARIC) study, from
+#' eTable 2 of the supplement of Lee et al. These correlations describe how the
+#' exposures co-occur within individuals and were used to compute the
+#' communality of each risk factor (see the `communality` column of
+#' [dementiarisk]).
+#'
+#' @note These are correlations between exposures, not between the estimates
+#' of the relative risks. They should not be used as a covariance for `beta`.
 #'
 #' @format
-#' A covariance matrix with 12 rows and 12 columns. Each entry
-#' represents the covariance between them.
+#' A symmetric 12 x 12 correlation matrix with row and column names given by
+#' the risk factors (in the same order as `dementiarisk$risk_factor`).
 #'
 #' @references Lee, Mark, et al. "Variation in population attributable fraction
 #' of dementia associated with potentially modifiable risk factors by race
 #' and ethnicity in the US." JAMA network open 5.7 (2022): e2219672-e2219672.
 #'
-#' @seealso [dementiarisk] for the relative risks and prevalence estimates
-"dementiacov"
+#' @seealso [dementiarisk] for the relative risks, prevalence estimates and
+#' communalities
+"dementiacor"
 
 #' Alcohol consumption in Australia from Pandeya et al
 #'

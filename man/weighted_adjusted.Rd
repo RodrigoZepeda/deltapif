@@ -14,10 +14,19 @@ weighted_adjusted_paf(
   var_pif_weights = NULL,
   var_p = NULL,
   var_beta = NULL,
+  pif_total_link = "log-complement",
+  pif_total_link_inv = NULL,
+  pif_total_link_deriv = NULL,
+  pif_ensemble_link = "identity",
+  pif_ensemble_link_inv = NULL,
+  pif_ensemble_link_deriv = NULL,
   conf_level = 0.95,
   label_ensemble = NULL,
   label_sum = NULL,
-  quiet = FALSE
+  quiet = FALSE,
+  link = "log",
+  link_inv = NULL,
+  link_deriv = NULL
 )
 
 weighted_adjusted_pif(
@@ -37,7 +46,10 @@ weighted_adjusted_pif(
   conf_level = 0.95,
   label_ensemble = NULL,
   label_sum = NULL,
-  quiet = FALSE
+  quiet = FALSE,
+  link = "log",
+  link_inv = NULL,
+  link_deriv = NULL
 )
 }
 \arguments{
@@ -49,7 +61,9 @@ All fractions must be of the same type (all \code{PIF} or all \code{PAF}).}
 
 \item{weights}{Weights for the ensemble (\code{pif_ensemble}).
 Passed directly to \code{\link[=pif_ensemble]{pif_ensemble()}} / \code{\link[=paf_ensemble]{paf_ensemble()}}.
-Defaults to \code{NULL} (equal weights of 1 for each fraction).}
+Defaults to \code{NULL} (equal weights of 1 for each fraction). When
+adjusting for communality (Mukadam et al. 2019) the weights are
+\code{1 - communality}.}
 
 \item{var_weights}{Covariance structure for \code{weights}.
 Passed directly to \code{\link[=pif_ensemble]{pif_ensemble()}} / \code{\link[=paf_ensemble]{paf_ensemble()}}.
@@ -59,26 +73,12 @@ Defaults to \code{0}.}
 fractions and \code{weights}. Passed to \code{\link[=pif_ensemble]{pif_ensemble()}} /
 \code{\link[=paf_ensemble]{paf_ensemble()}}. Defaults to \code{NULL}.}
 
-\item{var_p}{Covariance matrix for the prevalence parameters \code{p} across
-all fractions. Passed to \code{\link[=covariance]{covariance()}} when computing cross-covariances.
-Defaults to \code{NULL}.}
-
-\item{var_beta}{Covariance matrix for the relative-risk parameters \code{beta}
-across all fractions. Passed to \code{\link[=covariance]{covariance()}} when computing
-cross-covariances. Defaults to \code{NULL}.}
-
-\item{conf_level}{Confidence level for the confidence interval (default 0.95).}
-
-\item{label_ensemble}{Character label for the internally constructed
-ensemble fraction. Defaults to \code{NULL} (auto-generated).}
-
-\item{label_sum}{Character label for the internally constructed sum
-(total) fraction. Defaults to \code{NULL} (auto-generated).}
-
-\item{quiet}{Whether to show messages.}
-
-\item{pif1}{A potential impact fraction (class \code{pif_class}). This is
-the first of the individual fractions to be adjusted.}
+\item{var_p, var_beta}{(Optional) Covariance matrices between the estimates
+of \code{p} (respectively \code{beta}) of different fractions, with row and column
+names given by the identifiers of the parameters (see the section
+\emph{Shared parameters} in \code{\link[=pif]{pif()}}). Passed to \code{\link[=pif_total]{pif_total()}} and
+\code{\link[=pif_ensemble]{pif_ensemble()}}. Defaults to \code{NULL} (fractions are correlated only
+through shared identifiers).}
 
 \item{pif_total_link}{Link to pass to \code{pif_total} in the denominator
 of the adjustment}
@@ -97,6 +97,29 @@ of the adjustment}
 
 \item{pif_ensemble_link_deriv}{Derivative of the link to pass to \code{pif_ensemble} in the numerator
 of the adjustment}
+
+\item{conf_level}{Confidence level for the confidence interval (default 0.95).}
+
+\item{label_ensemble}{Character label for the internally constructed
+ensemble fraction. Defaults to \code{NULL} (auto-generated).}
+
+\item{label_sum}{Character label for the internally constructed sum
+(total) fraction. Defaults to \code{NULL} (auto-generated).}
+
+\item{quiet}{Whether to show messages.}
+
+\item{link}{Link used to build the confidence intervals of the adjusted
+fractions. Defaults to \code{"log"}, the scale on which their variance is
+derived (see \emph{Formula}), which guarantees strictly positive intervals.
+Use \code{"identity"} for symmetric Wald intervals (required if an adjusted
+fraction is not strictly positive) or a function together with
+\code{link_inv} and \code{link_deriv}.}
+
+\item{link_inv, link_deriv}{(Optional) Inverse and derivative of \code{link}
+when \code{link} is a function.}
+
+\item{pif1}{A potential impact fraction (class \code{pif_class}). This is
+the first of the individual fractions to be adjusted.}
 }
 \value{
 A named list of \code{pif_class} objects, one per input
@@ -140,6 +163,13 @@ where each log-covariance is approximated via the delta method:
 \deqn{
   \operatorname{Cov}\!\big(\ln X, \ln Y\big) \approx
     \frac{\operatorname{Cov}(X, Y)}{X \cdot Y}
+}
+
+The confidence interval is built on the scale of \code{link} (the log scale by
+default):
+\deqn{
+  \exp\Big( \ln \widehat{\text{PIF}}_i^{\text{adj}} \pm Z_{\alpha/2}
+  \sqrt{\operatorname{Var}\big[\ln \widehat{\text{PIF}}_i^{\text{adj}}\big]}\Big).
 }
 
 The covariances \eqn{\operatorname{Cov}(\widehat{\text{PIF}}_i, \cdot)} are

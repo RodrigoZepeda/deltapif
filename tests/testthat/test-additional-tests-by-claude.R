@@ -746,10 +746,12 @@ test_that("weighted_adjusted_fractions raises error for duplicate labels", {
 })
 
 test_that("weighted_adjusted_fractions with var_p runs without error", {
-  p1 <- make_paf_atomic(label = "waf6")
-  p2 <- make_paf_atomic(label = "waf7")
+  p1 <- make_paf_atomic(p = list("s1" = 0.3), label = "waf6")
+  p2 <- make_paf_atomic(p = list("s2" = 0.3), label = "waf7")
+  var_p_ids <- matrix(c(0.01, 0.001, 0.001, 0.01), ncol = 2,
+                      dimnames = list(c("s1", "s2"), c("s1", "s2")))
   expect_silent(
-    weighted_adjusted_fractions(p1, p2, var_p = 0.001, quiet = TRUE)
+    weighted_adjusted_fractions(p1, p2, var_p = var_p_ids, quiet = TRUE)
   )
 })
 

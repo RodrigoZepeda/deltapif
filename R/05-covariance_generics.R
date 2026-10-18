@@ -34,10 +34,10 @@
 #'
 #' @examples
 #' \dontrun{
-#' p1 <- pif(p = 0.5, p_cft = 0.1, beta = 0.2, 0.003, 0.04, label = "Population 1")
-#' p2 <- pif(p = 0.4, p_cft = 0.1, beta = 0.2, 0.003, 0.04, label = "Population 2")
+#' p1 <- pif(p = 0.5, p_cft = 0.1, beta = list("rr" = 0.2), 0.003, 0.04, label = "Population 1")
+#' p2 <- pif(p = 0.4, p_cft = 0.1, beta = list("rr" = 0.2), 0.003, 0.04, label = "Population 2")
 #'
-#' #Positive covariance as program automatically detects same beta and p
+#' #Positive covariance as both fractions use the same relative risk (identifier "rr")
 #' cov_atomic_pif(p1, p2)
 #'
 #' #Zero covariance as they have no covariates in common
@@ -187,6 +187,8 @@ cov_atomic_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL) {
     p2       = pif2@p,
     p1_cft   = pif1@p_cft,
     p2_cft   = pif2@p_cft,
+    p1_cft_jacobian = pif1@p_cft_jacobian,
+    p2_cft_jacobian = pif2@p_cft_jacobian,
     rr1      = pif1@rr,
     rr2      = pif2@rr,
     var_p    = var_p,
@@ -873,7 +875,8 @@ cov_total_pif <- function(pif1, pif2, var_p = NULL, var_beta = NULL,
 #' covariance(my_pif)
 #'
 #' # Calculate the link_covariance between 3 fractions with shared relative risk
-#' beta <- 0.3
+#' # (declared by giving beta the same identifier)
+#' beta <- list("rr" = 0.3)
 #' var_beta <- 0.1
 #' pif1 <- pif(0.5, 0.2, beta, var_p = 0.5 * (1 - 0.5) / 100, var_beta = var_beta)
 #' pif2 <- pif(0.3, 0.1, beta, var_p = 0.3 * (1 - 0.3) / 100, var_beta = var_beta)
@@ -1086,6 +1089,73 @@ S7::method(variance, cases_class) <- function(x, ...) {
 standard_deviation <- S7::new_generic("standard_deviation", "x")
 S7::method(standard_deviation, S7::new_union(pif_class, cases_class)) <- function(x, ...) {
   sqrt(variance(x, ...))
+}
+
+#' Components of the variance of a potential impact fraction
+#'
+#' Splits the delta-method variance of a potential impact fraction (or
+#' population attributable fraction) into the part due to the uncertainty
+#' in the exposure prevalences `p`, the part due to the uncertainty in the
+#' relative-risk parameters `beta`, and, for totals and ensembles, the part
+#' due to the uncertainty in the `weights`.
+#'
+#' @param x A potential impact fraction created with [pif()], [paf()],
+#' [pif_total()], [pif_ensemble()] or their `paf` counterparts.
+#'
+#' @param ... Not used.
+#'
+#' @details
+#' As the prevalences and the relative risks are estimated independently, the
+#' variance of the fraction is the sum of a prevalence component and a
+#' relative-risk component:
+#' \deqn{
+#' \text{Var}\big(\widehat{\textrm{PIF}}\big) \approx
+#' \nabla_p \textrm{PIF}^{\top} \Sigma_p \nabla_p \textrm{PIF} +
+#' \nabla_\beta \textrm{PIF}^{\top} \Sigma_\beta \nabla_\beta \textrm{PIF}.
+#' }
+#' Comparing both components shows whether a more precise exposure survey or a
+#' more precise relative risk would most reduce the uncertainty of the fraction.
+#' For totals and ensembles the remaining variance (from `var_weights` and
+#' `var_pif_weights`) is reported as the `weights` component. Components are
+#' on the scale of the fraction (not of the link) and add up to
+#' [variance()].
+#'
+#' @returns A named numeric vector with entries `p`, `beta` and `weights`.
+#'
+#' @examples
+#' my_pif <- pif(p = 0.085, p_cft = function(p) 0.85 * p, beta = log(1.59),
+#'               var_p = 0.01^2, var_beta = 0.165^2, quiet = TRUE)
+#' variance_components(my_pif)
+#'
+#' # Share of the variance due to each source
+#' variance_components(my_pif) / variance(my_pif)
+#'
+#' @seealso [variance()], [standard_deviation()]
+#' @export
+variance_components <- S7::new_generic("variance_components", "x")
+S7::method(variance_components, S7::new_union(pif_global_ensemble_class, pif_atomic_class)) <- function(x, ...) {
+
+  #Remove one source of uncertainty at a time by giving it a zero covariance
+  zero_structure <- covariance_structure2(x, x, warning = FALSE)
+
+  total   <- variance(x)
+  no_p    <- cov_total_pif(x, x, var_p = zero_structure, warning = FALSE)
+  no_beta <- cov_total_pif(x, x, var_beta = zero_structure, warning = FALSE)
+
+  p_component    <- total - no_p
+  beta_component <- total - no_beta
+
+  #Atomic fractions have no weights
+  if (S7::S7_inherits(x, pif_atomic_class)){
+    weights_component <- 0
+  } else {
+    weights_component <- no_p + no_beta - total
+    if (abs(weights_component) < sqrt(.Machine$double.eps) * abs(total)){
+      weights_component <- 0
+    }
+  }
+
+  c(p = p_component, beta = beta_component, weights = weights_component)
 }
 
 

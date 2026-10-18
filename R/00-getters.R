@@ -123,7 +123,8 @@ get_variance_atomic <- function(self) {
     var_p = self@var_p,
     var_beta = self@var_beta,
     upper_bound_p = self@upper_bound_p,
-    upper_bound_beta = self@upper_bound_beta
+    upper_bound_beta = self@upper_bound_beta,
+    p_cft_jacobian = self@p_cft_jacobian
   )
 }
 

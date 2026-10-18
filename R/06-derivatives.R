@@ -4,11 +4,18 @@
 #' with respect to the parameters `p` or `beta`.
 #'
 #' @inheritParams pifpaf
+#' @param p Prevalence (proportion) of the exposed individuals for
+#' each of the `N` exposure levels.
 #' @param rr The relative risk for each of the exposure levels.
 #' @param rr_link_deriv_vals The derivative of the relative risk function `g`
 #' with respect to the parameter `beta` evaluated at `beta`.
 #' @param mu_obs The average value of the relative risk in the observed population.
 #' @param mu_cft The average value of the counterfactual relative risk in the population.
+#' @param p_cft_jacobian (Optional) Jacobian of the counterfactual prevalence
+#' `p_cft` with respect to `p` when the counterfactual is a function of the
+#' observed prevalence (for example a relative reduction `p_cft = 0.85 * p`).
+#' Entry `[j, i]` is the derivative of `p_cft[j]` with respect to `p[i]`.
+#' `NULL` (default) assumes `p_cft` is a fixed target.
 #'
 #' @return The partial derivative (usually a vector)
 #'
@@ -18,6 +25,10 @@
 #' \dfrac{\partial \textrm{PIF}}{\partial p} =
 #' \dfrac{\mu^{\text{cft}}}{\big(\mu^{\text{obs}}\big)^2} \cdot \big( \text{RR}(\beta) - 1\big)
 #' }
+#' If the counterfactual is a function of the prevalence, \eqn{p_{*} = g(p)},
+#' the total derivative adds the term
+#' \eqn{- J_g^{\top} \big( \text{RR}(\beta) - 1\big) / \mu^{\text{obs}}}
+#' where \eqn{J_g} is the Jacobian of \eqn{g} evaluated at \eqn{p}.
 #' The partial derivative of `PIF` with respect to `beta` is:
 #' \deqn{
 #' \dfrac{\partial \textrm{PIF}}{\partial \beta} =
@@ -39,7 +50,8 @@ NULL
 
 #' @rdname derivatives
 #' @export
-deriv_pif_p <- function(p, p_cft, rr, mu_obs = NULL, mu_cft = NULL) {
+deriv_pif_p <- function(p, p_cft, rr, mu_obs = NULL, mu_cft = NULL,
+                        p_cft_jacobian = NULL) {
 
   if (any(p < 0)){
     cli::cli_abort(
@@ -74,7 +86,14 @@ deriv_pif_p <- function(p, p_cft, rr, mu_obs = NULL, mu_cft = NULL) {
   }
 
   # The derivative of pif
-  (mu_cft / (mu_obs)^2) * (rr - 1)
+  deriv_p <- (mu_cft / (mu_obs)^2) * (rr - 1)
+
+  # Add the change in the counterfactual if it is a function of p
+  if (!is.null(p_cft_jacobian)){
+    deriv_p <- deriv_p - as.numeric(t(p_cft_jacobian) %*% (rr - 1)) / mu_obs
+  }
+
+  deriv_p
 }
 
 #' Partial derivative of PIF respect to beta
