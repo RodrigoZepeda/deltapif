@@ -20,6 +20,7 @@ The object as a list
 ## Examples
 
 ``` r
+
 #FOR POTENTIAL IMPACT FRACTIONS
 #------------------------------------------------------------------------
 #Potential impact fraction for women

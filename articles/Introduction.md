@@ -1,6 +1,7 @@
 # Introduction
 
 ``` r
+
 library(deltapif)
 ```
 
@@ -70,6 +71,7 @@ The point estimate of the PAF can be calculated using [Levin’s
 formula](https://doi.org/10.1016/j.gloepi.2021.100062):
 
 ``` r
+
 library(deltapif)
 
 paf(p = 0.085, beta = log(1.59), quiet = TRUE)
@@ -88,6 +90,7 @@ interval following the [Cochrane
 Handbook](https://www.cochrane.org/authors/handbooks-and-manuals/handbook/current/chapter-06#section-6-3-2):
 
 ``` r
+
 var_log_rr <- ((log(2.20) - log(1.15)) / (2 * 1.96))^2
 var_log_rr
 #> [1] 0.0273848
@@ -100,6 +103,7 @@ relative risk by exponentiating the log. Since the prevalence variance
 was not reported, we assume `var_p = 0`.
 
 ``` r
+
 paf_dementia <- paf(
   p         = 0.085, 
   beta      = log(1.59), 
@@ -124,6 +128,7 @@ also considered a scenario reducing smoking prevalence by 15% (from 8.5%
 to 7.225%). The PIF for this intervention is:
 
 ``` r
+
 lee_pif <- pif(
   p        = 0.085, 
   p_cft    = 0.085 * (1 - 0.15), # 15% reduction
@@ -156,6 +161,7 @@ smoking by 15% assuming the prevalence of smoking is identical to the
 rest of the US is given by:
 
 ``` r
+
 averted_cases(426.5, lee_pif, variance = 2647.005)
 #> 
 #> ── Averted cases: [deltapif-243726361121953] ──
@@ -168,6 +174,7 @@ Attributable cases can likewise be estimated using the previous `paf`
 as:
 
 ``` r
+
 attributable_cases(426.5, paf_dementia, variance = 2647.005)
 #> 
 #> ── Attributable cases: [deltapif-025531705484526] ──
@@ -184,6 +191,7 @@ fraction by specifying the distribution of the subgroups in the
 population:
 
 ``` r
+
 paf_men   <- paf(p = 0.41, beta = 0.31, var_p = 0.001,
                  var_beta = 0.14,
                  label = "Men")
@@ -195,6 +203,7 @@ paf_women <- paf(p = 0.37, beta = 0.35, var_p = 0.001,
 Assuming the distribution is 51% women and 49% men:
 
 ``` r
+
 paf_total(paf_men, paf_women, weights = c(0.49, 0.51))
 #> 
 #> ── Population Attributable Fraction: [deltapif-000557128674616073] ──
@@ -219,6 +228,7 @@ example the fraction of exposure to lead and the fraction of exposure to
 asbestus:
 
 ``` r
+
 paf_lead  <- paf(p = 0.41, beta = 0.31, var_p = 0.001,
                  var_beta = 0.014,
                  label = "Lead")
@@ -232,6 +242,7 @@ calculated by multiplying the inverse of the fractions, assuming a
 commonality correction (say of `c(0.1, 0.2)`):
 
 ``` r
+
 paf_ensemble(paf_lead, paf_absts, weights = c(0.1, 0.2))
 #> 
 #> ── Population Attributable Fraction: [deltapif-15123996512628] ──
@@ -272,6 +283,7 @@ The adjusted fractions can be calculated with the `weighted_adjusted`
 as:
 
 ``` r
+
 weighted_adjusted_paf(paf_lead, paf_absts, weights = c(0.2, 0.3))
 #> $Lead
 #> 
@@ -304,12 +316,10 @@ the 50 US States and 3142 Counties: A Population Estimate Using the 2020
 Bridged-Race Postcensal from the National Center for Health Statistics.”
 *Alzheimer’s & Dementia* 19: e074430.
 
-Lee, Mark, Eric Whitsel, Christy Avery, Timothy M Hughes, Michael E
-Griswold, Sanaz Sedaghat, Rebecca F Gottesman, Thomas H Mosley, Gerardo
-Heiss, and Pamela L Lutsey. 2022. “Variation in Population Attributable
-Fraction of Dementia Associated with Potentially Modifiable Risk Factors
-by Race and Ethnicity in the US.” *JAMA Network Open* 5 (7):
-e2219672–72.
+Lee, Mark, Eric Whitsel, Christy Avery, et al. 2022. “Variation in
+Population Attributable Fraction of Dementia Associated with Potentially
+Modifiable Risk Factors by Race and Ethnicity in the US.” *JAMA Network
+Open* 5 (7): e2219672–72.
 
 Mukadam, Naaheed, Andrew Sommerlad, Jonathan Huntley, and Gill
 Livingston. 2019. “Population Attributable Fractions for Risk Factors

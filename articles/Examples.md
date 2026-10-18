@@ -1,6 +1,7 @@
 # Examples
 
 ``` r
+
 library(deltapif)
 ```
 
@@ -8,7 +9,7 @@ library(deltapif)
 
 ### Example 1: Estimating the PAF for the proportion of dementia attributable to smoking
 
-The article by [M. Lee et al.
+The article by [Lee et al.
 (2022)](https://doi.org/10.1001/jamanetworkopen.2022.19672) estimates
 the PAF of dementia associated with 12 risk factors (`logrr`) in US
 adults. The package includes this data as well as the proportion of
@@ -16,6 +17,7 @@ exposed individuals in the respective race column (Hispanic, Asian,
 Black and White):
 
 ``` r
+
 data(dementiarisk)
 ```
 
@@ -49,6 +51,7 @@ with variance of
 Among hispanic individuals 6.9% (`p = 0.069`) smoke. Hence their PAF is:
 
 ``` r
+
 paf_hispanic <- paf(p = 0.069, beta = 0.4637340, var_beta = 0.0273858, var_p = 0,
                     rr_link = exp, label = "Hispanic")
 paf_hispanic
@@ -64,6 +67,7 @@ non-hispanic asians, 11.7% of non-hispanic blacks and 8.4% of
 non-hispanic whites smoke:
 
 ``` r
+
 paf_asian <- paf(p = 0.049, beta = 0.4637340, var_beta = 0.0273858, 
                     var_p = 0, rr_link = exp, label = "Asian")
 paf_black <- paf(p = 0.117, beta = 0.4637340, var_beta = 0.0273858, 
@@ -80,6 +84,7 @@ of the population. According to Wikipedia the distribution in 2020 of
 the US population by race was as follows:
 
 ``` r
+
 weights <- c("white" = 0.5784, "hispanic" = 0.1873, 
              "black" = 0.1205, "asian" = 0.0592)
 
@@ -91,6 +96,7 @@ The `paf_total` function computes the aggregated `paf` of the whole
 population:
 
 ``` r
+
 paf_population <- paf_total(paf_white, paf_hispanic, paf_black, 
                             paf_asian, weights = weights, var_weights = 0,
                             label = "All")
@@ -125,6 +131,7 @@ been extended to allow the user to extract information from a `paf` (or
 `pif`):
 
 ``` r
+
 as.data.frame(paf_population)
 #>        value standard_deviation     ci_low      ci_up confidence type label
 #> 1 0.04662895         0.01979259 0.04486196 0.04839268       0.95  PAF   All
@@ -138,6 +145,7 @@ estimate the number of people with Alzheimer’s Disease in New York, USA
 `((452.7 - 400.2) / 2*qnorm(0.975))^2 = 2647.005`.
 
 ``` r
+
 attributable_cases(426.5, paf_population, variance = 2647)
 #> 
 #> ── Attributable cases: [All] ──
@@ -148,15 +156,15 @@ attributable_cases(426.5, paf_population, variance = 2647)
 
 ### Example 3: Estimating the PIF for the proportion of dementia reduced by a 15% reduction in smoking.
 
-[M. Lee et al.
-(2022)](https://doi.org/10.1001/jamanetworkopen.2022.19672) also
-estimates the proportion of dementia cases that would be reduced by a
-15% decrease in smoking prevalence. This 15% reduction corresponds to
+[Lee et al. (2022)](https://doi.org/10.1001/jamanetworkopen.2022.19672)
+also estimates the proportion of dementia cases that would be reduced by
+a 15% decrease in smoking prevalence. This 15% reduction corresponds to
 multiplying the current smoking prevalence by `1 - 0.15 = 0.85`
 specified with the prevalence under the counterfactual (`p_cft`)
 variable:
 
 ``` r
+
 pif_hispanic <- pif(p = 0.069, p_cft = 0.069*0.85, beta = 0.4637340, var_beta = 0.0273858, 
                     var_p = 0, rr_link = exp, label = "Hispanic")
 pif_asian    <- pif(p = 0.049, p_cft = 0.049*0.85, beta = 0.4637340, var_beta = 0.0273858, 
@@ -171,6 +179,7 @@ The total fraction of the overall population can be aggregated with
 `pif_total`:
 
 ``` r
+
 pif_population <- pif_total(pif_white, pif_hispanic, pif_black, 
                             pif_asian, weights = weights, var_weights = 0,
                             label = "All")
@@ -192,6 +201,7 @@ We can use the `as.data.frame` function to create a `data.frame` with
 all of the results:
 
 ``` r
+
 df <- as.data.frame(pif_population, pif_white, pif_black, pif_hispanic, pif_asian)
 df
 #>         value standard_deviation       ci_low       ci_up confidence type
@@ -212,6 +222,7 @@ Averted cases can be calculated with the same number as before with the
 `averted_cases` function:
 
 ``` r
+
 averted_cases(426.5, pif_population, variance = 2647)
 #> 
 #> ── Averted cases: [All] ──
@@ -231,6 +242,7 @@ the intake of alcohol by sex as well as the proportion of individuals in
 each of the intake-categories:
 
 ``` r
+
 data(alcohol)
 ```
 
@@ -255,6 +267,7 @@ for each of the consumption level groups using their median intake as
 follows:
 
 ``` r
+
 #Get alcohol intake for men divided by 10 cause RR is per 10g/day
 alcohol_men_intake <- c(0, 0.8, 1.6, 3.2, 7.1, 12.6, 17.4, 24.5, 34.7, 
                         44.2, 54.4, 85.2) / 10 
@@ -279,6 +292,7 @@ If we want to add uncertainty we can approximate the covariance of the
 relative risk as follows:
 
 ``` r
+
 #Calculate covariance of the betas given by variance*intake_i*intake_j
 beta_sd <- (1.12 - 1.07) / (2*qnorm(0.975))
 beta_var <- matrix(NA, ncol = length(prevalence), nrow = length(prevalence))
@@ -302,6 +316,7 @@ paf_males
 We can repeat the same process for females:
 
 ``` r
+
 #Get alcohol intake for women divided by 10 cause RR is per 10g/day
 alcohol_female_intake <- c(0, 0.8, 1.6, 3.9, 7.1, 12.6, 17.4, 
                            24.5, 34.7, 44.2, 54.4, 78.1) / 10
@@ -338,6 +353,7 @@ The total fraction can be computed with `paf_total` assuming both males
 and females are 50% each of the population:
 
 ``` r
+
 paf_total(paf_males, paf_females, weights = c(0.5, 0.5))
 #> 
 #> ── Population Attributable Fraction: [deltapif-0974069593265456] ──
@@ -352,7 +368,7 @@ paf_total(paf_males, paf_females, weights = c(0.5, 0.5))
 
 ### Example 5: Combining fractions of different risks into an ensemble
 
-M. Lee et al. (2022) combines multiple population attributable fractions
+Lee et al. (2022) combines multiple population attributable fractions
 from different risk exposures can be combined into a single fraction.
 For example, we can create an attributable fraction for **behavioral**
 risk factors by joining the fractions for: smoking, physical inactivity,
@@ -366,6 +382,7 @@ log-relative risk, its standard deviation, and the total proportion of
 individuals exposed (here we highlight the part of the table):
 
 ``` r
+
 data(dementiarisk)
 ```
 
@@ -377,6 +394,7 @@ data(dementiarisk)
 We then calculate the population attributable fraction for each:
 
 ``` r
+
 paf_alcohol  <- paf(p = 0.036, beta = 0.1655144, var_beta = 0.05402095^2, 
                     var_p = 0, label = "Alcohol")
 paf_smoking  <- paf(p = 0.085, beta = 0.4637340, var_beta = 0.16548657^2, 
@@ -406,6 +424,7 @@ communality estimates were:
 hence we can use them as the `weights` argument:
 
 ``` r
+
 paf_ensemble(paf_alcohol, paf_physical, paf_smoking, 
              weights = c(0.038, 0.311, 0.059),
              label = "Behavioural factors")
@@ -425,6 +444,7 @@ Finally, variance among the weights can be implemented with the
 `var_weights` argument providing a variance-covariance matrix:
 
 ``` r
+
 #Variance covariance matrix
 weight_variance <- matrix(
   c( 1.00, 0.21, -0.02, 
@@ -453,7 +473,7 @@ paf_ensemble(paf_alcohol, paf_physical, paf_smoking,
 ### Example 6: Adjusted fractions
 
 Adjusting for communality is a way to discount the contribution of
-correlated risk factors. M. Lee et al. (2022) estimates the adjusted
+correlated risk factors. Lee et al. (2022) estimates the adjusted
 fractions by computing the ensemble fraction as above (lee calls it
 Overall):
 
@@ -473,6 +493,7 @@ adjusting smoking and physical by just changing the numerator of the
 fraction. This can be computed in the package as:
 
 ``` r
+
 #Calculate each of the fractions
 paf_alcohol  <- paf(p = 0.036, beta = 0.1655144, var_beta = 0.05402095^2, 
                     var_p = 0, label = "Alcohol")
@@ -510,12 +531,13 @@ weighted_adjusted_paf(paf_alcohol, paf_smoking, paf_physical, weights = cweights
 
 ### Example 7: Ensuring non-negative fractions
 
-S. Lee et al. (2024) show an example with a relative risk of `rr = 7.0`
+Lee et al. (2024) show an example with a relative risk of `rr = 7.0`
 (log relative risk `1.94591`) and a log-variance of `0.35.` that results
 in a negative confidence interval when applying directly the delta
 method:
 
 ``` r
+
 paf(p = 0.05, beta = 1.94, var_beta = 0.591^2, var_p = 0)
 #> 
 #> ── Population Attributable Fraction: [deltapif-0173820105906731] ──
@@ -528,6 +550,7 @@ The `pif` and `paf` functions contain the `logit` link option for
 guaranteeing positivity in the fraction’s intervals:
 
 ``` r
+
 paf(p = 0.05, beta = 1.94, var_beta = 0.591^2, var_p = 0, link = "logit")
 #> 
 #> ── Population Attributable Fraction: [deltapif-0178812018276085] ──
@@ -559,12 +582,13 @@ To estimate cases we need to:
     population attributable fraction (attributable)
 2.  Use the `averted_cases` (resp. `attributable_cases` function)
 
-We start by calcualting the same fraction as before from [M. Lee et al.
+We start by calcualting the same fraction as before from [Lee et al.
 (2022)](https://doi.org/10.1001/jamanetworkopen.2022.19672). This
 considers the impact on dementia of reducing smoking prevalence by 15%
 (from 8.5% to 7.225%). The PIF for this intervention is:
 
 ``` r
+
 pif_smoking <- pif(
   p        = 0.085, 
   p_cft    = 0.085 * (1 - 0.15), # 15% reduction
@@ -581,6 +605,7 @@ pif_smoking
 ```
 
 ``` r
+
 averted_cases(426.5, pif_smoking, variance = 179.3752)
 #> 
 #> ── Averted cases: [deltapif-0698429449342544] ──
@@ -597,6 +622,7 @@ variance might result in a confidence interval that includes negative
 values:
 
 ``` r
+
 averted_cases(426.5, pif_smoking, variance = 100000)
 #> 
 #> ── Averted cases: [deltapif-0698429449342544] ──
@@ -611,6 +637,7 @@ strictly greater than 1) we can change the link function to `logit` to
 guarantee the interval is always positive:
 
 ``` r
+
 averted_cases(426.5, pif_smoking, variance = 100000, link = "log")
 #> 
 #> ── Averted cases: [deltapif-0698429449342544] ──
@@ -632,6 +659,7 @@ In the following example we used the Hazard Ratio of shingles
 vaccination on dementia by Wu et al:
 
 ``` r
+
 library(EValue)
 
 upper_rr <- HR(0.72, rare = FALSE) |> toRR() |> as.numeric()
@@ -645,6 +673,7 @@ vaccination coverage from the baseline of `p = 0.438` to
 `p_cft = 0.876`:
 
 ``` r
+
 pif(
   p     = 0.438,
   beta  = log(rr_value),
@@ -667,19 +696,16 @@ the 50 US States and 3142 Counties: A Population Estimate Using the 2020
 Bridged-Race Postcensal from the National Center for Health Statistics.”
 *Alzheimer’s & Dementia* 19: e074430.
 
-Lee, Mark, Eric Whitsel, Christy Avery, Timothy M Hughes, Michael E
-Griswold, Sanaz Sedaghat, Rebecca F Gottesman, Thomas H Mosley, Gerardo
-Heiss, and Pamela L Lutsey. 2022. “Variation in Population Attributable
-Fraction of Dementia Associated with Potentially Modifiable Risk Factors
-by Race and Ethnicity in the US.” *JAMA Network Open* 5 (7):
-e2219672–72.
+Lee, Mark, Eric Whitsel, Christy Avery, et al. 2022. “Variation in
+Population Attributable Fraction of Dementia Associated with Potentially
+Modifiable Risk Factors by Race and Ethnicity in the US.” *JAMA Network
+Open* 5 (7): e2219672–72.
 
-Lee, Sangjun, Sungji Moon, Kyungsik Kim, Soseul Sung, Youjin Hong,
-Woojin Lim, and Sue K Park. 2024. “A Comparison of Green, Delta, and
-Monte Carlo Methods to Select an Optimal Approach for Calculating the
-95% Confidence Interval of the Population-Attributable Fraction:
-Guidance for Epidemiological Research.” *Journal of Preventive Medicine
-and Public Health* 57 (5): 499.
+Lee, Sangjun, Sungji Moon, Kyungsik Kim, et al. 2024. “A Comparison of
+Green, Delta, and Monte Carlo Methods to Select an Optimal Approach for
+Calculating the 95% Confidence Interval of the Population-Attributable
+Fraction: Guidance for Epidemiological Research.” *Journal of Preventive
+Medicine and Public Health* 57 (5): 499.
 
 Maya B. Mathur, and Tyler J. VanderWeele. 2019. “Sensitivity Analysis
 for Unmeasured Confounding in Meta-Analyses.” *Journal of the American

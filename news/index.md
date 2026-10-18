@@ -1,5 +1,9 @@
 # Changelog
 
+## deltapif (development version)
+
+- Updates for compatibility with S7 \> 0.2.2.
+
 ## deltapif 0.4.6
 
 - Fixes bug in printing standard deviation of
