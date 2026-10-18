@@ -75,7 +75,7 @@ library(deltapif)
 
 paf(p = 0.085, beta = log(1.59), quiet = TRUE)
 #> 
-#> ── Population Attributable Fraction: [deltapif-0392085470984571] ──
+#> ── Population Attributable Fraction: [deltapif-17731070011194] ──
 #> 
 #> PAF = 4.776% [95% CI: 4.776% to 4.776%]
 #> standard_deviation(paf %) = 0.000
@@ -108,14 +108,19 @@ paf_dementia <- paf(
 )
 paf_dementia
 #> 
-#> ── Population Attributable Fraction: [deltapif-025152816804265] ──
+#> ── Population Attributable Fraction: [deltapif-124946088830436] ──
 #> 
 #> PAF = 4.776% [95% CI: 0.717% to 8.669%]
 #> standard_deviation(paf %) = 2.028
 ```
 
-The results match those reported by Lee et al.: **PAF = 4.9% (95% CI:
-1.3–9.3)**.
+Lee et al. report **PAF = 4.9% (95% CI: 1.3–9.3)**. Their interval was
+obtained by plugging the confidence limits of the relative risk into the
+formula (the substitution method), which ignores the uncertainty of the
+prevalence and, when several fractions are combined, implicitly assumes
+their relative risks are perfectly correlated. The delta-method interval
+above is built on the log-complement scale and is therefore slightly
+different.
 
 ### Potential Impact Fraction (PIF)
 
@@ -133,14 +138,14 @@ lee_pif <- pif(
 )
 lee_pif
 #> 
-#> ── Potential Impact Fraction: [deltapif-0440089997377483] ──
+#> ── Potential Impact Fraction: [deltapif-0868565506412345] ──
 #> 
 #> PIF = 0.716% [95% CI: 0.118% to 1.311%]
 #> standard_deviation(pif %) = 0.304
 ```
 
-This result is consistent with the reported estimate: **PIF = 0.7% (95%
-CI: 0.2–1.4)**.
+This result is close to the estimate reported by Lee et al. with the
+substitution method: **PIF = 0.7% (95% CI: 0.2–1.4)**.
 
 ### Attributable and averted cases
 
@@ -158,7 +163,7 @@ rest of the US is given by:
 ``` r
 averted_cases(426.5, lee_pif, variance = 179.3752)
 #> 
-#> ── Averted cases: [deltapif-0440089997377483] ──
+#> ── Averted cases: [deltapif-0868565506412345] ──
 #> 
 #> Averted cases = 3.055 [95% CI: 0.504 to 5.606]
 #> standard_deviation(averted cases) = 1.302
@@ -170,7 +175,7 @@ as:
 ``` r
 attributable_cases(426.5, paf_dementia, variance = 179.3752)
 #> 
-#> ── Attributable cases: [deltapif-025152816804265] ──
+#> ── Attributable cases: [deltapif-124946088830436] ──
 #> 
 #> Attributable cases = 20.368 [95% CI: 3.360 to 37.375]
 #> standard_deviation(attributable cases) = 8.677
@@ -197,7 +202,7 @@ Assuming the distribution is 51% women and 49% men:
 ``` r
 paf_total(paf_men, paf_women, weights = c(0.49, 0.51))
 #> 
-#> ── Population Attributable Fraction: [deltapif-112502709114089] ──
+#> ── Population Attributable Fraction: [deltapif-18365508705933] ──
 #> 
 #> PAF = 13.201% [95% CI: -11.745% to 32.577%]
 #> standard_deviation(paf %) = 11.187
@@ -234,7 +239,7 @@ commonalities of `0.1` and `0.2` (see below):
 ``` r
 paf_ensemble(paf_lead, paf_absts, weights = c(0.9, 0.8))
 #> 
-#> ── Population Attributable Fraction: [deltapif-100735625490394] ──
+#> ── Population Attributable Fraction: [deltapif-0195026297976528] ──
 #> 
 #> PAF = 18.020% [95% CI: 9.287% to 26.753%]
 #> standard_deviation(paf %) = 4.456

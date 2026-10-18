@@ -34,7 +34,7 @@ dementiarisk <- df_prevalence |>
   mutate(logrr = log(RR)) |>
   mutate(sdlog = (log(upper_CI) - log(lower_CI)) / (2*qnorm(0.975))) |>
   select(risk_factor, RR, lower_CI, upper_CI, logrr, sdlog, everything()) |>
-  select(-communality)
+  relocate(communality, .after = everything())
 
 usethis::use_data(dementiarisk, overwrite = TRUE)
 
@@ -44,7 +44,9 @@ risk_factors <- c("Less education", "Hearing loss", "TBI", "Hypertension",
                   "Social isolation", "Physical inactivity", "Diabetes",
                   "Air pollution")
 
-# Create the correlation matrix
+# Pairwise tetrachoric correlations between the risk factors (exposures) in
+# ARIC from eTable 2 of the supplement of Lee et al. These were used to
+# compute the communality of each risk factor
 cor_matrix <- matrix(c(
   1.00, 0.11, -0.15, 0.25, -0.06, 0.18, 0.10, 0.31, 0.24, 0.16, 0.22, 0.52,
   0.11, 1.00, 0.09, -0.02, 0.09, 0.01, 0.03, 0.00, -0.09, 0.05, 0.01, -0.08,
@@ -64,28 +66,5 @@ cor_matrix <- matrix(c(
 rownames(cor_matrix) <- risk_factors
 colnames(cor_matrix) <- risk_factors
 
-cov_df <- as.data.frame(cor_matrix) |>
-  mutate(risk_factor = colnames(cor_matrix)) |>
-  left_join(
-    dementiarisk |>
-      select(risk_factor, sdlog)
-  ) |>
-  rename(risk_factor_1 = risk_factor) |>
-  rename(sd1 = sdlog) |>
-  pivot_longer(cols =  `Less education`:`Air pollution`,
-               names_to = "risk_factor_2", values_to = "correlation") |>
-  left_join(
-    dementiarisk |>
-      select(risk_factor, sdlog),
-    by = c("risk_factor_2" = "risk_factor")
-  ) |>
-  rename(sd2 = sdlog) |>
-  mutate(covariance = correlation*sd1*sd2) |>
-  select(risk_factor_1, risk_factor_2, covariance) |>
-  pivot_wider(id_cols = risk_factor_1, names_from = risk_factor_2, values_from = covariance) |>
-  select(-risk_factor_1) |>
-  as.matrix()
-rownames(cov_df) <- colnames(cov_df)
-dementiacov <- cov_df
-usethis::use_data(dementiacov, overwrite = TRUE)
-
+dementiacor <- cor_matrix
+usethis::use_data(dementiacor, overwrite = TRUE)

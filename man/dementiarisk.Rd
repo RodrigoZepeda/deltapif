@@ -5,7 +5,7 @@
 \alias{dementiarisk}
 \title{Exposure and Relative Risk data from Lee et Al}
 \format{
-A data frame with 12 rows and 11 columns:
+A data frame with 12 rows and 12 columns:
 
 \describe{
 \item{risk_factor}{The risk factor for dementia}
@@ -13,11 +13,14 @@ A data frame with 12 rows and 11 columns:
 \item{lower_CI, upper_CI}{Lower and upper bounds for the 95\% confidence interval}
 \item{logrr}{The logarithm of the relative risk \code{log(RR)}}
 \item{sdlog}{The standard deviation (standard error) of the logarithm of the relative risk \code{sd(log(RR))}}
-\item{total}{The proportion of individuals exposed in the overall population}
-\item{hispanic}{The proportion of hispanic individuals exposed}
-\item{asian}{The proportion of non-hispanic asian individuals exposed}
-\item{black}{The proportion of non-hispanic black individuals exposed}
-\item{white}{The proportion of non-hispanic white individuals exposed}
+\item{total}{The percentage (\%) of individuals exposed in the overall population}
+\item{hispanic}{The percentage (\%) of hispanic individuals exposed}
+\item{asian}{The percentage (\%) of non-hispanic asian individuals exposed}
+\item{black}{The percentage (\%) of non-hispanic black individuals exposed}
+\item{white}{The percentage (\%) of non-hispanic white individuals exposed}
+\item{communality}{Communality (\%) of the risk factor with the other risk
+factors (Table 2 of Lee et al.). The communality weight used to combine
+fractions is \code{1 - communality / 100}.}
 }
 }
 \usage{
@@ -32,6 +35,6 @@ of dementia associated with potentially modifiable risk factors by race
 and ethnicity in the US." JAMA network open 5.7 (2022): e2219672-e2219672.
 }
 \seealso{
-\link{dementiacov} for the covariance between the risk factors
+\link{dementiacor} for the correlation between the risk factors
 }
 \keyword{datasets}

@@ -85,7 +85,7 @@ paf_dementia <- paf(
 paf_dementia
 ```
 
-The results match those reported by Lee et al.: **PAF = 4.9% (95% CI: 1.3–9.3)**.
+Lee et al. report **PAF = 4.9% (95% CI: 1.3–9.3)**. Their interval was obtained by plugging the confidence limits of the relative risk into the formula (the substitution method), which ignores the uncertainty of the prevalence and, when several fractions are combined, implicitly assumes their relative risks are perfectly correlated. The delta-method interval above is built on the log-complement scale and is therefore slightly different.
 
 ### Potential Impact Fraction (PIF)
 
@@ -102,7 +102,7 @@ lee_pif <- pif(
 lee_pif
 ```
 
-This result is consistent with the reported estimate: **PIF = 0.7% (95% CI: 0.2–1.4)**.
+This result is close to the estimate reported by Lee et al. with the substitution method: **PIF = 0.7% (95% CI: 0.2–1.4)**.
 
 #### Fixed targets and relative reductions
 

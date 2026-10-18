@@ -1,5 +1,18 @@
 # deltapif 0.4.6
 
+* **`dementiacov` is replaced by `dementiacor`.** The former was built from the
+pairwise tetrachoric correlations between the dementia risk factors (exposures)
+in ARIC (eTable 2 of Lee et al.) multiplied by the standard errors of the log
+relative risks, so it was not a covariance between relative-risk estimates.
+`dementiacor` contains the published correlations themselves, documented as
+correlations between exposures.
+
+* `dementiarisk` gains a `communality` column (%, Table 2 of Lee et al.).
+Its documentation now states that the prevalence columns are percentages. The
+vignettes previously used the ARIC exposure prevalences of smoking, excessive
+alcohol and physical inactivity (5.9%, 3.8% and 31.1%) as if they were
+communalities; they now use the published communalities.
+
 * **Shared parameters are now declared explicitly (behaviour change).** `p` and
 `beta` in `pif()`/`paf()` can be given as a named list with one element, e.g.
 `beta = list("smoking_dementia" = 0.46)` or `p = list("447" = c(0.12, 0.87))`.

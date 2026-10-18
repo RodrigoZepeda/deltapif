@@ -329,18 +329,19 @@ $$
 \textrm{PAF}_{\text{Ensemble}} = 1 - (1 - w_1 \cdot\textrm{PAF}_{\text{Alcohol}})\cdot (1 - w_2 \cdot\textrm{PAF}_{\text{Smoking}})\cdot (1 - w_3\cdot \textrm{PAF}_{\text{Physical}})
 $$
 
-where the weights are set to 1 for independent risks or are calculated via a communality correction as `w = 1 - communality`. In the case of this paper the communality estimates were:
+where the weights are set to 1 for independent risks or are calculated via a communality correction as `w = 1 - communality`. In the case of this paper the communality estimates (Table 2 of @lee, available in the `communality` column of `dementiarisk`) were:
 
-+ **Physical inactivity:** 31.1
++ **Physical inactivity:** 30.0%
 
-+ **Smoking:** 5.9
++ **Smoking:** 63.5%
 
-+ **Excessive alcohol:** 3.8
++ **Excessive alcohol:** 59.8%
 
 hence the `weights` argument is `1 - communality` (in the same order as the fractions):
 
 ```{r}
-communality <- c(0.038, 0.311, 0.059) #Alcohol, physical inactivity, smoking
+risk_factors <- c("Excessive alcohol", "Physical inactivity", "Smoking")
+communality  <- dementiarisk$communality[match(risk_factors, dementiarisk$risk_factor)] / 100
 paf_ensemble(paf_alcohol, paf_physical, paf_smoking, 
              weights = 1 - communality,
              label = "Behavioural factors")
@@ -390,7 +391,8 @@ paf_physical <- paf(p = 0.628, beta = 0.3293037, var_beta = 0.09296182^2,
                     var_p = 0, label = "Physical Activity")
 
 #Get the communality weights in the same order as the fractions
-communality <- c(0.038, 0.059, 0.311) #Alcohol, smoking, physical inactivity
+risk_factors <- c("Excessive alcohol", "Smoking", "Physical inactivity")
+communality  <- dementiarisk$communality[match(risk_factors, dementiarisk$risk_factor)] / 100
 
 #Calculate the adjusted versions
 weighted_adjusted_paf(paf_alcohol, paf_smoking, paf_physical, weights = 1 - communality)
