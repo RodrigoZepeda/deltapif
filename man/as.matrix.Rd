@@ -3,6 +3,10 @@
 \name{as.matrix}
 \alias{as.matrix}
 \title{Convert a \code{covariance_structure} to \code{matrix}}
+\usage{
+## S7 method for class <deltapif::covariance_structure_class>
+\special{as.matrix(x, default = NA, ...)}
+}
 \arguments{
 \item{x}{A \code{covariance_structure}}
 

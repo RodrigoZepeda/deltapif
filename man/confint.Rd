@@ -3,12 +3,19 @@
 \name{confint}
 \alias{confint}
 \title{Extract confidence intervals}
+\usage{
+## S7 method for class <deltapif::pif_class>
+\special{confint(object, ..., level = object@conf_level)}
+
+## S7 method for class <deltapif::cases_class>
+\special{confint(object, ..., level = object@conf_level)}
+}
 \arguments{
 \item{object}{A \code{pif_class} or a \code{cases_class}.}
 
-\item{level}{Level of confidence desired.}
-
 \item{...}{Additional parameters to pass to \code{confint} (ignored)}
+
+\item{level}{Level of confidence desired.}
 }
 \value{
 A vector containing the lower and upper bounds of the

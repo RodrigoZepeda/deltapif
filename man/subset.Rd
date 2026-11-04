@@ -3,6 +3,10 @@
 \name{subset}
 \alias{subset}
 \title{Subset a \code{covariance_structure}}
+\usage{
+## S7 method for class <deltapif::covariance_structure_class>
+\special{subset(x, select = NULL, cols = NULL, rows = NULL, negate = FALSE, ...)}
+}
 \arguments{
 \item{x}{A \code{covariance_structure}}
 

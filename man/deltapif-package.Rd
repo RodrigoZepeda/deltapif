@@ -20,6 +20,11 @@ Useful links:
 \author{
 \strong{Maintainer}: Rodrigo Zepeda-Tello \email{rzepeda17@gmail.com}
 
+Authors:
+\itemize{
+  \item Rodrigo Zepeda-Tello \email{rzepeda17@gmail.com}
+}
+
 Other contributors:
 \itemize{
   \item Tomasz Kalinowski [contributor]

@@ -366,6 +366,8 @@ default_parameter_covariance_structure <- function(pif, parameter = "p", is_vari
   cov_str
 }
 
+#' @rdname covariance_structures
+#' @export
 default_parameter_covariance_structure2 <- function(pif1, pif2, parameter = "p", warning = TRUE){
 
   #Create a fake parent name
