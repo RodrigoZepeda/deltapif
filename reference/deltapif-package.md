@@ -17,6 +17,10 @@ Useful links:
 
 **Maintainer**: Rodrigo Zepeda-Tello <rzepeda17@gmail.com>
 
+Authors:
+
+- Rodrigo Zepeda-Tello <rzepeda17@gmail.com>
+
 Other contributors:
 
 - Tomasz Kalinowski \[contributor\]

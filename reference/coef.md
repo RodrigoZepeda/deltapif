@@ -2,6 +2,16 @@
 
 Gets the potential impact fraction value
 
+## Usage
+
+``` r
+## S7 method for class <deltapif::pif_class>
+coef(object, ...)
+
+## S7 method for class <deltapif::cases_class>
+coef(object, ...)
+```
+
 ## Arguments
 
 - object:

@@ -4,11 +4,20 @@ Function to print or show a potential impact fraction object
 
 Function to print an object
 
+## Usage
+
+``` r
+## S7 method for class <deltapif::pif_class>
+print(x, ..., accuracy = 0.001)
+
+## S7 method for class <deltapif::cases_class>
+print(x, ..., accuracy = 0.001)
+
+## S7 method for class <deltapif::covariance_structure_class>
+print(x, ..., quote = FALSE)
+```
+
 ## Arguments
-
-- accuracy:
-
-  The accuracy of the printed value
 
 - x:
 
@@ -17,6 +26,10 @@ Function to print an object
 - ...:
 
   Additional arguments to pass to `print`
+
+- accuracy:
+
+  The accuracy of the printed value
 
 ## Value
 

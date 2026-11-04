@@ -2,6 +2,13 @@
 
 Transforms a `covariance_structure` into a `matrix`.
 
+## Usage
+
+``` r
+## S7 method for class <deltapif::covariance_structure_class>
+as.matrix(x, default = NA, ...)
+```
+
 ## Arguments
 
 - x:

@@ -6,6 +6,16 @@ or the cases
 ([`averted_cases()`](https://rodrigozepeda.github.io/deltapif/reference/casecalc.md)/[`attributable_cases()`](https://rodrigozepeda.github.io/deltapif/reference/casecalc.md))
 and transforms them into a `data.frame`.
 
+## Usage
+
+``` r
+## S7 method for class <deltapif::pif_class>
+as.data.frame(x, ..., level = 0.95)
+
+## S7 method for class <deltapif::cases_class>
+as.data.frame(x, ..., level = 0.95)
+```
+
 ## Arguments
 
 - x:

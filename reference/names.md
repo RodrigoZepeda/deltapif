@@ -3,6 +3,16 @@
 Gets the label of a potential impact fraction or a population
 attributable fraction
 
+## Usage
+
+``` r
+## S7 method for class <deltapif::pif_class>
+names(x, ...)
+
+## S7 method for class <deltapif::pif_global_ensemble_class>
+names(x, ...)
+```
+
 ## Arguments
 
 - x:

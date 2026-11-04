@@ -2,6 +2,13 @@
 
 Gets the weights of a `pif_global_ensemble` object
 
+## Usage
+
+``` r
+## S7 method for class <deltapif::pif_global_ensemble_class>
+weights(object, ...)
+```
+
 ## Arguments
 
 - object:

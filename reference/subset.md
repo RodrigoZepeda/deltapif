@@ -3,6 +3,13 @@
 Obtains a smaller `covariance_structure` with the entries given by the
 `select` option as a vector.
 
+## Usage
+
+``` r
+## S7 method for class <deltapif::covariance_structure_class>
+subset(x, select = NULL, cols = NULL, rows = NULL, negate = FALSE, ...)
+```
+
 ## Arguments
 
 - x:

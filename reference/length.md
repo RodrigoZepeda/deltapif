@@ -2,6 +2,19 @@
 
 Gets the length of a covariance structure or a `pif_class`
 
+## Usage
+
+``` r
+## S7 method for class <deltapif::covariance_structure_class>
+length(x)
+
+## S7 method for class <deltapif::pif_global_ensemble_class>
+length(x)
+
+## S7 method for class <deltapif::pif_atomic_class>
+length(x)
+```
+
 ## Arguments
 
 - x:

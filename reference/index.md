@@ -5,13 +5,13 @@
 - [`alcohol`](https://rodrigozepeda.github.io/deltapif/reference/alcohol.md)
   : Alcohol consumption in Australia from Pandeya et al
 
-- [`as.data.frame`](https://rodrigozepeda.github.io/deltapif/reference/as.data.frame.md)
+- [`as.data.frame()`](https://rodrigozepeda.github.io/deltapif/reference/as.data.frame.md)
   : Transform an object into a data.frame
 
-- [`as.list`](https://rodrigozepeda.github.io/deltapif/reference/as.list.md)
+- [`as.list()`](https://rodrigozepeda.github.io/deltapif/reference/as.list.md)
   : Convert to list
 
-- [`as.matrix`](https://rodrigozepeda.github.io/deltapif/reference/as.matrix.md)
+- [`as.matrix()`](https://rodrigozepeda.github.io/deltapif/reference/as.matrix.md)
   :
 
   Convert a `covariance_structure` to `matrix`
@@ -34,10 +34,10 @@
 
   Get the children labels from a `pif_class`
 
-- [`coef`](https://rodrigozepeda.github.io/deltapif/reference/coef.md) :
-  Extract coefficients of a pif object
+- [`coef()`](https://rodrigozepeda.github.io/deltapif/reference/coef.md)
+  : Extract coefficients of a pif object
 
-- [`confint`](https://rodrigozepeda.github.io/deltapif/reference/confint.md)
+- [`confint()`](https://rodrigozepeda.github.io/deltapif/reference/confint.md)
   : Extract confidence intervals
 
 - [`covariance_structure_class()`](https://rodrigozepeda.github.io/deltapif/reference/covariance_structure_class.md)
@@ -78,29 +78,29 @@
 - [`fraction_type()`](https://rodrigozepeda.github.io/deltapif/reference/fraction_type.md)
   : Get the type of the fraction
 
-- [`length`](https://rodrigozepeda.github.io/deltapif/reference/length.md)
+- [`length()`](https://rodrigozepeda.github.io/deltapif/reference/length.md)
   : Length of an object
 
-- [`names`](https://rodrigozepeda.github.io/deltapif/reference/names.md)
+- [`names()`](https://rodrigozepeda.github.io/deltapif/reference/names.md)
   : Get the label of a PIF or PAF
 
 - [`paf()`](https://rodrigozepeda.github.io/deltapif/reference/pifpaf.md)
   [`pif()`](https://rodrigozepeda.github.io/deltapif/reference/pifpaf.md)
   : Potential Impact fraction and Population Attributable Fraction
 
-- [`print`](https://rodrigozepeda.github.io/deltapif/reference/print.md)
+- [`print()`](https://rodrigozepeda.github.io/deltapif/reference/print.md)
   : Print or show a potential impact fraction
 
 - [`row_names()`](https://rodrigozepeda.github.io/deltapif/reference/rowcol.md)
   [`col_names()`](https://rodrigozepeda.github.io/deltapif/reference/rowcol.md)
   : Row and Column names
 
-- [`subset`](https://rodrigozepeda.github.io/deltapif/reference/subset.md)
+- [`subset()`](https://rodrigozepeda.github.io/deltapif/reference/subset.md)
   :
 
   Subset a `covariance_structure`
 
-- [`summary`](https://rodrigozepeda.github.io/deltapif/reference/summary.md)
+- [`summary()`](https://rodrigozepeda.github.io/deltapif/reference/summary.md)
   : Summary of an object
 
 - [`paf_total()`](https://rodrigozepeda.github.io/deltapif/reference/totalpifpaf.md)
@@ -117,5 +117,5 @@
   [`weighted_adjusted_pif()`](https://rodrigozepeda.github.io/deltapif/reference/weighted_adjusted.md)
   : Weighted Adjusted Fractions
 
-- [`weights`](https://rodrigozepeda.github.io/deltapif/reference/weights.md)
+- [`weights()`](https://rodrigozepeda.github.io/deltapif/reference/weights.md)
   : Extract weights of a pif_global_ensemble

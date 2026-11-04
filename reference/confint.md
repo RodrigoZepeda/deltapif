@@ -2,19 +2,29 @@
 
 Gets the confidence interval for any fraction or cases.
 
+## Usage
+
+``` r
+## S7 method for class <deltapif::pif_class>
+confint(object, ..., level = object@conf_level)
+
+## S7 method for class <deltapif::cases_class>
+confint(object, ..., level = object@conf_level)
+```
+
 ## Arguments
 
 - object:
 
   A `pif_class` or a `cases_class`.
 
-- level:
-
-  Level of confidence desired.
-
 - ...:
 
   Additional parameters to pass to `confint` (ignored)
+
+- level:
+
+  Level of confidence desired.
 
 ## Value
 

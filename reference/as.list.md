@@ -2,6 +2,16 @@
 
 Converts the object into a list.
 
+## Usage
+
+``` r
+## S7 method for class <deltapif::covariance_structure_class>
+as.list(x, ...)
+
+## S7 method for class <deltapif::pif_class>
+as.list(x, ...)
+```
+
 ## Arguments
 
 - x:

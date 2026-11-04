@@ -2,6 +2,16 @@
 
 Gets the point-estimate and confidence interval of an object
 
+## Usage
+
+``` r
+## S7 method for class <deltapif::pif_class>
+summary(object, level = object@conf_level, ...)
+
+## S7 method for class <deltapif::cases_class>
+summary(object, level = object@conf_level, ...)
+```
+
 ## Arguments
 
 - object:
