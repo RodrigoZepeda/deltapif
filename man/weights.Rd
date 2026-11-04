@@ -3,6 +3,10 @@
 \name{weights}
 \alias{weights}
 \title{Extract weights of a pif_global_ensemble}
+\usage{
+## S7 method for class <deltapif::pif_global_ensemble_class>
+\special{weights(object, ...)}
+}
 \arguments{
 \item{object}{A \code{pif_global_ensemble} object.}
 

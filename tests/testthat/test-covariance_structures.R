@@ -204,3 +204,15 @@ test_that("total pif covariance structures work end-to-end", {
   expect_true(is.list(default_parameter_covariance_structure(tot, parameter = "p")@cov_list))
   expect_true(is.list(default_parameter_covariance_structure(tot, parameter = "beta")@cov_list))
 })
+
+test_that("The default covariance structure functions are exported", {
+  structures <- c("default_parameter_covariance_structure",
+                  "default_parameter_covariance_structure2",
+                  "default_pif_covariance_structure",
+                  "default_pif_covariance_structure2",
+                  "default_weight_covariance_structure",
+                  "default_weight_covariance_structure2",
+                  "default_weight_pif_covariance_structure",
+                  "default_weight_pif_covariance_structure2")
+  expect_true(all(structures %in% getNamespaceExports("deltapif")))
+})

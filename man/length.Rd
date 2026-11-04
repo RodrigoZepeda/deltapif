@@ -3,6 +3,16 @@
 \name{length}
 \alias{length}
 \title{Length of an object}
+\usage{
+## S7 method for class <deltapif::covariance_structure_class>
+\special{length(x)}
+
+## S7 method for class <deltapif::pif_global_ensemble_class>
+\special{length(x)}
+
+## S7 method for class <deltapif::pif_atomic_class>
+\special{length(x)}
+}
 \arguments{
 \item{x}{A \code{pif_class} or a \code{covariance_structure}}
 }

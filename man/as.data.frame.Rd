@@ -3,6 +3,13 @@
 \name{as.data.frame}
 \alias{as.data.frame}
 \title{Transform an object into a data.frame}
+\usage{
+## S7 method for class <deltapif::pif_class>
+\special{as.data.frame(x, ..., level = 0.95)}
+
+## S7 method for class <deltapif::cases_class>
+\special{as.data.frame(x, ..., level = 0.95)}
+}
 \arguments{
 \item{x}{A \code{pif_class} or \code{cases_class} object.}
 

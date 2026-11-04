@@ -3,6 +3,13 @@
 \name{summary}
 \alias{summary}
 \title{Summary of an object}
+\usage{
+## S7 method for class <deltapif::pif_class>
+\special{summary(object, level = object@conf_level, ...)}
+
+## S7 method for class <deltapif::cases_class>
+\special{summary(object, level = object@conf_level, ...)}
+}
 \arguments{
 \item{object}{A \code{pif_class} or \code{cases_class} object.}
 

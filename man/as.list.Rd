@@ -3,6 +3,13 @@
 \name{as.list}
 \alias{as.list}
 \title{Convert to list}
+\usage{
+## S7 method for class <deltapif::covariance_structure_class>
+\special{as.list(x, ...)}
+
+## S7 method for class <deltapif::pif_class>
+\special{as.list(x, ...)}
+}
 \arguments{
 \item{x}{Either a \code{covariance_structure}, a \code{pif_atomic_class}
 or \code{pif_global_ensemble_class}}

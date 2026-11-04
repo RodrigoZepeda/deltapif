@@ -3,12 +3,22 @@
 \name{print}
 \alias{print}
 \title{Print or show a potential impact fraction}
-\arguments{
-\item{accuracy}{The accuracy of the printed value}
+\usage{
+## S7 method for class <deltapif::pif_class>
+\special{print(x, ..., accuracy = 0.001)}
 
+## S7 method for class <deltapif::cases_class>
+\special{print(x, ..., accuracy = 0.001)}
+
+## S7 method for class <deltapif::covariance_structure_class>
+\special{print(x, ..., quote = FALSE)}
+}
+\arguments{
 \item{x}{A \code{covariance_structure_class}, a \code{pif_class} or a \code{cases_class}}
 
 \item{...}{Additional arguments to pass to \code{print}}
+
+\item{accuracy}{The accuracy of the printed value}
 }
 \value{
 NULL. Called for its side-effects.

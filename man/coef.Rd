@@ -3,6 +3,13 @@
 \name{coef}
 \alias{coef}
 \title{Extract coefficients of a pif object}
+\usage{
+## S7 method for class <deltapif::pif_class>
+\special{coef(object, ...)}
+
+## S7 method for class <deltapif::cases_class>
+\special{coef(object, ...)}
+}
 \arguments{
 \item{object}{A \code{pif_class} object.}
 

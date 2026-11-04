@@ -3,6 +3,13 @@
 \name{names}
 \alias{names}
 \title{Get the label of a PIF or PAF}
+\usage{
+## S7 method for class <deltapif::pif_class>
+\special{names(x, ...)}
+
+## S7 method for class <deltapif::pif_global_ensemble_class>
+\special{names(x, ...)}
+}
 \arguments{
 \item{x}{A \code{pif_class} object.}
 
